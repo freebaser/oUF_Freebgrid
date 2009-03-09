@@ -1,7 +1,7 @@
 ## Interface: 30000
 ## Title: oUF_Feebgrid
 ## Author: Freebaser
-## Version: 0.6
+## Version: 0.7
 ## Notes: oUF layout.
 ## Dependencies: oUF
 ## OptionalDeps: oUF_ReadyCheck, LibHealComm-3.0, LibBanzai-2.0
@@ -18,3 +18,4 @@ libs\UTF8\utf8data.lua
 oUF_Freebgrid.lua
 oUF_HealComm.lua
 oUF_Freebpets.xml
+oUF_FreebMtargets.xml

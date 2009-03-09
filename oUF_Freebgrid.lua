@@ -650,6 +650,13 @@ for i = 1, 8 do
 	end
 end
 
+local tank = oUF:Spawn('header', 'oUF_MainTank')
+tank:SetPoint('LEFT', UIParent, 5, 0)
+tank:SetManyAttributes('showRaid', true, 
+			'groupFilter', 'MAINTANK', 
+			'yOffset', -5)
+tank:SetAttribute("template", "oUF_FreebMtargets")
+
 local partyToggle = CreateFrame('Frame')
 
 partyToggle:RegisterEvent('PLAYER_LOGIN')
@@ -664,6 +671,7 @@ partyToggle:SetScript('OnEvent', function(self)
 		if(GetNumRaidMembers() > 5) then
 			party:Hide()
 			for i,v in ipairs(raid) do v:Show() end
+			tank:Show()
 		else
 			party:Show()
 			for i,v in ipairs(raid) do v:Hide() end
