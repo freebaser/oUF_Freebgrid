@@ -1,9 +1,18 @@
 ## Interface: 30000
 ## Title: oUF_Feebgrid
 ## Author: Freebaser
-## Version: 0.1
+## Version: 0.2
 ## Notes: oUF layout.
 ## Dependencies: oUF
-## OptionalDeps: oUF_DebuffHighlight
+## OptionalDeps: oUF_DebuffHighlight, oUF_ReadyCheck, LibHealComm-3.0
+## X-Embeds: LibHealComm-3.0
+
+libs\LibHealComm-3.0\LibStub\LibStub.lua
+libs\LibHealComm-3.0\CallbackHandler-1.0\CallbackHandler-1.0.lua
+libs\LibHealComm-3.0\LibHealComm-3.0.lua
+
+libs\UTF8\utf8.lua
+libs\UTF8\utf8data.lua
 
 oUF_Freebgrid.lua
+oUF_HealComm.lua

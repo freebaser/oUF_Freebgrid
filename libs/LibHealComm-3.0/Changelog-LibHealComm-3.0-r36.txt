@@ -1,0 +1,148 @@
+------------------------------------------------------------------------
+r36 | jlam | 2009-01-19 18:48:15 +0000 (Mon, 19 Jan 2009) | 4 lines
+Changed paths:
+   M /trunk/LibHealComm-3.0.lua
+
+Paladin updates from cremor:
+- Drop Blessing of Light and Greater Blessing of Light, which have been removed in WotLK.
+- Detect effects of the self-buffs Divine Plea and Avenging Wrath.
+- In WotLK, the bonus healing effects have been increased by 25% for Flash of Light and Holy Light.
+------------------------------------------------------------------------
+r35 | jlam | 2009-01-18 15:12:54 +0000 (Sun, 18 Jan 2009) | 1 line
+Changed paths:
+   M /trunk/LibHealComm-3.0.lua
+
+GetHealSize may be called with "nil" as the target in the case of a "Party" heal.  Check that it's non-nil before checking the buffs on target.  This should fix an error in detecting the Grace buff when Prayer of Healing is cast.
+------------------------------------------------------------------------
+r34 | jlam | 2009-01-18 00:27:40 +0000 (Sun, 18 Jan 2009) | 1 line
+Changed paths:
+   M /trunk/LibHealComm-3.0.lua
+
+Table indices can't be nil.
+------------------------------------------------------------------------
+r33 | jlam | 2009-01-16 18:09:04 +0000 (Fri, 16 Jan 2009) | 3 lines
+Changed paths:
+   M /trunk/LibHealComm-3.0.lua
+
+Account for the Discipline Priest talents Focused Power and Grace.
+
+The Grace buff detection will be moved after the more general buff/debuff modifications have been made.
+------------------------------------------------------------------------
+r32 | jlam | 2009-01-16 17:29:28 +0000 (Fri, 16 Jan 2009) | 1 line
+Changed paths:
+   M /trunk/LibHealComm-3.0.lua
+
+Rename "effectiveHealBuff" to "effectiveHealModifier" to more accurately self-document its purpose.
+------------------------------------------------------------------------
+r31 | jlam | 2009-01-16 17:24:00 +0000 (Fri, 16 Jan 2009) | 1 line
+Changed paths:
+   M /trunk/LibHealComm-3.0.lua
+
+Detect Glyph of Flash of Light for Paladins.
+------------------------------------------------------------------------
+r29 | jlam | 2009-01-16 08:00:35 +0000 (Fri, 16 Jan 2009) | 1 line
+Changed paths:
+   M /trunk/LibHealComm-3.0.lua
+
+Cache the glyphs that are being used instead of iterating over them each time we call detectGlyph() to see if a particular glyph is in use.
+------------------------------------------------------------------------
+r28 | pastamancer | 2009-01-15 05:28:07 +0000 (Thu, 15 Jan 2009) | 2 lines
+Changed paths:
+   M /trunk/LibHealComm-3.0.lua
+
+Ticket #3: effectiveHealingBuff -> effectiveHealBuff
+
+------------------------------------------------------------------------
+r27 | jlam | 2009-01-13 20:25:19 +0000 (Tue, 13 Jan 2009) | 11 lines
+Changed paths:
+   M /trunk/LibHealComm-3.0.lua
+
+Reorganize code slightly for less copy-and-paste duplication.  We now set three variables that are tuned within each spell-specific section:
+
+- baseHealSize is the base heal amount of the spell
+- nBonus is the bonus healing effect for the spell
+- effectiveHealBuff is the increase to total (effective) healing of the spell.
+
+Each of these variables may be modified by talents, buffs and equipped relics.  These variables are used in the final global formula to determine the heal estimate:
+
+  effectiveHeal = effectiveHealBuff * (baseHealSize + nBonus)
+
+This makes it easier to see how each talent, buff or relic affects the heal estimate.
+------------------------------------------------------------------------
+r26 | jlam | 2009-01-13 19:58:03 +0000 (Tue, 13 Jan 2009) | 4 lines
+Changed paths:
+   M /trunk/LibHealComm-3.0.lua
+
+Druid fixes:
+- Account for Idols that affect Healing Touch.
+- Nourish has a 20% to effective healing if your rejuv/regrowth/lifebloom is on the target.
+- Clean up bookkeeping for effective healing buff.
+------------------------------------------------------------------------
+r25 | jlam | 2009-01-13 18:05:51 +0000 (Tue, 13 Jan 2009) | 1 line
+Changed paths:
+   M /trunk/LibHealComm-3.0.lua
+
+Clean up bookkeeping in shaman spell modifiers.
+------------------------------------------------------------------------
+r24 | jlam | 2009-01-13 17:12:05 +0000 (Tue, 13 Jan 2009) | 6 lines
+Changed paths:
+   M /trunk/LibHealComm-3.0.lua
+
+Paladin fixes:
+- Create spell-specific tables of librams.
+- Add WotLK librarms.
+- Glyphed Seal of Light increases effective healing by 5%.
+- Simplify the bookkeeping of factors that buff effective healing by wrapping it all up into a single factor "effectiveHealBuff".
+- The librams all increase the spellpower of their respective spells, so make the calculation of the healing bonus more transparent and fix the Holy Light bonus calculation.
+------------------------------------------------------------------------
+r23 | jlam | 2009-01-13 16:26:23 +0000 (Tue, 13 Jan 2009) | 1 line
+Changed paths:
+   M /trunk/LibHealComm-3.0.lua
+
+Add Tree of Life target buff that increases healing received by 6%.
+------------------------------------------------------------------------
+r22 | jlam | 2009-01-09 02:23:46 +0000 (Fri, 09 Jan 2009) | 1 line
+Changed paths:
+   M /trunk/LibHealComm-3.0.lua
+
+Move Tidal Waves bonus back to proper spot in the calculations.
+------------------------------------------------------------------------
+r21 | jlam | 2009-01-08 23:00:19 +0000 (Thu, 08 Jan 2009) | 3 lines
+Changed paths:
+   M /trunk/LibHealComm-3.0.lua
+
+Fix Chain Heal size estimate:
+* Improved Chain Heal and Purification talents are additive in their effects, not multiplicative.
+* Unlike the totems for LHW and HW, the totems that affect Chain Heal increase the base amount healed, not the spellpower of the healing spell.  Move the totem bonus so that this is accurately computed in the effective heal.
+------------------------------------------------------------------------
+r20 | jlam | 2009-01-08 22:37:21 +0000 (Thu, 08 Jan 2009) | 1 line
+Changed paths:
+   M /trunk/LibHealComm-3.0.lua
+
+Tidal Waves only affects the bonus healing, not the total effective healing, so move the multiplier into the bonus healing calculation instead.
+------------------------------------------------------------------------
+r19 | jlam | 2009-01-08 20:33:50 +0000 (Thu, 08 Jan 2009) | 2 lines
+Changed paths:
+   M /trunk/LibHealComm-3.0.lua
+
+* Create spell-specific tables of totems (relics) which affect those spells.
+* Update lists of totems for WotLK.
+------------------------------------------------------------------------
+r18 | jlam | 2009-01-08 20:11:33 +0000 (Thu, 08 Jan 2009) | 1 line
+Changed paths:
+   M /trunk/LibHealComm-3.0.lua
+
+Remove unused variable buffTidalWaves.
+------------------------------------------------------------------------
+r17 | jlam | 2009-01-08 20:01:04 +0000 (Thu, 08 Jan 2009) | 1 line
+Changed paths:
+   M /trunk/LibHealComm-3.0.lua
+
+Fix Tidal Waves calculation for shamans -- the bonus to Healing Wave and Lesser Healing Wave is a passive bonus and doesn't depend on whether the buff is up on the target of the heal.
+------------------------------------------------------------------------
+r16 | xbeeps | 2008-12-01 18:42:10 +0000 (Mon, 01 Dec 2008) | 1 line
+Changed paths:
+   M /trunk/LibHealComm-3.0.lua
+
+20% heal buff moved from Fel Armor to Demon Armor
+------------------------------------------------------------------------
