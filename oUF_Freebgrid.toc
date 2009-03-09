@@ -1,0 +1,9 @@
+## Interface: 30000
+## Title: oUF_Feebgrid
+## Author: Freebaser
+## Version: 0.1
+## Notes: oUF layout.
+## Dependencies: oUF
+## OptionalDeps: oUF_DebuffHighlight
+
+oUF_Freebgrid.lua
