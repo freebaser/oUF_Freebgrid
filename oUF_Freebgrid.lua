@@ -13,6 +13,7 @@ local symbols1, symbols1Size = mediaPath.."STYLBCC_.ttf", 12		-- The font and fo
 local height, width = 40, 40
 local playerClass = select(2, UnitClass("player"))
 
+local reverseColors = false	-- Reverse Units color
 local highlight = true		-- MouseOver Highlight?
 local indicators = true 	-- Class Indicators?
 
@@ -343,10 +344,7 @@ local colors = setmetatable({
 		['ENERGY'] = {.65,.63,.35},
 		['RUNIC_POWER'] = {0,.8,.9},
 	}, {__index = oUF.colors.power}),
-}, {__index = oUF.colors})
-
-local colorsC = {
-	class ={
+	class =setmetatable({
 		["DEATHKNIGHT"] = { 0.77, 0.12, 0.23 },
 		["DRUID"] = { 1.0 , 0.49, 0.04 },
 		["HUNTER"] = { 0.67, 0.83, 0.45 },
@@ -357,17 +355,9 @@ local colorsC = {
 		["SHAMAN"] = { 0.14,  0.35,  1.00 },
 		["WARLOCK"] = { 0.58, 0.51, 0.7 },
 		["WARRIOR"] = { 0.78, 0.61, 0.43 },
-	},
-}
-setmetatable(colorsC.class, {
-	__index = function(self, key)
-		return { 0.78, 0.61, 0.43 }
-	end
-})
+	}, {__index = oUF.colors.class}),
+}, {__index = oUF.colors})
 
-local GetClassColor = function(unit)
-	return unpack(colorsC.class[select(2, UnitClass(unit))])
-end
 local menu = function(self)
 	local unit = self.unit:sub(1, -2)
 	local cunit = self.unit:gsub("(.)", string.upper, 1)
@@ -387,11 +377,17 @@ local updateHealth = function(self, event, unit, bar, current, max)
 	local def = max - current
 	bar:SetValue(current)
 
+	local r, g, b, t
+	local _, class = UnitClass(unit)
+	t = self.colors.class[class]
+	r, g, b = t[1], t[2], t[3]
+
 	local per = round(current/max, 100)
 	if banzai:GetUnitAggroByUnitId(unit) then
 		self.Name:SetVertexColor(1, 0, 0)
-	else
-		self.Name:SetTextColor(GetClassColor(unit))
+	else	
+		-- Name Color
+		self.Name:SetTextColor(r, g, b)
 	end
 
 	if(not UnitIsConnected(unit)) then
@@ -407,11 +403,15 @@ local updateHealth = function(self, event, unit, bar, current, max)
 	end
 
 	if UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) then
-		bar.bg:SetVertexColor(0.3, 0.3, 0.3)
-	else
-		bar.bg:SetVertexColor(GetClassColor(unit))
-	end
+		r, g, b = .3, .3, .3
+	end 
+	bar.bg:SetVertexColor(r, g, b)
 
+	if(reverseColors)then
+	  bar:SetStatusBarColor(r, g, b)
+  	else	
+	  bar:SetStatusBarColor(0, 0, 0)
+	end
 end
 
 local OnEnter = function(self)
@@ -438,9 +438,11 @@ local func = function(self, unit)
 	-- Health
 	local hp = CreateFrame"StatusBar"
 	hp:SetStatusBarTexture(texture)
-	hp:SetStatusBarColor(0, 0, 0)
-	hp:SetAlpha(0.8)
-	hp.colorHappiness = true
+	if(reverseColors)then
+	  hp:SetAlpha(1)
+	else
+	  hp:SetAlpha(0.8)
+  	end
 	hp.frequentUpdates = true
 	if(manabars)then
 	  if(vertical)then
@@ -474,7 +476,11 @@ local func = function(self, unit)
 	local hpbg = hp:CreateTexture(nil, "BORDER")
 	hpbg:SetAllPoints(hp)
 	hpbg:SetTexture(texture)
-	hpbg.colorClass = true
+	if(reverseColors)then
+	  hpbg:SetAlpha(0.3)
+	else
+	  hpbg:SetAlpha(1)
+  	end
 
 	-- Backdrop	
 	self.TargetBorder = CreateFrame('Frame', nil, self)
@@ -554,7 +560,8 @@ local func = function(self, unit)
 	local name = hp:CreateFontString(nil, "OVERLAY")
 	name:SetPoint("CENTER")
 	name:SetJustifyH("CENTER")
-	name:SetFont(font, fontsize, "THINOUTLINE")
+	name:SetFont(font, fontsize)
+	name:SetShadowOffset(1.25, -1.25)
 	name:SetTextColor(1,1,1,1)
 
 	self.Name = name
@@ -609,12 +616,16 @@ local func = function(self, unit)
 	self.ReadyCheck:SetPoint("TOPRIGHT", self, 0, 8)
 	self.ReadyCheck:SetHeight(16)
 	self.ReadyCheck:SetWidth(16)
-	self.ReadyCheck.delayTime = 12
+	self.ReadyCheck.delayTime = 8
 	self.ReadyCheck.fadeTime = 2
 
 	if(indicators)then
 	  applyAuraIndicator(self)
   	end
+
+	if(self:GetAttribute('unitsuffix') == 'target')then
+	  self.ignoreHealComm = true
+	end
 
 	self:RegisterEvent('PLAYER_TARGET_CHANGED', ChangedTarget)
 	f:RegisterEvent("UNIT_AURA")
@@ -630,7 +641,7 @@ oUF:RegisterStyle("Freebgrid", func)
 oUF:SetActiveStyle"Freebgrid"  
 
 local party = oUF:Spawn('header', 'oUF_Party')
-party:SetPoint('TOP', UIParent, 'BOTTOM', -90, 310)
+party:SetPoint('TOP', UIParent, 'BOTTOM', 300, 250)
 party:SetManyAttributes('showParty', true, 
 			'showPlayer', true,
 			'yOffset', -5)
@@ -644,7 +655,7 @@ for i = 1, 8 do
 				'yOffset', -5)
 	table.insert(raid, raidg)
 	if(i == 1) then	
-		raidg:SetPoint('TOP', UIParent, 'BOTTOM', -90, 310)
+		raidg:SetPoint('TOP', UIParent, 'BOTTOM', 300, 250)
 	else
 		raidg:SetPoint('TOPLEFT', raid[i-1], 'TOPRIGHT', 5, 0)
 	end
@@ -678,3 +689,7 @@ partyToggle:SetScript('OnEvent', function(self)
 		end
 	end
 end)
+-- Testing frame
+--local player = oUF:Spawn"player"
+--player:SetPoint("CENTER", 0, -100)
+
