@@ -4,6 +4,7 @@ local mediaPath = layoutPath.."\\media\\"
 
 local texture = mediaPath.."gradient"
 local hightlight = mediaPath.."white"
+local borderTex = mediaPath.."border"
 
 local font,fontsize = mediaPath.."CalibriBold.ttf",12			-- The font and fontSize for Names and Health
 local symbols, symbolsSize = mediaPath.."PIZZADUDEBULLETS.ttf", 12	-- The font and fontSize for TagEvents
@@ -13,28 +14,17 @@ local height, width = 40, 40
 local playerClass = select(2, UnitClass("player"))
 
 local highlight = true		-- MouseOver Highlight?
-local filterdebuff = true	-- Filter debuffs by your class?(oUF_DebuffHighlight)
-local indicators = false		-- Class Indicators?
+local indicators = true 	-- Class Indicators?
 
 local vertical = true 		-- Vertical bars?
-local manabars = true		-- Mana Bars?
+local manabars = false		-- Mana Bars?
 local Licon = true		-- Leader icon?
 local ricon = true		-- Raid icon?
 
-local numberize = function(val)
-	if(val >= 1e4) then
-        return ("%.1fk"):format(val / 1e3)
-	elseif (val >= 1e6) then
-		return ("%.1fm"):format(val / 1e6)
-	else
-		return val
-	end
-end
-
-local backdrop = {
-	bgFile = [=[Interface\ChatFrame\ChatFrameBackground]=], tile = true, tileSize = 16,
-	insets = {top = -1, left = -1, bottom = -1, right = -1},
-}
+local f = CreateFrame("Frame")
+f:SetScript("OnEvent", function(self, evnet, ...)
+	return self[event](self, ...)
+end)
 
 --=========================------------- Big Thanks to jadakren! 
 
@@ -60,58 +50,65 @@ oUF.classIndicators={
 				["TL"] = "[tree]",
 				["TR"] = "[gotw]",
 				["BL"] = "[lb]",
-				["BR"] = "[rejuv][regrow][flour]"
+				["BR"] = "[rejuv][regrow][wg]"
 		},
 		["PRIEST"] = {
 				["TL"] = "[pws][ws]",
-				["TR"] = "[sp][fort][fw]",
+				["TR"] = "[ds][sp][fort][fw]",
 				["BL"] = "[pom]",
 				["BR"] = "[rnw][gotn]"
 		},
 		["PALADIN"] = {
-			["TL"] = "",
-			["TR"] = "",
-			["BL"] = "",
-			["BR"] = ""
+				["TL"] = "",
+				["TR"] = "",
+				["BL"] = "",
+				["BR"] = ""
 		},
 		["WARLOCK"] = {
-			["TL"] = "",
-			["TR"] = "",
-			["BL"] = "",
-			["BR"] = ""
+				["TL"] = "",
+				["TR"] = "",
+				["BL"] = "",
+				["BR"] = ""
+		},
+		["WARRIOR"] = {
+				["TL"] = "",
+				["TR"] = "[sh]",
+				["BL"] = "",
+				["BR"] = ""
+		},
+		["DEATHKNIGHT"] = {
+				["TL"] = "",
+				["TR"] = "",
+				["BL"] = "",
+				["BR"] = ""
+		},
+		["SHAMAN"] = {
+				["TL"] = "",
+				["TR"] = "",
+				["BL"] = "",
+				["BR"] = ""
+		},
+		["HUNTER"] = {
+				["TL"] = "",
+				["TR"] = "",
+				["BL"] = "",
+				["BR"] = ""
 		},
 		["ROGUE"] = {
-			["TL"] = "",
-			["TR"] = "",
-			["BL"] = "",
-			["BR"] = ""
+				["TL"] = "",
+				["TR"] = "",
+				["BL"] = "",
+				["BR"] = ""
+		},
+		["MAGE"] = {
+				["TL"] = "",
+				["TR"] = "",
+				["BL"] = "",
+				["BR"] = ""
 		}
 		
 	}
-oUF.TagEvents["[shortName]"] = "UNIT_NAME_UPDATE"
-oUF.Tags["[shortName]"] = function(u) 
-	return string.sub(UnitName(u),1,4) or '' 
-end
 
-oUF.TagEvents["[raidhp]"] = "UNIT_HEALTH UNIT_MAXHEALTH"
-oUF.Tags["[raidhp]"] = function(u)
-	o = ""
-	if not(u == nil) then
-		local c, m, n= UnitHealth(u), UnitHealthMax(u), UnitName(u)
-		if(c <= 1) then 
-			o = "DEAD" 
-		elseif not UnitIsConnected(u) then
-			return "D/C" 
-		elseif(c >= m) then 
-			o = n:utf8sub(1,4)
-		elseif(UnitCanAttack("player", u)) then
-			o = math.floor(c/m*100+0.5).."%"
-		else
-		 	o = "-"..numberize(m - c)
-		end
-	end
-	return o
-end
 oUF.Tags["[pom]"] = function(u) local c = select(4, UnitAura(u, "Prayer of Mending")) return c and "|cffFFCF7F"..oUF.pomCount[c].."|r" or "" end
 oUF.TagEvents["[pom]"] = "UNIT_AURA"
 
@@ -130,57 +127,200 @@ oUF.Tags["[sp]"] = function(u) return (UnitAura(u, "Prayer of Shadow Protection"
 oUF.TagEvents["[sp]"] = "UNIT_AURA"
 oUF.Tags["[fort]"] = function(u) return (UnitAura(u, "Prayer of Fortitude") or UnitAura(u, "Power Word: Fortitude")) and "" or "|cff00A1DE.|r" end
 oUF.TagEvents["[fort]"] = "UNIT_AURA"
-oUF.Tags["[fw]"] = function(u) return UnitAura(u, "Fear Ward") and "|cffCA21FF.|r" or "" end
+oUF.Tags["[fw]"] = function(u) return UnitAura(u, "Fear Ward") and "|cff8B4513 .|r" or "" end
 oUF.TagEvents["[fw]"] = "UNIT_AURA"
+oUF.Tags["[ds]"] = function(u) return (UnitAura(u, "Prayer of Spirit") or UnitAura(u, "Divine Spirit")) and "" or "|cffffff00.|r" end
+oUF.TagEvents["[ds]"] = "UNIT_AURA"
 
 --druid
 
 oUF.Tags["[lb]"] = function(u) local c = select(4, UnitAura(u, "Lifebloom")) return c and "|cffA7FD0A"..c.."|r" or "" end
 oUF.Tags["[rejuv]"] = function(u) return UnitAura(u, "Rejuvenation") and "|cff00FEBF.|r" or "" end
 oUF.Tags["[regrow]"] = function(u) return UnitAura(u, "Regrowth") and "|cff00FF10.|r" or "" end
-oUF.Tags["[flour]"] = function(u) return UnitAura(u, "Flourish") and "|cff33FF33.|r" or "" end
+oUF.Tags["[wg]"] = function(u) return UnitAura(u, "Wild Growth") and "|cff33FF33.|r" or "" end
 oUF.Tags["[tree]"] = function(u) return UnitAura(u, "Tree of Life") and "|cff33FF33.|r" or "" end
 oUF.Tags["[gotw]"] = function(u) return UnitAura(u, "Gift of the Wild") and "|cff33FF33.|r" or "" end
 oUF.TagEvents["[lb]"] = "UNIT_AURA"
 oUF.TagEvents["[rejuv]"] = "UNIT_AURA"
 oUF.TagEvents["[regrow]"] = "UNIT_AURA"
-oUF.TagEvents["[flour]"] = "UNIT_AURA"
+oUF.TagEvents["[wg]"] = "UNIT_AURA"
 oUF.TagEvents["[tree]"] = "UNIT_AURA"
 oUF.TagEvents["[gotw]"] = "UNIT_AURA"
+
+--warrior
+oUF.Tags["[sh]"] = function(u) return (UnitAura(u, "Battle Shout") or UnitAura(u, "Commanding Shout")) and "" or "|cffffff00.|r" end
+oUF.TagEvents["[sh]"] = "UNIT_AURA"
 
 
 local function applyAuraIndicator(self)
 --========= ----- =========--
 		self.AuraStatusTL = self.Health:CreateFontString(nil, "OVERLAY")
 		self.AuraStatusTL:ClearAllPoints()
-		self.AuraStatusTL:SetPoint("TOPLEFT", self.Health, "TOPLEFT", 0, 18)
-		self.AuraStatusTL:SetJustifyH("LEFT")
+		self.AuraStatusTL:SetPoint("BOTTOMLEFT", self, "TOPLEFT", -5, -5)
 		self.AuraStatusTL:SetFont(font, 22, "OUTLINE")
 		self:Tag(self.AuraStatusTL, oUF.classIndicators[playerClass]["TL"])
 	
 		self.AuraStatusTR = self.Health:CreateFontString(nil, "OVERLAY")
 		self.AuraStatusTR:ClearAllPoints()
-		self.AuraStatusTR:SetPoint("TOPRIGHT", self.Health, "TOPRIGHT", 5, 18)
-		self.AuraStatusTR:SetJustifyH("RIGHT")
+		self.AuraStatusTR:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", 5, -5)
 		self.AuraStatusTR:SetFont(font, 22, "OUTLINE")
 		self:Tag(self.AuraStatusTR, oUF.classIndicators[playerClass]["TR"])
 
-		self.AuraStatusBR1 = self.Health:CreateFontString(nil, "OVERLAY")
-		self.AuraStatusBR1:ClearAllPoints()
-		self.AuraStatusBR1:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMRIGHT", 5, -5)
-		self.AuraStatusBR1:SetJustifyH("RIGHT")
-		self.AuraStatusBR1:SetFont(symbols, symbolsSize, "OUTLINE")
-		self:Tag(self.AuraStatusBR1, oUF.classIndicators[playerClass]["BL"])	
+		self.AuraStatusBL = self.Health:CreateFontString(nil, "OVERLAY")
+		self.AuraStatusBL:ClearAllPoints()
+		self.AuraStatusBL:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 7, -3)
+		self.AuraStatusBL:SetFont(symbols, symbolsSize, "OUTLINE")
+		self:Tag(self.AuraStatusBL, oUF.classIndicators[playerClass]["BL"])	
 
-		self.AuraStatusBR2 = self.Health:CreateFontString(nil, "OVERLAY")
-		self.AuraStatusBR2:ClearAllPoints()
-		self.AuraStatusBR2:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMRIGHT", 5, -5)
-		self.AuraStatusBR2:SetJustifyH("RIGHT")
-		self.AuraStatusBR2:SetFont(font, 22, "OUTLINE")
-		self:Tag(self.AuraStatusBR2, oUF.classIndicators[playerClass]["BR"])	
+		self.AuraStatusBR = self.Health:CreateFontString(nil, "OVERLAY")
+		self.AuraStatusBR:ClearAllPoints()
+		self.AuraStatusBR:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", -5, -5)
+		self.AuraStatusBR:SetFont(font, 22, "OUTLINE")
+		self:Tag(self.AuraStatusBR, oUF.classIndicators[playerClass]["BR"])	
 	--========= ----- =========--
 end
+ 
+-- Credits to zariel
 
+local debuffs = {
+	["Viper Sting"] = 12,
+	["Mana Burn"] = 12,
+
+	["Wound Poison"] = 9,
+	["Mortal Strike"] = 8,
+	["Aimed Shot"] = 8,
+
+	["Counterspell - Silenced"] = 11,
+	["Counterspell"] = 10,
+
+	["Blind"] = 10,
+	["Cyclone"] = 10,
+
+	["Polymorph"] = 7,
+
+	["Entangling Roots"] = 7,
+	["Freezing Trap Effect"] = 7,
+
+	["Crippling Poison"] = 6,
+	["Hamstring"] = 5,
+	["Wingclip"] = 5,
+
+	["Fear"] = 3,
+	["Psycic Scream"] = 3,
+	["Howl of Terror"] = 3,
+}
+
+local dispellClass
+do
+	local t = {
+		["PRIEST"] = {
+			["Magic"] = true,
+			["Disease"] = true,
+		},
+		["SHAMAN"] = {
+			["Poision"] = true,
+			["Disease"] = true,
+		},
+		["PALADIN"] = {
+			["Poison"] = true,
+			["Magic"] = true,
+			["Disease"] = true,
+		},
+		["MAGE"] = {
+			["Curse"] = true,
+		},
+		["DRUID"] = {
+			["Curse"] = true,
+			["Poison"] = true,
+		},
+	}
+	if t[playerClass] then
+		dispellClass = {}
+		for k, v in pairs(t[playerClass]) do
+			dispellClass[k] = v
+		end
+		t = nil
+	end
+end
+
+local dispellPiority = {
+	["Magic"] = 4,
+	["Poison"] = 3,
+	["Disease"] = 1,
+	["Curse"] = 2,
+}
+
+local name, rank, buffTexture, count, duration, timeLeft, dtype
+function f:UNIT_AURA(unit)
+	if not oUF.units[unit] then return end
+
+	local frame = oUF.units[unit]
+
+	if not frame.Icon then return end
+	local current, bTexture, dispell, dispellTexture
+	for i = 1, 40 do
+		name, rank, buffTexture, count, dtype, duration, timeLeft = UnitDebuff(unit, i)
+		if not name then break end
+
+		if dispellClass and dispellClass[dtype] then
+			dispell = dispell or dtype
+			dispellTexture = dispellTexture or buffTexture
+			if dispellPiority[dtype] > dispellPiority[dispell] then
+				dispell = dtype
+				dispellTexture = buffTexture
+			end
+		end
+
+		if debuffs[name] then
+			current = current or name
+			bTexture = bTexture or buffTexture
+
+			local prio = debuffs[name]
+			if prio > debuffs[current] then
+				current = name
+				bTexture = buffTexture
+			end
+		end
+	end
+
+	if dispellClass then
+		if dispell then
+			if dispellClass[dispell] then
+				local col = DebuffTypeColor[dispell]
+				frame.border:Show()
+				frame.border:SetVertexColor(col.r, col.g, col.b)
+				frame.Dispell = true
+				if not bTexture and dispellTexture then
+					current = dispell
+					bTexture = dispellTexture
+				end
+			end
+		else
+			frame.border:SetVertexColor(1, 1, 1)
+			frame.Dispell = false
+			frame.border:Hide()
+		end
+	end
+
+	if current and bTexture then
+		frame.IconShown = true
+		frame.Icon:SetTexture(bTexture)
+		frame.Icon:ShowText()
+		frame.DebuffTexture = true
+	else
+		frame.IconShown = false
+		frame.DebuffTexture = false
+		frame.Icon:HideText()
+	end
+end
+-- Target Border
+local ChangedTarget = function(self)
+	if (UnitInRaid'player' == 1 or UnitInParty'player' ) and UnitName('target') == UnitName(self.unit) then
+		self.TargetBorder:SetBackdropBorderColor(0.8,0.8,0.8,1)
+	else
+		self.TargetBorder:SetBackdropBorderColor(0.8,0.8,0.8,0)
+	end
+end
 
 --===========================--
 local colors = setmetatable({
@@ -202,7 +342,7 @@ local colorsC = {
 		["PALADIN"] = { 0.96, 0.55, 0.73 },
 		["PRIEST"] = { 1.0 , 1.0 , 1.0 },
 		["ROGUE"] = { 1.0 , 0.96, 0.41 },
-		["SHAMAN"] = { 0,0.86,0.73 },
+		["SHAMAN"] = { 0.14,  0.35,  1.00 },
 		["WARLOCK"] = { 0.58, 0.51, 0.7 },
 		["WARRIOR"] = { 0.78, 0.61, 0.43 },
 	},
@@ -227,20 +367,35 @@ local menu = function(self)
 	end
 end
 
--- Health Function
-local updateHealth = function(self, event, unit, bar, min, max)
+local round = function(x, y)
+	return math.floor((x * 10 ^ y)+ 0.5) / 10 ^ y
+end
 
-	if(max ~= 0)then
-	  r,g,b = self.ColorGradient((min/max), .9,.1,.1, .9,.5,.1, .8,.8,1)
+local updateHealth = function(self, event, unit, bar, current, max)
+	local def = max - current
+	bar:SetValue(current)
+
+	local per = round(current/max, 100)
+	self.Name:SetTextColor(GetClassColor(unit))
+
+	if(not UnitIsConnected(unit)) then
+		self.Name:SetText('|cffD7BEA5'..'D/C')
+	elseif(UnitIsDead(unit)) then
+		self.Name:SetText('|cffD7BEA5'..'Dead')
+	elseif(UnitIsGhost(unit)) then
+		self.Name:SetText('|cffD7BEA5'..'Ghost')
+	elseif (per > 0.9) then
+		self.Name:SetText(UnitName(unit):sub(1, 3))
+	else
+		self.Name:SetFormattedText("-%0.1f",math.floor(def/100)/10)
 	end
-
-	bar.value:SetTextColor(r,g,b)
 
 	if UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) then
 		bar.bg:SetVertexColor(0.3, 0.3, 0.3)
 	else
 		bar.bg:SetVertexColor(GetClassColor(unit))
 	end
+
 end
 
 local OnEnter = function(self)
@@ -305,17 +460,25 @@ local func = function(self, unit)
 	hpbg:SetTexture(texture)
 	hpbg.colorClass = true
 
-	self:SetBackdrop(backdrop)
-	self:SetBackdropColor(0, 0, 0, 1)
+	-- Backdrop	
+	self.TargetBorder = CreateFrame('Frame', nil, self)
+	self.TargetBorder:SetPoint("TOPLEFT",-3,3)
+	self.TargetBorder:SetPoint("BOTTOMRIGHT",3,-3)
+	self.TargetBorder:SetBackdrop({
+		bgFile = [[Interface\ChatFrame\ChatFrameBackground]], tile = true, tileSize = 16,
+		edgeFile = [[Interface\ChatFrame\ChatFrameBackground]], edgeSize = 1,
+		insets = {top = 1, left = 1, bottom = 1, right = 1},
+	})
+	self.TargetBorder:SetBackdropColor(0, 0, 0, 1)
+	self.TargetBorder:SetBackdropBorderColor(0, 0, 0, 0)
+	
 
 	-- Health Text
 	local hpp = hp:CreateFontString(nil, "OVERLAY")
-	hpp:SetFont(font, fontsize, "THINOUTLINE")
+	hpp:SetFont(font, fontsize)
 	hpp:SetShadowOffset(1,-1)
 	hpp:SetPoint("CENTER")
 	hpp:SetJustifyH("CENTER")
-
-	self:Tag(hpp, "[raidhp]")
 
 	hp.bg = hpbg
 	hp.value = hpp
@@ -365,14 +528,6 @@ local func = function(self, unit)
 	  self.Highlight = hl
 	end
 
-	-- DebuffHidghtlight
-	self.DebuffHighlightBackdrop = true
-	self.DebuffHighlightAlpha = .5
-
-	if(filterdebuff)then
-	  self.DebuffHighlightFilter = true
-	end
-
 	-- Range Alpha
 	if(not unit) then
 		self.Range = true
@@ -380,10 +535,47 @@ local func = function(self, unit)
 		self.outsideRangeAlpha = .5
 	end
 
+	local name = hp:CreateFontString(nil, "OVERLAY")
+	name:SetPoint("CENTER")
+	name:SetJustifyH("CENTER")
+	name:SetFont(font, fontsize, "THINOUTLINE")
+	name:SetShadowColor(0,0,0,1)
+	name:SetShadowOffset(1, -1)
+	name:SetTextColor(1,1,1,1)
+
+	self.Name = name
+
+	local border = hp:CreateTexture(nil, "OVERLAY")
+	border:SetPoint("LEFT", self, "LEFT", -4, 0)
+	border:SetPoint("RIGHT", self, "RIGHT", 4, 0)
+	border:SetPoint("TOP", self, "TOP", 0, 4)
+	border:SetPoint("BOTTOM", self, "BOTTOM", 0, -4)
+	border:SetTexture(borderTex)
+	border:Hide()
+	border:SetVertexColor(1, 1, 1)
+	self.border = border
+
 --==========--
 --  ICONS   --
 --==========--
---Leader Icon
+-- Dispel Icons
+	local icon = hp:CreateTexture(nil, "OVERLAY")
+	icon:SetPoint("CENTER")
+	icon:SetHeight(18)
+	icon:SetWidth(18)
+	icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
+	icon:Hide()
+	icon.ShowText = function(s)
+		self.Name:Hide()
+		s:Show()
+	end
+	icon.HideText = function(s)
+		self.Name:Show()
+		s:Hide()
+	end
+	self.Icon = icon
+
+-- Leader Icon
 	if(Licon)then
 	self.Leader = self.Health:CreateTexture(nil, "OVERLAY")
 	self.Leader:SetPoint("TOPLEFT", self, 0, 8)
@@ -403,10 +595,15 @@ local func = function(self, unit)
 	self.ReadyCheck:SetPoint("TOPRIGHT", self, 0, 8)
 	self.ReadyCheck:SetHeight(16)
 	self.ReadyCheck:SetWidth(16)
-	
-	if(indictors)then
+	self.ReadyCheck.delayTime = 12
+	self.ReadyCheck.fadeTime = 2
+
+	if(indicators)then
 	  applyAuraIndicator(self)
   	end
+
+	self:RegisterEvent('PLAYER_TARGET_CHANGED', ChangedTarget)
+	f:RegisterEvent("UNIT_AURA")
 
 	self:SetAttribute('initial-height', height)
 	self:SetAttribute('initial-width', width)
@@ -418,19 +615,44 @@ oUF:RegisterStyle("Freebgrid", func)
 
 oUF:SetActiveStyle"Freebgrid"  
 
+local party = oUF:Spawn('header', 'oUF_Party')
+party:SetPoint('TOP', UIParent, 'BOTTOM', -90, 310)
+party:SetManyAttributes('showParty', true, 
+			'showPlayer', true,
+			'yOffset', -5)
+party:SetAttribute("template", "oUF_Freebpets")
+
 local raid = {}
 for i = 1, 8 do
-	local group = oUF:Spawn('header', 'oUF_Group'..i)
-	group:SetManyAttributes('groupFilter', tostring(i), 'showRaid', true, 'yOffset', -4)
-	table.insert(raid, group)
-	if(i == 1) then
-		group:SetManyAttributes('showParty', true, 'showPlayer', true)
-		group:SetPoint('TOPLEFT', UIParent, 5, -500)
+	local raidg = oUF:Spawn('header', 'oUF_Raid'..i)
+	raidg:SetManyAttributes('groupFilter', tostring(i), 
+				'showRaid', true, 
+				'yOffset', -5)
+	table.insert(raid, raidg)
+	if(i == 1) then	
+		raidg:SetPoint('TOP', UIParent, 'BOTTOM', -90, 310)
 	else
-		group:SetPoint('TOPLEFT', raid[i-1], 'TOPRIGHT', 4, 0)
+		raidg:SetPoint('TOPLEFT', raid[i-1], 'TOPRIGHT', 5, 0)
 	end
-	group:Show()
 end
 
+local partyToggle = CreateFrame('Frame')
 
-
+partyToggle:RegisterEvent('PLAYER_LOGIN')
+partyToggle:RegisterEvent('RAID_ROSTER_UPDATE')
+partyToggle:RegisterEvent('PARTY_LEADER_CHANGED')
+partyToggle:RegisterEvent('PARTY_MEMBERS_CHANGED')
+partyToggle:SetScript('OnEvent', function(self)
+	if(InCombatLockdown()) then
+		self:RegisterEvent('PLAYER_REGEN_ENABLED')
+	else
+		self:UnregisterEvent('PLAYER_REGEN_ENABLED')
+		if(GetNumRaidMembers() > 5) then
+			party:Hide()
+			for i,v in ipairs(raid) do v:Show() end
+		else
+			party:Show()
+			for i,v in ipairs(raid) do v:Hide() end
+		end
+	end
+end)

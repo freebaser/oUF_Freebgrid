@@ -16,3 +16,4 @@ libs\UTF8\utf8data.lua
 
 oUF_Freebgrid.lua
 oUF_HealComm.lua
+oUF_Freebpets.xml
