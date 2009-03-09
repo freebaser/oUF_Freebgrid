@@ -17,9 +17,9 @@ local filterdebuff = true	-- Filter debuffs by your class?(oUF_DebuffHighlight)
 local indicators = false		-- Class Indicators?
 
 local vertical = true 		-- Vertical bars?
-local manabars = false		-- Mana Bars?
-local Licon = false		-- Leader icon?
-local ricon = false		-- Raid icon?
+local manabars = true		-- Mana Bars?
+local Licon = true		-- Leader icon?
+local ricon = true		-- Raid icon?
 
 local numberize = function(val)
 	if(val >= 1e4) then
@@ -33,7 +33,7 @@ end
 
 local backdrop = {
 	bgFile = [=[Interface\ChatFrame\ChatFrameBackground]=], tile = true, tileSize = 16,
-	insets = {top = -2, left = -2, bottom = -2, right = -2},
+	insets = {top = -1, left = -1, bottom = -1, right = -1},
 }
 
 --=========================------------- Big Thanks to jadakren! 
@@ -231,7 +231,7 @@ end
 local updateHealth = function(self, event, unit, bar, min, max)
 
 	if(max ~= 0)then
-	  r,g,b = self.ColorGradient((min/max), .9,.1,.1, .9,.1,.1, 1,1,1)
+	  r,g,b = self.ColorGradient((min/max), .9,.1,.1, .9,.5,.1, .8,.8,1)
 	end
 
 	bar.value:SetTextColor(r,g,b)
@@ -273,14 +273,14 @@ local func = function(self, unit)
 	hp.frequentUpdates = true
 	if(manabars)then
 	  if(vertical)then
-	    hp:SetWidth(width*.95)
+	    hp:SetWidth(width*.93)
 	    hp:SetOrientation("VERTICAL")
 	    hp:SetParent(self)
 	    hp:SetPoint"TOP"
 	    hp:SetPoint"BOTTOM"
 	    hp:SetPoint"LEFT"
   	  else
-	    hp:SetHeight(height*.95)
+	    hp:SetHeight(height*.93)
 	    hp:SetParent(self)
 	    hp:SetPoint"LEFT"
 	    hp:SetPoint"RIGHT"
@@ -306,7 +306,7 @@ local func = function(self, unit)
 	hpbg.colorClass = true
 
 	self:SetBackdrop(backdrop)
-	self:SetBackdropColor(0, 0, 0, .5)
+	self:SetBackdropColor(0, 0, 0, 1)
 
 	-- Health Text
 	local hpp = hp:CreateFontString(nil, "OVERLAY")
