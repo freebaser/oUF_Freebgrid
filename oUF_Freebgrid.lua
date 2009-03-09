@@ -385,7 +385,7 @@ local updateHealth = function(self, event, unit, bar, current, max)
 	elseif(UnitIsGhost(unit)) then
 		self.Name:SetText('|cffD7BEA5'..'Ghost')
 	elseif (per > 0.9) then
-		self.Name:SetText(UnitName(unit):sub(1, 3))
+		self.Name:SetText(UnitName(unit):utf8sub(1, 3))
 	else
 		self.Name:SetFormattedText("-%0.1f",math.floor(def/100)/10)
 	end
@@ -539,8 +539,6 @@ local func = function(self, unit)
 	name:SetPoint("CENTER")
 	name:SetJustifyH("CENTER")
 	name:SetFont(font, fontsize, "THINOUTLINE")
-	name:SetShadowColor(0,0,0,1)
-	name:SetShadowOffset(1, -1)
 	name:SetTextColor(1,1,1,1)
 
 	self.Name = name

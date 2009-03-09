@@ -1,10 +1,11 @@
 ﻿local MAJOR_VERSION = "LibHealComm-3.0";
-local MINOR_VERSION = 90000 + tonumber(("$Revision: 36 $"):match("%d+"));
+local MINOR_VERSION = 90000 + tonumber(("$Revision: 45 $"):match("%d+"));
 
 local lib = LibStub:NewLibrary(MAJOR_VERSION, MINOR_VERSION);
 if not lib then return end
 
 local playerName = UnitName('player');
+local playerRealm = GetRealmName();
 local playerClass = select(2, UnitClass('player'));
 local isHealer = (playerClass == "PRIEST") or (playerClass == "SHAMAN") or (playerClass == "DRUID") or (playerClass == "PALADIN");
 
@@ -26,6 +27,9 @@ lib.EventFrame:RegisterEvent("UNIT_AURA");
 lib.EventFrame:RegisterEvent("UNIT_TARGET");
 lib.EventFrame:RegisterEvent("PLAYER_TARGET_CHANGED");
 lib.EventFrame:RegisterEvent("PLAYER_FOCUS_CHANGED");
+lib.EventFrame:RegisterEvent("GLYPH_ADDED");
+lib.EventFrame:RegisterEvent("GLYPH_REMOVED");
+lib.EventFrame:RegisterEvent("GLYPH_UPDATED");
 
 -- For keeping track of versions
 lib.EventFrame:RegisterEvent("PARTY_MEMBERS_CHANGED");
@@ -146,6 +150,26 @@ local function unitFullName(unit)
     else
         return name;
     end
+end
+
+local function extractRealm(fullName)
+    return fullName:match("^[^%-]+%-(.+)$");
+end
+
+-- Convert a remotely generated fully qualified name to
+-- a local fully qualified name.
+local function convertRealm(fullName, remoteRealm)
+    if (remoteRealm) then
+        local name, realm = fullName:match("^([^%-]+)%-(.*)$");
+        if (not realm) then
+            -- Apply remote realm if there is no realm on the target
+            return fullName .. "-" .. remoteRealm;
+        elseif (realm == playerRealm) then
+            -- Strip realm if it is equal to the local realm
+            return name;
+        end
+    end
+    return fullName;
 end
 
 local function commSend(contents, distribution, target)
@@ -590,6 +614,7 @@ if (playerClass == "DRUID") then
     local tNourish = GetSpellInfo(50464);
     local tRejuvenation = GetSpellInfo(774); 
     local tLifebloom = GetSpellInfo(33763);    
+    local tWildGrowth = GetSpellInfo(48438);    
 
 --[[HotSpells =
     {
@@ -683,10 +708,14 @@ if (playerClass == "DRUID") then
                 nBonus = bonus * (1.88 + talentEmpoweredTouch);
             end
         elseif (name == tRegrowth) then
+            -- Glyph of Regrowth (increases effective healing by 20% if player's Regrowth is on target)
+            if (detectGlyph(54743) and detectBuff(target, tRegrowth, true)) then
+                effectiveHealModifier = effectiveHealModifier * 1.2;
+            end
             nBonus = bonus * 1.88 * (2.0 / 3.5) * 0.5;
         elseif (name == tNourish) then
-            -- Nourish heals for 20% more if player's rejuv/regrowth/lifebloom is on the target.
-            if (detectBuff(target, tRejuvenation, true) or detectBuff(target, tRegrowth, true) or detectBuff(target, tLifebloom, true)) then
+            -- Nourish heals for 20% more if player's HoT is on the target.
+            if (detectBuff(target, tRejuvenation, true) or detectBuff(target, tRegrowth, true) or detectBuff(target, tLifebloom, true) or detectBuff(target, tWildGrowth, true)) then
                 effectiveHealModifier = effectiveHealModifier * 1.2
             end
             nBonus = bonus * 1.88 * (1.5 / 3.5);
@@ -767,9 +796,9 @@ if (playerClass == "PALADIN") then
             effectiveHealModifier = effectiveHealModifier * 1.2;
         end
 
-        -- Divine Plea (decrease all healing by 20%)
+        -- Divine Plea (decrease all healing by 50%)
         if (detectBuff('player', tDivinePlea)) then
-            effectiveHealModifier = effectiveHealModifier * 0.8;
+            effectiveHealModifier = effectiveHealModifier * 0.5;
         end
 
         -- Glyph of Seal of Light (increases healing by 5% if Seal of Light is active)
@@ -784,11 +813,6 @@ if (playerClass == "PALADIN") then
         if (name == tFlashOfLight) then
             local libramBonus = libramsFlashOfLight[getEquippedRelicID()] or 0;
             nBonus = (bonus + libramBonus) * 1.88 * (1.5 / 3.5) * 1.25;
-            
-            -- Glyph of Flash of Light (reduces healing effect by 50%)
-            if (detectGlyph(54936)) then
-                effectiveHealModifier = effectiveHealModifier * 0.5;
-            end
         elseif (name == tHolyLight) then
             local libramBonus = libramsHolyLight[getEquippedRelicID()] or 0;
             nBonus = (bonus + libramBonus) * 1.88 * (2.5 / 3.5) * 1.25;
@@ -1023,11 +1047,9 @@ if (playerClass == "SHAMAN") then
             local totemBonus = totemsHealingWave[getEquippedRelicID()] or 0;
             effectiveHealModifier = effectiveHealModifier * talentPurification;
 
-            -- Healing Way Buff (target buff that increases effective healing by 6%, stacks 3 times)
-            -- TODO: In 3.0.8, Healing Way is a non-stackable target buff that increases effective healing received by 18%.
-            local hwMod = detectBuff(target, tHealingWay);
-            if (hwMod) then
-                effectiveHealModifier = effectiveHealModifier * (1.0 + 0.06 * hwMod);
+            -- Healing Way Buff (target buff that increases effective healing by 18%)
+            if (detectBuff(target, tHealingWay)) then
+                effectiveHealModifier = effectiveHealModifier * 1.18;
             end;
 
             -- Tidal Waves Talent (increases bonus healing effects by 4% per rank)
@@ -1114,8 +1136,22 @@ function lib:UNIT_AURA(unit)
 end
 
 function lib:LEARNED_SPELL_IN_TAB()
-    -- Invalidate cached spell & glyph data when learning new spells & glyphs
+    -- Invalidate cached spell data when learning new spells
     SpellCache = {};
+end
+
+function lib:GLYPH_ADDED()
+    -- Invalidate cached glyph data when updating glyphs
+    GlyphCache = {};
+end
+
+function lib:GLYPH_REMOVED()
+    -- Invalidate cached glyph data when updating glyphs
+    GlyphCache = {};
+end
+
+function lib:GLYPH_UPDATED()
+    -- Invalidate cached glyph data when updating glyphs
     GlyphCache = {};
 end
 
@@ -1195,6 +1231,9 @@ function lib:CHAT_MSG_ADDON(prefix, msg, distribution, sender)
             local endTime = select(6, UnitCastingInfo(sender));
 
             if (endTime) then
+                if (distribution == "BATTLEGROUND") then
+                    targetName = convertRealm(targetName, extractRealm(sender));
+                end
                 endTime = endTime / 1000;
                 entryUpdate(sender, targetName, healSize, endTime);
                 self.Callbacks:Fire("HealComm_DirectHealStart", sender, healSize, endTime, targetName);
@@ -1216,6 +1255,12 @@ function lib:CHAT_MSG_ADDON(prefix, msg, distribution, sender)
             local endTime = select(6, UnitCastingInfo(sender));
 
             if (endTime) then
+                if (distribution == "BATTLEGROUND") then
+                    local senderRealm = extractRealm(sender);
+                    for k, targetName in pairs(targetNames) do
+                        targetNames[k] = convertRealm(targetName, senderRealm);
+                    end
+                end
                 endTime = endTime / 1000;
                 tinsert(targetNames, 1, sender);
                 entryUpdate(sender, targetNames, healSize, endTime);
@@ -1309,6 +1354,9 @@ function lib:PLAYER_ALIVE()
     -- prior to this event firing (no messages sent and InBattlegroundOrArena and InRaidOrParty
     -- are probably not correctly initialised).
     lib:Initialise();
+
+    -- Only receive once
+    self.EventFrame:UnregisterEvent("PLAYER_ALIVE");
 end
 
 function lib:PLAYER_ENTERING_WORLD()
