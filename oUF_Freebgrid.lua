@@ -21,6 +21,18 @@ local manabars = false		-- Mana Bars?
 local Licon = true		-- Leader icon?
 local ricon = true		-- Raid icon?
 
+local banzai = LibStub("LibBanzai-2.0")
+
+banzai:RegisterCallback(function(aggro, name, ...)
+	for i = 1, select("#", ...) do
+		local u = select(i, ...)
+		local f = oUF.units[u]
+		if f then
+			f:UNIT_MAXHEALTH("OnBanzaiUpdate", f.unit)
+		end
+	end
+end)
+
 local f = CreateFrame("Frame")
 f:SetScript("OnEvent", function(self, evnet, ...)
 	return self[event](self, ...)
@@ -376,7 +388,11 @@ local updateHealth = function(self, event, unit, bar, current, max)
 	bar:SetValue(current)
 
 	local per = round(current/max, 100)
-	self.Name:SetTextColor(GetClassColor(unit))
+	if banzai:GetUnitAggroByUnitId(unit) then
+		self.Name:SetVertexColor(1, 0, 0)
+	else
+		self.Name:SetTextColor(GetClassColor(unit))
+	end
 
 	if(not UnitIsConnected(unit)) then
 		self.Name:SetText('|cffD7BEA5'..'D/C')
