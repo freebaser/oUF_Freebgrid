@@ -378,9 +378,15 @@ local updateHealth = function(self, event, unit, bar, current, max)
 	bar:SetValue(current)
 
 	local r, g, b, t
-	local _, class = UnitClass(unit)
-	t = self.colors.class[class]
-	r, g, b = t[1], t[2], t[3]
+	if UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) then
+		r, g, b = .3, .3, .3
+	elseif(UnitIsPlayer(unit)) then
+		local _, class = UnitClass(unit)
+		t = self.colors.class[class]
+		r, g, b = t[1], t[2], t[3]	
+	else			
+		r, g, b = .1, .8, .3
+	end
 
 	local per = round(current/max, 100)
 	if banzai:GetUnitAggroByUnitId(unit) then
@@ -402,9 +408,6 @@ local updateHealth = function(self, event, unit, bar, current, max)
 		self.Name:SetFormattedText("-%0.1f",math.floor(def/100)/10)
 	end
 
-	if UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) then
-		r, g, b = .3, .3, .3
-	end 
 	bar.bg:SetVertexColor(r, g, b)
 
 	if(reverseColors)then
@@ -641,7 +644,7 @@ oUF:RegisterStyle("Freebgrid", func)
 oUF:SetActiveStyle"Freebgrid"  
 
 local party = oUF:Spawn('header', 'oUF_Party')
-party:SetPoint('TOP', UIParent, 'BOTTOM', 300, 250)
+party:SetPoint('RIGHT', UIParent, 'LEFT', 500, -330)
 party:SetManyAttributes('showParty', true, 
 			'showPlayer', true,
 			'yOffset', -5)
@@ -655,7 +658,7 @@ for i = 1, 8 do
 				'yOffset', -5)
 	table.insert(raid, raidg)
 	if(i == 1) then	
-		raidg:SetPoint('TOP', UIParent, 'BOTTOM', 300, 250)
+		raidg:SetPoint('RIGHT', UIParent, 'LEFT', 500, -330)
 	else
 		raidg:SetPoint('TOPLEFT', raid[i-1], 'TOPRIGHT', 5, 0)
 	end
@@ -689,7 +692,3 @@ partyToggle:SetScript('OnEvent', function(self)
 		end
 	end
 end)
--- Testing frame
---local player = oUF:Spawn"player"
---player:SetPoint("CENTER", 0, -100)
-
