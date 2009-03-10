@@ -15,7 +15,7 @@ libs\LibBanzai-2.0\LibBanzai-2.0.lua
 libs\UTF8\utf8.lua
 libs\UTF8\utf8data.lua
 
-oUF_Freebgrid.lua
-oUF_HealComm.lua
 oUF_Freebpets.xml
 oUF_FreebMtargets.xml
+oUF_Freebgrid.lua
+oUF_HealComm.lua
