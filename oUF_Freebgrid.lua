@@ -35,7 +35,7 @@ banzai:RegisterCallback(function(aggro, name, ...)
 end)
 
 local f = CreateFrame("Frame")
-f:SetScript("OnEvent", function(self, evnet, ...)
+f:SetScript("OnEvent", function(self, event, ...)
 	return self[event](self, ...)
 end)
 
