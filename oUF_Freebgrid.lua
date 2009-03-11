@@ -382,10 +382,13 @@ local updateHealth = function(self, event, unit, bar, current, max)
 		r, g, b = .3, .3, .3
 	elseif(UnitIsPlayer(unit)) then
 		local _, class = UnitClass(unit)
-		t = self.colors.class[class]
-		r, g, b = t[1], t[2], t[3]	
+		t = colors.class[class]	
 	else			
-		r, g, b = .1, .8, .3
+		r, g, b = UnitSelectionColor(unit)
+	end
+
+	if(t) then
+		r, g, b = t[1], t[2], t[3]
 	end
 
 	local per = round(current/max, 100)
