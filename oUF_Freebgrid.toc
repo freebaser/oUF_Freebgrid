@@ -1,11 +1,12 @@
 ## Interface: 30000
 ## Title: oUF_Feebgrid
 ## Author: Freebaser
-## Version: 0.82
+## Version: 0.83
 ## Notes: oUF layout.
 ## Dependencies: oUF
 ## OptionalDeps: oUF_ReadyCheck, LibHealComm-3.0, LibBanzai-2.0
 ## X-Embeds: LibHealComm-3.0, LibBanzai-2.0
+## X-oUF: Freebgrid
 
 libs\LibHealComm-3.0\LibStub\LibStub.lua
 libs\LibHealComm-3.0\CallbackHandler-1.0\CallbackHandler-1.0.lua

@@ -5,16 +5,8 @@
 -- Uses data from LibHealComm-3.0 to add incoming heal estimate bars onto units 
 -- health bars.
 --
--- * currently won't update the frame if max HP is unknown (ie, restricted to 
---   players/pets in your group that are in range), hides the bar for these
--- * can define frame.ignoreHealComm in layout to not have the bars appear on 
---   that frame
---
 --=============================================================================
-oUF.debug=false
-local oufDebug = function(msg) 
-	if(oUF.debug) then	print("|cff00FF10"..msg.."|r") end
-end
+
 if not oUF then return end
 
 --set texture and color here
@@ -64,7 +56,6 @@ local updateHealCommBar = function(frame, unit)
     h = frame.Health:GetHeight()
     w = frame.Health:GetWidth()
     orient = frame.Health:GetOrientation()
-	oufDebug("orient: "..orient, "h: "..h, "w: "..w, "percInc: "..percInc)
     
     frame.HealCommBar:ClearAllPoints()
     frame.HealCommBar:SetFrameStrata("TOOLTIP")
@@ -88,7 +79,7 @@ local updateHealCommBars = function(...)
         for frame in pairs(oUF.units) do
             local name, server = UnitName(frame)
             if server then name = strjoin("-",name,server) end
-            if name == unit and not oUF.units[frame].ignoreHealComm then
+            if name == unit and oUF.units[frame].applyHealComm then
                 updateHealCommBar(oUF.units[frame],unit)
             end
         end
@@ -96,24 +87,24 @@ local updateHealCommBars = function(...)
 end
 
 local function hook(frame)
-	if frame.ignoreHealComm then return end
+if not frame.applyHealComm then return end
 	
     --create heal bar here and set initial values
     if(frame.Health:GetOrientation() =="VERTICAL")then
 		local hcb = CreateFrame"StatusBar"
 		hcb:SetWidth(frame.Health:GetWidth()) -- same height as health bar
-		hcb:SetHeight(4) --no initial width
+		hcb:SetHeight(0) --no initial width
 		hcb:SetStatusBarTexture(frame.Health:GetStatusBarTexture():GetTexture())
 		hcb:SetStatusBarColor(color.r, color.g, color.b, color.a)
 		hcb:SetParent(frame)
-		hcb:SetPoint("BOTTOM", frame.Health, "TOP",0,0) --attach to immediate right of health bar to start
+		hcb:SetPoint("BOTTOM", frame.Health, "TOP",0,0) --attach to immediate top of health bar to start
 	--    hcb:SetFrameLevel
 		hcb:Hide() --hide it for now
 		frame.HealCommBar = hcb
 	else
 		local hcb = CreateFrame"StatusBar"
 		hcb:SetHeight(frame.Health:GetHeight()) -- same height as health bar
-		hcb:SetWidth(4) --no initial width
+		hcb:SetWidth(0) --no initial width
 		hcb:SetStatusBarTexture(frame.Health:GetStatusBarTexture():GetTexture())
 		hcb:SetStatusBarColor(color.r, color.g, color.b, color.a)
 		hcb:SetParent(frame)
@@ -166,3 +157,4 @@ healcomm.RegisterCallback(oUF_HealComm, "HealComm_DirectHealStart")
 healcomm.RegisterCallback(oUF_HealComm, "HealComm_DirectHealUpdate")
 healcomm.RegisterCallback(oUF_HealComm, "HealComm_DirectHealStop")
 healcomm.RegisterCallback(oUF_HealComm, "HealComm_HealModifierUpdate")
+

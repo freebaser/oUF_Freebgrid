@@ -383,8 +383,9 @@ local updateHealth = function(self, event, unit, bar, current, max)
 	elseif(UnitIsPlayer(unit)) then
 		local _, class = UnitClass(unit)
 		t = colors.class[class]	
-	else			
-		r, g, b = UnitSelectionColor(unit)
+	else		
+		-- MainTank target and Party Pet color
+		r, g, b = .1, .8, .3
 	end
 
 	if(t) then
@@ -629,8 +630,8 @@ local func = function(self, unit)
 	  applyAuraIndicator(self)
   	end
 
-	if(self:GetAttribute('unitsuffix') == 'target')then
-	  self.ignoreHealComm = true
+	if not(self:GetAttribute('unitsuffix') == 'target')then
+	  self.applyHealComm = true
 	end
 
 	self:RegisterEvent('PLAYER_TARGET_CHANGED', ChangedTarget)
@@ -647,7 +648,7 @@ oUF:RegisterStyle("Freebgrid", func)
 oUF:SetActiveStyle"Freebgrid"  
 
 local party = oUF:Spawn('header', 'oUF_Party')
-party:SetPoint('RIGHT', UIParent, 'LEFT', 500, -330)
+party:SetPoint('LEFT', UIParent, 5, -160)
 party:SetManyAttributes('showParty', true, 
 			'showPlayer', true,
 			'yOffset', -5)
@@ -661,14 +662,14 @@ for i = 1, 8 do
 				'yOffset', -5)
 	table.insert(raid, raidg)
 	if(i == 1) then	
-		raidg:SetPoint('RIGHT', UIParent, 'LEFT', 500, -330)
+		raidg:SetPoint('LEFT', UIParent, 5, -160)
 	else
 		raidg:SetPoint('TOPLEFT', raid[i-1], 'TOPRIGHT', 5, 0)
 	end
 end
 
 local tank = oUF:Spawn('header', 'oUF_MainTank')
-tank:SetPoint('LEFT', UIParent, 5, 0)
+tank:SetPoint('LEFT', UIParent, 5, 50)
 tank:SetManyAttributes('showRaid', true, 
 			'groupFilter', 'MAINTANK', 
 			'yOffset', -5)
@@ -695,3 +696,6 @@ partyToggle:SetScript('OnEvent', function(self)
 		end
 	end
 end)
+
+--local player = oUF:Spawn("player")
+--player:SetPoint("CENTER", UIParent, 0, -80)
