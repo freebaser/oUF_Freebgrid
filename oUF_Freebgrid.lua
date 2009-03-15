@@ -626,11 +626,11 @@ local func = function(self, unit)
 	self.ReadyCheck.delayTime = 8
 	self.ReadyCheck.fadeTime = 2
 
-	if(indicators)then
-	  applyAuraIndicator(self)
-  	end
-
 	if not(self:GetAttribute('unitsuffix') == 'target')then
+	  if(indicators)then
+	    applyAuraIndicator(self)
+  	  end
+	
 	  self.applyHealComm = true
 	end
 
