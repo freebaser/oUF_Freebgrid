@@ -62,14 +62,14 @@ oUF.classIndicators={
 		["DRUID"] = {
 				["TL"] = "[tree]",
 				["TR"] = "[gotw]",
-				["BL"] = "[lb]",
-				["BR"] = "[rejuv][regrow][wg]"
+				["BL"] = "[rejuv][regrow][wg]",
+				["BR"] = "[lb]"
 		},
 		["PRIEST"] = {
 				["TL"] = "[pws][ws]",
 				["TR"] = "[ds][sp][fort][fw]",
-				["BL"] = "[pom]",
-				["BR"] = "[rnw][gotn]"
+				["BL"] = "[rnw][gotn]",
+				["BR"] = "[pom]"
 		},
 		["PALADIN"] = {
 				["TL"] = "",
@@ -181,14 +181,14 @@ local function applyAuraIndicator(self)
 
 		self.AuraStatusBL = self.Health:CreateFontString(nil, "OVERLAY")
 		self.AuraStatusBL:ClearAllPoints()
-		self.AuraStatusBL:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 7, -3)
-		self.AuraStatusBL:SetFont(symbols, symbolsSize, "OUTLINE")
+		self.AuraStatusBL:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", -5, -5)
+		self.AuraStatusBL:SetFont(font, 22, "OUTLINE")
 		self:Tag(self.AuraStatusBL, oUF.classIndicators[playerClass]["BL"])	
 
 		self.AuraStatusBR = self.Health:CreateFontString(nil, "OVERLAY")
 		self.AuraStatusBR:ClearAllPoints()
-		self.AuraStatusBR:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", -5, -5)
-		self.AuraStatusBR:SetFont(font, 22, "OUTLINE")
+		self.AuraStatusBR:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 7, -3)
+		self.AuraStatusBR:SetFont(symbols, symbolsSize, "OUTLINE")
 		self:Tag(self.AuraStatusBR, oUF.classIndicators[playerClass]["BR"])	
 	--========= ----- =========--
 end
