@@ -42,22 +42,7 @@ end)
 --=========================------------- Big Thanks to jadakren! 
 
 oUF.pomCount = {"i","h","g","f","Z","Y"}
-oUF.unitStyle={
-	["player"] = function()
-	end,
-	["target"] = function()
-	end,
-	["targettarget"] = function()
-	end,
-	["focus"] = function()
-	end,
-	["focustarget"] = function()
-	end,
-	["pet"] = function()
-	end,
-	["pettarget"] = function()
-	end
-}
+
 oUF.classIndicators={
 		["DRUID"] = {
 				["TL"] = "[tree]",
