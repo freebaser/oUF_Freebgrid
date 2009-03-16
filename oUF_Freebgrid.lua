@@ -122,6 +122,7 @@ oUF.classIndicators={
 		
 	}
 
+--priest
 oUF.Tags["[pom]"] = function(u) local c = select(4, UnitAura(u, "Prayer of Mending")) return c and "|cffFFCF7F"..oUF.pomCount[c].."|r" or "" end
 oUF.TagEvents["[pom]"] = "UNIT_AURA"
 
@@ -146,7 +147,6 @@ oUF.Tags["[ds]"] = function(u) return (UnitAura(u, "Prayer of Spirit") or UnitAu
 oUF.TagEvents["[ds]"] = "UNIT_AURA"
 
 --druid
-
 oUF.Tags["[lb]"] = function(u) local c = select(4, UnitAura(u, "Lifebloom")) return c and "|cffA7FD0A"..c.."|r" or "" end
 oUF.Tags["[rejuv]"] = function(u) return UnitAura(u, "Rejuvenation") and "|cff00FEBF.|r" or "" end
 oUF.Tags["[regrow]"] = function(u) return UnitAura(u, "Regrowth") and "|cff00FF10.|r" or "" end
@@ -393,8 +393,10 @@ local updateHealth = function(self, event, unit, bar, current, max)
 	end
 
 	local per = round(current/max, 100)
-	if banzai:GetUnitAggroByUnitId(unit) then
-		self.Name:SetVertexColor(1, 0, 0)
+	if (UnitIsPlayer(unit)) then
+		if (banzai:GetUnitAggroByUnitId(unit)) then
+		  self.Name:SetVertexColor(1, 0, 0)
+		end
 	else	
 		-- Name Color
 		self.Name:SetTextColor(r, g, b)
@@ -514,6 +516,7 @@ local func = function(self, unit)
 	self.Health = hp
 	self.OverrideUpdateHealth = updateHealth
 
+	-- PowerBars
 	if(manabars)then
 	  local pp = CreateFrame"StatusBar"
 	  pp:SetStatusBarTexture(texture)
@@ -545,7 +548,7 @@ local func = function(self, unit)
 	  self.PostUpdatePower = updatePower
 	end
 
-	-- Hightlight
+	-- Highlight
 	if(highlight)then
 	  local hl = hp:CreateTexture(nil, "OVERLAY")
 	  hl:SetAllPoints(self)
@@ -564,6 +567,7 @@ local func = function(self, unit)
 		self.outsideRangeAlpha = .5
 	end
 
+	-- Name
 	local name = hp:CreateFontString(nil, "OVERLAY")
 	name:SetPoint("CENTER")
 	name:SetJustifyH("CENTER")
@@ -618,7 +622,8 @@ local func = function(self, unit)
 	self.RaidIcon:SetHeight(16)
 	self.RaidIcon:SetWidth(16)
 	end
-	
+
+-- ReadyCheck	
 	self.ReadyCheck = self.Health:CreateTexture(nil, "OVERLAY")
 	self.ReadyCheck:SetPoint("TOPRIGHT", self, 0, 8)
 	self.ReadyCheck:SetHeight(16)
