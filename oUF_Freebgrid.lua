@@ -378,10 +378,8 @@ local updateHealth = function(self, event, unit, bar, current, max)
 	end
 
 	local per = round(current/max, 100)
-	if (UnitIsPlayer(unit)) then
-		if (banzai:GetUnitAggroByUnitId(unit)) then
-		  self.Name:SetVertexColor(1, 0, 0)
-		end
+	if (UnitIsPlayer(unit)) and (banzai:GetUnitAggroByUnitId(unit)) then
+		self.Name:SetVertexColor(1, 0, 0)
 	else	
 		-- Name Color
 		self.Name:SetTextColor(r, g, b)
@@ -687,5 +685,3 @@ partyToggle:SetScript('OnEvent', function(self)
 	end
 end)
 
---local player = oUF:Spawn("player")
---player:SetPoint("CENTER", UIParent, 0, -80)
