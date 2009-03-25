@@ -6,6 +6,11 @@ local texture = mediaPath.."gradient"
 local hightlight = mediaPath.."white"
 local borderTex = mediaPath.."border"
 
+local backdrop = {
+	bgFile = [=[Interface\ChatFrame\ChatFrameBackground]=],
+	insets = {top = -1, left = -1, bottom = -1, right = -1},
+}
+
 local font,fontsize = mediaPath.."CalibriBold.ttf",12			-- The font and fontSize for Names and Health
 local symbols, symbolsSize = mediaPath.."PIZZADUDEBULLETS.ttf", 12	-- The font and fontSize for TagEvents
 local symbols1, symbols1Size = mediaPath.."STYLBCC_.ttf", 12		-- The font and fontSize for TagEvents
@@ -218,6 +223,7 @@ do
 		["SHAMAN"] = {
 			["Poision"] = true,
 			["Disease"] = true,
+			--["Curse"] = true, -- uncomment to enable curses for shamans
 		},
 		["PALADIN"] = {
 			["Poison"] = true,
@@ -314,9 +320,9 @@ end
 -- Target Border
 local ChangedTarget = function(self)
 	if (UnitInRaid'player' == 1 or UnitInParty'player' ) and UnitName('target') == UnitName(self.unit) then
-		self.TargetBorder:SetBackdropBorderColor(0.8,0.8,0.8,1)
+		self.TargetBorder:Show()
 	else
-		self.TargetBorder:SetBackdropBorderColor(0.8,0.8,0.8,0)
+		self.TargetBorder:Hide()
 	end
 end
 
@@ -406,6 +412,17 @@ local updateHealth = function(self, event, unit, bar, current, max)
 	end
 end
 
+local updatePower = function(self, event, unit, bar, current, max)	
+	local powerType, powerTypeString = UnitPowerType(unit)
+
+	local perc = round(current/max, 100)
+	if (perc < 0.1 and UnitIsConnected(unit) and powerTypeString == 'MANA' and not UnitIsDeadOrGhost(unit)) then
+		self.manaborder:Show()
+	else
+		self.manaborder:Hide()
+	end
+end
+
 local OnEnter = function(self)
 	UnitFrame_OnEnter(self)
 	self.Highlight:Show()
@@ -474,18 +491,9 @@ local func = function(self, unit)
 	  hpbg:SetAlpha(1)
   	end
 
-	-- Backdrop	
-	self.TargetBorder = CreateFrame('Frame', nil, self)
-	self.TargetBorder:SetPoint("TOPLEFT",-3,3)
-	self.TargetBorder:SetPoint("BOTTOMRIGHT",3,-3)
-	self.TargetBorder:SetBackdrop({
-		bgFile = [[Interface\ChatFrame\ChatFrameBackground]], tile = true, tileSize = 16,
-		edgeFile = [[Interface\ChatFrame\ChatFrameBackground]], edgeSize = 1,
-		insets = {top = 1, left = 1, bottom = 1, right = 1},
-	})
-	self.TargetBorder:SetBackdropColor(0, 0, 0, 1)
-	self.TargetBorder:SetBackdropBorderColor(0, 0, 0, 0)
-	
+	-- Backdrop
+	self:SetBackdrop(backdrop)
+	self:SetBackdropColor(0, 0, 0)
 
 	-- Health Text
 	local hpp = hp:CreateFontString(nil, "OVERLAY")
@@ -530,7 +538,7 @@ local func = function(self, unit)
 	  self.Power = pp
 	  self.PostUpdatePower = updatePower
 	end
-
+	
 	-- Highlight
 	if(highlight)then
 	  local hl = hp:CreateTexture(nil, "OVERLAY")
@@ -543,12 +551,18 @@ local func = function(self, unit)
 	  self.Highlight = hl
 	end
 
-	-- Range Alpha
-	if(not unit) then
+	-- Range Alpha/SpellRange
+	if(IsAddOnLoaded('oUF_SpellRange')) then
+	  self.SpellRange = true
+	  self.inRangeAlpha = 1.0 -- Frame alpha when in range
+	  self.outsideRangeAlpha = 0.5 -- Frame alpha when out of range
+	else
+	  if(not unit) then
 		self.Range = true
 		self.inRangeAlpha = 1
 		self.outsideRangeAlpha = .5
-	end
+	  end
+  	end
 
 	-- Name
 	local name = hp:CreateFontString(nil, "OVERLAY")
@@ -560,15 +574,25 @@ local func = function(self, unit)
 
 	self.Name = name
 
-	local border = hp:CreateTexture(nil, "OVERLAY")
-	border:SetPoint("LEFT", self, "LEFT", -4, 0)
-	border:SetPoint("RIGHT", self, "RIGHT", 4, 0)
-	border:SetPoint("TOP", self, "TOP", 0, 4)
-	border:SetPoint("BOTTOM", self, "BOTTOM", 0, -4)
-	border:SetTexture(borderTex)
-	border:Hide()
-	border:SetVertexColor(1, 1, 1)
-	self.border = border
+	local manaborder = self:CreateTexture(nil, "OVERLAY")
+	manaborder:SetPoint("LEFT", self, "LEFT", -5, 0)
+	manaborder:SetPoint("RIGHT", self, "RIGHT", 5, 0)
+	manaborder:SetPoint("TOP", self, "TOP", 0, 5)
+	manaborder:SetPoint("BOTTOM", self, "BOTTOM", 0, -5)
+	manaborder:SetTexture(borderTex)
+	manaborder:Hide()
+	manaborder:SetVertexColor(0, .1, .9, .8)
+	self.manaborder = manaborder
+
+	tBorder = self:CreateTexture(nil, "OVERLAY")
+	tBorder:SetPoint("LEFT", self, "LEFT", -6, 0)
+	tBorder:SetPoint("RIGHT", self, "RIGHT", 6, 0)
+	tBorder:SetPoint("TOP", self, "TOP", 0, 6)
+	tBorder:SetPoint("BOTTOM", self, "BOTTOM", 0, -6)
+	tBorder:SetTexture(borderTex)
+	tBorder:Hide()
+	tBorder:SetVertexColor(.8, .8, .8, .8)
+	self.TargetBorder = tBorder
 
 --==========--
 --  ICONS   --
@@ -589,6 +613,16 @@ local func = function(self, unit)
 		s:Hide()
 	end
 	self.Icon = icon
+
+	local border = self:CreateTexture(nil, "OVERLAY")
+	border:SetPoint("LEFT", self, "LEFT", -5, 0)
+	border:SetPoint("RIGHT", self, "RIGHT", 5, 0)
+	border:SetPoint("TOP", self, "TOP", 0, 5)
+	border:SetPoint("BOTTOM", self, "BOTTOM", 0, -5)
+	border:SetTexture(borderTex)
+	border:Hide()
+	border:SetVertexColor(1, 1, 1)
+	self.border = border
 
 -- Leader Icon
 	if(Licon)then
