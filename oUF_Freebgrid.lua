@@ -187,7 +187,6 @@ end
 
 local debuffs = {
 	["Viper Sting"] = 12,
-	["Mana Burn"] = 12,
 
 	["Wound Poison"] = 9,
 	["Mortal Strike"] = 8,
@@ -206,10 +205,10 @@ local debuffs = {
 
 	["Crippling Poison"] = 6,
 	["Hamstring"] = 5,
-	["Wingclip"] = 5,
+	["Wing Clip"] = 5,
 
 	["Fear"] = 3,
-	["Psycic Scream"] = 3,
+	["Psychic Scream"] = 3,
 	["Howl of Terror"] = 3,
 }
 
@@ -221,7 +220,7 @@ do
 			["Disease"] = true,
 		},
 		["SHAMAN"] = {
-			["Poision"] = true,
+			["Poison"] = true,
 			["Disease"] = true,
 			--["Curse"] = true, -- uncomment to enable curses for shamans
 		},
@@ -319,7 +318,7 @@ function f:UNIT_AURA(unit)
 end
 -- Target Border
 local ChangedTarget = function(self)
-	if (UnitInRaid'player' == 1 or UnitInParty'player' ) and UnitName('target') == UnitName(self.unit) then
+	if (UnitInRaid'player' == 1 or GetNumPartyMembers() > 0 ) and UnitIsUnit('target', self.unit) then
 		self.TargetBorder:Show()
 	else
 		self.TargetBorder:Hide()
@@ -349,8 +348,8 @@ local colors = setmetatable({
 	}, {__index = oUF.colors.class}),
 }, {__index = oUF.colors})
 
-local menu = function(self)
-	local unit = self.unit:sub(1, -2)
+--local menu = function(self)
+--[[	local unit = self.unit:sub(1, -2)
 	local cunit = self.unit:gsub("(.)", string.upper, 1)
 
 	if(unit == "party" or unit == "partypet") then
@@ -358,7 +357,7 @@ local menu = function(self)
 	elseif(_G[cunit.."FrameDropDown"]) then
 		ToggleDropDownMenu(1, nil, _G[cunit.."FrameDropDown"], "cursor", 0, 0)
 	end
-end
+end]]
 
 local round = function(x, y)
 	return math.floor((x * 10 ^ y)+ 0.5) / 10 ^ y
@@ -435,7 +434,7 @@ end
 
 -- Style
 local func = function(self, unit)
-	self.menu = menu
+	--self.menu = menu
 	self.colors = colors
 	
 	self:EnableMouse(true)
@@ -670,28 +669,30 @@ oUF:RegisterStyle("Freebgrid", func)
 oUF:SetActiveStyle"Freebgrid"  
 
 local party = oUF:Spawn('header', 'oUF_Party')
-party:SetPoint('LEFT', UIParent, 5, -160)
+party:SetPoint('CENTER', UIParent, 0, -400)
 party:SetManyAttributes('showParty', true, 
 			'showPlayer', true,
-			'yOffset', -5)
+			'point', 'LEFT', -- Remove to grow vertically
+			'xOffset', 5)
 party:SetAttribute("template", "oUF_Freebpets")
 
 local raid = {}
 for i = 1, 8 do
 	local raidg = oUF:Spawn('header', 'oUF_Raid'..i)
 	raidg:SetManyAttributes('groupFilter', tostring(i), 
-				'showRaid', true, 
-				'yOffset', -5)
+				'showRaid', true,
+				'point', 'LEFT', -- Remove to grow vertically
+				'xOffset', 5)
 	table.insert(raid, raidg)
 	if(i == 1) then	
-		raidg:SetPoint('LEFT', UIParent, 5, -160)
+		raidg:SetPoint('CENTER', UIParent, 0, -400)
 	else
-		raidg:SetPoint('TOPLEFT', raid[i-1], 'TOPRIGHT', 5, 0)
+		raidg:SetPoint('BOTTOMLEFT', raid[i-1], 'TOPLEFT', 0, 5)
 	end
 end
 
 local tank = oUF:Spawn('header', 'oUF_MainTank')
-tank:SetPoint('LEFT', UIParent, 5, 50)
+tank:SetPoint('LEFT', UIParent, 5, 100)
 tank:SetManyAttributes('showRaid', true, 
 			'groupFilter', 'MAINTANK', 
 			'yOffset', -5)
@@ -711,7 +712,7 @@ partyToggle:SetScript('OnEvent', function(self)
 		if(GetNumRaidMembers() > 5) then
 			party:Hide()
 			for i,v in ipairs(raid) do v:Show() end
-			tank:Show()
+			tank:Hide() --tank:Show() to enable MTs
 		else
 			party:Show()
 			for i,v in ipairs(raid) do v:Hide() end

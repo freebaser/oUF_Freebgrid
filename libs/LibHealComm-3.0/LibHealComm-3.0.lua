@@ -1,5 +1,5 @@
 ﻿local MAJOR_VERSION = "LibHealComm-3.0";
-local MINOR_VERSION = 90000 + tonumber(("$Revision: 45 $"):match("%d+"));
+local MINOR_VERSION = 90000 + tonumber(("$Revision: 48 $"):match("%d+"));
 
 local lib = LibStub:NewLibrary(MAJOR_VERSION, MINOR_VERSION);
 if not lib then return end
@@ -160,7 +160,7 @@ end
 -- a local fully qualified name.
 local function convertRealm(fullName, remoteRealm)
     if (remoteRealm) then
-        local name, realm = fullName:match("^([^%-]+)%-(.*)$");
+        local name, realm = fullName:match("^([^%-]+)%-(.+)$");
         if (not realm) then
             -- Apply remote realm if there is no realm on the target
             return fullName .. "-" .. remoteRealm;
@@ -264,9 +264,10 @@ end
 
 local healingBuffs =
 {
-    [GetSpellInfo(706)] = 1.20,   -- Demon Armor
+    [GetSpellInfo(706)]   = 1.20, -- Demon Armor
     [GetSpellInfo(45234)] = function (count, rank) return (1.0 + (0.04 + 0.03 * (rank - 1)) * count) end, -- Focused Will
     [GetSpellInfo(34123)] = 1.06, -- Tree of Life
+    [GetSpellInfo(58549)] = function (count, rank, texture) return ((texture == "Interface\\Icons\\Ability_Warrior_StrengthOfArms") and (1.18 ^ count) or 1.0) end, -- Tenacity (Wintergrasp)
 }
 
 local healingDebuffs =
@@ -276,7 +277,6 @@ local healingDebuffs =
     [GetSpellInfo(30423)] = function (count) return (1.0 - count * 0.01) end, -- Nether Portal - Dominance (Netherspite - Karazhan)
     [GetSpellInfo(13218)] = function (count) return (1.0 - count * 0.10) end, -- Wound Poison
     [GetSpellInfo(19434)] = 0.50,   -- Aimed Shot
---    [GetSpellInfo(31306)] = 0.25,   -- Carrion Swarm (Anetheron - Mount Hyjal) - TODO: This affects the casting part, not the receiving part
     [GetSpellInfo(12294)] = 0.50,   -- Mortal Strike
     [GetSpellInfo(40599)] = 0.50,   -- Arcing Smash (Gurtogg Bloodboil)
     [GetSpellInfo(23169)] = 0.50,   -- Brood Affliction: Green (Chromaggus)
@@ -328,7 +328,7 @@ local function calculateHealModifier(unit)
         local mark = healingBuffs[name];
         if (mark) then
             if (type(mark) == "function") then
-                mark = mark(count, rank and tonumber(rank:match("(%d+)")));
+                mark = mark(count, rank and tonumber(rank:match("(%d+)")), texture);
             end
             modifier = modifier * mark;
         end
