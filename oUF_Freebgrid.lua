@@ -118,9 +118,12 @@ oUF.TagEvents["[pom]"] = "UNIT_AURA"
 
 oUF.Tags["[gotn]"] = function(u) return UnitAura(u, "Gift of the Naaru") and "|cff33FF33.|r" or "" end
 oUF.TagEvents["[gotn]"] = "UNIT_AURA"
-oUF.Tags["[rnw]"] = function(u) return UnitAura(u, "Renew") and "|cff33FF33.|r" or "" end
+oUF.Tags["[rnw]"] = function(u)
+ local name, _,_,_,_,_,_, fromwho,_ = UnitAura(u, "Renew")
+ if not (fromwho == "player") then return end
+ return UnitAura(u, "Renew") and "|cff33FF33.|r" or ""
+end
 oUF.TagEvents["[rnw]"] = "UNIT_AURA"
-
 oUF.Tags["[pws]"] = function(u) return UnitAura(u, "Power Word: Shield") and "|cff33FF33.|r" or "" end
 oUF.TagEvents["[pws]"] = "UNIT_AURA"
 oUF.Tags["[ws]"] = function(u) return UnitDebuff(u, "Weakened Soul") and "|cffFF5500.|r" or "" end
@@ -669,7 +672,7 @@ oUF:RegisterStyle("Freebgrid", func)
 oUF:SetActiveStyle"Freebgrid"  
 
 local party = oUF:Spawn('header', 'oUF_Party')
-party:SetPoint('CENTER', UIParent, 0, -400)
+party:SetPoint('CENTER', UIParent, 0, -420)
 party:SetManyAttributes('showParty', true, 
 			'showPlayer', true,
 			'point', 'LEFT', -- Remove to grow vertically
@@ -677,7 +680,7 @@ party:SetManyAttributes('showParty', true,
 party:SetAttribute("template", "oUF_Freebpets")
 
 local raid = {}
-for i = 1, 8 do
+for i = 1, 5 do
 	local raidg = oUF:Spawn('header', 'oUF_Raid'..i)
 	raidg:SetManyAttributes('groupFilter', tostring(i), 
 				'showRaid', true,
@@ -685,7 +688,7 @@ for i = 1, 8 do
 				'xOffset', 5)
 	table.insert(raid, raidg)
 	if(i == 1) then	
-		raidg:SetPoint('CENTER', UIParent, 0, -400)
+		raidg:SetPoint('CENTER', UIParent, 0, -420)
 	else
 		raidg:SetPoint('BOTTOMLEFT', raid[i-1], 'TOPLEFT', 0, 5)
 	end
