@@ -34,7 +34,11 @@ banzai:RegisterCallback(function(aggro, name, ...)
 		local u = select(i, ...)
 		local f = oUF.units[u]
 		if f then
-			f:UNIT_MAXHEALTH("OnBanzaiUpdate", f.unit)
+			if f.Banzai then
+				f:Banzai(u, aggro)
+			else
+				f:UNIT_MAXHEALTH("OnBanzaiUpdate", f.unit)
+			end
 		end
 	end
 end)
@@ -351,17 +355,6 @@ local colors = setmetatable({
 	}, {__index = oUF.colors.class}),
 }, {__index = oUF.colors})
 
---local menu = function(self)
---[[	local unit = self.unit:sub(1, -2)
-	local cunit = self.unit:gsub("(.)", string.upper, 1)
-
-	if(unit == "party" or unit == "partypet") then
-		ToggleDropDownMenu(1, nil, _G["PartyMemberFrame"..self.id.."DropDown"], "cursor", 0, 0)
-	elseif(_G[cunit.."FrameDropDown"]) then
-		ToggleDropDownMenu(1, nil, _G[cunit.."FrameDropDown"], "cursor", 0, 0)
-	end
-end]]
-
 local round = function(x, y)
 	return math.floor((x * 10 ^ y)+ 0.5) / 10 ^ y
 end
@@ -437,7 +430,6 @@ end
 
 -- Style
 local func = function(self, unit)
-	--self.menu = menu
 	self.colors = colors
 	
 	self:EnableMouse(true)
@@ -680,7 +672,7 @@ party:SetManyAttributes('showParty', true,
 party:SetAttribute("template", "oUF_Freebpets")
 
 local raid = {}
-for i = 1, 5 do
+for i = 1, 8 do
 	local raidg = oUF:Spawn('header', 'oUF_Raid'..i)
 	raidg:SetManyAttributes('groupFilter', tostring(i), 
 				'showRaid', true,
