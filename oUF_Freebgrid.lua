@@ -15,14 +15,14 @@ local font,fontsize = mediaPath.."CalibriBold.ttf",12			-- The font and fontSize
 local symbols, symbolsSize = mediaPath.."PIZZADUDEBULLETS.ttf", 12	-- The font and fontSize for TagEvents
 local symbols1, symbols1Size = mediaPath.."STYLBCC_.ttf", 12		-- The font and fontSize for TagEvents
 
-local height, width = 40, 40
+local height, width = 30, 40
 local playerClass = select(2, UnitClass("player"))
 
 local reverseColors = false	-- Reverse Units color
 local highlight = true		-- MouseOver Highlight?
 local indicators = true 	-- Class Indicators?
 
-local vertical = true 		-- Vertical bars?
+local vertical = false		-- Vertical bars?
 local manabars = false		-- Mana Bars?
 local Licon = true		-- Leader icon?
 local ricon = true		-- Raid icon?
@@ -393,7 +393,7 @@ local updateHealth = function(self, event, unit, bar, current, max)
 	elseif(UnitIsGhost(unit)) then
 		self.Name:SetText('|cffD7BEA5'..'Ghost')
 	elseif (per > 0.9) then
-		self.Name:SetText(UnitName(unit):utf8sub(1, 3))
+		self.Name:SetText(UnitName(unit):utf8sub(1, 4))
 	else
 		self.Name:SetFormattedText("-%0.1f",math.floor(def/100)/10)
 	end
@@ -420,12 +420,16 @@ end
 
 local OnEnter = function(self)
 	UnitFrame_OnEnter(self)
-	self.Highlight:Show()
+	if(highlight)then
+	  self.Highlight:Show()	
+  	end
 end
 
 local OnLeave = function(self)
 	UnitFrame_OnLeave(self)
-	self.Highlight:Hide()
+	if(highlight)then
+	  self.Highlight:Hide()	
+  	end
 end
 
 -- Style
@@ -495,6 +499,15 @@ local func = function(self, unit)
 	hpp:SetShadowOffset(1,-1)
 	hpp:SetPoint("CENTER")
 	hpp:SetJustifyH("CENTER")
+
+	local hinc = hp:CreateFontString(nil, "OVERLAY")
+    	hinc:SetFont(font, fontsize-1)
+    	hinc:SetShadowOffset(1,-1)
+    	hinc:SetPoint("BOTTOM")
+    	hinc:SetHeight(fontsize)
+    	hinc:SetVertexColor(0, 1, 0)
+    	hinc:SetJustifyH("CENTER")
+    	hp.hinc = hinc
 
 	hp.bg = hpbg
 	hp.value = hpp
@@ -664,15 +677,15 @@ oUF:RegisterStyle("Freebgrid", func)
 oUF:SetActiveStyle"Freebgrid"  
 
 local party = oUF:Spawn('header', 'oUF_Party')
-party:SetPoint('CENTER', UIParent, 0, -420)
+party:SetPoint('BOTTOMRIGHT', UIParent, 'BOTTOMRIGHT', -400, 5) -- Party position
 party:SetManyAttributes('showParty', true, 
 			'showPlayer', true,
 			'point', 'LEFT', -- Remove to grow vertically
-			'xOffset', 5)
+			'xOffset', 3)
 party:SetAttribute("template", "oUF_Freebpets")
 
 local raid = {}
-for i = 1, 8 do
+for i = 1, 5 do
 	local raidg = oUF:Spawn('header', 'oUF_Raid'..i)
 	raidg:SetManyAttributes('groupFilter', tostring(i), 
 				'showRaid', true,
@@ -680,9 +693,9 @@ for i = 1, 8 do
 				'xOffset', 5)
 	table.insert(raid, raidg)
 	if(i == 1) then	
-		raidg:SetPoint('CENTER', UIParent, 0, -420)
+		raidg:SetPoint('BOTTOMRIGHT', UIParent, 'BOTTOMRIGHT', -400, 5) -- Raid position
 	else
-		raidg:SetPoint('BOTTOMLEFT', raid[i-1], 'TOPLEFT', 0, 5)
+		raidg:SetPoint('BOTTOMLEFT', raid[i-1], 'TOPLEFT', 0, 3)
 	end
 end
 

@@ -5,7 +5,7 @@
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" relativeTo="$parent">
 						<Offset>
-							<AbsDimension x="0" y="5"/>
+							<AbsDimension x="0" y="3"/>
 						</Offset>
 					</Anchor>
 				</Anchors>
