@@ -27,12 +27,13 @@ local playerHeals = 0
 local playerTarget = ""
 
 --update a specific bar
-local updateHealCommBar = function(frame, unit)
+updateHealCommBar = function(frame, unit)
     local curHP = UnitHealth(unit)
     local maxHP = UnitHealthMax(unit)
     local percHP = curHP / maxHP
 
-    local incHeals = select(2, healcomm:UnitIncomingHealGet(unit, GetTime())) or 0
+    FreebincHeals = select(2, healcomm:UnitIncomingHealGet(unit, GetTime())) or 0
+	local incHeals = FreebincHeals
 
     --add player's own heals if casting on this unit
     if playerIsCasting then
@@ -43,16 +44,20 @@ local updateHealCommBar = function(frame, unit)
             end
         end
     end
-
+	
     --hide if unknown max hp or no heals inc
     if maxHP == 100 or incHeals == 0 then
         frame.HealCommBar:Hide()
-	frame.Health.hinc:SetText(" ")
+		frame.healText:SetText(" ")
         return
     else
-        frame.HealCommBar:Hide()
-	frame.Health.hinc:SetText(string.format("+%.1fk", incHeals / 1000))
-    end
+		if FreebHealtext then
+			frame.healText:SetText(string.format("+%.1f", incHeals / 1000))
+		end
+		if FreebHealbar then
+			frame.HealCommBar:Show()
+		end
+	end
 
     percInc = incHeals / maxHP
     h = frame.Health:GetHeight()
