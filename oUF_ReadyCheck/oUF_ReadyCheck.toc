@@ -1,0 +1,8 @@
+## Interface: 30100
+## Author: p3lim, Starlon
+## Version: 30100.6
+## Title: oUF ReadyCheck
+## Notes: ReadyCheck support for oUF layouts.
+## RequiredDeps: oUF
+
+oUF_ReadyCheck.lua

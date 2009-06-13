@@ -6,7 +6,7 @@
 -- health bars.
 --
 --=============================================================================
-
+local oUF = Freebgrid
 if not oUF then return end
 
 --set texture and color here
@@ -32,8 +32,7 @@ updateHealCommBar = function(frame, unit)
     local maxHP = UnitHealthMax(unit)
     local percHP = curHP / maxHP
 
-    FreebincHeals = select(2, healcomm:UnitIncomingHealGet(unit, GetTime())) or 0
-	local incHeals = FreebincHeals
+	local incHeals = select(2, healcomm:UnitIncomingHealGet(unit, GetTime())) or 0
 
     --add player's own heals if casting on this unit
     if playerIsCasting then

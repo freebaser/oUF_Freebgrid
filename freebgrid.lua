@@ -13,14 +13,13 @@ local height, width = 40, 40
 local posRel = "TOPLEFT"
 local pos = "TOPLEFT"
 local posX = 5
-local posY = -300
+local posY = -25
 
 local font,fontsize = mediaPath.."CalibriBold.ttf", 13			-- The font and fontSize for Names and Health
 local symbols, symbolsSize = mediaPath.."PIZZADUDEBULLETS.ttf", 12	-- The font and fontSize for TagEvents
 local symbols1, symbols1Size = mediaPath.."STYLBCC_.ttf", 12		-- The font and fontSize for TagEvents
 local indicatorSize = 22	-- the little dots in the corner
 
-local partyON =  true		-- Dude?
 local reverseColors = false	-- Reverse Units color
 local highlight = true		-- MouseOver Highlight?
 local indicators = true 	-- Class Indicators?
@@ -34,6 +33,7 @@ FreebHealtext = true	-- HealComm Text
 -----------------------------------------------------------------------------------------------
 -- End Config
 -----------------------------------------------------------------------------------------------
+local oUF = Freebgrid
 local playerClass = select(2, UnitClass("player"))
 
 local banzai = LibStub("LibBanzai-2.0")
@@ -466,17 +466,9 @@ local func = function(self, unit)
 	end
 
 	-- Range Alpha/SpellRange
-	if(IsAddOnLoaded('oUF_SpellRange')) then
-	  self.SpellRange = true
-	  self.inRangeAlpha = 1.0 -- Frame alpha when in range
-	  self.outsideRangeAlpha = 0.5 -- Frame alpha when out of range
-	else
-	  if(not unit) then
-		self.Range = true
-		self.inRangeAlpha = 1
-		self.outsideRangeAlpha = .5
-	  end
-  	end
+	self.SpellRange = true
+	self.inRangeAlpha = 1.0
+	self.outsideRangeAlpha = 0.5
 
 	-- Name
 	local name = hp:CreateFontString(nil, "OVERLAY")
@@ -565,11 +557,11 @@ local func = function(self, unit)
 
 -- ReadyCheck	
 	self.ReadyCheck = self.Health:CreateTexture(nil, "OVERLAY")
-	self.ReadyCheck:SetPoint("TOPRIGHT", self, 0, 8)
+	self.ReadyCheck:SetPoint("TOP", self)
 	self.ReadyCheck:SetHeight(16)
 	self.ReadyCheck:SetWidth(16)
 	self.ReadyCheck.delayTime = 8
-	self.ReadyCheck.fadeTime = 2
+	self.ReadyCheck.fadeTime = 1
 
 	if not(self:GetAttribute('unitsuffix') == 'target')then
 	  if(indicators)then
@@ -623,7 +615,6 @@ tank:SetManyAttributes('showRaid', true,
 tank:SetAttribute("template", "oUF_FreebMtargets")
 
 local partyToggle = CreateFrame('Frame')
-
 partyToggle:RegisterEvent('PLAYER_LOGIN')
 partyToggle:RegisterEvent('RAID_ROSTER_UPDATE')
 partyToggle:RegisterEvent('PARTY_LEADER_CHANGED')
@@ -643,4 +634,5 @@ partyToggle:SetScript('OnEvent', function(self)
 		end
 	end
 end)
+
 
