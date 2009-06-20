@@ -21,6 +21,7 @@ local L = {
   ["Horn of Winter"] = GetSpellInfo(57623),
   ["Battle Shout"] = GetSpellInfo(47436),
   ["Commanding Shout"] = GetSpellInfo(47440),
+  ["Vigilance"] = GetSpellInfo(50720),
 }
 
 --priest
@@ -66,6 +67,10 @@ oUF.Tags["[Bsh]"] = function(u) if UnitAura(u, L["Battle Shout"]) then return "|
 oUF.TagEvents["[Bsh]"] = "UNIT_AURA"
 oUF.Tags["[Csh]"] = function(u) if UnitAura(u, L["Commanding Shout"]) then return "|cffffff00.|r" end end
 oUF.TagEvents["[Csh]"] = "UNIT_AURA"
+oUF.Tags["[vigil]"] = function(u)
+  local name, _,_,_,_,_,_, fromwho,_ = UnitAura(u, L["Vigilance"])
+  if not (fromwho == "player") then return end
+  if UnitAura(u, L["Vigilance"]) then return "|cffDEB887.|r" end end
 
 --deathknight
 oUF.Tags["[how]"] = function(u) if UnitAura(u, L["Horn of Winter"]) then return "|cffffff10.|r" end end
@@ -99,7 +104,7 @@ oUF.classIndicators={
 		["WARRIOR"] = {
 				["TL"] = "",
 				["TR"] = "[Bsh][Csh]",
-				["BL"] = "",
+				["BL"] = "[vigil]",
 				["BR"] = ""
 		},
 		["DEATHKNIGHT"] = {

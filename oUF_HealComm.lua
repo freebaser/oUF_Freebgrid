@@ -8,6 +8,7 @@
 --=============================================================================
 local oUF = Freebgrid
 if not oUF then return end
+local db = FreebgridDefaults
 
 --set texture and color here
 local color = {
@@ -50,10 +51,10 @@ updateHealCommBar = function(frame, unit)
 		frame.healText:SetText(" ")
         return
     else
-		if FreebHealtext then
+		if db.Healtext then
 			frame.healText:SetText(string.format("+%.1f", incHeals / 1000))
 		end
-		if FreebHealbar then
+		if db.Healbar then
 			frame.HealCommBar:Show()
 		end
 	end

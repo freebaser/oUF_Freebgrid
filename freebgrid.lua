@@ -1,52 +1,12 @@
------------------------------------------------------------------------------------------------
--- Config
------------------------------------------------------------------------------------------------
-local layoutName = "Freebgrid"
-local layoutPath = "Interface\\Addons\\oUF_"..layoutName
-local mediaPath = layoutPath.."\\media\\"
-
-local texture = mediaPath.."gradient"
-local highlightTex = mediaPath.."white"
-local borderTex = mediaPath.."border"
-
-local height, width = 40, 40
-local posRel = "TOPLEFT"
-local pos = "TOPLEFT"
-local posX = 5
-local posY = -25
-
-local font,fontsize = mediaPath.."CalibriBold.ttf", 13			-- The font and fontSize for Names and Health
-local symbols, symbolsSize = mediaPath.."PIZZADUDEBULLETS.ttf", 12	-- The font and fontSize for TagEvents
-local symbols1, symbols1Size = mediaPath.."STYLBCC_.ttf", 12		-- The font and fontSize for TagEvents
-local indicatorSize = 22	-- the little dots in the corner
-
-local reverseColors = false	-- Reverse Units color
-local highlight = true		-- MouseOver Highlight?
-local indicators = true 	-- Class Indicators?
-local vertical = true		-- Vertical bars?
-local manabars = false		-- Mana Bars?
-local Licon = true		-- Leader icon?
-local ricon = true		-- Raid icon?
-FreebHealbar = false	-- HealComm Bar
-FreebHealtext = true	-- HealComm Text
-
------------------------------------------------------------------------------------------------
--- End Config
------------------------------------------------------------------------------------------------
+oUF_Freebgrid = CreateFrame('Frame', 'oUF_Freebgrid', UIParent)
+oUF_Freebgrid:SetScript('OnEvent', function(self, event, ...) self[event](self, event, ...) end)
+oUF_Freebgrid:RegisterEvent("ADDON_LOADED")
 local oUF = Freebgrid
+local db
+
 local playerClass = select(2, UnitClass("player"))
 
 local banzai = LibStub("LibBanzai-2.0")
-
-local f = CreateFrame("Frame")
-f:SetScript("OnEvent", function(self, event, ...)
-	return self[event](self, ...)
-end)
-
-local backdrop = {
-	bgFile = [=[Interface\ChatFrame\ChatFrameBackground]=],
-	insets = {top = -1, left = -1, bottom = -1, right = -1},
-}
 
 banzai:RegisterCallback(function(aggro, name, ...)
 	for i = 1, select("#", ...) do
@@ -63,64 +23,30 @@ banzai:RegisterCallback(function(aggro, name, ...)
 end)
 
 local function applyAuraIndicator(self)
-		self.AuraStatusTL = self.Health:CreateFontString(nil, "OVERLAY")
-		self.AuraStatusTL:ClearAllPoints()
-		self.AuraStatusTL:SetPoint("BOTTOMLEFT", self, "TOPLEFT", -3, -7)
-		self.AuraStatusTL:SetFont(font, indicatorSize, "OUTLINE")
-		self:Tag(self.AuraStatusTL, oUF.classIndicators[playerClass]["TL"])
+	self.AuraStatusTL = self.Health:CreateFontString(nil, "OVERLAY")
+	self.AuraStatusTL:ClearAllPoints()
+	self.AuraStatusTL:SetPoint("BOTTOMLEFT", self, "TOPLEFT", -3, -7)
+	self.AuraStatusTL:SetFont(db.font, db.indicatorSize, "OUTLINE")
+	self:Tag(self.AuraStatusTL, oUF.classIndicators[playerClass]["TL"])
 	
-		self.AuraStatusTR = self.Health:CreateFontString(nil, "OVERLAY")
-		self.AuraStatusTR:ClearAllPoints()
-		self.AuraStatusTR:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", 3, -7)
-		self.AuraStatusTR:SetFont(font, indicatorSize, "OUTLINE")
-		self:Tag(self.AuraStatusTR, oUF.classIndicators[playerClass]["TR"])
+	self.AuraStatusTR = self.Health:CreateFontString(nil, "OVERLAY")
+	self.AuraStatusTR:ClearAllPoints()
+	self.AuraStatusTR:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", 3, -7)
+	self.AuraStatusTR:SetFont(db.font, db.indicatorSize, "OUTLINE")
+	self:Tag(self.AuraStatusTR, oUF.classIndicators[playerClass]["TR"])
 
-		self.AuraStatusBL = self.Health:CreateFontString(nil, "OVERLAY")
-		self.AuraStatusBL:ClearAllPoints()
-		self.AuraStatusBL:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", -3, -3)
-		self.AuraStatusBL:SetFont(font, indicatorSize, "OUTLINE")
-		self:Tag(self.AuraStatusBL, oUF.classIndicators[playerClass]["BL"])	
+	self.AuraStatusBL = self.Health:CreateFontString(nil, "OVERLAY")
+	self.AuraStatusBL:ClearAllPoints()
+	self.AuraStatusBL:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", -3, -3)
+	self.AuraStatusBL:SetFont(db.font, db.indicatorSize, "OUTLINE")
+	self:Tag(self.AuraStatusBL, oUF.classIndicators[playerClass]["BL"])	
 
-		self.AuraStatusBR = self.Health:CreateFontString(nil, "OVERLAY")
-		self.AuraStatusBR:ClearAllPoints()
-		self.AuraStatusBR:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 7, -3)
-		self.AuraStatusBR:SetFont(symbols, symbolsSize, "OUTLINE")
-		self:Tag(self.AuraStatusBR, oUF.classIndicators[playerClass]["BR"])	
+	self.AuraStatusBR = self.Health:CreateFontString(nil, "OVERLAY")
+	self.AuraStatusBR:ClearAllPoints()
+	self.AuraStatusBR:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 7, -3)
+	self.AuraStatusBR:SetFont(db.symbols, db.symbolsSize, "OUTLINE")
+	self:Tag(self.AuraStatusBR, oUF.classIndicators[playerClass]["BR"])	
 end
-
-local debuffs = {
-	["Viper Sting"] = 12,
-
-	["Wound Poison"] = 9,
-	["Mortal Strike"] = 8,
-	["Aimed Shot"] = 8,
-
-	["Counterspell - Silenced"] = 11,
-	["Counterspell"] = 10,
-
-	["Blind"] = 10,
-	["Cyclone"] = 10,
-
-	["Polymorph"] = 7,
-
-	["Entangling Roots"] = 7,
-	["Freezing Trap Effect"] = 7,
-
-	["Crippling Poison"] = 6,
-	["Hamstring"] = 5,
-	["Wing Clip"] = 5,
-
-	["Fear"] = 3,
-	["Psychic Scream"] = 3,
-	["Howl of Terror"] = 3,
-}
-
-local dispellPriority = {
-	["Magic"] = 4,
-	["Poison"] = 3,
-	["Disease"] = 1,
-	["Curse"] = 2,
-}
 
 local dispellClass
 do
@@ -132,7 +58,7 @@ do
 		["SHAMAN"] = {
 			["Poison"] = true,
 			["Disease"] = true,
-			--["Curse"] = true, -- uncomment to enable curses for shamans
+			["Curse"] = true,
 		},
 		["PALADIN"] = {
 			["Poison"] = true,
@@ -156,6 +82,11 @@ do
 	end
 end
 
+local f = CreateFrame("Frame")
+f:SetScript("OnEvent", function(self, event, ...)
+	return self[event](self, ...)
+end)
+
 local name, rank, buffTexture, count, duration, timeLeft, dtype
 function f:UNIT_AURA(unit)
 	if not oUF.units[unit] then return end
@@ -168,30 +99,30 @@ function f:UNIT_AURA(unit)
 		name, rank, buffTexture, count, dtype, duration, timeLeft = UnitDebuff(unit, i)
 		if not name then break end
 
-		if dispellClass and dispellClass[dtype] then
+		if db.dispellClass and db.dispellClass[dtype] then
 			dispell = dispell or dtype
 			dispellTexture = dispellTexture or buffTexture
-			if dispellPriority[dtype] > dispellPriority[dispell] then
+			if db.dispellPriority[dtype] > db.dispellPriority[dispell] then
 				dispell = dtype
 				dispellTexture = buffTexture
 			end
 		end
 
-		if debuffs[name] then
+		if db.debuffs[name] then
 			current = current or name
 			bTexture = bTexture or buffTexture
 
-			local prio = debuffs[name]
-			if prio > debuffs[current] then
+			local prio = db.debuffs[name]
+			if prio > db.debuffs[current] then
 				current = name
 				bTexture = buffTexture
 			end
 		end
 	end
 
-	if dispellClass then
+	if db.dispellClass then
 		if dispell then
-			if dispellClass[dispell] then
+			if db.dispellClass[dispell] then
 				local col = DebuffTypeColor[dispell]
 				frame.border:Show()
 				frame.border:SetVertexColor(col.r, col.g, col.b)
@@ -220,12 +151,25 @@ function f:UNIT_AURA(unit)
 	end
 end
 
+local backdrop = {
+	bgFile = [=[Interface\ChatFrame\ChatFrameBackground]=],
+	insets = {top = -1, left = -1, bottom = -1, right = -1},
+}
+
 -- Target Border
 local ChangedTarget = function(self)
 	if (UnitInRaid'player' == 1 or GetNumPartyMembers() > 0 ) and UnitIsUnit('target', self.unit) then
 		self.TargetBorder:Show()
 	else
 		self.TargetBorder:Hide()
+	end
+end
+
+local FocusTarget = function(self)
+	if UnitIsUnit('focus', self.unit) then
+		self.FocusHighlight:Show()
+	else
+		self.FocusHighlight:Hide()
 	end
 end
 
@@ -261,66 +205,73 @@ local function utf8sub(str, start, numChars)
 	return str:sub(start, currentIndex - 1) 
 end 
 	 
-local nameCache = {}  
+local nameCache = {}
 local updateHealth = function(self, event, unit, bar, current, max)
 	local def = max - current
-	bar:SetValue(current)
 
 	local r, g, b, t
 	if UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) then
-		r, g, b = .3, .3, .3
+		r, g, b = .6, .6, .6
 	elseif(UnitIsPlayer(unit)) then
 		local _, class = UnitClass(unit)
 		t = self.colors.class[class]
 	else		
-		-- MainTank target and Party Pet color
-		r, g, b = .1, .8, .3
+		r, g, b = db.petColor[1], db.petColor[2], db.petColor[3]
 	end
 
 	if(t) then
 		r, g, b = t[1], t[2], t[3]
 	end
+	
+	if(UnitIsDead(unit)) then
+		bar:SetValue(0)
+		self.DDG:SetText('|cffFF0000'..'Dead')
+		self.DDG:Show()
+	elseif(UnitIsGhost(unit)) then
+		bar:SetValue(0)
+		self.DDG:SetText('|cffD7BEA5'..'Ghost')
+		self.DDG:Show()
+	elseif(not UnitIsConnected(unit)) then
+		self.DDG:SetText('|cffD7BEA5'..'D/C')
+		self.DDG:Show()
+	else
+		self.DDG:Hide()
+	end
 
-	local per = round(current/max, 100)
 	if (UnitIsPlayer(unit)) and (banzai:GetUnitAggroByUnitId(unit)) then
 		self.Name:SetVertexColor(1, 0, 0)
 	else	
 		-- Name Color
 		self.Name:SetTextColor(r, g, b)
 	end
-
-	if(not UnitIsConnected(unit)) then
-		self.Name:SetText('|cffD7BEA5'..'D/C')
-	elseif(UnitIsDead(unit)) then
-		self.Name:SetText('|cffD7BEA5'..'Dead')
-	elseif(UnitIsGhost(unit)) then
-		self.Name:SetText('|cffD7BEA5'..'Ghost')
-	elseif (per > 0.9) then
-		local name = UnitName(unit) or "Unknown" 
+	
+	local per = round(current/max, 100)
+		local name = UnitName(unit) or "Unknown"
+		if(per > 0.9) or UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) then
 			if nameCache[name] then 
 				self.Name:SetText(nameCache[name]) 
 			else 
 				local substring 
 				for length=#name, 1, -1 do 
-					substring = utf8sub(name, 1, length) 
-					self.Name:SetText(substring) 
+				substring = utf8sub(name, 1, length) 
+				self.Name:SetText(substring) 
 					if self.Name:GetStringWidth() <= 38 then 
-						break 
+						break end 
 					end 
-				end 
-				nameCache[name] = substring
 			end
-	else
-		self.Name:SetFormattedText("-%0.1f",math.floor(def/100)/10)
-	end
+			nameCache[name] = substring
+		else
+			self.Name:SetFormattedText("-%0.1f",math.floor(def/100)/10)
+		end
 
 	bar.bg:SetVertexColor(r, g, b)
 
-	if(reverseColors)then
+	if(db.reverseColors)then
 	  bar:SetStatusBarColor(r, g, b)
   	else	
 	  bar:SetStatusBarColor(0, 0, 0)
 	end
+	
 end
 
 local updatePower = function(self, event, unit, bar, current, max)	
@@ -336,21 +287,30 @@ end
 
 local OnEnter = function(self)
 	UnitFrame_OnEnter(self)
-	if(highlight)then
+	if(db.highlight)then
 	  self.Highlight:Show()	
   	end
 end
 
 local OnLeave = function(self)
 	UnitFrame_OnLeave(self)
-	if(highlight)then
+	if(db.highlight)then
 	  self.Highlight:Hide()	
   	end
+end
+
+local function menu(self)
+  if(self.unit:match('party')) then
+    ToggleDropDownMenu(1, nil, _G['PartyMemberFrame'..self.id..'DropDown'], 'cursor')
+  else
+    ToggleDropDownMenu(1, nil, TargetFrameDropDown, "cursor")
+  end
 end
 
 -- Style
 local func = function(self, unit)
 	self.colors = colors
+	self.menu = menu
 	
 	self:EnableMouse(true)
 	self:SetScript("OnEnter", OnEnter)
@@ -360,31 +320,31 @@ local func = function(self, unit)
 
 	-- Health
 	local hp = CreateFrame"StatusBar"
-	hp:SetStatusBarTexture(texture)
-	if(reverseColors)then
+	hp:SetStatusBarTexture(db.texture)
+	if(db.reverseColors)then
 	  hp:SetAlpha(1)
 	else
 	  hp:SetAlpha(0.8)
   	end
 	hp.frequentUpdates = true
-	if(manabars)then
-	  if(vertical)then
-	    hp:SetWidth(width*.93)
+	if(db.manabars)then
+	  if(db.vertical)then
+	    hp:SetWidth(db.width*.93)
 	    hp:SetOrientation("VERTICAL")
 	    hp:SetParent(self)
 	    hp:SetPoint"TOP"
 	    hp:SetPoint"BOTTOM"
 	    hp:SetPoint"LEFT"
   	  else
-	    hp:SetHeight(height*.93)
+	    hp:SetHeight(db.height*.93)
 	    hp:SetParent(self)
 	    hp:SetPoint"LEFT"
 	    hp:SetPoint"RIGHT"
 	    hp:SetPoint"TOP"
 	  end
   	else
-	  if(vertical)then
-	    hp:SetWidth(width)
+	  if(db.vertical)then
+	    hp:SetWidth(db.width)
 	    hp:SetOrientation("VERTICAL")
 	    hp:SetParent(self)
 	    hp:SetPoint"TOPLEFT"
@@ -398,8 +358,8 @@ local func = function(self, unit)
 
 	local hpbg = hp:CreateTexture(nil, "BORDER")
 	hpbg:SetAllPoints(hp)
-	hpbg:SetTexture(texture)
-	if(reverseColors)then
+	hpbg:SetTexture(db.texture)
+	if(db.reverseColors)then
 	  hpbg:SetAlpha(0.3)
 	else
 	  hpbg:SetAlpha(1)
@@ -411,7 +371,7 @@ local func = function(self, unit)
 
 	-- Health Text
 	local hpp = hp:CreateFontString(nil, "OVERLAY")
-	hpp:SetFont(font, fontsize)
+	hpp:SetFont(db.font, db.fontsize)
 	hpp:SetShadowOffset(1,-1)
 	hpp:SetPoint("CENTER")
 	hpp:SetJustifyH("CENTER")
@@ -422,21 +382,21 @@ local func = function(self, unit)
 	self.OverrideUpdateHealth = updateHealth
 
 	-- PowerBars
-	if(manabars)then
+	if(db.manabars)then
 	  local pp = CreateFrame"StatusBar"
-	  pp:SetStatusBarTexture(texture)
+	  pp:SetStatusBarTexture(db.texture)
 	  pp.colorPower = true
 	  pp.frequentUpdates = true
 	
-	  if(vertical)then
-	    pp:SetWidth(width*.05)
+	  if(db.vertical)then
+	    pp:SetWidth(db.width*.05)
 	    pp:SetOrientation("VERTICAL")
 	    pp:SetParent(self)
 	    pp:SetPoint"TOP"
 	    pp:SetPoint"BOTTOM"
 	    pp:SetPoint"RIGHT"
   	  else
-	    pp:SetHeight(height*.05)
+	    pp:SetHeight(db.height*.05)
 	    pp:SetParent(self)
 	    pp:SetPoint"LEFT"
 	    pp:SetPoint"RIGHT"
@@ -445,7 +405,7 @@ local func = function(self, unit)
 
 	  local ppbg = pp:CreateTexture(nil, "BORDER")
 	  ppbg:SetAllPoints(pp)
-	  ppbg:SetTexture(texture)
+	  ppbg:SetTexture(db.texture)
 	  ppbg.multiplier = .3
 	  pp.bg = ppbg
 
@@ -454,10 +414,10 @@ local func = function(self, unit)
 	end
 	
 	-- Highlight
-	if(highlight)then
+	if(db.highlight)then
 	  local hl = hp:CreateTexture(nil, "OVERLAY")
 	  hl:SetAllPoints(self)
-	  hl:SetTexture(highlightTex)
+	  hl:SetTexture(db.highlightTex)
 	  hl:SetVertexColor(1,1,1,.1)
 	  hl:SetBlendMode("ADD")
 	  hl:Hide()
@@ -474,7 +434,7 @@ local func = function(self, unit)
 	local name = hp:CreateFontString(nil, "OVERLAY")
 	name:SetPoint("CENTER")
 	name:SetJustifyH("CENTER")
-	name:SetFont(font, fontsize)
+	name:SetFont(db.font, db.fontsize)
 	name:SetShadowOffset(1.25, -1.25)
 	name:SetTextColor(1,1,1,1)
 
@@ -483,18 +443,27 @@ local func = function(self, unit)
 	local heal = hp:CreateFontString(nil, "OVERLAY")
 	heal:SetPoint("BOTTOM")
 	heal:SetJustifyH("CENTER")
-	heal:SetFont(font, fontsize-1)
+	heal:SetFont(db.font, db.fontsize-1)
 	heal:SetShadowOffset(1.25, -1.25)
 	heal:SetTextColor(0,1,0,1)
 
 	self.healText = heal
+	
+	local DDG = hp:CreateFontString(nil, "OVERLAY")
+	DDG:SetPoint("BOTTOM")
+	DDG:SetJustifyH("CENTER")
+	DDG:SetFont(db.font, db.fontsize-2)
+	DDG:SetShadowOffset(1.25, -1.25)
+	DDG:SetTextColor(1,1,1,1)
+
+	self.DDG = DDG
 
 	local manaborder = self:CreateTexture(nil, "OVERLAY")
 	manaborder:SetPoint("LEFT", self, "LEFT", -5, 0)
 	manaborder:SetPoint("RIGHT", self, "RIGHT", 5, 0)
 	manaborder:SetPoint("TOP", self, "TOP", 0, 5)
 	manaborder:SetPoint("BOTTOM", self, "BOTTOM", 0, -5)
-	manaborder:SetTexture(borderTex)
+	manaborder:SetTexture(db.borderTex)
 	manaborder:Hide()
 	manaborder:SetVertexColor(0, .1, .9, .8)
 	self.manaborder = manaborder
@@ -504,11 +473,21 @@ local func = function(self, unit)
 	tBorder:SetPoint("RIGHT", self, "RIGHT", 6, 0)
 	tBorder:SetPoint("TOP", self, "TOP", 0, 6)
 	tBorder:SetPoint("BOTTOM", self, "BOTTOM", 0, -6)
-	tBorder:SetTexture(borderTex)
+	tBorder:SetTexture(db.borderTex)
 	tBorder:Hide()
 	tBorder:SetVertexColor(.8, .8, .8, .8)
 	self.TargetBorder = tBorder
 
+	fBorder = self:CreateTexture(nil, "OVERLAY")
+	fBorder:SetPoint("LEFT", self, "LEFT", -6, 0)
+	fBorder:SetPoint("RIGHT", self, "RIGHT", 6, 0)
+	fBorder:SetPoint("TOP", self, "TOP", 0, 6)
+	fBorder:SetPoint("BOTTOM", self, "BOTTOM", 0, -6)
+	fBorder:SetTexture(db.borderTex)
+	fBorder:Hide()
+	fBorder:SetVertexColor(db.focusHighlightcolor[1], db.focusHighlightcolor[2], db.focusHighlightcolor[3], db.focusHighlightcolor[4])
+	self.FocusHighlight = fBorder
+	
 --==========--
 --  ICONS   --
 --==========--
@@ -534,105 +513,206 @@ local func = function(self, unit)
 	border:SetPoint("RIGHT", self, "RIGHT", 5, 0)
 	border:SetPoint("TOP", self, "TOP", 0, 5)
 	border:SetPoint("BOTTOM", self, "BOTTOM", 0, -5)
-	border:SetTexture(borderTex)
+	border:SetTexture(db.borderTex)
 	border:Hide()
 	border:SetVertexColor(1, 1, 1)
 	self.border = border
 
--- Leader Icon
-	if(Licon)then
-	self.Leader = self.Health:CreateTexture(nil, "OVERLAY")
-	self.Leader:SetPoint("TOPLEFT", self, 0, 8)
-	self.Leader:SetHeight(16)
-	self.Leader:SetWidth(16)
+-- Leader/Assistant Icon
+	if(db.Licon)then
+	  self.Leader = self.Health:CreateTexture(nil, "OVERLAY")
+	  self.Leader:SetPoint("TOPLEFT", self, 0, 8)
+	  self.Leader:SetHeight(db.iconSize)
+	  self.Leader:SetWidth(db.iconSize)
+	  
+	  self.Assistant = self.Health:CreateTexture(nil, "OVERLAY")
+	  self.Assistant:SetPoint("TOPLEFT", self, 0, 8)
+	  self.Assistant:SetHeight(db.iconSize)
+	  self.Assistant:SetWidth(db.iconSize)
 	end
 
 -- Raid Icon
-	if(ricon)then
-	self.RaidIcon = self.Health:CreateTexture(nil, "OVERLAY")
-	self.RaidIcon:SetPoint("TOP", self, 0, 8)
-	self.RaidIcon:SetHeight(16)
-	self.RaidIcon:SetWidth(16)
+	if(db.ricon)then
+	  self.RaidIcon = self.Health:CreateTexture(nil, "OVERLAY")
+  	  self.RaidIcon:SetPoint("TOP", self, 0, 8)
+	  self.RaidIcon:SetHeight(db.iconSize)
+	  self.RaidIcon:SetWidth(db.iconSize)
 	end
 
 -- ReadyCheck	
 	self.ReadyCheck = self.Health:CreateTexture(nil, "OVERLAY")
 	self.ReadyCheck:SetPoint("TOP", self)
-	self.ReadyCheck:SetHeight(16)
-	self.ReadyCheck:SetWidth(16)
+	self.ReadyCheck:SetHeight(db.iconSize)
+	self.ReadyCheck:SetWidth(db.iconSize)
 	self.ReadyCheck.delayTime = 8
 	self.ReadyCheck.fadeTime = 1
 
 	if not(self:GetAttribute('unitsuffix') == 'target')then
-	  if(indicators)then
+	  if(db.indicators)then
 	    applyAuraIndicator(self)
   	  end
 	
 	  self.applyHealComm = true
 	end
-
+	
+	self:RegisterEvent('PLAYER_FOCUS_CHANGED', FocusTarget)
 	self:RegisterEvent('PLAYER_TARGET_CHANGED', ChangedTarget)
 	f:RegisterEvent("UNIT_AURA")
 
-	self:SetAttribute('initial-height', height)
-	self:SetAttribute('initial-width', width)
+	self:SetAttribute('initial-height', db.height)
+	self:SetAttribute('initial-width', db.width)
 
 	return self
 end
 
-oUF:RegisterStyle("Freebgrid", func)
+function oUF_Freebgrid:OnEnable()
+	oUF:RegisterStyle("Freebgrid", func)
+	oUF:SetActiveStyle"Freebgrid"
+	
+	local pos, posRel, spacingX, spacingY
+	-- SetPoint of MOTHERFUCKING DOOM!
+	if db.point == "TOP" and db.growth == "LEFT" then
+		pos = "TOPRIGHT"
+		posRel = "TOPLEFT"
+		spacingX = 0
+		spacingY = -(db.spacing)
+		colX = -(db.spacing)
+		colY = 0
+		petsTemp = "oUF_FreebpetsLEFT"
+	elseif db.point == "TOP" and db.growth == "RIGHT" then
+		pos = "TOPLEFT"
+		posRel = "TOPRIGHT"
+		spacingX = 0
+		spacingY = -(db.spacing)
+		colX = db.spacing
+		colY = 0
+		petsTemp = "oUF_FreebpetsRIGHT"
+	elseif db.point == "LEFT" and db.growth == "UP" then
+		pos = "BOTTOMLEFT"
+		posRel = "TOPLEFT"
+		spacingX = db.spacing
+		spacingY = 0
+		colX = 0
+		colY = db.spacing
+		petsTemp = "oUF_FreebpetsUP"
+	elseif db.point == "LEFT" and db.growth == "DOWN" then
+		pos = "TOPLEFT"
+		posRel = "BOTTOMLEFT"
+		spacingX = db.spacing
+		spacingY = 0
+		colX = 0
+		colY = -(db.spacing)
+		petsTemp = "oUF_FreebpetsDOWN"
+	elseif db.point == "RIGHT" and db.growth == "UP" then
+		pos = "BOTTOMRIGHT"
+		posRel = "TOPRIGHT"
+		spacingX = -(db.spacing)
+		spacingY = 0
+		colX = 0
+		colY = db.spacing
+		petsTemp = "oUF_FreebpetsUP"
+	elseif db.point == "RIGHT" and db.growth == "DOWN" then
+		pos = "TOPRIGHT"
+		posRel = "BOTTOMRIGHT"
+		spacingX = -(db.spacing)
+		spacingY = 0
+		colX = 0
+		colY = -(db.spacing)
+		petsTemp = "oUF_FreebpetsDOWN"
+	elseif db.point == "BOTTOM" and db.growth == "LEFT" then
+		pos = "BOTTOMRIGHT"
+		posRel = "BOTTOMLEFT"
+		spacingX = 0
+		spacingY = (db.spacing)
+		colX = -(db.spacing)
+		colY = 0
+		petsTemp = "oUF_FreebpetsLEFT"
+	elseif db.point == "BOTTOM" and db.growth == "RIGHT" then
+		pos = "BOTTOMLEFT"
+		posRel = "BOTTOMRIGHT"
+		spacingX = 0
+		spacingY = (db.spacing)
+		colX = (db.spacing)
+		colY = 0
+		petsTemp = "oUF_FreebpetsRIGHT"
+	else -- You failed to equal any of the above. So I give this...
+		pos = "TOPLEFT"
+		posRel = "TOPRIGHT"
+		spacingX = 0
+		spacingY = -(db.spacing)
+		colX = db.spacing
+		colY = 0
+		petsTemp = "oUF_FreebpetsRIGHT"
+	end
 
-oUF:SetActiveStyle"Freebgrid"  
+	local raid = {}
+	for i = 1, db.numRaidgroups do
+		local raidg = oUF:Spawn('header', 'oUF_Raid'..i)
+		raidg:SetManyAttributes('groupFilter', tostring(i),
+					'showRaid', true,
+					'showParty', db.partyON,
+					'showPlayer', true,
+					'point', db.point,
+					'xoffset', spacingX,
+					'yOffset', spacingY)
+		table.insert(raid, raidg)
+		if(i == 1) then	
+			raidg:SetPoint(db.position[1], db.position[2], db.position[3], db.position[4], db.position[5])
+		else
+			raidg:SetPoint(pos, raid[i-1], posRel, colX, colY) 
+		end
+	end
 
-local party = oUF:Spawn('header', 'oUF_Party')
-party:SetPoint(pos, UIParent, posRel, posX, posY) -- Party position
-party:SetManyAttributes('showParty', true, 
-			'showPlayer', true,
-			--'point', 'LEFT', -- Remove to grow vertically(Offset also needs to be updated)
-			'yOffset', -5)
-party:SetAttribute("template", "oUF_Freebpets")
-
-local raid = {}
-for i = 1, 5 do
-	local raidg = oUF:Spawn('header', 'oUF_Raid'..i)
-	raidg:SetManyAttributes('groupFilter', tostring(i), 
-				'showRaid', true,
-				--'point', 'LEFT', -- Remove to grow vertically(Offset also needs to be updated)
-				'yOffset', -5)	
-	table.insert(raid, raidg)
-	if(i == 1) then	
-		raidg:SetPoint(pos, UIParent, posRel, posX, posY) -- Raid position
+	if db.partyON and db.partyPets then
+		local party = oUF:Spawn('header', 'oUF_Party')
+		party:SetPoint(db.position[1], db.position[2], db.position[3], db.position[4], db.position[5])
+		party:SetManyAttributes('showParty', true, 
+					'showPlayer', true,
+					'point', db.point,
+					'xoffset', spacingX,
+					'yOffset', spacingY)
+		party:SetAttribute("template", petsTemp)
+	
+		local partyToggle = CreateFrame('Frame')
+		partyToggle:RegisterEvent('PLAYER_LOGIN')
+		partyToggle:RegisterEvent('RAID_ROSTER_UPDATE')
+		partyToggle:RegisterEvent('PARTY_LEADER_CHANGED')
+		partyToggle:RegisterEvent('PARTY_MEMBERS_CHANGED')
+		partyToggle:SetScript('OnEvent', function(self)
+			if(InCombatLockdown()) then
+				self:RegisterEvent('PLAYER_REGEN_ENABLED')
+			else
+				self:UnregisterEvent('PLAYER_REGEN_ENABLED')
+					if(GetNumRaidMembers() > 5) then
+						party:Hide()
+						for i,v in ipairs(raid) do v:Show() end
+					else
+						party:Show()
+						for i,v in ipairs(raid) do v:Hide() end
+					end
+			end
+		end)
 	else
-		raidg:SetPoint('TOPLEFT', raid[i-1], 'TOPRIGHT', 5, 0) -- needs to be updated when switching from vertical to horizontal
+		for i,v in ipairs(raid) do v:Show() end
 	end
 end
 
-local tank = oUF:Spawn('header', 'oUF_MainTank')
-tank:SetPoint('LEFT', UIParent, 5, 100) -- MT position
-tank:SetManyAttributes('showRaid', true, 
-			'groupFilter', 'MAINTANK', 
-			'yOffset', -5)
-tank:SetAttribute("template", "oUF_FreebMtargets")
-
-local partyToggle = CreateFrame('Frame')
-partyToggle:RegisterEvent('PLAYER_LOGIN')
-partyToggle:RegisterEvent('RAID_ROSTER_UPDATE')
-partyToggle:RegisterEvent('PARTY_LEADER_CHANGED')
-partyToggle:RegisterEvent('PARTY_MEMBERS_CHANGED')
-partyToggle:SetScript('OnEvent', function(self)
-	if(InCombatLockdown()) then
-		self:RegisterEvent('PLAYER_REGEN_ENABLED')
-	else
-		self:UnregisterEvent('PLAYER_REGEN_ENABLED')
-		if(GetNumRaidMembers() > 5) then
-			party:Hide()
-			for i,v in ipairs(raid) do v:Show() end
-			tank:Hide() --tank:Show() to enable MTs
-		else
-			party:Show()
-			for i,v in ipairs(raid) do v:Hide() end
+function oUF_Freebgrid:LoadDB()
+	oUF_FreebgridDB = oUF_FreebgridDB or {}
+	for k, v in pairs(FreebgridDefaults) do
+		if(type(oUF_FreebgridDB[k]) == 'nil') then
+			oUF_FreebgridDB[k] = v
 		end
 	end
-end)
+	--db = oUF_FreebgridDB -- not used yet
+	db = FreebgridDefaults
+end
+
+function oUF_Freebgrid:ADDON_LOADED(event, addon)
+	if addon ~= "oUF_Freebgrid" then return end
+	oUF_Freebgrid:LoadDB()
+	oUF_Freebgrid:OnEnable()
+	self:UnregisterEvent("ADDON_LOADED")
+end
 
 

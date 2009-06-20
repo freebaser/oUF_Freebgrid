@@ -1,8 +1,9 @@
 ## Interface: 30100
 ## Title: oUF_Freebgrid
 ## Author: Freebaser
-## Version: 0.99
+## Version: 1.0
 ## Notes: oUF layout.
+## SavedVariables: oUF_FreebgridDB
 ## OptionalDeps: oUF_ReadyCheck, oUF_SpellRange
 ## X-Embeds: LibHealComm-3.0, LibBanzai-2.0
 ## X-oUF: Freebgrid
@@ -16,8 +17,11 @@ libs\UTF8\utf8.lua
 libs\UTF8\utf8data.lua
 
 oUF\oUF.xml
-pets.xml
-mtargets.xml
+pets1.xml
+pets2.xml
+pets3.xml
+pets4.xml
+config.lua
 tags.lua
 freebgrid.lua
 oUF_HealComm.lua
