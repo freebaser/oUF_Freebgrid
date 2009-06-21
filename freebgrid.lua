@@ -225,7 +225,7 @@ local updateHealth = function(self, event, unit, bar, current, max)
 	
 	if(UnitIsDead(unit)) then
 		bar:SetValue(0)
-		self.DDG:SetText('|cffFF0000'..'Dead')
+		self.DDG:SetText('|cffD7BEA5'..'Dead')
 		self.DDG:Show()
 	elseif(UnitIsGhost(unit)) then
 		bar:SetValue(0)
@@ -271,7 +271,7 @@ local updateHealth = function(self, event, unit, bar, current, max)
   	else	
 	  bar:SetStatusBarColor(0, 0, 0)
 	end
-	
+	FocusTarget(self)
 end
 
 local updatePower = function(self, event, unit, bar, current, max)	

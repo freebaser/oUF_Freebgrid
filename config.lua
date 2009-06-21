@@ -43,7 +43,7 @@ FreebgridDefaults = {
 	Healbar = false,		-- HealComm Bar
 	Healtext = true,		-- HealComm Text
 	
-	focusHighlightcolor = {1, 1, 0, .8},
+	focusHighlightcolor = {.8, .8, .2, .5},
 	petColor = {.1, .8, .3},
 	
 	numRaidgroups = 8,		-- Number of Raid Groups
