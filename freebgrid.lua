@@ -99,7 +99,7 @@ function f:UNIT_AURA(unit)
 		name, rank, buffTexture, count, dtype, duration, timeLeft = UnitDebuff(unit, i)
 		if not name then break end
 
-		if db.dispellClass and db.dispellClass[dtype] then
+		if dispellClass and dispellClass[dtype] then
 			dispell = dispell or dtype
 			dispellTexture = dispellTexture or buffTexture
 			if db.dispellPriority[dtype] > db.dispellPriority[dispell] then
@@ -120,9 +120,9 @@ function f:UNIT_AURA(unit)
 		end
 	end
 
-	if db.dispellClass then
+	if dispellClass then
 		if dispell then
-			if db.dispellClass[dispell] then
+			if dispellClass[dispell] then
 				local col = DebuffTypeColor[dispell]
 				frame.border:Show()
 				frame.border:SetVertexColor(col.r, col.g, col.b)
@@ -666,7 +666,8 @@ function oUF_Freebgrid:OnEnable()
 	if db.partyON and db.partyPets then
 		local party = oUF:Spawn('header', 'oUF_Party')
 		party:SetPoint(db.position[1], db.position[2], db.position[3], db.position[4], db.position[5])
-		party:SetManyAttributes('showParty', true, 
+		party:SetManyAttributes('showParty', true,
+					--'showSolo', true,
 					'showPlayer', true,
 					'point', db.point,
 					'xoffset', spacingX,

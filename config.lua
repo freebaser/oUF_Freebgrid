@@ -10,8 +10,8 @@ FreebgridDefaults = {
 	height = 40,
 	width = 40,
 	
-	font = mediaPath.."CalibriBold.ttf",
-	fontsize = 13,
+	font = mediaPath.."font.ttf",
+	fontsize = 16,
 	
 	symbols = mediaPath.."PIZZADUDEBULLETS.ttf",
 	symbolsSize = 12,
