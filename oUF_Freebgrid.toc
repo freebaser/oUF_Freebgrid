@@ -17,10 +17,7 @@ libs\UTF8\utf8.lua
 libs\UTF8\utf8data.lua
 
 oUF\oUF.xml
-pets1.xml
-pets2.xml
-pets3.xml
-pets4.xml
+pets.xml
 mtargets.xml
 config.lua
 tags.lua
