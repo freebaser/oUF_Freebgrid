@@ -26,25 +26,25 @@ local function applyAuraIndicator(self)
 	self.AuraStatusTL = self.Health:CreateFontString(nil, "OVERLAY")
 	self.AuraStatusTL:ClearAllPoints()
 	self.AuraStatusTL:SetPoint("BOTTOMLEFT", self, "TOPLEFT", -3, -7)
-	self.AuraStatusTL:SetFont(db.font, db.indicatorSize, "OUTLINE")
+	self.AuraStatusTL:SetFont(db.font, db.indicatorSize, "THINOUTLINE")
 	self:Tag(self.AuraStatusTL, oUF.classIndicators[playerClass]["TL"])
 	
 	self.AuraStatusTR = self.Health:CreateFontString(nil, "OVERLAY")
 	self.AuraStatusTR:ClearAllPoints()
 	self.AuraStatusTR:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", 3, -7)
-	self.AuraStatusTR:SetFont(db.font, db.indicatorSize, "OUTLINE")
+	self.AuraStatusTR:SetFont(db.font, db.indicatorSize, "THINOUTLINE")
 	self:Tag(self.AuraStatusTR, oUF.classIndicators[playerClass]["TR"])
 
 	self.AuraStatusBL = self.Health:CreateFontString(nil, "OVERLAY")
 	self.AuraStatusBL:ClearAllPoints()
 	self.AuraStatusBL:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", -3, -3)
-	self.AuraStatusBL:SetFont(db.font, db.indicatorSize, "OUTLINE")
+	self.AuraStatusBL:SetFont(db.font, db.indicatorSize, "THINOUTLINE")
 	self:Tag(self.AuraStatusBL, oUF.classIndicators[playerClass]["BL"])	
 
 	self.AuraStatusBR = self.Health:CreateFontString(nil, "OVERLAY")
 	self.AuraStatusBR:ClearAllPoints()
 	self.AuraStatusBR:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 7, -3)
-	self.AuraStatusBR:SetFont(db.symbols, db.symbolsSize, "OUTLINE")
+	self.AuraStatusBR:SetFont(db.symbols, db.symbolsSize, "THINOUTLINE")
 	self:Tag(self.AuraStatusBR, oUF.classIndicators[playerClass]["BR"])	
 end
 
@@ -150,6 +150,7 @@ function f:UNIT_AURA(unit)
 		frame.Icon:HideText()
 	end
 end
+f:RegisterEvent("UNIT_AURA")
 
 local backdrop = {
 	bgFile = [=[Interface\ChatFrame\ChatFrameBackground]=],
@@ -172,6 +173,85 @@ local FocusTarget = function(self)
 		self.FocusHighlight:Hide()
 	end
 end
+
+---------------------------------------
+local bg = CreateFrame("Frame")
+bg:SetBackdrop({
+	bgFile = "Interface\\ChatFrame\\ChatFrameBackground", tile = true, tileSize = 16,
+	edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", edgeSize = 10,
+	insets = {left = 2, right = 2, top = 2, bottom = 2}
+})
+bg:SetBackdropColor(0, 0, 0, 0.6)
+bg:SetBackdropBorderColor(0.4, 0.4, 0.4, 1)
+bg:SetFrameLevel(0)
+bg:EnableMouse(true)
+
+local SubGroups = function()
+	local t = {}
+	for i = 1, 8 do t[i] = 0 end
+	for i = 1, GetNumRaidMembers() do
+			local s = select(3, GetRaidRosterInfo(i))
+			t[s] = t[s] + 1
+	end
+	return t
+end
+
+local FrameBG = function(self)
+	if not db.frameBG or not UnitInRaid("player") then
+		return bg:Hide()
+	else
+		bg:Show()
+	end
+
+	local roster = SubGroups()
+
+	local h, last, first = 1
+	for k, v in ipairs(roster) do
+		if v > 0 then
+			if not first then
+				first = k
+			end
+			last = k
+		end
+		if v > roster[h] then
+			h = k
+		end
+	end
+	
+	if db.growth == "RIGHT" then
+		bg:ClearAllPoints()
+		bg:SetPoint("TOP", "oUF_Raid1", "TOP", 0, 8)
+		bg:SetPoint("LEFT", "oUF_Raid" .. first, "LEFT", -8 , 0)
+		bg:SetPoint("RIGHT", "oUF_Raid" .. last, "RIGHT", 8, 0)
+		bg:SetPoint("BOTTOM", "oUF_Raid" .. h, "BOTTOM", 0, -8)
+	elseif db.growth == "UP" then
+		bg:ClearAllPoints()
+		bg:SetPoint("LEFT", "oUF_Raid1", "LEFT", -8, 0)
+		bg:SetPoint("BOTTOM", "oUF_Raid" .. first, "BOTTOM", 0, -8)
+		bg:SetPoint("TOP", "oUF_Raid" .. last, "TOP", 0, 8)
+		bg:SetPoint("RIGHT", "oUF_Raid" .. h, "RIGHT", 8, 0)
+	elseif db.growth == "DOWN" then
+		bg:ClearAllPoints()
+		bg:SetPoint("LEFT", "oUF_Raid1", "LEFT", -8, 0)
+		bg:SetPoint("TOP", "oUF_Raid" .. first, "TOP", 0, 8)
+		bg:SetPoint("BOTTOM", "oUF_Raid" .. last, "BOTTOM", 0, -8)
+		bg:SetPoint("RIGHT", "oUF_Raid" .. h, "RIGHT", 8, 0)
+	elseif db.growth == "LEFT" then
+		bg:ClearAllPoints()
+		bg:SetPoint("TOP", "oUF_Raid1", "TOP", 0, 8)
+		bg:SetPoint("RIGHT", "oUF_Raid" .. first, "RIGHT", 8 , 0)
+		bg:SetPoint("LEFT", "oUF_Raid" .. last, "LEFT", -8, 0)
+		bg:SetPoint("BOTTOM", "oUF_Raid" .. h, "BOTTOM", 0, -8)
+	else
+		bg:ClearAllPoints()
+		bg:SetPoint("TOP", "oUF_Raid1", "TOP", 0, 8)
+		bg:SetPoint("LEFT", "oUF_Raid" .. first, "LEFT", -8 , 0)
+		bg:SetPoint("RIGHT", "oUF_Raid" .. last, "RIGHT", 8, 0)
+		bg:SetPoint("BOTTOM", "oUF_Raid" .. h, "BOTTOM", 0, -8)
+	end
+
+end
+---------------------------------------
 
 local colors = setmetatable({
 	power = setmetatable({
@@ -271,7 +351,6 @@ local updateHealth = function(self, event, unit, bar, current, max)
   	else	
 	  bar:SetStatusBarColor(0, 0, 0)
 	end
-	FocusTarget(self)
 end
 
 local updatePower = function(self, event, unit, bar, current, max)	
@@ -468,7 +547,7 @@ local func = function(self, unit)
 	manaborder:SetVertexColor(0, .1, .9, .8)
 	self.manaborder = manaborder
 
-	tBorder = self:CreateTexture(nil, "OVERLAY")
+	local tBorder = self:CreateTexture(nil, "OVERLAY")
 	tBorder:SetPoint("LEFT", self, "LEFT", -6, 0)
 	tBorder:SetPoint("RIGHT", self, "RIGHT", 6, 0)
 	tBorder:SetPoint("TOP", self, "TOP", 0, 6)
@@ -478,7 +557,7 @@ local func = function(self, unit)
 	tBorder:SetVertexColor(.8, .8, .8, .8)
 	self.TargetBorder = tBorder
 
-	fBorder = self:CreateTexture(nil, "OVERLAY")
+	local fBorder = self:CreateTexture(nil, "OVERLAY")
 	fBorder:SetPoint("LEFT", self, "LEFT", -6, 0)
 	fBorder:SetPoint("RIGHT", self, "RIGHT", 6, 0)
 	fBorder:SetPoint("TOP", self, "TOP", 0, 6)
@@ -556,8 +635,10 @@ local func = function(self, unit)
 	end
 	
 	self:RegisterEvent('PLAYER_FOCUS_CHANGED', FocusTarget)
+	self:RegisterEvent('RAID_ROSTER_UPDATE', FocusTarget)
 	self:RegisterEvent('PLAYER_TARGET_CHANGED', ChangedTarget)
-	f:RegisterEvent("UNIT_AURA")
+	self:RegisterEvent("RAID_ROSTER_UPDATE", FrameBG)
+	self:RegisterEvent("PLAYER_LOGIN", FrameBG)
 
 	self:SetAttribute('initial-height', db.height)
 	self:SetAttribute('initial-width', db.width)
@@ -695,6 +776,16 @@ function oUF_Freebgrid:OnEnable()
 		end)
 	else
 		for i,v in ipairs(raid) do v:Show() end
+	end
+	
+	if db.MTs then
+		local tank = oUF:Spawn('header', 'oUF_MainTank')
+		tank:SetPoint(db.MTposition[1], db.MTposition[2], db.MTposition[3], db.MTposition[4], db.MTposition[5])
+		tank:SetManyAttributes('showRaid', true, 
+					'groupFilter', 'MAINTANK', 
+					'yOffset', -5)
+		tank:SetAttribute("template", "oUF_FreebMtargets")
+		tank:Show()
 	end
 end
 

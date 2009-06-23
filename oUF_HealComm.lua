@@ -28,7 +28,7 @@ local playerHeals = 0
 local playerTarget = ""
 
 --update a specific bar
-updateHealCommBar = function(frame, unit)
+local updateHealCommBar = function(frame, unit)
     local curHP = UnitHealth(unit)
     local maxHP = UnitHealthMax(unit)
     local percHP = curHP / maxHP

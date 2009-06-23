@@ -20,12 +20,13 @@ FreebgridDefaults = {
 	indicatorSize = 22,
 	iconSize = 14,			-- Size of raid symbols, leader, etc.
 	
-	position = {"TOPLEFT", "UIParent", "TOPLEFT", 5, -275},
+	position = {"LEFT", "UIParent", "LEFT", 12, -200},
 	
-	point = "TOP", --[[ usage: "TOP", "LEFT", "RIGHT", "BOTTOM"
+	point = "LEFT", --[[ usage: "TOP", "LEFT", "RIGHT", "BOTTOM"
 						this is the unit anchor so TOP would make units grow down and LEFT would make units grow RIGHT etc. SEE growth COMMENT! ]]--
 						
-	growth = "RIGHT", --[[ usage: "UP", "DOWN", "LEFT", "RIGHT"
+	growth = "UP", --[[ usage: "UP", "DOWN", "LEFT", "RIGHT"
+						This defines how additional groups should be added.
 						if point = "TOP" or "BOTTOM" this MUST be "LEFT" or "RIGHT". 
 						if point = "LEFT" or "RIGHT" this MUST be "UP" or "DOWN" ]]--
 						
@@ -42,8 +43,12 @@ FreebgridDefaults = {
 	ricon = true,			-- Raid icon?
 	Healbar = false,		-- HealComm Bar
 	Healtext = true,		-- HealComm Text
+	frameBG = true,			-- apply raid Background?
 	
-	focusHighlightcolor = {.8, .8, .2, .5},
+	MTs = false, 			-- Main Tanks?
+	MTposition = {"TOPLEFT", "UIParent", "TOPLEFT", 10, -150},
+	
+	focusHighlightcolor = {.8, .8, .2, .7},
 	petColor = {.1, .8, .3},
 	
 	numRaidgroups = 8,		-- Number of Raid Groups
