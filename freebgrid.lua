@@ -48,6 +48,23 @@ local function applyAuraIndicator(self)
 	self:Tag(self.AuraStatusBR, oUF.classIndicators[playerClass]["BR"])	
 end
 
+--=======================================================================================--
+--[[
+	This license applies to the following code provided by oUF_Grid by zariel
+
+Copyright (c) 2009, Chris Bannister
+All rights reserved.
+ 
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+ 
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+    * Neither the name of the <ORGANIZATION> nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+ 
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
+]]--	
+
 local dispellClass
 do
 	local t = {
@@ -152,30 +169,7 @@ function f:UNIT_AURA(unit)
 end
 f:RegisterEvent("UNIT_AURA")
 
-local backdrop = {
-	bgFile = [=[Interface\ChatFrame\ChatFrameBackground]=],
-	insets = {top = -1, left = -1, bottom = -1, right = -1},
-}
-
--- Target Border
-local ChangedTarget = function(self)
-	if (UnitInRaid'player' == 1 or GetNumPartyMembers() > 0 ) and UnitIsUnit('target', self.unit) then
-		self.TargetBorder:Show()
-	else
-		self.TargetBorder:Hide()
-	end
-end
-
-local FocusTarget = function(self)
-	if UnitIsUnit('focus', self.unit) then
-		self.FocusHighlight:Show()
-	else
-		self.FocusHighlight:Hide()
-	end
-end
-
----------------------------------------
-local bg = CreateFrame("Frame")
+local bg = CreateFrame("Frame", nil, UIParent)
 bg:SetBackdrop({
 	bgFile = "Interface\\ChatFrame\\ChatFrameBackground", tile = true, tileSize = 16,
 	edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", edgeSize = 10,
@@ -251,7 +245,30 @@ local FrameBG = function(self)
 	end
 
 end
----------------------------------------
+
+--=======================================================================================--
+
+local backdrop = {
+	bgFile = [=[Interface\ChatFrame\ChatFrameBackground]=],
+	insets = {top = -1, left = -1, bottom = -1, right = -1},
+}
+
+-- Target Border
+local ChangedTarget = function(self)
+	if (UnitInRaid'player' == 1 or GetNumPartyMembers() > 0 ) and UnitIsUnit('target', self.unit) then
+		self.TargetBorder:Show()
+	else
+		self.TargetBorder:Hide()
+	end
+end
+
+local FocusTarget = function(self)
+	if UnitIsUnit('focus', self.unit) then
+		self.FocusHighlight:Show()
+	else
+		self.FocusHighlight:Hide()
+	end
+end
 
 local colors = setmetatable({
 	power = setmetatable({
