@@ -7,7 +7,6 @@
 --
 --=============================================================================
 local oUF = Freebgrid
-if not oUF then return end
 local db = FreebgridDefaults
 
 --set texture and color here
@@ -48,7 +47,7 @@ local updateHealCommBar = function(frame, unit)
     --hide if unknown max hp or no heals inc
     if maxHP == 100 or incHeals == 0 then
         frame.HealCommBar:Hide()
-		frame.healText:SetText(" ")
+	frame.healText:SetText(" ")
         return
     else
 		if db.Healtext then

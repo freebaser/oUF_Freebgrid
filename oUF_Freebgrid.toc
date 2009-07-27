@@ -1,27 +1,15 @@
 ## Interface: 30100
 ## Title: oUF_Freebgrid
 ## Author: Freebaser
-## Version: 1.2
+## Version: 1.3
 ## Notes: oUF layout.
 ## SavedVariables: oUF_FreebgridDB
 ## OptionalDeps: oUF_ReadyCheck, oUF_SpellRange
-## X-Embeds: LibHealComm-3.0, LibBanzai-2.0
+## X-Embeds: LibHealComm-3.0
 ## X-oUF: Freebgrid
 
-libs\LibHealComm-3.0\LibStub\LibStub.lua
-libs\LibHealComm-3.0\CallbackHandler-1.0\CallbackHandler-1.0.lua
-libs\LibHealComm-3.0\LibHealComm-3.0.lua
-libs\LibBanzai-2.0\LibBanzai-2.0.lua
-
-libs\UTF8\utf8.lua
-libs\UTF8\utf8data.lua
-
+libs\lib.xml
 oUF\oUF.xml
 pets.xml
 mtargets.xml
-config.lua
-tags.lua
-freebgrid.lua
-oUF_HealComm.lua
-oUF_ReadyCheck\oUF_ReadyCheck.lua
-oUF_SpellRange\oUF_SpellRange.lua
+oUF_Freebgrid.xml

@@ -1,5 +1,5 @@
 local MAJOR_VERSION = "LibHealComm-3.0";
-local MINOR_VERSION = 90000 + tonumber(("$Revision: 52 $"):match("%d+"));
+local MINOR_VERSION = 90000 + tonumber(("$Revision: 59 $"):match("%d+"));
 
 local lib = LibStub:NewLibrary(MAJOR_VERSION, MINOR_VERSION);
 if not lib then return end
@@ -51,16 +51,19 @@ end
 -- Scanning Tooltip --
 ----------------------
 
+-- Create tooltip frame if it does not exist
 if (not lib.Tooltip) then
     lib.Tooltip = CreateFrame("GameTooltip");
     lib.Tooltip:SetOwner(UIParent, "ANCHOR_NONE");
-    for i = 1, 4 do
+end
+-- Create tooltip lines if they do not exist
+for i = 1, 5 do
+    if (not lib["TooltipTextLeft" .. i]) then
         lib["TooltipTextLeft" .. i] = lib.Tooltip:CreateFontString();
         lib["TooltipTextRight" .. i] = lib.Tooltip:CreateFontString();
         lib.Tooltip:AddFontStrings(lib["TooltipTextLeft" .. i], lib["TooltipTextRight" .. i]);
     end
 end
-
 
 -------------------------------
 -- Embed CallbackHandler-1.0 --
@@ -210,7 +213,7 @@ local function getBaseHealSize(name)
             lib.Tooltip:SetSpell(i, BOOKTYPE_SPELL);
 
             -- Determine healing
-            local HealMin, HealMax = select(3, string.find(lib.TooltipTextLeft4:GetText() or lib.TooltipTextLeft3:GetText() or "", "(%d+) ?[\195\160tobisa到~\-]+ ?(%d+)"));
+            local HealMin, HealMax = select(3, string.find(lib.TooltipTextLeft5:GetText() or lib.TooltipTextLeft4:GetText() or lib.TooltipTextLeft3:GetText() or "", "(%d+) ?[\195\160tobisa到~\-]+ ?(%d+)"));
             HealMin, HealMax = tonumber(HealMin) or 0, tonumber(HealMax) or 0;
             local Heal = (HealMin + HealMax) / 2;
 
@@ -273,6 +276,7 @@ local healingBuffs =
     [GetSpellInfo(45234)] = function (count, rank) return (1.0 + (0.04 + 0.03 * (rank - 1)) * count) end, -- Focused Will
     [GetSpellInfo(34123)] = 1.06, -- Tree of Life
     [GetSpellInfo(58549)] = function (count, rank, texture) return ((texture == "Interface\\Icons\\Ability_Warrior_StrengthOfArms") and (1.18 ^ count) or 1.0) end, -- Tenacity (Wintergrasp)
+    [GetSpellInfo(64844)] = function (count, rank, texture) return rank and 1.0 or 1.10 end, -- Divine Hymn
 }
 
 local healingDebuffs =
@@ -674,6 +678,11 @@ if (playerClass == "DRUID") then
         [22399] = 100, -- Idol of Health
     }
 
+    local idolsNourish =
+    {
+        [46138] = 187, -- Idol of the Flourishing Life
+    }
+
     GetHealSize = function(name, rank, target)
         local i, effectiveHeal;
 
@@ -719,11 +728,12 @@ if (playerClass == "DRUID") then
             end
             nBonus = bonus * 1.88 * (2.0 / 3.5) * 0.5;
         elseif (name == tNourish) then
+            local idolBonus = idolsNourish[getEquippedRelicID()] or 0;
             -- Nourish heals for 20% more if player's HoT is on the target.
             if (detectBuff(target, tRejuvenation, true) or detectBuff(target, tRegrowth, true) or detectBuff(target, tLifebloom, true) or detectBuff(target, tWildGrowth, true)) then
                 effectiveHealModifier = effectiveHealModifier * 1.2
             end
-            nBonus = bonus * 1.88 * (1.5 / 3.5);
+            nBonus = (bonus + idolBonus) * 1.88 * (1.5 / 3.5);
         end
 
         effectiveHeal = effectiveHealModifier * (baseHealSize + nBonus * getDownrankingFactor(spellTab.Level[rank], UnitLevel('player')));
@@ -733,7 +743,6 @@ if (playerClass == "DRUID") then
 end
 
 -- Paladin --
--- TODO: Track Beacon of Light (GetSpellInfo(53563) for name).
 if (playerClass == "PALADIN") then
 
     local tHolyLight = GetSpellInfo(635);
@@ -759,6 +768,7 @@ if (playerClass == "PALADIN") then
 
     local libramsFlashOfLight =
     {
+        [42615] = 320, -- Furious Gladiator's Libram of Justice
         [42614] = 267, -- Deadly Gladiator's Libram of Justice
         [42613] = 236, -- Hateful Gladiator's Libram of Justice
         [42612] = 204, -- Savage Gladiator's Libram of Justice
@@ -770,6 +780,7 @@ if (playerClass == "PALADIN") then
 
     local libramsHolyLight =
     {
+        [45436] = 160, -- Libram of the Resolute
         [40268] = 141, -- Libram of Tolerance
         [28296] = 47,  -- Libram of the Lightbringer
     }
@@ -830,7 +841,6 @@ if (playerClass == "PALADIN") then
 end
 
 -- Priest --
-
 -- TODO: Talent: Improved Renew: increases renew by 5%-10%-15%
 -- Healing_Done = (Renew_Base + (Healbonus * Downrankfactor) ) * Improved_Renew * Spiritual_Healing
 if (playerClass == "PRIEST") then
@@ -993,6 +1003,7 @@ if (playerClass == "SHAMAN") then
 
     local totemsLesserHealingWave =
     {
+        [42598] = 320, -- Furious Gladiator's Totem of the Third Wind
         [42597] = 267, -- Deadly Gladiator's Totem of the Third Wind
         [42596] = 236, -- Hateful Gladiator's Totem of the Third Wind
         [42595] = 204, -- Savage Gladiator's Totem of the Third Wind
@@ -1008,6 +1019,7 @@ if (playerClass == "SHAMAN") then
 
     local totemsChainHeal =
     {
+        [45114] = 243, -- Steamcaller's Totem
         [38368] = 102, -- Totem of the Bay
         [28523] = 87,  -- Totem of Healing Rains
     }

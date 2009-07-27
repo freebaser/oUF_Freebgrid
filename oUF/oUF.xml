@@ -1,14 +1,13 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
 	<Script file='ouf.lua' />
-	<Script file='elements\assistant.lua' />
+
 	<Script file='elements\power.lua' />
-	<Script file='elements\aura.lua' />
 	<Script file='elements\health.lua' />
 	<Script file='elements\ricons.lua' />
 	<Script file='elements\leader.lua' />
+	<Script file='elements\range.lua' />
 	<Script file='elements\tags.lua' />
-	<Script file='elements\vehicle.lua' />
-	<Script file='elements\masterlooter.lua' />
+	<Script file='elements\assistant.lua' />
 
 	<!--
 		This template requires the layout to set the anchoring positions from the

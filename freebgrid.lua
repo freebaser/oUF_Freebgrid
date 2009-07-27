@@ -6,39 +6,29 @@ local db
 
 local playerClass = select(2, UnitClass("player"))
 
-local banzai = LibStub("LibBanzai-2.0")
-
-banzai:RegisterCallback(function(aggro, name, ...)
-	for i = 1, select("#", ...) do
-		local u = select(i, ...)
-		local f = oUF.units[u]
-		if f then
-			if f.Banzai then
-				f:Banzai(u, aggro)
-			else
-				f:UNIT_MAXHEALTH("OnBanzaiUpdate", f.unit)
-			end
-		end
-	end
-end)
-
 local function applyAuraIndicator(self)
 	self.AuraStatusTL = self.Health:CreateFontString(nil, "OVERLAY")
 	self.AuraStatusTL:ClearAllPoints()
-	self.AuraStatusTL:SetPoint("BOTTOMLEFT", self, "TOPLEFT", -3, -7)
-	self.AuraStatusTL:SetFont(db.font, db.indicatorSize, "THINOUTLINE")
+	self.AuraStatusTL:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, -7)
+	self.AuraStatusTL:SetFont(db.aurafont, db.indicatorSize, "THINOUTLINE")
+	self.AuraStatusTL:SetJustifyH("LEFT")
+	self.AuraStatusTL:SetJustifyV("TOP")
 	self:Tag(self.AuraStatusTL, oUF.classIndicators[playerClass]["TL"])
 	
 	self.AuraStatusTR = self.Health:CreateFontString(nil, "OVERLAY")
 	self.AuraStatusTR:ClearAllPoints()
 	self.AuraStatusTR:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", 3, -7)
-	self.AuraStatusTR:SetFont(db.font, db.indicatorSize, "THINOUTLINE")
+	self.AuraStatusTR:SetFont(db.aurafont, db.indicatorSize, "THINOUTLINE")
+	self.AuraStatusTR:SetJustifyH("RIGHT")
+	self.AuraStatusTL:SetJustifyV("TOP")
 	self:Tag(self.AuraStatusTR, oUF.classIndicators[playerClass]["TR"])
 
 	self.AuraStatusBL = self.Health:CreateFontString(nil, "OVERLAY")
 	self.AuraStatusBL:ClearAllPoints()
-	self.AuraStatusBL:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", -3, -3)
-	self.AuraStatusBL:SetFont(db.font, db.indicatorSize, "THINOUTLINE")
+	self.AuraStatusBL:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 0, -5)
+	self.AuraStatusBL:SetFont(db.aurafont, db.indicatorSize, "THINOUTLINE")
+	self.AuraStatusBL:SetJustifyH("LEFT")
+	self.AuraStatusTL:SetJustifyV("BOTTOM")
 	self:Tag(self.AuraStatusBL, oUF.classIndicators[playerClass]["BL"])	
 
 	self.AuraStatusBR = self.Health:CreateFontString(nil, "OVERLAY")
@@ -182,9 +172,11 @@ bg:EnableMouse(true)
 
 local SubGroups = function()
 	local t = {}
-	for i = 1, 8 do t[i] = 0 end
+	local last = db.numRaidgroups
+	for i = 1, last do t[i] = 0 end
 	for i = 1, GetNumRaidMembers() do
 			local s = select(3, GetRaidRosterInfo(i))
+			if s > last then break end
 			t[s] = t[s] + 1
 	end
 	return t
@@ -334,13 +326,9 @@ local updateHealth = function(self, event, unit, bar, current, max)
 	else
 		self.DDG:Hide()
 	end
-
-	if (UnitIsPlayer(unit)) and (banzai:GetUnitAggroByUnitId(unit)) then
-		self.Name:SetVertexColor(1, 0, 0)
-	else	
-		-- Name Color
-		self.Name:SetTextColor(r, g, b)
-	end
+		
+	-- Name Color
+	self.Name:SetTextColor(r, g, b)
 	
 	local per = round(current/max, 100)
 		local name = UnitName(unit) or "Unknown"
@@ -521,10 +509,12 @@ local func = function(self, unit)
 	  self.Highlight = hl
 	end
 
-	-- Range Alpha/SpellRange
-	self.SpellRange = true
-	self.inRangeAlpha = 1.0
-	self.outsideRangeAlpha = 0.5
+	-- Range Alpha
+	if(not unit) then
+		self.Range = true
+		self.inRangeAlpha = 1
+		self.outsideRangeAlpha = .5
+	end
 
 	-- Name
 	local name = hp:CreateFontString(nil, "OVERLAY")

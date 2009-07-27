@@ -17,10 +17,14 @@ FreebgridDefaults = {
 	symbolsSize = 12,
 	symbols1 = mediaPath.."STYLBCC_.ttf",
 	symbols1Size = 12,
-	indicatorSize = 22,
+
+	aurafont = mediaPath.."visitor.ttf",
+	indicatorSize = 28,
+
 	iconSize = 14,			-- Size of raid symbols, leader, etc.
 	
 	position = {"LEFT", "UIParent", "LEFT", 12, -200},
+	--position = {"BOTTOM", "UIParent", "BOTTOM", 275, 150},
 	
 	point = "LEFT", --[[ usage: "TOP", "LEFT", "RIGHT", "BOTTOM"
 						this is the unit anchor so TOP would make units grow down and LEFT would make units grow RIGHT etc. SEE growth COMMENT! ]]--

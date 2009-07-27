@@ -24,6 +24,10 @@ local L = {
   ["Vigilance"] = GetSpellInfo(50720),
 }
 
+oUF.Tags["[Freebaggro]"] = function(u) 
+	local s = UnitThreatSituation(u) if s == 2 or s == 3 then return "|cffFF0000.|r" end end
+oUF.TagEvents["[Freebaggro]"] = "UNIT_THREAT_SITUATION_UPDATE"
+
 --priest
 oUF.pomCount = {"i","h","g","f","Z","Y"}
 oUF.Tags["[pom]"] = function(u) local c = select(4, UnitAura(u, L["Prayer of Mending"])) if c then return "|cffFFCF7F"..oUF.pomCount[c].."|r" end end
@@ -37,9 +41,9 @@ oUF.Tags["[rnw]"] = function(u)
 oUF.TagEvents["[rnw]"] = "UNIT_AURA"
 oUF.Tags["[pws]"] = function(u) if UnitAura(u, L["Power Word: Shield"]) then return "|cff33FF33.|r" end end
 oUF.TagEvents["[pws]"] = "UNIT_AURA"
-oUF.Tags["[ws]"] = function(u) if UnitDebuff(u, L["Weakened Soul"]) then return "|cffFF5500.|r" end end
+oUF.Tags["[ws]"] = function(u) if UnitDebuff(u, L["Weakened Soul"]) then return "|cffFF9900.|r" end end
 oUF.TagEvents["[ws]"] = "UNIT_AURA"
-oUF.Tags["[fw]"] = function(u) if UnitAura(u, L["Fear Ward"]) then return "|cff8B4513 .|r" end end
+oUF.Tags["[fw]"] = function(u) if UnitAura(u, L["Fear Ward"]) then return "|cff8B4513.|r" end end
 oUF.TagEvents["[fw]"] = "UNIT_AURA"
 oUF.Tags["[sp]"] = function(u) local c = UnitAura(u, L["Prayer of Shadow Protection"]) or UnitAura(u, "Shadow Protection") if not c then return "|cff9900FF.|r" end end
 oUF.TagEvents["[sp]"] = "UNIT_AURA"
@@ -71,6 +75,7 @@ oUF.Tags["[vigil]"] = function(u)
   local name, _,_,_,_,_,_, fromwho,_ = UnitAura(u, L["Vigilance"])
   if not (fromwho == "player") then return end
   if UnitAura(u, L["Vigilance"]) then return "|cffDEB887.|r" end end
+oUF.TagEvents["[vigil]"] = "UNIT_AURA"
 
 --deathknight
 oUF.Tags["[how]"] = function(u) if UnitAura(u, L["Horn of Winter"]) then return "|cffffff10.|r" end end
@@ -80,61 +85,61 @@ oUF.classIndicators={
 		["DRUID"] = {
 				["TL"] = "[tree]",
 				["TR"] = "[gotw]",
-				["BL"] = "[rejuv][regrow][wg]",
+				["BL"] = "[rejuv][regrow][wg][Freebaggro]",
 				["BR"] = "[lb]"
 		},
 		["PRIEST"] = {
 				["TL"] = "[pws][ws]",
 				["TR"] = "[ds][sp][fort][fw]",
-				["BL"] = "[rnw][gotn]",
+				["BL"] = "[rnw][gotn][Freebaggro]",
 				["BR"] = "[pom]"
 		},
 		["PALADIN"] = {
 				["TL"] = "",
 				["TR"] = "",
-				["BL"] = "",
+				["BL"] = "[Freebaggro]",
 				["BR"] = ""
 		},
 		["WARLOCK"] = {
 				["TL"] = "",
 				["TR"] = "",
-				["BL"] = "",
+				["BL"] = "[Freebaggro]",
 				["BR"] = ""
 		},
 		["WARRIOR"] = {
 				["TL"] = "",
 				["TR"] = "[Bsh][Csh]",
-				["BL"] = "[vigil]",
+				["BL"] = "[vigil][Freebaggro]",
 				["BR"] = ""
 		},
 		["DEATHKNIGHT"] = {
 				["TL"] = "",
 				["TR"] = "[how]",
-				["BL"] = "",
+				["BL"] = "[Freebaggro]",
 				["BR"] = ""
 		},
 		["SHAMAN"] = {
 				["TL"] = "",
 				["TR"] = "",
-				["BL"] = "",
+				["BL"] = "[Freebaggro]",
 				["BR"] = ""
 		},
 		["HUNTER"] = {
 				["TL"] = "",
 				["TR"] = "",
-				["BL"] = "",
+				["BL"] = "[Freebaggro]",
 				["BR"] = ""
 		},
 		["ROGUE"] = {
 				["TL"] = "",
 				["TR"] = "",
-				["BL"] = "",
+				["BL"] = "[Freebaggro]",
 				["BR"] = ""
 		},
 		["MAGE"] = {
 				["TL"] = "",
 				["TR"] = "",
-				["BL"] = "",
+				["BL"] = "[Freebaggro]",
 				["BR"] = ""
 		}
 		
