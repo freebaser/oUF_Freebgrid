@@ -5,6 +5,5 @@
 	<Script file="freebgrid.lua"/>
 	<Script file="oUF_HealComm.lua"/>
 	<Script file="oUF_ReadyCheck\oUF_ReadyCheck.lua"/>
-	<Script file="oUF_SpellRange\oUF_SpellRange.lua"/>
 
 </Ui>

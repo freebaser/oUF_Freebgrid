@@ -45,11 +45,11 @@ local updateHealCommBar = function(frame, unit)
     end
 	
     --hide if unknown max hp or no heals inc
-    if maxHP == 100 or incHeals == 0 then
-        frame.HealCommBar:Hide()
-	frame.healText:SetText(" ")
-        return
-    else
+	if maxHP == 100 or incHeals == 0 then
+        	frame.HealCommBar:Hide()
+		frame.healText:SetText(" ")
+        	return
+    	else
 		if db.Healtext then
 			frame.healText:SetText(string.format("+%.1f", incHeals / 1000))
 		end

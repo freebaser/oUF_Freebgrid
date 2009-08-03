@@ -738,6 +738,7 @@ function oUF_Freebgrid:OnEnable()
 		local raidg = oUF:Spawn('header', 'oUF_Raid'..i)
 		raidg:SetManyAttributes('groupFilter', tostring(i),
 					'showRaid', true,
+					'showSolo', db.solo,
 					'showParty', db.partyON,
 					'showPlayer', true,
 					'point', db.point,
@@ -755,7 +756,7 @@ function oUF_Freebgrid:OnEnable()
 		local party = oUF:Spawn('header', 'oUF_Party')
 		party:SetPoint(db.position[1], db.position[2], db.position[3], db.position[4], db.position[5])
 		party:SetManyAttributes('showParty', true,
-					--'showSolo', true,
+					'showSolo', db.solo,
 					'showPlayer', true,
 					'point', db.point,
 					'xoffset', spacingX,

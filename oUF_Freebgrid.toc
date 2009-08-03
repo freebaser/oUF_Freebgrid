@@ -1,10 +1,10 @@
 ## Interface: 30100
 ## Title: oUF_Freebgrid
 ## Author: Freebaser
-## Version: 1.3
+## Version: 1.4
 ## Notes: oUF layout.
 ## SavedVariables: oUF_FreebgridDB
-## OptionalDeps: oUF_ReadyCheck, oUF_SpellRange
+## OptionalDeps: oUF_ReadyCheck
 ## X-Embeds: LibHealComm-3.0
 ## X-oUF: Freebgrid
 

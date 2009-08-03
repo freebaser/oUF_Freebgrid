@@ -35,7 +35,8 @@ FreebgridDefaults = {
 						if point = "LEFT" or "RIGHT" this MUST be "UP" or "DOWN" ]]--
 						
 	spacing = 5,	-- space between units and raid groups
-	
+
+	solo = false,
 	partyON = true,	-- dude?
 	partyPets = true,	-- has no effect if partyON is false
 	reverseColors = false,	-- Reverse Units color
