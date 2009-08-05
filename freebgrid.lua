@@ -340,7 +340,7 @@ local updateHealth = function(self, event, unit, bar, current, max)
 				for length=#name, 1, -1 do 
 				substring = utf8sub(name, 1, length) 
 				self.Name:SetText(substring) 
-					if self.Name:GetStringWidth() <= 38 then 
+					if self.Name:GetStringWidth() <= db.width then 
 						break end 
 					end 
 			end
@@ -735,7 +735,7 @@ function oUF_Freebgrid:OnEnable()
 
 	local raid = {}
 	for i = 1, db.numRaidgroups do
-		local raidg = oUF:Spawn('header', 'oUF_Raid'..i)
+		local raidg = oUF:Spawn('header', 'oUF_FreebRaid'..i)
 		raidg:SetManyAttributes('groupFilter', tostring(i),
 					'showRaid', true,
 					'showSolo', db.solo,
@@ -753,7 +753,7 @@ function oUF_Freebgrid:OnEnable()
 	end
 
 	if db.partyON and db.partyPets then
-		local party = oUF:Spawn('header', 'oUF_Party')
+		local party = oUF:Spawn('header', 'oUF_FreebParty')
 		party:SetPoint(db.position[1], db.position[2], db.position[3], db.position[4], db.position[5])
 		party:SetManyAttributes('showParty', true,
 					'showSolo', db.solo,
@@ -787,7 +787,7 @@ function oUF_Freebgrid:OnEnable()
 	end
 	
 	if db.MTs then
-		local tank = oUF:Spawn('header', 'oUF_MainTank')
+		local tank = oUF:Spawn('header', 'oUF_FreebMainTank')
 		tank:SetPoint(db.MTposition[1], db.MTposition[2], db.MTposition[3], db.MTposition[4], db.MTposition[5])
 		tank:SetManyAttributes('showRaid', true, 
 					'groupFilter', 'MAINTANK', 
