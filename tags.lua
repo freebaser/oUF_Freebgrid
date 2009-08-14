@@ -39,6 +39,13 @@ oUF.Tags["[rnw]"] = function(u)
   if not (fromwho == "player") then return end
   if UnitAura(u, L["Renew"]) then return "|cff33FF33.|r" end end
 oUF.TagEvents["[rnw]"] = "UNIT_AURA"
+-- rnwtime
+oUF.Tags["[rnwTime]"] = function(u)
+  local name, _,_,_,_,_, expirationTime, fromwho,_ = UnitAura(u, L["Renew"])
+  if not (fromwho == "player") then return end
+  local spellTimer = "|cffffff00"..format("%.0f",-1*(GetTime()-expirationTime)).."|r"
+  return spellTimer end
+oUF.TagEvents["[rnwTime]"] = "UNIT_AURA"
 oUF.Tags["[pws]"] = function(u) if UnitAura(u, L["Power Word: Shield"]) then return "|cff33FF33.|r" end end
 oUF.TagEvents["[pws]"] = "UNIT_AURA"
 oUF.Tags["[ws]"] = function(u) if UnitDebuff(u, L["Weakened Soul"]) then return "|cffFF9900.|r" end end
@@ -55,8 +62,18 @@ oUF.TagEvents["[ds]"] = "UNIT_AURA"
 --druid
 oUF.Tags["[lb]"] = function(u) local c = select(4, UnitAura(u, L["Lifebloom"])) if c then return "|cffA7FD0A"..c.."|r" end end
 oUF.TagEvents["[lb]"] = "UNIT_AURA"
-oUF.Tags["[rejuv]"] = function(u) if UnitAura(u, L["Rejuvenation"]) then return "|cff00FEBF.|r" end end
+oUF.Tags["[rejuv]"] = function(u) 
+  local name, _,_,_,_,_,_, fromwho,_ = UnitAura(u, L["Rejuvenation"])
+  if not (fromwho == "player") then return end
+  if UnitAura(u, L["Rejuvenation"]) then return "|cff00FEBF.|r" end end
 oUF.TagEvents["[rejuv]"] = "UNIT_AURA"
+-- rejuvtime
+oUF.Tags["[rejuvTime]"] = function(u)
+  local name, _,_,_,_,_, expirationTime, fromwho,_ = UnitAura(u, L["Renew"])
+  if not (fromwho == "player") then return end
+  local spellTimer = "|cffffff00"..format("%.0f",-1*(GetTime()-expirationTime)).."|r"
+  return spellTimer end
+oUF.TagEvents["[rejuvTime]"] = "UNIT_AURA"
 oUF.Tags["[regrow]"] = function(u) if UnitAura(u, L["Regrowth"]) then return "|cff00FF10.|r" end end
 oUF.TagEvents["[regrow]"] = "UNIT_AURA"
 oUF.Tags["[wg]"] = function(u) if UnitAura(u, L["Wild Growth"]) then return "|cff33FF33.|r" end end
@@ -85,62 +102,72 @@ oUF.classIndicators={
 		["DRUID"] = {
 				["TL"] = "[tree]",
 				["TR"] = "[gotw]",
-				["BL"] = "[rejuv][regrow][wg][Freebaggro]",
-				["BR"] = "[lb]"
+				["BL"] = "[regrow][wg][Freebaggro]",
+				["BR"] = "[lb]",
+				["Cen"] = "[rejuvTime]",
 		},
 		["PRIEST"] = {
 				["TL"] = "[pws][ws]",
 				["TR"] = "[ds][sp][fort][fw]",
-				["BL"] = "[rnw][gotn][Freebaggro]",
-				["BR"] = "[pom]"
+				["BL"] = "[gotn][Freebaggro]",
+				["BR"] = "[pom]",
+				["Cen"] = "[rnwTime]",
 		},
 		["PALADIN"] = {
 				["TL"] = "",
 				["TR"] = "",
 				["BL"] = "[Freebaggro]",
-				["BR"] = ""
+				["BR"] = "",
+				["Cen"] = "",
 		},
 		["WARLOCK"] = {
 				["TL"] = "",
 				["TR"] = "",
 				["BL"] = "[Freebaggro]",
-				["BR"] = ""
+				["BR"] = "",
+				["Cen"] = "",
 		},
 		["WARRIOR"] = {
 				["TL"] = "",
 				["TR"] = "[Bsh][Csh]",
 				["BL"] = "[vigil][Freebaggro]",
-				["BR"] = ""
+				["BR"] = "",
+				["Cen"] = "",
 		},
 		["DEATHKNIGHT"] = {
 				["TL"] = "",
 				["TR"] = "[how]",
 				["BL"] = "[Freebaggro]",
-				["BR"] = ""
+				["BR"] = "",
+				["Cen"] = "",
 		},
 		["SHAMAN"] = {
 				["TL"] = "",
 				["TR"] = "",
 				["BL"] = "[Freebaggro]",
-				["BR"] = ""
+				["BR"] = "",
+				["Cen"] = "",
 		},
 		["HUNTER"] = {
 				["TL"] = "",
 				["TR"] = "",
 				["BL"] = "[Freebaggro]",
-				["BR"] = ""
+				["BR"] = "",
+				["Cen"] = "",
 		},
 		["ROGUE"] = {
 				["TL"] = "",
 				["TR"] = "",
 				["BL"] = "[Freebaggro]",
-				["BR"] = ""
+				["BR"] = "",
+				["Cen"] = "",
 		},
 		["MAGE"] = {
 				["TL"] = "",
 				["TR"] = "",
 				["BL"] = "[Freebaggro]",
-				["BR"] = ""
+				["BR"] = "",
+				["Cen"] = "",
 		}
 		
 	}

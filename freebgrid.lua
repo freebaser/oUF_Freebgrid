@@ -35,7 +35,16 @@ local function applyAuraIndicator(self)
 	self.AuraStatusBR:ClearAllPoints()
 	self.AuraStatusBR:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 7, -3)
 	self.AuraStatusBR:SetFont(db.symbols, db.symbolsSize, "THINOUTLINE")
-	self:Tag(self.AuraStatusBR, oUF.classIndicators[playerClass]["BR"])	
+	self:Tag(self.AuraStatusBR, oUF.classIndicators[playerClass]["BR"])
+
+	self.AuraStatusCen = self.Health:CreateFontString(nil, "OVERLAY")
+	self.AuraStatusCen:ClearAllPoints()
+	self.AuraStatusCen:SetPoint("TOP")
+	self.AuraStatusCen:SetJustifyH("CENTER")
+	self.AuraStatusCen:SetFont(db.font, db.fontsize-2)
+	self.AuraStatusCen:SetShadowOffset(1.25, -1.25)
+	self.AuraStatusCen.frequentUpdates = 1
+	self:Tag(self.AuraStatusCen, oUF.classIndicators[playerClass]["Cen"])
 end
 
 --=======================================================================================--
@@ -94,67 +103,56 @@ f:SetScript("OnEvent", function(self, event, ...)
 	return self[event](self, ...)
 end)
 
-local name, rank, buffTexture, count, duration, timeLeft, dtype
+local frame
 function f:UNIT_AURA(unit)
-	if not oUF.units[unit] then return end
-
-	local frame = oUF.units[unit]
-
-	if not frame.Icon then return end
-	local current, bTexture, dispell, dispellTexture
+	frame = oUF.units[unit]
+	if not frame or frame.unit ~= unit then return end
+	
+	local cur, tex, dis, dur, exp
+	local name, rank, buffTexture, count, duration, expire, dtype, isPlayer
+	local dispellPriority, debuffs = db.dispellPriority, db.debuffs
 	for i = 1, 40 do
-		name, rank, buffTexture, count, dtype, duration, timeLeft = UnitDebuff(unit, i)
+		name, rank, buffTexture, count, dtype, duration, expire, isPlayer = UnitAura(unit, i, "HARMFUL")
 		if not name then break end
-
-		if dispellClass and dispellClass[dtype] then
-			dispell = dispell or dtype
-			dispellTexture = dispellTexture or buffTexture
-			if db.dispellPriority[dtype] > db.dispellPriority[dispell] then
-				dispell = dtype
-				dispellTexture = buffTexture
-			end
-		end
-
-		if db.debuffs[name] then
-			current = current or name
-			bTexture = bTexture or buffTexture
-
-			local prio = db.debuffs[name]
-			if prio > db.debuffs[current] then
-				current = name
-				bTexture = buffTexture
+		if not cur or (debuffs[name] >= debuffs[cur]) then
+			if debuffs[name] > 0 and debuffs[name] > debuffs[cur or 1] then
+				-- Highest priority
+				cur = name
+				tex = buffTexture
+				dis = dtype or "none"
+				exp = expire
+				dur = duration
+			elseif dtype and dtype ~= "none" then
+				if not dis or (dispellPriority[dtype] > dispellPriority[dis]) then
+					cur = name
+					tex = buffTexture
+					dis = dtype
+					exp = expire
+					dur = duration
+				end
 			end
 		end
 	end
 
 	if dispellClass then
-		if dispell then
-			if dispellClass[dispell] then
-				local col = DebuffTypeColor[dispell]
-				frame.border:Show()
+		if dis then
+			if dispellClass[dis] then
+				local col = DebuffTypeColor[dis]
 				frame.border:SetVertexColor(col.r, col.g, col.b)
-				frame.Dispell = true
-				if not bTexture and dispellTexture then
-					current = dispell
-					bTexture = dispellTexture
-				end
+				frame.border:Show()
 			end
 		else
-			frame.border:SetVertexColor(1, 1, 1)
-			frame.Dispell = false
 			frame.border:Hide()
 		end
 	end
 
-	if current and bTexture then
-		frame.IconShown = true
-		frame.Icon:SetTexture(bTexture)
-		frame.Icon:ShowText()
-		frame.DebuffTexture = true
+	if cur then
+		frame.Icon:SetTexture(tex)
+		frame.Icon:Show()
+		frame.Name:Hide()
 	else
-		frame.IconShown = false
-		frame.DebuffTexture = false
-		frame.Icon:HideText()
+		frame.Icon:Hide()
+		frame.Name:Show()
 	end
 end
 f:RegisterEvent("UNIT_AURA")
@@ -272,10 +270,6 @@ local colors = setmetatable({
 	}, {__index = oUF.colors.power}),
 }, {__index = oUF.colors})
 
-local round = function(x, y)
-	return math.floor((x * 10 ^ y)+ 0.5) / 10 ^ y
-end
-
 local function utf8sub(str, start, numChars) 
 	local currentIndex = start 
 	while numChars > 0 and currentIndex <= #str do 
@@ -295,13 +289,12 @@ local function utf8sub(str, start, numChars)
 end 
 	 
 local nameCache = {}
-local updateHealth = function(self, event, unit, bar, current, max)
-	local def = max - current
-
+local updateHealth = function(self, event, unit, bar)
+	local def = oUF.Tags["[missinghp]"](unit)
+	local per = oUF.Tags["[perhp]"](unit)
+	
 	local r, g, b, t
-	if UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) then
-		r, g, b = .6, .6, .6
-	elseif(UnitIsPlayer(unit)) then
+	if(UnitIsPlayer(unit)) then
 		local _, class = UnitClass(unit)
 		t = self.colors.class[class]
 	else		
@@ -314,55 +307,57 @@ local updateHealth = function(self, event, unit, bar, current, max)
 	
 	if(UnitIsDead(unit)) then
 		bar:SetValue(0)
-		self.DDG:SetText('|cffD7BEA5'..'Dead')
+		self.DDG:SetText('Dead')
 		self.DDG:Show()
 	elseif(UnitIsGhost(unit)) then
 		bar:SetValue(0)
-		self.DDG:SetText('|cffD7BEA5'..'Ghost')
+		self.DDG:SetText('Ghost')
 		self.DDG:Show()
 	elseif(not UnitIsConnected(unit)) then
-		self.DDG:SetText('|cffD7BEA5'..'D/C')
+		bar:SetValue(0)
+		self.DDG:SetText('D/C')
 		self.DDG:Show()
 	else
 		self.DDG:Hide()
 	end
 		
-	-- Name Color
 	self.Name:SetTextColor(r, g, b)
 	
-	local per = round(current/max, 100)
-		local name = UnitName(unit) or "Unknown"
-		if(per > 0.9) or UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) then
-			if nameCache[name] then 
-				self.Name:SetText(nameCache[name]) 
-			else 
-				local substring 
-				for length=#name, 1, -1 do 
-				substring = utf8sub(name, 1, length) 
-				self.Name:SetText(substring) 
-					if self.Name:GetStringWidth() <= db.width then 
-						break end 
-					end 
-			end
-			nameCache[name] = substring
-		else
-			self.Name:SetFormattedText("-%0.1f",math.floor(def/100)/10)
+	local name = UnitName(unit) or "Unknown"
+	if(per > 90) or UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) then
+		if nameCache[name] then 
+			self.Name:SetText(nameCache[name]) 
+		else 
+			local substring 
+			for length=#name, 1, -1 do 
+			substring = utf8sub(name, 1, length) 
+			self.Name:SetText(substring) 
+				if self.Name:GetStringWidth() <= db.width-2 then break end 
+			end 
 		end
+		nameCache[name] = substring
+	else
+		self.Name:SetText(string.format("-%.1f", def / 1000))
+	end
 
-	bar.bg:SetVertexColor(r, g, b)
-
-	if(db.reverseColors)then
-	  bar:SetStatusBarColor(r, g, b)
-  	else	
-	  bar:SetStatusBarColor(0, 0, 0)
+	if UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) then
+		bar.bg:SetVertexColor(.6, .6, .6)
+		bar:SetStatusBarColor(.6, .6, .6)
+	else
+		bar.bg:SetVertexColor(r, g, b)
+		if(db.reverseColors)then
+			bar:SetStatusBarColor(r, g, b)
+  		else	
+			bar:SetStatusBarColor(0, 0, 0)
+		end
 	end
 end
 
-local updatePower = function(self, event, unit, bar, current, max)	
+local updatePower = function(self, event, unit)	
 	local powerType, powerTypeString = UnitPowerType(unit)
 
-	local perc = round(current/max, 100)
-	if (perc < 0.1 and UnitIsConnected(unit) and powerTypeString == 'MANA' and not UnitIsDeadOrGhost(unit)) then
+	local perc = oUF.Tags["[perpp]"](unit)
+	if (perc < 10 and UnitIsConnected(unit) and powerTypeString == 'MANA' and not UnitIsDeadOrGhost(unit)) then
 		self.manaborder:Show()
 	else
 		self.manaborder:Hide()
@@ -413,14 +408,14 @@ local func = function(self, unit)
 	hp.frequentUpdates = true
 	if(db.manabars)then
 	  if(db.vertical)then
-	    hp:SetWidth(db.width*.93)
+	    hp:SetWidth(db.width*.90)
 	    hp:SetOrientation("VERTICAL")
 	    hp:SetParent(self)
 	    hp:SetPoint"TOP"
 	    hp:SetPoint"BOTTOM"
 	    hp:SetPoint"LEFT"
   	  else
-	    hp:SetHeight(db.height*.93)
+	    hp:SetHeight(db.height*.90)
 	    hp:SetParent(self)
 	    hp:SetPoint"LEFT"
 	    hp:SetPoint"RIGHT"
@@ -473,14 +468,14 @@ local func = function(self, unit)
 	  pp.frequentUpdates = true
 	
 	  if(db.vertical)then
-	    pp:SetWidth(db.width*.05)
+	    pp:SetWidth(db.width*.08)
 	    pp:SetOrientation("VERTICAL")
 	    pp:SetParent(self)
 	    pp:SetPoint"TOP"
 	    pp:SetPoint"BOTTOM"
 	    pp:SetPoint"RIGHT"
   	  else
-	    pp:SetHeight(db.height*.05)
+	    pp:SetHeight(db.height*.08)
 	    pp:SetParent(self)
 	    pp:SetPoint"LEFT"
 	    pp:SetPoint"RIGHT"
@@ -540,7 +535,7 @@ local func = function(self, unit)
 	DDG:SetJustifyH("CENTER")
 	DDG:SetFont(db.font, db.fontsize-2)
 	DDG:SetShadowOffset(1.25, -1.25)
-	DDG:SetTextColor(1,1,1,1)
+	DDG:SetTextColor(.8,.8,.8,1)
 
 	self.DDG = DDG
 
@@ -580,8 +575,8 @@ local func = function(self, unit)
 -- Dispel Icons
 	local icon = hp:CreateTexture(nil, "OVERLAY")
 	icon:SetPoint("CENTER")
-	icon:SetHeight(18)
-	icon:SetWidth(18)
+	icon:SetHeight(db.debuffsize)
+	icon:SetWidth(db.debuffsize)
 	icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
 	icon:Hide()
 	icon.ShowText = function(s)
@@ -594,12 +589,20 @@ local func = function(self, unit)
 	end
 	self.Icon = icon
 
-	local border = self:CreateTexture(nil, "OVERLAY")
-	border:SetPoint("LEFT", self, "LEFT", -5, 0)
-	border:SetPoint("RIGHT", self, "RIGHT", 5, 0)
-	border:SetPoint("TOP", self, "TOP", 0, 5)
-	border:SetPoint("BOTTOM", self, "BOTTOM", 0, -5)
-	border:SetTexture(db.borderTex)
+	local dummy = CreateFrame"StatusBar"
+	dummy:SetParent(hp)
+	dummy:SetPoint"Center"
+	dummy:SetStatusBarTexture(db.trans)
+	dummy:SetHeight(db.debuffsize)
+	dummy:SetWidth(db.debuffsize)
+	self.Dummy = dummy
+
+	local border = dummy:CreateTexture(nil, "OVERLAY")
+	border:SetPoint("LEFT", dummy, "LEFT", -4, 0)
+	border:SetPoint("RIGHT", dummy, "RIGHT", 4, 0)
+	border:SetPoint("TOP", dummy, "TOP", 0, 4)
+	border:SetPoint("BOTTOM", dummy, "BOTTOM", 0, -4)
+	border:SetTexture(db.iconborder)
 	border:Hide()
 	border:SetVertexColor(1, 1, 1)
 	self.border = border

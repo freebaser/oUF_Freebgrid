@@ -1,5 +1,5 @@
 local MAJOR_VERSION = "LibHealComm-3.0";
-local MINOR_VERSION = 90000 + tonumber(("$Revision: 59 $"):match("%d+"));
+local MINOR_VERSION = 90000 + tonumber(("$Revision: 85 $"):match("%d+"));
 
 local lib = LibStub:NewLibrary(MAJOR_VERSION, MINOR_VERSION);
 if not lib then return end
@@ -19,7 +19,6 @@ lib.EventFrame:SetScript("OnEvent", function (this, event, ...) lib[event](lib, 
 lib.EventFrame:UnregisterAllEvents();
 
 -- Register Events
-lib.EventFrame:RegisterEvent("PLAYER_ALIVE");
 lib.EventFrame:RegisterEvent("LEARNED_SPELL_IN_TAB");
 lib.EventFrame:RegisterEvent("CHAT_MSG_ADDON");
 lib.EventFrame:RegisterEvent("UNIT_SPELLCAST_DELAYED");
@@ -27,6 +26,7 @@ lib.EventFrame:RegisterEvent("UNIT_AURA");
 lib.EventFrame:RegisterEvent("UNIT_TARGET");
 lib.EventFrame:RegisterEvent("PLAYER_TARGET_CHANGED");
 lib.EventFrame:RegisterEvent("PLAYER_FOCUS_CHANGED");
+lib.EventFrame:RegisterEvent("PLAYER_EQUIPMENT_CHANGED");
 lib.EventFrame:RegisterEvent("GLYPH_ADDED");
 lib.EventFrame:RegisterEvent("GLYPH_REMOVED");
 lib.EventFrame:RegisterEvent("GLYPH_UPDATED");
@@ -110,14 +110,27 @@ local Latency = 0;
 -- Version Information Table
 local Versions = {};
 
--- Battleground/Arena/Group Indicators
-local InBattlegroundOrArena;
+-- InGroup Indicators
 local InRaid;
 local InParty;
 
 -- Subgroup of raid members
 local Subgroup = {};
 
+-- Player's equipment that can contribute to set bonuses
+local ItemSetGear = {};
+local NumItemSet = {};
+local EquipmentSlotIDs =
+{
+    (GetInventorySlotInfo("ChestSlot")),
+    (GetInventorySlotInfo("FeetSlot")),
+    (GetInventorySlotInfo("HandsSlot")),
+    (GetInventorySlotInfo("HeadSlot")),
+    (GetInventorySlotInfo("LegsSlot")),
+    (GetInventorySlotInfo("ShoulderSlot")),
+    (GetInventorySlotInfo("WaistSlot")),
+    (GetInventorySlotInfo("WristSlot")),
+}
 
 ---------------------------------
 -- Frequently Accessed Globals --
@@ -181,7 +194,11 @@ local function convertRealm(fullName, remoteRealm)
 end
 
 local function commSend(contents, distribution, target)
-    SendAddonMessage("HealComm", contents, distribution or (InBattlegroundOrArena and "BATTLEGROUND" or "RAID"), target);
+    local it = select(2, IsInInstance());
+    distribution = distribution or (((it == "pvp") or (it == "arena")) and "BATTLEGROUND" or "RAID");
+    if ((distribution == "GUILD") and (not IsInGuild())) then return end
+    if ((distribution == "RAID") and (not InRaid) and (not InParty)) then return end
+    SendAddonMessage("HealComm", contents, distribution, target);
 end
 
 -- Spellbook Scanner --
@@ -253,6 +270,12 @@ local function detectBuff(unit, buffName, mineOnly)
     return name and (not mineOnly or applier and UnitIsUnit(applier, 'player')) and count or false;
 end
 
+-- Detects whether there are at least numPieces of the named itemSet and returns true if so,
+-- false otherwise.
+local function detectItemSetBonus(itemSet, numPieces)
+    return (NumItemSet[itemSet] and (NumItemSet[itemSet] >= numPieces));
+end
+
 --[[
     [GetSpellInfo(604)]   = -20,      -- Dampen Magic (Rank 1)
     [GetSpellInfo(8450)]  = -40,      -- Dampen Magic (Rank 2)
@@ -273,7 +296,7 @@ end
 local healingBuffs =
 {
     [GetSpellInfo(706)]   = 1.20, -- Demon Armor
-    [GetSpellInfo(45234)] = function (count, rank) return (1.0 + (0.04 + 0.03 * (rank - 1)) * count) end, -- Focused Will
+    [GetSpellInfo(45234)] = function (count, rank) return (1.0 + (0.03 + 0.01 * (rank - 1)) * count) end, -- Focused Will
     [GetSpellInfo(34123)] = 1.06, -- Tree of Life
     [GetSpellInfo(58549)] = function (count, rank, texture) return ((texture == "Interface\\Icons\\Ability_Warrior_StrengthOfArms") and (1.18 ^ count) or 1.0) end, -- Tenacity (Wintergrasp)
     [GetSpellInfo(64844)] = function (count, rank, texture) return rank and 1.0 or 1.10 end, -- Divine Hymn
@@ -672,6 +695,48 @@ if (playerClass == "DRUID") then
         }
     }
 
+    ItemSetGear =
+    {
+        [31041] = "Tier 6", -- Thunderheart Tunic
+        [31032] = "Tier 6", -- Thunderheart Gloves
+        [31037] = "Tier 6", -- Thunderheart Helmet
+        [31045] = "Tier 6", -- Thunderheart Legguards
+        [31047] = "Tier 6", -- Thunderheart Spaulders
+        [34571] = "Tier 6", -- Thunderheart Boots
+        [34445] = "Tier 6", -- Thunderheart Bracers
+        [34554] = "Tier 6", -- Thunderheart Belt
+        [39531] = "Tier 7", -- Heroes' Dreamwalker Headpiece
+        [39538] = "Tier 7", -- Heroes' Dreamwalker Robe
+        [39539] = "Tier 7", -- Heroes' Dreamwalker Leggings
+        [39542] = "Tier 7", -- Heroes' Dreamwalker Spaulders
+        [39543] = "Tier 7", -- Heroes' Dreamwalker Handguards
+        [40460] = "Tier 7", -- Valorous Dreamwalker Handguards
+        [40461] = "Tier 7", -- Valorous Dreamwalker Headpiece
+        [40462] = "Tier 7", -- Valorous Dreamwalker Leggings
+        [40463] = "Tier 7", -- Valorous Dreamwalker Robe
+        [40465] = "Tier 7", -- Valorous Dreamwalker Spaulders
+        [48153] = "Tier 9", -- Runetotem's Handguards of Conquest
+        [48154] = "Tier 9", -- Runetotem's Headpiece of Conquest
+        [48155] = "Tier 9", -- Runetotem's Leggings of Conquest
+        [48156] = "Tier 9", -- Runetotem's Robe of Conquest
+        [48157] = "Tier 9", -- Runetotem's Spaulders of Conquest
+        [48158] = "Tier 9", -- Stormrage's Headpiece of Conquest
+        [48159] = "Tier 9", -- Stormrage's Robe of Conquest
+        [48160] = "Tier 9", -- Stormrage's Leggings of Conquest
+        [48161] = "Tier 9", -- Stormrage's Spaulders of Conquest
+        [48162] = "Tier 9", -- Stormrage's Handguards of Conquest
+        [48148] = "Tier 9", -- Runetotem's Spaulders of Triumph
+        [48149] = "Tier 9", -- Runetotem's Robe of Triumph
+        [48150] = "Tier 9", -- Runetotem's Leggings of Triumph
+        [48151] = "Tier 9", -- Runetotem's Headpiece of Triumph
+        [48152] = "Tier 9", -- Runetotem's Handguards of Triumph
+        [48133] = "Tier 9", -- Stormrage's Handguards of Triumph
+        [48134] = "Tier 9", -- Stormrage's Headpiece of Triumph
+        [48135] = "Tier 9", -- Stormrage's Leggings of Triumph
+        [48136] = "Tier 9", -- Stormrage's Robe of Triumph
+        [48137] = "Tier 9", -- Stormrage's Spaulders of Triumph
+    }
+
     local idolsHealingTouch =
     {
         [28568] = 136, -- Idol of the Avian Heart
@@ -700,6 +765,9 @@ if (playerClass == "DRUID") then
 
         local spellTab = HealingSpells[name];
 
+        -- Druid healing spells belong to the Nature school ("4").
+        local critChance = GetSpellCritChance(4);
+
         -- Gift of Nature Talent - Increases effective healing by 2% per rank on all spells
         effectiveHealModifier = effectiveHealModifier * (2 * select(5, GetTalentInfo(3, 13)) / 100 + 1);
 
@@ -708,9 +776,17 @@ if (playerClass == "DRUID") then
             local idolBonus = idolsHealingTouch[getEquippedRelicID()] or 0;
             baseHealSize = baseHealSize + idolBonus;
 
+            -- Nature's Majesty Talent (increases critical strike chance by 2% per rank)
+            critChance = critChance + 2 * select(5, GetTalentInfo(1, 4));
+
             -- Glyph of Healing Touch (decreases amount healed by 50%)
             if (detectGlyph(54825)) then
                 effectiveHealModifier = effectiveHealModifier * 0.5
+            end
+
+            -- Tier 6 4-pc. set bonus increases the healing from Healing Touch by 5%
+            if (detectItemSetBonus("Tier 6", 4)) then
+                effectiveHealModifier = effectiveHealModifier * 1.05;
             end
 
             -- Empowered Touch Talent (increases bonus healing effects by 20% per rank)
@@ -722,18 +798,65 @@ if (playerClass == "DRUID") then
                 nBonus = bonus * (1.88 + talentEmpoweredTouch);
             end
         elseif (name == tRegrowth) then
+            -- Nature's Bounty Talent (increases critical effect chance of Regrowth by 5% per rank)
+            critChance = critChance + 5 * select(5, GetTalentInfo(3, 16));
+
             -- Glyph of Regrowth (increases effective healing by 20% if player's Regrowth is on target)
             if (detectGlyph(54743) and detectBuff(target, tRegrowth, true)) then
                 effectiveHealModifier = effectiveHealModifier * 1.2;
             end
+
             nBonus = bonus * 1.88 * (2.0 / 3.5) * 0.5;
         elseif (name == tNourish) then
             local idolBonus = idolsNourish[getEquippedRelicID()] or 0;
-            -- Nourish heals for 20% more if player's HoT is on the target.
-            if (detectBuff(target, tRejuvenation, true) or detectBuff(target, tRegrowth, true) or detectBuff(target, tLifebloom, true) or detectBuff(target, tWildGrowth, true)) then
-                effectiveHealModifier = effectiveHealModifier * 1.2
+
+            -- Nature's Majesty Talent (increases critical strike chance by 2% per rank)
+            critChance = critChance + 2 * select(5, GetTalentInfo(1, 4));
+
+            -- Empowered Touch Talent (increases bonus healing effects by 10% per rank)
+            local talentEmpoweredTouch = 10 * select(5, GetTalentInfo(3, 15)) / 100;
+
+            -- Nature's Bounty Talent (increases critical effect chance of Nourish by 5% per rank)
+            critChance = critChance + 5 * select(5, GetTalentInfo(3, 16));
+
+            local numHoTs = 0;
+            numHoTs = numHoTs + (detectBuff(target, tRejuvenation, true) or 0);
+            numHoTs = numHoTs + (detectBuff(target, tRegrowth, true) or 0);
+            numHoTs = numHoTs + (detectBuff(target, tWildGrowth, true) or 0);
+            if (detectBuff(target, tLifebloom, true)) then
+                numHoTs = numHoTs + 1;  -- only count a Lifebloom stack as one HoT
             end
-            nBonus = (bonus + idolBonus) * 1.88 * (1.5 / 3.5);
+
+            local nourishBonusModifier = 1.0;
+
+            -- Nourish heals for 20% more if player's HoT is on the target.
+            if (numHoTs > 0) then
+                nourishBonusModifier = nourishBonusModifier + 0.20;
+            end
+
+            -- Tier 7 4-pc. set bonus makes Nourish heal an additional 5% for each of your HoTs on the target.
+            if (detectItemSetBonus("Tier 7", 4)) then
+                nourishBonusModifier = nourishBonusModifier + numHoTs * 0.05;
+            end
+
+            -- Tier 9 2-pc. set bonus increases the critical strike chance of Nourish by 5%.
+            if (detectItemSetBonus("Tier 9", 2)) then
+                critChance = critChance + 5;
+            end
+
+            -- Glyph of Nourish (heals additional 6% for each of your HoTs on the target)
+            if (detectGlyph(62971)) then
+                nourishBonusModifier = nourishBonusModifier + numHoTs * 0.06;
+            end
+
+            effectiveHealModifier = effectiveHealModifier * nourishBonusModifier;
+
+            nBonus = (bonus + idolBonus) * (1.88 * (1.5 / 3.5) + talentEmpoweredTouch);
+        end
+
+        -- If our critical effect chance is over 100%, then we're guaranteed a critical heal effect.
+        if (critChance >= 100) then
+            effectiveHealModifier = effectiveHealModifier * 1.5;
         end
 
         effectiveHeal = effectiveHealModifier * (baseHealSize + nBonus * getDownrankingFactor(spellTab.Level[rank], UnitLevel('player')));
@@ -751,6 +874,7 @@ if (playerClass == "PALADIN") then
     local tSealOfLight = GetSpellInfo(20167);
     local tAvengingWrath = GetSpellInfo(31884);
     local tDivinePlea = GetSpellInfo(54428);
+    local tInfusionOfLight = GetSpellInfo(53569);
 
     HealingSpells =
     {
@@ -764,6 +888,18 @@ if (playerClass == "PALADIN") then
             Level = {20, 26, 34, 42, 50, 58, 66, 74, 79},
             Type = "Direct",
         },
+    }
+
+    ItemSetGear =
+    {
+        [30992] = "Tier 6",     -- Lightbringer Chestpiece
+        [30983] = "Tier 6",     -- Lightbringer Gloves
+        [30988] = "Tier 6",     -- Lightbringer Greathelm
+        [30994] = "Tier 6",     -- Lightbringer Leggings
+        [30996] = "Tier 6",     -- Lightbringer Pauldrons
+        [34432] = "Tier 6",     -- Lightbringer Bracers
+        [34487] = "Tier 6",     -- Lightbringer Belt
+        [34559] = "Tier 6",     -- Lightbringer Treads
     }
 
     local libramsFlashOfLight =
@@ -802,9 +938,12 @@ if (playerClass == "PALADIN") then
 
         local spellTab = HealingSpells[name];
 
+        -- Paladin healing spells belong to the Holy school ("2").
+        local critChance = GetSpellCritChance(2);
+
         -- Divine Favor (100% crit chance on heal spell)
         if (detectBuff('player', tDivineFavor)) then
-            effectiveHealModifier = effectiveHealModifier * 1.5;
+            critChance = critChance + 100;
         end
 
         -- Avenging Wrath (increase all healing by 20%)
@@ -822,16 +961,52 @@ if (playerClass == "PALADIN") then
             effectiveHealModifier = effectiveHealModifier * 1.05;
         end
 
+        -- Divinity Talent- Increases healing by 1% per rank on all spells
+        effectiveHealModifier = effectiveHealModifier * (select(5, GetTalentInfo(2, 1)) / 100 + 1);
+
         -- Healing Light - Increases healing by 4% per rank on all spells
         effectiveHealModifier = effectiveHealModifier * (4 * select(5, GetTalentInfo(1, 3)) / 100 + 1);
+
+        -- Holy Power Talent (increases critical strike chance by 1% per rank)
+        critChance = critChance + select(5, GetTalentInfo(1, 16));
 
         -- Process individual spells
         if (name == tFlashOfLight) then
             local libramBonus = libramsFlashOfLight[getEquippedRelicID()] or 0;
-            nBonus = (bonus + libramBonus) * 1.88 * (1.5 / 3.5) * 1.25;
+            local spBonusModifier = 1.25;   -- patch 3.0 bonus to Holy Paladin healing
+
+            -- Tier 6 2-pc. set bonus increases the spellpower of FoL by 5%.
+            if (detectItemSetBonus("Tier 6", 2)) then
+                spBonusModifier = spBonusModifier + 0.05;
+            end
+
+            nBonus = (bonus + libramBonus) * 1.88 * (1.5 / 3.5) * spBonusModifier;
         elseif (name == tHolyLight) then
             local libramBonus = libramsHolyLight[getEquippedRelicID()] or 0;
-            nBonus = (bonus + libramBonus) * 1.88 * (2.5 / 3.5) * 1.25;
+            local spBonusModifier = 1.25;   -- patch 3.0 bonus to Holy Paladin healing
+
+            -- Sanctified Light Talent (increases critical effect chance of Holy Light by 2% per rank)
+            critChance = critChance + 2 * select(5, GetTalentInfo(1, 14));
+
+            -- Infusion of Light Buff (increases the critical strike chance of Holy Light by 10% per rank)
+            if (detectBuff('player', tInfusionOfLight)) then
+                critChance = critChance + 10 * select(5, GetTalentInfo(1, 24));
+            end
+
+            -- Tier 6 4-pc. set bonus increases critical strike chance of Holy Light by 5%.
+            if (detectItemSetBonus("Tier 6", 4)) then
+                critChance = critChance + 5;
+            end
+
+            nBonus = (bonus + libramBonus) * 1.88 * (2.5 / 3.5) * spBonusModifier;
+        end
+
+        -- If our critical effect chance is over 100%, then we're guaranteed a critical heal effect.
+        if (critChance >= 100) then
+            effectiveHealModifier = effectiveHealModifier * 1.5;
+
+            -- Touched by the Light Talent (increases amount healed by crit heals by 10% per rank)
+            effectiveHealModifier = effectiveHealModifier * (10 * select(5, GetTalentInfo(2, 21)) / 100 + 1);
         end
 
         effectiveHeal = effectiveHealModifier * (baseHealSize + nBonus * getDownrankingFactor(spellTab.Level[rank], UnitLevel('player')));
@@ -854,6 +1029,8 @@ if (playerClass == "PRIEST") then
     local tPowerWordFortitude = GetSpellInfo(1243);
     --local tRenew = GetSpellInfo(139);
     local tGrace = GetSpellInfo(47930);
+    local tInnerFocus = GetSpellInfo(14751);
+    local tWeakenedSoul = GetSpellInfo(6788);
 
 --[[HotSpells =
     {
@@ -901,6 +1078,36 @@ if (playerClass == "PRIEST") then
         },
     }
 
+    ItemSetGear =
+    {
+        [16811] = "Tier 1", -- Boots of Prophecy
+        [16813] = "Tier 1", -- Circlet of Prophecy
+        [16817] = "Tier 1", -- Girdle of Prophecy
+        [16812] = "Tier 1", -- Gloves of Prophecy
+        [16814] = "Tier 1", -- Pants of Prophecy
+        [16816] = "Tier 1", -- Mantle of Prophecy
+        [16815] = "Tier 1", -- Robes of Prophecy
+        [16819] = "Tier 1", -- Vambraces of Prophecy
+        [31068] = "Tier 6", -- Breeches of Absolution
+        [31063] = "Tier 6", -- Cowl of Absolution
+        [31060] = "Tier 6", -- Gloves of Absolution
+        [31069] = "Tier 6", -- Mantle of Absolution
+        [31066] = "Tier 6", -- Vestments of Absolution
+        [34562] = "Tier 6", -- Boots of Absolution
+        [34527] = "Tier 6", -- Belt of Absolution
+        [34435] = "Tier 6", -- Cuffs of Absolution
+        [45386] = "Tier 8", -- Valorous Cowl of Santification
+        [45387] = "Tier 8", -- Valorous Gloves of Santification
+        [45388] = "Tier 8", -- Valorous Leggings of Santification
+        [45389] = "Tier 8", -- Valorous Robe of Santification
+        [45390] = "Tier 8", -- Valorous Shoulderpads of Santification
+        [46188] = "Tier 8", -- Conqueror's Gloves of Santification
+        [46190] = "Tier 8", -- Conqueror's Shoulderpads of Santification
+        [46193] = "Tier 8", -- Conqueror's Robe of Santification
+        [46195] = "Tier 8", -- Conqueror's Leggings of Santification
+        [46197] = "Tier 8", -- Conqueror's Cowl of Santification
+    }
+
     GetHealSize = function(name, rank, target)
         local i, effectiveHeal;
 
@@ -918,18 +1125,29 @@ if (playerClass == "PRIEST") then
 
         local spellTab = HealingSpells[name];
 
+        -- Priest healing spells belong to the Holy school ("2").
+        local critChance = GetSpellCritChance(2);
+
+        -- Blessed Resilience Talent - Increases healing by 1% per rank
+        effectiveHealModifier = effectiveHealModifier * (select(5, GetTalentInfo(2, 19)) / 100 + 1);
+
         -- Focused Power - Increases healing by 2% per rank on all spells
         effectiveHealModifier = effectiveHealModifier * (2 * select(5, GetTalentInfo(1, 16)) / 100 + 1);
 
         -- Spiritual Healing - Increases healing by 2% per rank on all spells
         effectiveHealModifier = effectiveHealModifier * (2 * select(5, GetTalentInfo(2, 16)) / 100 + 1);
 
-        -- Grace (increases healing by 2% per application on target if buff was placed by the player)
+        -- Grace (increases healing by 3% per application on target if buff was placed by the player)
         if (target) then
             local grace = detectBuff(target, tGrace, true);
             if (grace) then
-                effectiveHealModifier = effectiveHealModifier * (1.0 + 0.02 * grace);
+                effectiveHealModifier = effectiveHealModifier * (1.0 + 0.03 * grace);
             end
+        end
+
+        -- Inner Focus Buff increases the critical effect chance by 25%.
+        if (detectBuff('player', tInnerFocus)) then
+            critChance = critChance + 25;
         end
 
         -- Process individual spells
@@ -938,16 +1156,63 @@ if (playerClass == "PRIEST") then
         elseif (name == tHeal) then
             nBonus = bonus * 1.88 * (3.0 / 3.5);
         elseif (name == tGreaterHeal) then
-            local empoweredHealing = 8 * select(5, GetTalentInfo(2, 20)) / 100;
-            nBonus = bonus * (1.88 * (3.0 / 3.5) + empoweredHealing);
+            local spBonus = 0.0;
+
+            -- Empowered Healing Talent increases bonus healing of Greater Heal by 8% per rank.
+            spBonus = spBonus + 8 * select(5, GetTalentInfo(2, 21)) / 100;
+
+            -- Renewed Hope Talent increases critical strike chance on targets with Weakened Soul buff by 2% per rank.
+            if (detectBuff('target', tWeakenedSoul)) then
+                critChance = critChance + 2 * select(5, GetTalentInfo(1, 21));
+            end
+
+            -- Tier 6 4-pc. set bonus increases healing done by Greater Heal by 5%.
+            if (detectItemSetBonus("Tier 6", 4)) then
+                effectiveHealModifier = effectiveHealModifier * 1.05;
+            end
+            nBonus = bonus * (1.88 * (3.0 / 3.5) + spBonus);
         elseif (name == tFlashHeal) then
-            local empoweredHealing = 4 * select(5, GetTalentInfo(2, 20)) / 100;
-            nBonus = bonus * (1.88 * (1.5 / 3.5) + empoweredHealing);
+            local spBonus = 0.0;
+
+            -- Empowered Healing Talent increases bonus healing of Flash Heal by 4% per rank.
+            spBonus = spBonus + 4 * select(5, GetTalentInfo(2, 21)) / 100;
+
+            -- Renewed Hope Talent increases critical strike chance on targets with Weakened Soul buff by 2% per rank.
+            if (detectBuff('target', tWeakenedSoul)) then
+                critChance = critChance + 2 * select(5, GetTalentInfo(1, 21));
+            end
+
+            nBonus = bonus * (1.88 * (1.5 / 3.5) + spBonus);
         elseif (name == tBindingHeal) then
-            local empoweredHealing = 4 * select(5, GetTalentInfo(2, 20)) / 100;
-            nBonus = bonus * (1.88 * (1.5 / 3.5) + empoweredHealing);
+            local spBonus = 0.0;
+
+            -- Empowered Healing Talent increases bonus healing of Binding Heal by 4% per rank.
+            spBonus = spBonus + 4 * select(5, GetTalentInfo(2, 21)) / 100;
+
+            -- Divine Providence Talent increases amount healed by 2% per rank.
+            effectiveHealModifier = effectiveHealModifier * (2 * select(5, GetTalentInfo(2, 26)) / 100 + 1);
+
+            nBonus = bonus * (1.88 * (1.5 / 3.5) + spBonus);
         elseif (name == tPrayerOfHealing) then
-            nBonus = bonus * 1.88 * (3.0 / 3.5) * 0.5;
+            -- Divine Providence Talent increases amount healed by 2% per rank.
+            effectiveHealModifier = effectiveHealModifier * (2 * select(5, GetTalentInfo(2, 26)) / 100 + 1);
+
+            -- Tier 1 8-pc. set bonus increases critical strike chance of Prayer of Healing by 25%
+            if (detectItemSetBonus("Tier 1", 8)) then
+                critChance = critChance + 25;
+            end
+
+            -- Tier 8 2-pc. set bonus increases critical strike chance of Prayer of Healing by 10%
+            if (detectItemSetBonus("Tier 8", 2)) then
+                critChance = critChance + 10;
+            end
+
+            nBonus = bonus * 1.88 * (3.0 / 3.5) * 0.326;
+        end
+
+        -- If our critical effect chance is over 100%, then we're guaranteed a critical heal effect.
+        if (critChance >= 100) then
+            effectiveHealModifier = effectiveHealModifier * 1.5;
         end
 
         effectiveHeal = effectiveHealModifier * (baseHealSize + nBonus * getDownrankingFactor(spellTab.Level[rank], UnitLevel('player')));
@@ -969,6 +1234,7 @@ if (playerClass == "SHAMAN") then
     local tTidalWaves = GetSpellInfo(51562);
     local tRiptide = GetSpellInfo(61295);
     local tEarthShield = GetSpellInfo(974);
+    local tTidalForce = GetSpellInfo(55198);
 
 --[[HotSpells =
     {
@@ -999,6 +1265,48 @@ if (playerClass == "SHAMAN") then
             Level = {40, 46, 54, 61, 68, 74, 80},
             Type = "Direct",
         },
+    }
+
+    ItemSetGear =
+    {
+        [31016] = "Tier 6", -- Skyshatter Chestguard
+        [31007] = "Tier 6", -- Skyshatter Gloves
+        [31012] = "Tier 6", -- Skyshatter Helmet
+        [31019] = "Tier 6", -- Skyshatter Leggings
+        [31022] = "Tier 6", -- Skyshatter Shoulderpads
+        [34543] = "Tier 6", -- Skyshatter Belt
+        [34438] = "Tier 6", -- Skyshatter Bracers
+        [34565] = "Tier 6", -- Skyshatter Boots
+        [39583] = "Tier 7", -- Heroes' Earthshatter Headpiece
+        [39588] = "Tier 7", -- Heroes' Earthshatter Tunic
+        [39589] = "Tier 7", -- Heroes' Earthshatter Legguards
+        [39590] = "Tier 7", -- Heroes' Earthshatter Spaulders
+        [39591] = "Tier 7", -- Heroes' Earthshatter Handguards
+        [40508] = "Tier 7", -- Valorous Earthshatter Headpiece
+        [40509] = "Tier 7", -- Valorous Earthshatter Tunic
+        [40510] = "Tier 7", -- Valorous Earthshatter Legguards
+        [40512] = "Tier 7", -- Valorous Earthshatter Spaulders
+        [40513] = "Tier 7", -- Valorous Earthshatter Handguards
+        [48295] = "Tier 9", -- Thrall's Tunic of Conquest
+        [48296] = "Tier 9", -- Thrall's Handguards of Conquest
+        [48297] = "Tier 9", -- Thrall's Headpiece of Conquest
+        [48298] = "Tier 9", -- Thrall's Legguards of Conquest
+        [48299] = "Tier 9", -- Thrall's Spaulders of Conquest
+        [48280] = "Tier 9", -- Nobundo's Headpiece of Conquest
+        [48281] = "Tier 9", -- Nobundo's Tunic of Conquest
+        [48282] = "Tier 9", -- Nobundo's Legguards of Conquest
+        [48283] = "Tier 9", -- Nobundo's Spaulders of Conquest
+        [48284] = "Tier 9", -- Nobundo's Handguards of Conquest
+        [48300] = "Tier 9", -- Thrall's Tunic of Triumph
+        [48301] = "Tier 9", -- Thrall's Handguards of Triumph
+        [48302] = "Tier 9", -- Thrall's Headpiece of Triumph
+        [48303] = "Tier 9", -- Thrall's Legguards of Triumph
+        [48304] = "Tier 9", -- Thrall's Spaulders of Triumph
+        [48316] = "Tier 9", -- Nobundo's Tunic of Triumph
+        [48317] = "Tier 9", -- Nobundo's Handguards of Triumph
+        [48318] = "Tier 9", -- Nobundo's Headpiece of Triumph
+        [48319] = "Tier 9", -- Nobundo's Legguards of Triumph
+        [48320] = "Tier 9", -- Nobundo's Spaulders of Triumph
     }
 
     local totemsLesserHealingWave =
@@ -1040,19 +1348,31 @@ if (playerClass == "SHAMAN") then
         local bonus = GetSpellBonusHealing();
 
         -- Purification Talent (increases healing by 2% per rank).
-        -- This is factored into effectiveHealModifier in the individual spell section below due to interaction with Improved Chain Heal.
-        local talentPurification = 2 * select(5, GetTalentInfo(3, 15)) / 100 + 1;
+        effectiveHealModifier = effectiveHealModifier * (2 * select(5, GetTalentInfo(3, 15)) / 100 + 1);
+
+        -- Shaman healing spells belong to the Nature school ("4").
+        local critChance = GetSpellCritChance(4);
+
+        -- Tidal Mastery Talent (increases critical effect chance of heals by 1% per rank)
+        critChance = critChance + select(5, GetTalentInfo(3, 11));
 
         local spellTab = HealingSpells[name];
 
         -- Process individual spells
         if (name == tLesserHealingWave) then
             local totemBonus = totemsLesserHealingWave[getEquippedRelicID()] or 0;
-            effectiveHealModifier = effectiveHealModifier * talentPurification;
 
             -- Glyph of Lesser Healing Wave (increases effective healing by 20% if player's Earth Shield is on target)
             if (detectGlyph(55438) and detectBuff(target, tEarthShield, true)) then
                 effectiveHealModifier = effectiveHealModifier * 1.2;
+            end
+
+            -- Tidal Force Buff (self-buff that increases critical effect chance by 20% per stack)
+            critChance = critChance + 20 * (detectBuff('player', tTidalForce) or 0);
+
+            -- Tidal Waves Buff (self-buff that increases critical effect chance by 25%)
+            if (detectBuff('player', tTidalWaves)) then
+                critChance = critChance + 25;
             end
 
             -- Tidal Waves Talent (increases bonus healing effects by 2% per rank)
@@ -1061,12 +1381,25 @@ if (playerClass == "SHAMAN") then
             nBonus = (bonus + totemBonus) * (1.88 * (1.5 / 3.5) + talentTidalWaves);
         elseif (name == tHealingWave) then
             local totemBonus = totemsHealingWave[getEquippedRelicID()] or 0;
-            effectiveHealModifier = effectiveHealModifier * talentPurification;
 
-            -- Healing Way Buff (target buff that increases effective healing by 18%)
-            if (detectBuff(target, tHealingWay)) then
-                effectiveHealModifier = effectiveHealModifier * 1.18;
-            end;
+            -- Healing Way Talent (increases healing by 8/16/25%)
+            local talentHealingWay = 0;
+            do
+                local t = select(5, GetTalentInfo(3, 12));
+                if     (t == 1) then talentHealingWay = 0.08;
+                elseif (t == 2) then talentHealingWay = 0.16;
+                elseif (t == 3) then talentHealingWay = 0.25;
+                end
+            end
+            effectiveHealModifier = effectiveHealModifier * (1.0 + talentHealingWay);
+
+            -- Tier 7 4-pc. set bonus increases healing done by Healing Wave by 5%
+            if (detectItemSetBonus("Tier 7", 4)) then
+                effectiveHealModifier = effectiveHealModifier * 1.05;
+            end
+
+            -- Tidal Force Buff (self-buff that increases critical effect chance by 20% per stack)
+            critChance = critChance + 20 * (detectBuff('player', tTidalForce) or 0);
 
             -- Tidal Waves Talent (increases bonus healing effects by 4% per rank)
             local talentTidalWaves = 4 * select(5, GetTalentInfo(3, 25)) / 100;
@@ -1082,16 +1415,37 @@ if (playerClass == "SHAMAN") then
             baseHealSize = baseHealSize + totemBonus;
 
             -- Improved Chain Heal Talent (increases healing by 10% per rank)
-            local talentImprovedChainHeal = 10 * select(5, GetTalentInfo(3, 20)) / 100;
+            effectiveHealModifier = effectiveHealModifier * (10 * select(5, GetTalentInfo(3, 20)) / 100 + 1);
 
-            effectiveHealModifier = effectiveHealModifier * (talentPurification + talentImprovedChainHeal);
+            -- Tier 6 4-pc. set bonus increases amount healed by Chain Heal by 5%
+            if (detectItemSetBonus("Tier 6", 4)) then
+                effectiveHealModifier = effectiveHealModifier * 1.05;
+            end
+
+            -- Tier 7 4-pc. set bonus increases healing done by Chain Heal by 5%
+            if (detectItemSetBonus("Tier 7", 4)) then
+                effectiveHealModifier = effectiveHealModifier * 1.05;
+            end
+
+            -- Tier 9 4-pc. set bonus increases critical strike chance Chain Heal by 5%
+            if (detectItemSetBonus("Tier 9", 4)) then
+                critChance = critChance + 5;
+            end
 
             -- Riptide Buff (target buff that increases effective healing by 25%)
             if (detectBuff(target, tRiptide, true)) then
                 effectiveHealModifier = effectiveHealModifier * 1.25;
             end
 
+            -- Tidal Force Buff (self-buff that increases critical heal chance by 20% per stack)
+            critChance = critChance + 20 * (detectBuff('player', tTidalForce) or 0);
+
             nBonus = bonus * 1.88 * (2.5 / 3.5);
+        end
+
+        -- If our critical effect chance is over 100%, then we're guaranteed a critical heal effect.
+        if (critChance >= 100) then
+            effectiveHealModifier = effectiveHealModifier * 1.5;
         end
 
         effectiveHeal = effectiveHealModifier * (baseHealSize + nBonus * getDownrankingFactor(spellTab.Level[rank], UnitLevel('player')));
@@ -1381,22 +1735,23 @@ function lib:UNIT_SPELLCAST_STOP(unit, spellName, spellRank, spellCastIndex)
     end
 end
 
-function lib:PLAYER_ALIVE()
-    -- This event is only fired at initial login, not at reloadui or load-on-demand loading.
-    -- The initialisation is triggered again, since none of the initialisation had any effect
-    -- prior to this event firing (no messages sent and InBattlegroundOrArena, InRaid and InParty
-    -- are probably not correctly initialised).
-    lib:Initialise();
-
-    -- Only receive once
-    self.EventFrame:UnregisterEvent("PLAYER_ALIVE");
-end
-
 function lib:PLAYER_ENTERING_WORLD()
     HealTime = {};
     HealTarget = {};
     HealSize = {};
     HealModifier = {};
+end
+
+function lib:PLAYER_EQUIPMENT_CHANGED()
+    -- Scan the relevant equipment slots to the amount of item-set gear the player
+    -- is wearing that might contribute to set bonuses.
+    twipe(NumItemSet);
+    for _, slot in pairs(EquipmentSlotIDs) do
+        local t = ItemSetGear[GetInventoryItemID('player', slot)];
+        if (t) then
+            NumItemSet[t] = (NumItemSet[t] or 0) + 1;
+        end
+    end
 end
 
 function lib:PARTY_MEMBERS_CHANGED()
@@ -1426,17 +1781,26 @@ function lib:RAID_ROSTER_UPDATE()
 end
 
 function lib:Initialise()
-    local it = select(2, IsInInstance());
-    InBattlegroundOrArena = (it == "pvp") or (it == "arena");
-
     InRaid = (GetNumRaidMembers() > 0);
     InParty = (GetNumPartyMembers() > 0);
 
+    -- Make sure NumItemSet table is initialised
+    self:PLAYER_EQUIPMENT_CHANGED();
+
+    -- Make sure Subgroup table is initialised
+    self:PARTY_MEMBERS_CHANGED();
+
     -- Announce and request version in group and in guild
     commSend("999" .. tostring(MINOR_VERSION));
-    if (IsInGuild()) then
-        commSend("999" .. tostring(MINOR_VERSION), "GUILD");
-    end
+    commSend("999" .. tostring(MINOR_VERSION), "GUILD");
 end
 
-lib:Initialise();
+function lib:PLAYER_LOGIN()
+    self:Initialise()
+end
+
+if (IsLoggedIn()) then
+    lib:Initialise()
+else
+    lib.EventFrame:RegisterEvent("PLAYER_LOGIN")
+end

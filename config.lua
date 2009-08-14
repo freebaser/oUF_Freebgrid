@@ -6,6 +6,8 @@ FreebgridDefaults = {
 	texture = mediaPath.."gradient",
 	highlightTex = mediaPath.."white",
 	borderTex = mediaPath.."border",
+	iconborder = mediaPath.."border2",
+	trans = mediaPath.."trans",
 	
 	height = 40,
 	width = 40,
@@ -21,7 +23,8 @@ FreebgridDefaults = {
 	aurafont = mediaPath.."visitor.ttf",
 	indicatorSize = 28,
 
-	iconSize = 14,			-- Size of raid symbols, leader, etc.
+	iconSize = 14,	-- Size of raid symbols, leader, etc.
+	debuffsize = 16,
 	
 	position = {"LEFT", "UIParent", "LEFT", 12, -200},
 	--position = {"BOTTOM", "UIParent", "BOTTOM", 275, 150},
@@ -58,7 +61,7 @@ FreebgridDefaults = {
 	
 	numRaidgroups = 8,		-- Number of Raid Groups
 	
-	debuffs = {
+	debuffs = setmetatable({
 		["Viper Sting"] = 12,
 
 		["Wound Poison"] = 9,
@@ -82,12 +85,18 @@ FreebgridDefaults = {
 		["Fear"] = 3,
 		["Psychic Scream"] = 3,
 		["Howl of Terror"] = 3,
-	},
+
+		--Raids
+		--Acidmaw
+		["Paralytic Spray"] = 2,
+		["Burning Spray"] = 2,
+	},{ __index = function() return 0 end }),
 	
 	dispellPriority = {
 		["Magic"] = 4,
 		["Poison"] = 3,
 		["Disease"] = 1,
 		["Curse"] = 2,
+		["None"] = 0,
 	},
 }
