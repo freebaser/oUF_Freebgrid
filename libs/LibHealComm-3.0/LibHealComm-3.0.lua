@@ -1,5 +1,5 @@
 local MAJOR_VERSION = "LibHealComm-3.0";
-local MINOR_VERSION = 90000 + tonumber(("$Revision: 85 $"):match("%d+"));
+local MINOR_VERSION = 90000 + tonumber(("$Revision: 87 $"):match("%d+"));
 
 local lib = LibStub:NewLibrary(MAJOR_VERSION, MINOR_VERSION);
 if not lib then return end
@@ -720,21 +720,21 @@ if (playerClass == "DRUID") then
         [48155] = "Tier 9", -- Runetotem's Leggings of Conquest
         [48156] = "Tier 9", -- Runetotem's Robe of Conquest
         [48157] = "Tier 9", -- Runetotem's Spaulders of Conquest
-        [48158] = "Tier 9", -- Stormrage's Headpiece of Conquest
-        [48159] = "Tier 9", -- Stormrage's Robe of Conquest
-        [48160] = "Tier 9", -- Stormrage's Leggings of Conquest
-        [48161] = "Tier 9", -- Stormrage's Spaulders of Conquest
-        [48162] = "Tier 9", -- Stormrage's Handguards of Conquest
+        [48102] = "Tier 9", -- Malfurion's Headpiece of Conquest
+        [48129] = "Tier 9", -- Malfurion's Robe of Conquest
+        [48130] = "Tier 9", -- Malfurion's Leggings of Conquest
+        [48131] = "Tier 9", -- Malfurion's Spaulders of Conquest
+        [48132] = "Tier 9", -- Malfurion's Handguards of Conquest
         [48148] = "Tier 9", -- Runetotem's Spaulders of Triumph
         [48149] = "Tier 9", -- Runetotem's Robe of Triumph
         [48150] = "Tier 9", -- Runetotem's Leggings of Triumph
         [48151] = "Tier 9", -- Runetotem's Headpiece of Triumph
         [48152] = "Tier 9", -- Runetotem's Handguards of Triumph
-        [48133] = "Tier 9", -- Stormrage's Handguards of Triumph
-        [48134] = "Tier 9", -- Stormrage's Headpiece of Triumph
-        [48135] = "Tier 9", -- Stormrage's Leggings of Triumph
-        [48136] = "Tier 9", -- Stormrage's Robe of Triumph
-        [48137] = "Tier 9", -- Stormrage's Spaulders of Triumph
+        [48133] = "Tier 9", -- Malfurion's Handguards of Triumph
+        [48134] = "Tier 9", -- Malfurion's Headpiece of Triumph
+        [48135] = "Tier 9", -- Malfurion's Leggings of Triumph
+        [48136] = "Tier 9", -- Malfurion's Robe of Triumph
+        [48137] = "Tier 9", -- Malfurion's Spaulders of Triumph
     }
 
     local idolsHealingTouch =
@@ -1302,11 +1302,11 @@ if (playerClass == "SHAMAN") then
         [48302] = "Tier 9", -- Thrall's Headpiece of Triumph
         [48303] = "Tier 9", -- Thrall's Legguards of Triumph
         [48304] = "Tier 9", -- Thrall's Spaulders of Triumph
-        [48316] = "Tier 9", -- Nobundo's Tunic of Triumph
-        [48317] = "Tier 9", -- Nobundo's Handguards of Triumph
-        [48318] = "Tier 9", -- Nobundo's Headpiece of Triumph
-        [48319] = "Tier 9", -- Nobundo's Legguards of Triumph
-        [48320] = "Tier 9", -- Nobundo's Spaulders of Triumph
+        [48285] = "Tier 9", -- Nobundo's Tunic of Triumph
+        [48286] = "Tier 9", -- Nobundo's Handguards of Triumph
+        [48287] = "Tier 9", -- Nobundo's Headpiece of Triumph
+        [48288] = "Tier 9", -- Nobundo's Legguards of Triumph
+        [48289] = "Tier 9", -- Nobundo's Spaulders of Triumph
     }
 
     local totemsLesserHealingWave =
