@@ -39,7 +39,7 @@ local function applyAuraIndicator(self)
 
 	self.AuraStatusCen = self.Health:CreateFontString(nil, "OVERLAY")
 	self.AuraStatusCen:ClearAllPoints()
-	self.AuraStatusCen:SetPoint("TOP")
+	self.AuraStatusCen:SetPoint("TOP", 0, 2)
 	self.AuraStatusCen:SetJustifyH("CENTER")
 	self.AuraStatusCen:SetFont(db.font, db.fontsize-2)
 	self.AuraStatusCen:SetShadowOffset(1.25, -1.25)
@@ -103,54 +103,41 @@ f:SetScript("OnEvent", function(self, event, ...)
 	return self[event](self, ...)
 end)
 
-local frame
 function f:UNIT_AURA(unit)
-	frame = oUF.units[unit]
+	local frame = oUF.units[unit]
 	if not frame or frame.unit ~= unit then return end
-	
-	local cur, tex, dis, dur, exp
+	local cur, tex, dis
 	local name, rank, buffTexture, count, duration, expire, dtype, isPlayer
 	local dispellPriority, debuffs = db.dispellPriority, db.debuffs
 	for i = 1, 40 do
 		name, rank, buffTexture, count, dtype, duration, expire, isPlayer = UnitAura(unit, i, "HARMFUL")
 		if not name then break end
+
 		if not cur or (debuffs[name] >= debuffs[cur]) then
 			if debuffs[name] > 0 and debuffs[name] > debuffs[cur or 1] then
-				-- Highest priority
 				cur = name
 				tex = buffTexture
 				dis = dtype or "none"
-				exp = expire
-				dur = duration
 			elseif dtype and dtype ~= "none" then
 				if not dis or (dispellPriority[dtype] > dispellPriority[dis]) then
-					cur = name
 					tex = buffTexture
 					dis = dtype
-					exp = expire
-					dur = duration
 				end
-			end
+			end	
 		end
 	end
 
-	if dispellClass then
-		if dis then
-			if dispellClass[dis] then
-				local col = DebuffTypeColor[dis]
-				frame.border:SetVertexColor(col.r, col.g, col.b)
-				frame.border:Show()
-			end
-		else
-			frame.border:Hide()
-		end
-	end
-
-	if cur then
+	if dispellClass[dis] or cur then
+		local col = DebuffTypeColor[dis]
+		frame.border:SetVertexColor(col.r, col.g, col.b)
+		frame.Dispell = true
+		frame.border:Show()
 		frame.Icon:SetTexture(tex)
 		frame.Icon:Show()
 		frame.Name:Hide()
-	else
+	elseif frame.Dispell then
+		frame.border:Hide()
+		frame.Dispell = false
 		frame.Icon:Hide()
 		frame.Name:Show()
 	end
@@ -598,10 +585,10 @@ local func = function(self, unit)
 	self.Dummy = dummy
 
 	local border = dummy:CreateTexture(nil, "OVERLAY")
-	border:SetPoint("LEFT", dummy, "LEFT", -4, 0)
-	border:SetPoint("RIGHT", dummy, "RIGHT", 4, 0)
-	border:SetPoint("TOP", dummy, "TOP", 0, 4)
-	border:SetPoint("BOTTOM", dummy, "BOTTOM", 0, -4)
+	border:SetPoint("LEFT", dummy, "LEFT", -2, 0)
+	border:SetPoint("RIGHT", dummy, "RIGHT", 2, 0)
+	border:SetPoint("TOP", dummy, "TOP", 0, 2)
+	border:SetPoint("BOTTOM", dummy, "BOTTOM", 0, -2)
 	border:SetTexture(db.iconborder)
 	border:Hide()
 	border:SetVertexColor(1, 1, 1)

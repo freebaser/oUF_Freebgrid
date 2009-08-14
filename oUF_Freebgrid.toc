@@ -1,7 +1,7 @@
 ## Interface: 30100
 ## Title: oUF_Freebgrid
 ## Author: Freebaser
-## Version: 1.4.1
+## Version: 1.5
 ## Notes: oUF layout.
 ## SavedVariables: oUF_FreebgridDB
 ## OptionalDeps: oUF_ReadyCheck

@@ -9,8 +9,8 @@ FreebgridDefaults = {
 	iconborder = mediaPath.."border2",
 	trans = mediaPath.."trans",
 	
-	height = 40,
-	width = 40,
+	height = 42,
+	width = 42,
 	
 	font = mediaPath.."font.ttf",
 	fontsize = 16,
