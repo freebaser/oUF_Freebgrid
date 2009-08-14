@@ -69,7 +69,7 @@ oUF.Tags["[rejuv]"] = function(u)
 oUF.TagEvents["[rejuv]"] = "UNIT_AURA"
 -- rejuvtime
 oUF.Tags["[rejuvTime]"] = function(u)
-  local name, _,_,_,_,_, expirationTime, fromwho,_ = UnitAura(u, L["Renew"])
+  local name, _,_,_,_,_, expirationTime, fromwho,_ = UnitAura(u, L["Rejuvenation"])
   if not (fromwho == "player") then return end
   local spellTimer = "|cffffff00"..format("%.0f",-1*(GetTime()-expirationTime)).."|r"
   return spellTimer end
