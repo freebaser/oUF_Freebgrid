@@ -127,19 +127,21 @@ function f:UNIT_AURA(unit)
 		end
 	end
 
-	if dispellClass[dis] or cur then
-		local col = DebuffTypeColor[dis]
-		frame.border:SetVertexColor(col.r, col.g, col.b)
-		frame.Dispell = true
-		frame.border:Show()
-		frame.Icon:SetTexture(tex)
-		frame.Icon:Show()
-		frame.Name:Hide()
-	elseif frame.Dispell then
-		frame.border:Hide()
-		frame.Dispell = false
-		frame.Icon:Hide()
-		frame.Name:Show()
+	if dispellClass or cur then
+		if dispellClass[dis] or cur then
+			local col = DebuffTypeColor[dis]
+			frame.border:SetVertexColor(col.r, col.g, col.b)
+			frame.Dispell = true
+			frame.border:Show()
+			frame.Icon:SetTexture(tex)
+			frame.Icon:Show()
+			frame.Name:Hide()
+		elseif frame.Dispell then
+			frame.border:Hide()
+			frame.Dispell = false
+			frame.Icon:Hide()
+			frame.Name:Show()
+		end
 	end
 end
 f:RegisterEvent("UNIT_AURA")

@@ -22,6 +22,7 @@ local L = {
   ["Battle Shout"] = GetSpellInfo(47436),
   ["Commanding Shout"] = GetSpellInfo(47440),
   ["Vigilance"] = GetSpellInfo(50720),
+  ["Magic Concentration"] = GetSpellInfo(54646),
 }
 
 oUF.Tags["[Freebaggro]"] = function(u) 
@@ -98,6 +99,10 @@ oUF.TagEvents["[vigil]"] = "UNIT_AURA"
 oUF.Tags["[how]"] = function(u) if UnitAura(u, L["Horn of Winter"]) then return "|cffffff10.|r" end end
 oUF.TagEvents["[how]"] = "UNIT_AURA"
 
+--mage
+oUF.Tags["[mc]"] = function(u) if UnitAura(u, L["Magic Concentration"]) then return "|cffffff00.|r" end end
+oUF.TagEvents["[mc]"] = "UNIT_AURA"  
+
 oUF.classIndicators={
 		["DRUID"] = {
 				["TL"] = "[tree]",
@@ -164,7 +169,7 @@ oUF.classIndicators={
 		},
 		["MAGE"] = {
 				["TL"] = "",
-				["TR"] = "",
+				["TR"] = "[mc]",
 				["BL"] = "[Freebaggro]",
 				["BR"] = "",
 				["Cen"] = "",
