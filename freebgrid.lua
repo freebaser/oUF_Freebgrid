@@ -88,6 +88,11 @@ do
 			["Curse"] = true,
 			["Poison"] = true,
 		},
+		["DEATHKNIGHT"] = {},
+		["HUNTER"] = {},
+		["ROGUE"] = {},
+		["WARLOCK"] = {},
+		["WARRIOR"] = {},
 	}
 	if t[playerClass] then
 		dispellClass = {}
@@ -127,7 +132,7 @@ function f:UNIT_AURA(unit)
 		end
 	end
 
-	if dispellClass or cur then
+	if dis then
 		if dispellClass[dis] or cur then
 			local col = DebuffTypeColor[dis]
 			frame.border:SetVertexColor(col.r, col.g, col.b)
@@ -142,6 +147,10 @@ function f:UNIT_AURA(unit)
 			frame.Icon:Hide()
 			frame.Name:Show()
 		end
+	else
+		frame.border:Hide()
+		frame.Icon:Hide()
+		frame.Name:Show()
 	end
 end
 f:RegisterEvent("UNIT_AURA")
