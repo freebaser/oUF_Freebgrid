@@ -3,30 +3,31 @@ oUF_Freebgrid:SetScript('OnEvent', function(self, event, ...) self[event](self, 
 oUF_Freebgrid:RegisterEvent("ADDON_LOADED")
 local oUF = Freebgrid
 local db
+local dbDebuffs
 
 local playerClass = select(2, UnitClass("player"))
 
 local function applyAuraIndicator(self)
 	self.AuraStatusTL = self.Health:CreateFontString(nil, "OVERLAY")
 	self.AuraStatusTL:ClearAllPoints()
-	self.AuraStatusTL:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, -7)
-	self.AuraStatusTL:SetFont(db.aurafont, db.indicatorSize, "THINOUTLINE")
+	self.AuraStatusTL:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, -5)
+	self.AuraStatusTL:SetFont(db.aurafont, db.indicatorSize, "MONOCHROME")
 	self.AuraStatusTL:SetJustifyH("LEFT")
 	self.AuraStatusTL:SetJustifyV("TOP")
 	self:Tag(self.AuraStatusTL, oUF.classIndicators[playerClass]["TL"])
 	
 	self.AuraStatusTR = self.Health:CreateFontString(nil, "OVERLAY")
 	self.AuraStatusTR:ClearAllPoints()
-	self.AuraStatusTR:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", 3, -7)
-	self.AuraStatusTR:SetFont(db.aurafont, db.indicatorSize, "THINOUTLINE")
+	self.AuraStatusTR:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", 0, -5)
+	self.AuraStatusTR:SetFont(db.aurafont, db.indicatorSize, "MONOCHROME")
 	self.AuraStatusTR:SetJustifyH("RIGHT")
 	self.AuraStatusTL:SetJustifyV("TOP")
 	self:Tag(self.AuraStatusTR, oUF.classIndicators[playerClass]["TR"])
 
 	self.AuraStatusBL = self.Health:CreateFontString(nil, "OVERLAY")
 	self.AuraStatusBL:ClearAllPoints()
-	self.AuraStatusBL:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 0, -5)
-	self.AuraStatusBL:SetFont(db.aurafont, db.indicatorSize, "THINOUTLINE")
+	self.AuraStatusBL:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 0, 0)
+	self.AuraStatusBL:SetFont(db.aurafont, db.indicatorSize, "MONOCHROME")
 	self.AuraStatusBL:SetJustifyH("LEFT")
 	self.AuraStatusTL:SetJustifyV("BOTTOM")
 	self:Tag(self.AuraStatusBL, oUF.classIndicators[playerClass]["BL"])	
@@ -39,7 +40,7 @@ local function applyAuraIndicator(self)
 
 	self.AuraStatusCen = self.Health:CreateFontString(nil, "OVERLAY")
 	self.AuraStatusCen:ClearAllPoints()
-	self.AuraStatusCen:SetPoint("TOP", 0, 2)
+	self.AuraStatusCen:SetPoint("TOP")
 	self.AuraStatusCen:SetJustifyH("CENTER")
 	self.AuraStatusCen:SetFont(db.font, db.fontsize-2)
 	self.AuraStatusCen:SetShadowOffset(1.25, -1.25)
@@ -113,7 +114,7 @@ function f:UNIT_AURA(unit)
 	if not frame or frame.unit ~= unit then return end
 	local cur, tex, dis
 	local name, rank, buffTexture, count, duration, expire, dtype, isPlayer
-	local dispellPriority, debuffs = db.dispellPriority, db.debuffs
+	local dispellPriority, debuffs = db.dispellPriority, dbDebuffs.debuffs
 	for i = 1, 40 do
 		name, rank, buffTexture, count, dtype, duration, expire, isPlayer = UnitAura(unit, i, "HARMFUL")
 		if not name then break end
@@ -751,6 +752,7 @@ function oUF_Freebgrid:OnEnable()
 		else
 			raidg:SetPoint(pos, raid[i-1], posRel, colX, colY) 
 		end
+		raidg:SetScale(db.scale)
 	end
 
 	if db.partyON and db.partyPets then
@@ -783,6 +785,7 @@ function oUF_Freebgrid:OnEnable()
 					end
 			end
 		end)
+		party:SetScale(db.scale)
 	else
 		for i,v in ipairs(raid) do v:Show() end
 	end
@@ -805,8 +808,16 @@ function oUF_Freebgrid:LoadDB()
 			oUF_FreebgridDB[k] = v
 		end
 	end
+	oUF_FreebgridDBdebuffs = oUF_FreebgridDBdebuffs or {}
+	for i, z in pairs(FreebgridDebuffs) do
+		if(type(oUF_FreebgridDBdebuffs[i]) == 'nil') then
+			oUF_FreebgridDBdebuffs[i] = z
+		end
+	end
+
 	--db = oUF_FreebgridDB -- not used yet
 	db = FreebgridDefaults
+	dbDebuffs = FreebgridDebuffs
 end
 
 function oUF_Freebgrid:ADDON_LOADED(event, addon)

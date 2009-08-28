@@ -11,6 +11,8 @@ FreebgridDefaults = {
 	
 	height = 42,
 	width = 42,
+
+	scale = 0.9,
 	
 	font = mediaPath.."font.ttf",
 	fontsize = 16,
@@ -20,8 +22,8 @@ FreebgridDefaults = {
 	symbols1 = mediaPath.."STYLBCC_.ttf",
 	symbols1Size = 12,
 
-	aurafont = mediaPath.."visitor.ttf",
-	indicatorSize = 28,
+	aurafont = mediaPath.."Gridder.ttf",
+	indicatorSize = 10,
 
 	iconSize = 14,	-- Size of raid symbols, leader, etc.
 	debuffsize = 16,
@@ -60,37 +62,6 @@ FreebgridDefaults = {
 	petColor = {.1, .8, .3},
 	
 	numRaidgroups = 8,		-- Number of Raid Groups
-	
-	debuffs = setmetatable({
-		["Viper Sting"] = 12,
-
-		["Wound Poison"] = 9,
-		["Mortal Strike"] = 8,
-		["Aimed Shot"] = 8,
-
-		["Counterspell"] = 10,
-
-		["Blind"] = 10,
-		["Cyclone"] = 10,
-
-		["Polymorph"] = 7,
-
-		["Entangling Roots"] = 7,
-		["Freezing Trap"] = 7,
-
-		["Crippling Poison"] = 6,
-		["Hamstring"] = 5,
-		["Wing Clip"] = 5,
-
-		["Fear"] = 3,
-		["Psychic Scream"] = 3,
-		["Howl of Terror"] = 3,
-
-		--Raids
-		--Acidmaw
-		["Paralytic Spray"] = 2,
-		["Burning Spray"] = 2,
-	},{ __index = function() return 0 end }),
 	
 	dispellPriority = {
 		["Magic"] = 4,
