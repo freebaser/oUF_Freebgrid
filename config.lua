@@ -12,9 +12,9 @@ FreebgridDefaults = {
 	height = 42,
 	width = 42,
 
-	scale = 0.9,
+	scale = 1.0,
 	
-	font = mediaPath.."font.ttf",
+	font = mediaPath.."calibri.ttf",
 	fontsize = 16,
 	
 	symbols = mediaPath.."PIZZADUDEBULLETS.ttf",
@@ -22,8 +22,8 @@ FreebgridDefaults = {
 	symbols1 = mediaPath.."STYLBCC_.ttf",
 	symbols1Size = 12,
 
-	aurafont = mediaPath.."Gridder.ttf",
-	indicatorSize = 10,
+	aurafont = mediaPath.."squares.ttf",
+	indicatorSize = 8,	-- Size of the Corner Indicators
 
 	iconSize = 14,	-- Size of raid symbols, leader, etc.
 	debuffsize = 16,
@@ -41,7 +41,7 @@ FreebgridDefaults = {
 						
 	spacing = 5,	-- space between units and raid groups
 
-	solo = false,
+	solo = true,
 	partyON = true,	-- dude?
 	partyPets = true,	-- has no effect if partyON is false
 	reverseColors = false,	-- Reverse Units color
