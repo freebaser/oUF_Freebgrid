@@ -23,13 +23,15 @@ FreebgridDefaults = {
 	symbols1Size = 12,
 
 	aurafont = mediaPath.."squares.ttf",
-	indicatorSize = 8,	-- Size of the Corner Indicators
+	indicatorSize = 6,	-- Size of the Corner Indicators
 
 	iconSize = 14,	-- Size of raid symbols, leader, etc.
 	debuffsize = 16,
 	
+	moveable = false,	-- use the drag option (alt+click) if false it will use "position" reguardless
+	locked = true,		-- locks frame from moving
+
 	position = {"LEFT", "UIParent", "LEFT", 12, -200},
-	--position = {"BOTTOM", "UIParent", "BOTTOM", 275, 150},
 	
 	point = "LEFT", --[[ usage: "TOP", "LEFT", "RIGHT", "BOTTOM"
 						this is the unit anchor so TOP would make units grow down and LEFT would make units grow RIGHT etc. SEE growth COMMENT! ]]--
@@ -41,7 +43,7 @@ FreebgridDefaults = {
 						
 	spacing = 5,	-- space between units and raid groups
 
-	solo = true,
+	solo = false,
 	partyON = true,	-- dude?
 	partyPets = true,	-- has no effect if partyON is false
 	reverseColors = false,	-- Reverse Units color

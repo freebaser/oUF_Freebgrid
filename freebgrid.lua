@@ -654,6 +654,33 @@ function oUF_Freebgrid:OnEnable()
 	oUF:RegisterStyle("Freebgrid", func)
 	oUF:SetActiveStyle"Freebgrid"
 	
+	-- Credits to Zork for the drag frame
+	local function make_me_movable(f)
+   		if db.moveable == false then
+    			f:IsUserPlaced(false)
+    		else
+      			f:SetMovable(true)
+      			f:SetUserPlaced(true)
+      			if db.locked == false then
+        			f:EnableMouse(true)
+        			f:RegisterForDrag("LeftButton","RightButton")
+        			f:SetScript("OnDragStart", function(self) if IsAltKeyDown() then self:StartMoving() end end)
+        			f:SetScript("OnDragStop", function(self) self:StopMovingOrSizing() end)
+     			end
+    		end
+	end
+
+	local oUF_FreebgridDragFrame = CreateFrame("Frame","oUF_FreebgridDragFrame",UIParent)
+	oUF_FreebgridDragFrame:SetWidth(db.height)
+	oUF_FreebgridDragFrame:SetHeight(db.width)
+	oUF_FreebgridDragFrame:SetScale(db.scale)
+	oUF_FreebgridDragFrame:SetFrameStrata("HIGH")
+	if db.locked == false then
+		oUF_FreebgridDragFrame:SetBackdrop({bgFile = "Interface/Tooltips/UI-Tooltip-Background", edgeFile = "", tile = true, tileSize = 16, edgeSize = 16, insets = { left = 0, right = 0, top = 0, bottom = 0 }})
+	end
+	oUF_FreebgridDragFrame:SetPoint(db.position[1], db.position[2], db.position[3], db.position[4], db.position[5])
+	make_me_movable(oUF_FreebgridDragFrame)
+	
 	local pos, posRel, spacingX, spacingY
 	-- SetPoint of MOTHERFUCKING DOOM!
 	if db.point == "TOP" and db.growth == "LEFT" then
@@ -743,7 +770,7 @@ function oUF_Freebgrid:OnEnable()
 					'yOffset', spacingY)
 		table.insert(raid, raidg)
 		if(i == 1) then	
-			raidg:SetPoint(db.position[1], db.position[2], db.position[3], db.position[4], db.position[5])
+			raidg:SetPoint("TOPLEFT", "oUF_FreebgridDragFrame", "TOPLEFT")
 		else
 			raidg:SetPoint(pos, raid[i-1], posRel, colX, colY) 
 		end
@@ -752,7 +779,7 @@ function oUF_Freebgrid:OnEnable()
 
 	if db.partyON and db.partyPets then
 		local party = oUF:Spawn('header', 'oUF_FreebParty')
-		party:SetPoint(db.position[1], db.position[2], db.position[3], db.position[4], db.position[5])
+		party:SetPoint("TOPLEFT", "oUF_FreebgridDragFrame", "TOPLEFT")
 		party:SetManyAttributes('showParty', true,
 					'showSolo', db.solo,
 					'showPlayer', true,
