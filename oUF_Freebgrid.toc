@@ -1,7 +1,7 @@
 ## Interface: 30200
 ## Title: oUF_Freebgrid
 ## Author: Freebaser
-## Version: 1.6
+## Version: 1.7
 ## Notes: oUF layout.
 ## SavedVariables: oUF_FreebgridDB, oUF_FreebgridDBdebuffs
 ## OptionalDeps: oUF_ReadyCheck

@@ -29,7 +29,7 @@ FreebgridDefaults = {
 	debuffsize = 16,
 	
 	moveable = false,	-- use the drag option (alt+click) if false it will use "position" reguardless
-	locked = true,		-- locks frame from moving
+	locked = true,		-- lock when done moving
 
 	position = {"LEFT", "UIParent", "LEFT", 12, -200},
 	

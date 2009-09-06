@@ -17,12 +17,16 @@ local L = {
   ["Regrowth"] = GetSpellInfo(8936),
   ["Wild Growth"] = GetSpellInfo(48438),
   ["Tree of Life"] = GetSpellInfo(33891),
-  ["Gift of the Wild"] = GetSpellInfo(21849),
+  ["Gift of the Wild"] = GetSpellInfo(48470),
+  ["Mark of the Wild"] = GetSpellInfo(48469),
   ["Horn of Winter"] = GetSpellInfo(57623),
   ["Battle Shout"] = GetSpellInfo(47436),
   ["Commanding Shout"] = GetSpellInfo(47440),
   ["Vigilance"] = GetSpellInfo(50720),
   ["Magic Concentration"] = GetSpellInfo(54646),
+  ["Beacon of Light"] = GetSpellInfo(53563),
+  ["Sacred Shield"] = GetSpellInfo(53601),
+  
 }
 local x = "M"
 
@@ -92,7 +96,7 @@ oUF.Tags["[wg]"] = function(u) if UnitAura(u, L["Wild Growth"]) then return "|cf
 oUF.TagEvents["[wg]"] = "UNIT_AURA"
 oUF.Tags["[tree]"] = function(u) if UnitAura(u, L["Tree of Life"]) then return "|cff33FF33"..x.."|r" end end
 oUF.TagEvents["[tree]"] = "UNIT_AURA"
-oUF.Tags["[gotw]"] = function(u) if UnitAura(u, L["Gift of the Wild"]) then return "|cff33FF33"..x.."|r" end end
+oUF.Tags["[gotw]"] = function(u) local c = UnitAura(u, L["Gift of the Wild"]) or UnitAura(u, L["Mark of the Wild"]) if not c then return "|cffFF00FF"..x.."|r" end end
 oUF.TagEvents["[gotw]"] = "UNIT_AURA"
 
 --warrior
@@ -112,7 +116,29 @@ oUF.TagEvents["[how]"] = "UNIT_AURA"
 
 --mage
 oUF.Tags["[mc]"] = function(u) if UnitAura(u, L["Magic Concentration"]) then return "|cffffff00"..x.."|r" end end
-oUF.TagEvents["[mc]"] = "UNIT_AURA"  
+oUF.TagEvents["[mc]"] = "UNIT_AURA"
+
+--paladin
+oUF.Tags["[sacred]"] = function(u) if UnitAura(u, L["Sacred Shield"]) then return "|cffffff10"..x.."|r" end end
+oUF.TagEvents["[sacred]"] = "UNIT_AURA"
+oUF.Tags["[beacon]"] = function(u) if UnitAura(u, L["Beacon of Light"]) then return "|cffffff10"..x.."|r" end end
+oUF.TagEvents["[beacon]"] = "UNIT_AURA"
+oUF.Tags["[selfsacred]"] = function(u)
+  local name, _,_,_,_,_,_, fromwho,_ = UnitAura(u, L["Sacred Shield"])
+  if not (fromwho == "player") then return end
+  if UnitAura(u, L["Sacred Shield"]) then return "|cffff33ff"..x.."|r" end end
+oUF.TagEvents["[selfsacred]"] = "UNIT_AURA"
+oUF.Tags["[selfbeacon]"] = function(u)
+  local name, _,_,_,_,_,_, fromwho,_ = UnitAura(u, L["Beacon of Light"])
+  if not (fromwho == "player") then return end
+  if UnitAura(u, L["Beacon of Light"]) then return "|cffff33ff"..x.."|r" end end
+oUF.TagEvents["[selfbeacon]"] = "UNIT_AURA"
+oUF.Tags["[beaconTime]"] = function(u)
+  local name, _,_,_,_,_, expirationTime, fromwho,_ = UnitAura(u, L["Beacon of Light"])
+  if not (fromwho == "player") then return end
+  local spellTimer = "|cffff33ff"..format("%.0f",-1*(GetTime()-expirationTime)).."|r"
+  return spellTimer end
+oUF.TagEvents["[beaconTime]"] = "UNIT_AURA"
 
 oUF.classIndicators={
 		["DRUID"] = {
@@ -130,11 +156,12 @@ oUF.classIndicators={
 				["Cen"] = "[rnwTime]",
 		},
 		["PALADIN"] = {
-				["TL"] = "",
-				["TR"] = "",
+				["TL"] = "[selfsacred][sacred]",
+				["TR"] = "[selfbeacon][beacon]",
 				["BL"] = "[Freebaggro]",
 				["BR"] = "",
-				["Cen"] = "",
+				["Cen"] = "[beaconTime]",
+				
 		},
 		["WARLOCK"] = {
 				["TL"] = "",
