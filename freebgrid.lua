@@ -10,27 +10,27 @@ local playerClass = select(2, UnitClass("player"))
 local function applyAuraIndicator(self)
 	self.AuraStatusTL = self.Health:CreateFontString(nil, "OVERLAY")
 	self.AuraStatusTL:ClearAllPoints()
-	self.AuraStatusTL:SetPoint("TOPLEFT")
-	self.AuraStatusTL:SetFont(db.aurafont, db.indicatorSize, "MONOCHROME")
+	self.AuraStatusTL:SetPoint("TOPLEFT", -1, 0)
+	self.AuraStatusTL:SetFont(db.aurafont, db.indicatorSize, "THINOUTLINE")
 	self:Tag(self.AuraStatusTL, oUF.classIndicators[playerClass]["TL"])
 	
 	self.AuraStatusTR = self.Health:CreateFontString(nil, "OVERLAY")
 	self.AuraStatusTR:ClearAllPoints()
-	self.AuraStatusTR:SetPoint("TOPRIGHT")
-	self.AuraStatusTR:SetFont(db.aurafont, db.indicatorSize, "MONOCHROME")
+	self.AuraStatusTR:SetPoint("TOPRIGHT", 1, 0)
+	self.AuraStatusTR:SetFont(db.aurafont, db.indicatorSize, "THINOUTLINE")
 	self:Tag(self.AuraStatusTR, oUF.classIndicators[playerClass]["TR"])
 
 	self.AuraStatusBL = self.Health:CreateFontString(nil, "OVERLAY")
 	self.AuraStatusBL:ClearAllPoints()
-	self.AuraStatusBL:SetPoint("BOTTOMLEFT")
-	self.AuraStatusBL:SetFont(db.aurafont, db.indicatorSize, "MONOCHROME")
+	self.AuraStatusBL:SetPoint("BOTTOMLEFT", -1, 0)
+	self.AuraStatusBL:SetFont(db.aurafont, db.indicatorSize, "THINOUTLINE")
 	self:Tag(self.AuraStatusBL, oUF.classIndicators[playerClass]["BL"])	
 
 	self.AuraStatusBR = self.Health:CreateFontString(nil, "OVERLAY")
 	self.AuraStatusBR:ClearAllPoints()
-	self.AuraStatusBR:SetPoint("BOTTOMRIGHT", 6, -3)
+	self.AuraStatusBR:SetPoint("BOTTOMRIGHT", 6, -2)
 	self.AuraStatusBR:SetFont(db.symbols, db.symbolsSize, "THINOUTLINE")
-	self.AuraStatusBR.frequentUpdates = 1
+	--self.AuraStatusBR.frequentUpdates = 1 -- Can be cpu intensive in large groups
 	self:Tag(self.AuraStatusBR, oUF.classIndicators[playerClass]["BR"])
 
 	self.AuraStatusCen = self.Health:CreateFontString(nil, "OVERLAY")
@@ -39,7 +39,7 @@ local function applyAuraIndicator(self)
 	self.AuraStatusCen:SetJustifyH("CENTER")
 	self.AuraStatusCen:SetFont(db.font, db.fontsize-2)
 	self.AuraStatusCen:SetShadowOffset(1.25, -1.25)
-	self.AuraStatusCen.frequentUpdates = 1
+	self.AuraStatusCen.frequentUpdates = 1 -- Can be cpu intensive in large groups
 	self:Tag(self.AuraStatusCen, oUF.classIndicators[playerClass]["Cen"])
 end
 
@@ -518,11 +518,11 @@ local func = function(self, unit)
 	local heal = hp:CreateFontString(nil, "OVERLAY")
 	heal:SetPoint("BOTTOM")
 	heal:SetJustifyH("CENTER")
-	heal:SetFont(db.font, db.fontsize-1)
+	heal:SetFont(db.font, db.fontsize-2)
 	heal:SetShadowOffset(1.25, -1.25)
 	heal:SetTextColor(0,1,0,1)
 
-	self.healText = heal
+	self.HealCommText = heal
 	
 	local DDG = hp:CreateFontString(nil, "OVERLAY")
 	DDG:SetPoint("BOTTOM")
@@ -630,13 +630,14 @@ local func = function(self, unit)
 	self.ReadyCheck.delayTime = 8
 	self.ReadyCheck.fadeTime = 1
 
-	if not(self:GetAttribute('unitsuffix') == 'target')then
+	if (self:GetAttribute('unitsuffix') == 'target')then
+	  self.ignoreHealComm = true
+  	else
 	  if(db.indicators)then
 	    applyAuraIndicator(self)
   	  end
-	
-	  self.applyHealComm = true
 	end
+	self.ignoreHealComm = db.noHealbar
 	
 	self:RegisterEvent('PLAYER_FOCUS_CHANGED', FocusTarget)
 	self:RegisterEvent('RAID_ROSTER_UPDATE', FocusTarget)
@@ -656,18 +657,15 @@ function oUF_Freebgrid:OnEnable()
 	
 	-- Credits to Zork for the drag frame
 	local function make_me_movable(f)
-   		if db.moveable == false then
-    			f:IsUserPlaced(false)
-    		else
-      			f:SetMovable(true)
-      			f:SetUserPlaced(true)
-      			if db.locked == false then
-        			f:EnableMouse(true)
-        			f:RegisterForDrag("LeftButton","RightButton")
-        			f:SetScript("OnDragStart", function(self) if IsAltKeyDown() then self:StartMoving() end end)
-        			f:SetScript("OnDragStop", function(self) self:StopMovingOrSizing() end)
-     			end
-    		end
+   		
+      		f:SetMovable(true)
+      		f:SetUserPlaced(true)
+      		if db.locked == false then
+        		f:EnableMouse(true)
+        		f:RegisterForDrag("LeftButton","RightButton")
+        		f:SetScript("OnDragStart", function(self) if IsAltKeyDown() then self:StartMoving() end end)
+        		f:SetScript("OnDragStop", function(self) self:StopMovingOrSizing() end)
+     		end
 	end
 
 	local oUF_FreebgridDragFrame = CreateFrame("Frame","oUF_FreebgridDragFrame",UIParent)

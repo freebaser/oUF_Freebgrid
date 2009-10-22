@@ -4,7 +4,8 @@
 	<Script file="raid_debuffs.lua"/>
 	<Script file="tags.lua"/>
 	<Script file="freebgrid.lua"/>
-	<Script file="oUF_HealComm.lua"/>
 	<Script file="oUF_ReadyCheck\oUF_ReadyCheck.lua"/>
+	<Include file="oUF_HealComm4\oUF_HealComm4.xml"/>
+	<Script file="oUF_HealComm4\oUF_HealComm4.lua"/>
 
 </Ui>

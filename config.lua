@@ -18,7 +18,7 @@ FreebgridDefaults = {
 	fontsize = 16,
 	
 	symbols = mediaPath.."PIZZADUDEBULLETS.ttf",
-	symbolsSize = 12,
+	symbolsSize = 11,
 	symbols1 = mediaPath.."STYLBCC_.ttf",
 	symbols1Size = 12,
 
@@ -28,22 +28,21 @@ FreebgridDefaults = {
 	iconSize = 14,	-- Size of raid symbols, leader, etc.
 	debuffsize = 16,
 	
-	moveable = false,	-- use the drag option (alt+click) if false it will use "position" reguardless
-	locked = true,		-- lock when done moving
+	locked = true, -- false to move frames
 
-	position = {"LEFT", "UIParent", "LEFT", 12, -200},
+	position = {"LEFT", "UIParent", "LEFT", 10, -100},
 	
-	point = "LEFT", --[[ usage: "TOP", "LEFT", "RIGHT", "BOTTOM"
+	point = "TOP", --[[ usage: "TOP", "LEFT", "RIGHT", "BOTTOM"
 						this is the unit anchor so TOP would make units grow down and LEFT would make units grow RIGHT etc. SEE growth COMMENT! ]]--
 						
-	growth = "UP", --[[ usage: "UP", "DOWN", "LEFT", "RIGHT"
+	growth = "RIGHT", --[[ usage: "UP", "DOWN", "LEFT", "RIGHT"
 						This defines how additional groups should be added.
 						if point = "TOP" or "BOTTOM" this MUST be "LEFT" or "RIGHT". 
 						if point = "LEFT" or "RIGHT" this MUST be "UP" or "DOWN" ]]--
 						
 	spacing = 5,	-- space between units and raid groups
 
-	solo = false,
+	solo = true,
 	partyON = true,	-- dude?
 	partyPets = true,	-- has no effect if partyON is false
 	reverseColors = false,	-- Reverse Units color
@@ -53,8 +52,8 @@ FreebgridDefaults = {
 	manabars = false,		-- Mana Bars?
 	Licon = true,			-- Leader icon?
 	ricon = true,			-- Raid icon?
-	Healbar = false,		-- HealComm Bar
-	Healtext = true,		-- HealComm Text
+	noHealbar = false,		-- Disable HealComm Bar
+	Healtext = true,		-- Enable HealComm Text
 	frameBG = true,			-- apply raid Background?
 	
 	MTs = false, 			-- Main Tanks?
