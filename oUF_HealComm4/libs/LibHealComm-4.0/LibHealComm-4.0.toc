@@ -3,12 +3,12 @@
 ## Notes: Library for showing incoming heals and hots
 ## Author: Shadowed
 ## X-Category: Library
-## X-Curse-Packaged-Version: 1.5-release
+## X-Curse-Packaged-Version: 1.5.2-release
 ## X-Curse-Project-Name: LibHealComm-4.0
 ## X-Curse-Project-ID: libhealcomm-4-0
 ## X-Curse-Repository-ID: wow/libhealcomm-4-0/mainline
 
-libs\CallbackHandler-1.0\LibStub\LibStub.lua
+libs\LibStub\LibStub.lua
 libs\CallbackHandler-1.0\CallbackHandler-1.0\CallbackHandler-1.0.xml
 
 LibHealComm-4.0.xml

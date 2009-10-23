@@ -1,5 +1,5 @@
 local major = "LibHealComm-4.0"
-local minor = 41
+local minor = 43
 assert(LibStub, string.format("%s requires LibStub.", major))
 
 local HealComm = LibStub:NewLibrary(major, minor)
@@ -195,7 +195,7 @@ HealComm.averageHealMT = HealComm.averageHealMT or {
 		local spellData = HealComm.spellData[rawget(tbl, "spell")]
 		local spellLevel = spellData.levels[rank]
 
-		-- No increase, it doesn't scale with level
+		-- No increase, it doesn't scale with levely
 		if( not spellData.increase or playerLevel <= spellLevel ) then
 			rawset(tbl, index, spellData.averages[rank])
 			return spellData.averages[rank]
@@ -416,7 +416,7 @@ function HealComm:GetNextHealAmount(guid, bitFlag, time, ignoreGUID)
 							end
 							
 						-- Channeled heals and hots, have to figure out how many times it'll tick within the given time band
-						elseif( pending.bitType == CHANNEL_HEALS or pending.bitType == HOT_HEALS ) then
+						elseif( ( pending.bitType == CHANNEL_HEALS or pending.bitType == HOT_HEALS ) and ( not pending.hasVariableTicks or pending.hasVariableTicks and amount[1] ) ) then
 							local secondsLeft = time and time - currentTime or endTime - currentTime
 							local nextTick = currentTime + (secondsLeft % pending.tickInterval)
 							if( not healTime or nextTick < healTime ) then
@@ -476,7 +476,7 @@ local function filterData(spells, filterGUID, bitFlag, time, ignoreGUID)
 							if( not pending.hasVariableTicks ) then
 								healAmount = healAmount + (amount * stack) * math.min(ticks, ticksLeft)
 							else
-								for i=1, ticks do
+								for i=1, math.min(ticks, #(amount)) do
 									healAmount = healAmount + (amount[i] * stack)
 								end
 							end
@@ -2180,7 +2180,7 @@ function HealComm:COMBAT_LOG_EVENT_UNFILTERED(timestamp, eventType, sourceGUID, 
 					if( bombAmount ) then
 						parseHotBomb(sourceGUID, true, spellID, bombAmount, compressGUID[destGUID])
 						
-						sendMessage(string.format("UB:%s:%d:%d:%s:%d:%d:%s", totalTicks, spellID, bombAmount, compressGUID[destGUID], amount, pending.tickInterval, compressGUID[destGUID]))
+						sendMessage(string.format("UB:%s:%d:%d:%s:%d:%d:%s", pending.totalTicks, spellID, bombAmount, compressGUID[destGUID], amount, pending.tickInterval, compressGUID[destGUID]))
 						return
 					end
 				end

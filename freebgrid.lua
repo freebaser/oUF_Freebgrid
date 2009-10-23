@@ -677,7 +677,19 @@ function oUF_Freebgrid:OnEnable()
 		oUF_FreebgridDragFrame:SetBackdrop({bgFile = "Interface/Tooltips/UI-Tooltip-Background", edgeFile = "", tile = true, tileSize = 16, edgeSize = 16, insets = { left = 0, right = 0, top = 0, bottom = 0 }})
 	end
 	oUF_FreebgridDragFrame:SetPoint(db.position[1], db.position[2], db.position[3], db.position[4], db.position[5])
+	
+	local oUF_FreebgridMTDFrame = CreateFrame("Frame","oUF_FreebgridMTDFrame",UIParent)
+	oUF_FreebgridMTDFrame:SetWidth(db.height)
+	oUF_FreebgridMTDFrame:SetHeight(db.width)
+	oUF_FreebgridMTDFrame:SetScale(db.scale)
+	oUF_FreebgridMTDFrame:SetFrameStrata("HIGH")
+	if db.locked == false then
+		oUF_FreebgridMTDFrame:SetBackdrop({bgFile = "Interface/Tooltips/UI-Tooltip-Background", edgeFile = "", tile = true, tileSize = 16, edgeSize = 16, insets = { left = 0, right = 0, top = 0, bottom = 0 }})
+	end
+	oUF_FreebgridMTDFrame:SetPoint(db.MTposition[1], db.MTposition[2], db.MTposition[3], db.MTposition[4], db.MTposition[5])
+
 	make_me_movable(oUF_FreebgridDragFrame)
+	make_me_movable(oUF_FreebgridMTDFrame)
 	
 	local pos, posRel, spacingX, spacingY
 	-- SetPoint of MOTHERFUCKING DOOM!
@@ -811,13 +823,50 @@ function oUF_Freebgrid:OnEnable()
 	end
 	
 	if db.MTs then
+
 		local tank = oUF:Spawn('header', 'oUF_FreebMainTank')
-		tank:SetPoint(db.MTposition[1], db.MTposition[2], db.MTposition[3], db.MTposition[4], db.MTposition[5])
-		tank:SetManyAttributes('showRaid', true, 
-					'groupFilter', 'MAINTANK', 
-					'yOffset', -5)
-		tank:SetAttribute("template", "oUF_FreebMtargets")
-		tank:Show()
+       		tank:SetPoint("TOPLEFT", "oUF_FreebgridMTDFrame", "TOPLEFT")
+        	tank:SetManyAttributes(
+                	"showRaid", true, 
+                    	"yOffset", -5,
+                    	"template", "oUF_FreebMtargets"
+        	)
+        	--[[if oRA3 then
+            		tank:SetAttribute(
+                		"initial-unitWatch", true,
+               		     	"nameList", table.concat(oRA3:GetSortedTanks(), ",")
+            		)
+            
+            		local tankhandler = CreateFrame('Frame')
+
+            		function tankhandler:OnEvent()
+                		if(InCombatLockdown()) then
+                    			self:RegisterEvent('PLAYER_REGEN_ENABLED')
+                		else
+                    			self:UnregisterEvent('PLAYER_REGEN_ENABLED')
+                    			if self.tanks then
+                        			tank:SetAttribute(
+                            			"nameList", table.concat(self.tanks, ",")
+                        			)
+                        			self.tanks = nil
+                    			end
+                		end
+            		end
+
+            		function tankhandler:OnTanksUpdated(event, tanks)
+                		self.tanks = tanks
+                		self:OnEvent()
+            		end
+            
+            		tankhandler:SetScript('OnEvent', tankhandler.OnEvent)
+            		oRA3.RegisterCallback(tankhandler, "OnTanksUpdated")
+            
+        	else]]
+            		tank:SetAttribute(
+                    	'groupFilter', 'MAINTANK'
+            		)
+        	--end
+        	tank:Show()
 	end
 end
 

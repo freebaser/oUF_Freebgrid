@@ -26,7 +26,8 @@ local L = {
   ["Magic Concentration"] = GetSpellInfo(54646),
   ["Beacon of Light"] = GetSpellInfo(53563),
   ["Sacred Shield"] = GetSpellInfo(53601),
-  
+  ['Earth Shield'] = GetSpellInfo(49284),
+  ['Riptide'] = GetSpellInfo(61301),
 }
 local x = "M"
 
@@ -140,6 +141,25 @@ oUF.Tags["[beaconTime]"] = function(u)
   return spellTimer end
 oUF.TagEvents["[beaconTime]"] = "UNIT_AURA"
 
+--shaman
+oUF.Tags['[rip]'] = function(u) 
+	local name, _,_,_,_,_,_, fromwho,_ = UnitAura(u, L['Riptide'])
+	if not (fromwho == 'player') then return end
+	if UnitAura(u, L['Riptide']) then return '|cff00FEBF'..x..'|r' end end
+oUF.TagEvents['[rip]'] = 'UNIT_AURA'
+
+oUF.Tags['[ripTime]'] = function(u)
+	local name, _,_,_,_,_, expirationTime, fromwho,_ = UnitAura(u, L['Riptide'])
+	if not (fromwho == 'player') then return end
+	local spellTimer = '|cffffff00'..format('%.0f',-1*(GetTime()-expirationTime))..'|r'
+	return spellTimer end
+oUF.TagEvents['[ripTime]'] = 'UNIT_AURA'
+
+oUF.earthCount = {'i','h','g','f','p','q','Z','Y'}
+oUF.Tags['[earth]'] = function(u) local c = select(4, UnitAura(u, L['Earth Shield'])) if c then return '|cffFFCF7F'..oUF.earthCount[c]..'|r' end end
+oUF.TagEvents['[earth]'] = 'UNIT_AURA'
+
+
 oUF.classIndicators={
 		["DRUID"] = {
 				["TL"] = "[tree]",
@@ -185,11 +205,11 @@ oUF.classIndicators={
 				["Cen"] = "",
 		},
 		["SHAMAN"] = {
-				["TL"] = "",
+				["TL"] = "[rip]",
 				["TR"] = "",
 				["BL"] = "[Freebaggro]",
-				["BR"] = "",
-				["Cen"] = "",
+				["BR"] = "[earth]",
+				["Cen"] = "[ripTime]",
 		},
 		["HUNTER"] = {
 				["TL"] = "",
