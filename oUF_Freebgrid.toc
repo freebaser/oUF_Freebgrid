@@ -1,7 +1,7 @@
 ## Interface: 30200
 ## Title: oUF_Freebgrid
 ## Author: Freebaser
-## Version: 1.8
+## Version: 1.9
 ## Notes: oUF layout.
 ## SavedVariables: oUF_FreebgridDB, oUF_FreebgridDBdebuffs
 ## OptionalDeps: LibHealComm-4.0, LibWrapperHealComm-1.0, oUF_ReadyCheck

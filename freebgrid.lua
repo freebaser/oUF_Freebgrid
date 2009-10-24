@@ -540,7 +540,7 @@ else
 -- Raid Icon
 	if(db.ricon)then
 	  self.RaidIcon = self.Health:CreateTexture(nil, "OVERLAY")
-  	  self.RaidIcon:SetPoint("TOP", self, 0, 8)
+  	  self.RaidIcon:SetPoint("TOP", self, 0, 5)
 	  self.RaidIcon:SetHeight(db.iconSize)
 	  self.RaidIcon:SetWidth(db.iconSize)
 	end
@@ -836,7 +836,7 @@ function oUF_Freebgrid:OnEnable()
                     	"yOffset", -5,
                     	"template", "oUF_FreebMtargets"
         	)
-        	--[[if oRA3 then
+        	if oRA3 then
             		tank:SetAttribute(
                 		"initial-unitWatch", true,
                		     	"nameList", table.concat(oRA3:GetSortedTanks(), ",")
@@ -866,11 +866,11 @@ function oUF_Freebgrid:OnEnable()
             		tankhandler:SetScript('OnEvent', tankhandler.OnEvent)
             		oRA3.RegisterCallback(tankhandler, "OnTanksUpdated")
             
-        	else]]
+        	else
             		tank:SetAttribute(
                     	'groupFilter', 'MAINTANK'
             		)
-        	--end
+        	end
         	tank:Show()
 	end
 end

@@ -32,12 +32,12 @@ FreebgridDefaults = {
 	moveable = true,
 	locked = true, -- false to move frames
 
-	position = {"LEFT", "UIParent", "LEFT", 10, -100},
+	position = {"LEFT", "UIParent", "LEFT", 10, 0},
 	
-	point = "LEFT", --[[ usage: "TOP", "LEFT", "RIGHT", "BOTTOM"
+	point = "TOP", --[[ usage: "TOP", "LEFT", "RIGHT", "BOTTOM"
 						this is the unit anchor so TOP would make units grow down and LEFT would make units grow RIGHT etc. SEE growth COMMENT! ]]--
 						
-	growth = "DOWN", --[[ usage: "UP", "DOWN", "LEFT", "RIGHT"
+	growth = "RIGHT", --[[ usage: "UP", "DOWN", "LEFT", "RIGHT"
 						This defines how additional groups should be added.
 						if point = "TOP" or "BOTTOM" this MUST be "LEFT" or "RIGHT". 
 						if point = "LEFT" or "RIGHT" this MUST be "UP" or "DOWN" ]]--
