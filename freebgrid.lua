@@ -3,7 +3,7 @@ oUF_Freebgrid:SetScript('OnEvent', function(self, event, ...) self[event](self, 
 oUF_Freebgrid:RegisterEvent("ADDON_LOADED")
 local oUF = Freebgrid
 local db
-local dbDebuffs
+local dbDebuffs 
 
 local playerClass = select(2, UnitClass("player"))
 
@@ -107,6 +107,7 @@ end)
 function f:UNIT_AURA(unit)
 	local frame = oUF.units[unit]
 	if not frame or frame.unit ~= unit then return end
+	if frame:GetAttribute('unitsuffix') == 'pet' then return end
 	local cur, tex, dis
 	local name, rank, buffTexture, count, duration, expire, dtype, isPlayer
 	local dispellPriority, debuffs = db.dispellPriority, dbDebuffs.debuffs
@@ -162,6 +163,8 @@ bg:SetBackdropBorderColor(0.4, 0.4, 0.4, 1)
 bg:SetFrameLevel(0)
 bg:EnableMouse(true)
 
+local petspacing
+
 local SubGroups = function()
 	local t = {}
 	local last = db.numRaidgroups
@@ -174,9 +177,22 @@ local SubGroups = function()
 	return t
 end
 
+local partyBG = function(self)
+	if UnitInRaid("player") then return end
+
+	bg:ClearAllPoints()
+	bg:SetPoint("TOP", "oUF_FreebRaid1", "TOP", 0, 8)
+	bg:SetPoint("LEFT", "oUF_FreebRaid1", "LEFT", -8 , 0)
+	bg:SetPoint("RIGHT", "oUF_FreebRaid1", "RIGHT", 8, 0)
+	bg:SetPoint("BOTTOM", "oUF_FreebRaid1", "BOTTOM", 0, -8+(-(petspacing)))
+
+	bg:Show()
+end
+
 local FrameBG = function(self)
-	if not db.frameBG or not UnitInRaid("player") then
-		return bg:Hide()
+	if not db.frameBG then return end
+	if not UnitInRaid("player") then
+		return partyBG()
 	else
 		bg:Show()
 	end
@@ -201,31 +217,31 @@ local FrameBG = function(self)
 		bg:SetPoint("TOP", "oUF_FreebRaid1", "TOP", 0, 8)
 		bg:SetPoint("LEFT", "oUF_FreebRaid" .. first, "LEFT", -8 , 0)
 		bg:SetPoint("RIGHT", "oUF_FreebRaid" .. last, "RIGHT", 8, 0)
-		bg:SetPoint("BOTTOM", "oUF_FreebRaid" .. h, "BOTTOM", 0, -8)
+		bg:SetPoint("BOTTOM", "oUF_FreebRaid" .. h, "BOTTOM", 0, -8+(-(petspacing)))
 	elseif db.growth == "UP" then
 		bg:ClearAllPoints()
 		bg:SetPoint("LEFT", "oUF_FreebRaid1", "LEFT", -8, 0)
-		bg:SetPoint("BOTTOM", "oUF_FreebRaid" .. first, "BOTTOM", 0, -8)
+		bg:SetPoint("BOTTOM", "oUF_FreebRaid" .. first, "BOTTOM", 0, -8+(-(petspacing)))
 		bg:SetPoint("TOP", "oUF_FreebRaid" .. last, "TOP", 0, 8)
 		bg:SetPoint("RIGHT", "oUF_FreebRaid" .. h, "RIGHT", 8, 0)
 	elseif db.growth == "DOWN" then
 		bg:ClearAllPoints()
 		bg:SetPoint("LEFT", "oUF_FreebRaid1", "LEFT", -8, 0)
 		bg:SetPoint("TOP", "oUF_FreebRaid" .. first, "TOP", 0, 8)
-		bg:SetPoint("BOTTOM", "oUF_FreebRaid" .. last, "BOTTOM", 0, -8)
+		bg:SetPoint("BOTTOM", "oUF_FreebRaid" .. last, "BOTTOM", 0, -8+(-(petspacing)))
 		bg:SetPoint("RIGHT", "oUF_FreebRaid" .. h, "RIGHT", 8, 0)
 	elseif db.growth == "LEFT" then
 		bg:ClearAllPoints()
 		bg:SetPoint("TOP", "oUF_FreebRaid1", "TOP", 0, 8)
 		bg:SetPoint("RIGHT", "oUF_FreebRaid" .. first, "RIGHT", 8 , 0)
 		bg:SetPoint("LEFT", "oUF_FreebRaid" .. last, "LEFT", -8, 0)
-		bg:SetPoint("BOTTOM", "oUF_FreebRaid" .. h, "BOTTOM", 0, -8)
+		bg:SetPoint("BOTTOM", "oUF_FreebRaid" .. h, "BOTTOM", 0, -8+(-(petspacing)))
 	else
 		bg:ClearAllPoints()
 		bg:SetPoint("TOP", "oUF_FreebRaid1", "TOP", 0, 8)
 		bg:SetPoint("LEFT", "oUF_FreebRaid" .. first, "LEFT", -8 , 0)
 		bg:SetPoint("RIGHT", "oUF_FreebRaid" .. last, "RIGHT", 8, 0)
-		bg:SetPoint("BOTTOM", "oUF_FreebRaid" .. h, "BOTTOM", 0, -8)
+		bg:SetPoint("BOTTOM", "oUF_FreebRaid" .. h, "BOTTOM", 0, -8+(-(petspacing)))
 	end
 
 end
@@ -240,6 +256,7 @@ local backdrop = {
 -- Target Border
 local ChangedTarget = function(self)
 	if (UnitInRaid'player' == 1 or GetNumPartyMembers() > 0 ) and UnitIsUnit('target', self.unit) then
+		if self:GetAttribute('unitsuffix') == 'pet' then return end
 		self.TargetBorder:Show()
 	else
 		self.TargetBorder:Hide()
@@ -248,6 +265,7 @@ end
 
 local FocusTarget = function(self)
 	if UnitIsUnit('focus', self.unit) then
+		if self:GetAttribute('unitsuffix') == 'pet' then return end
 		self.FocusHighlight:Show()
 	else
 		self.FocusHighlight:Hide()
@@ -315,6 +333,8 @@ local updateHealth = function(self, event, unit, bar)
 		self.DDG:Hide()
 	end
 		
+if self:GetAttribute('unitsuffix') == 'pet' then
+else
 	self.Name:SetTextColor(r, g, b)
 	
 	local name = UnitName(unit) or "Unknown"
@@ -333,6 +353,7 @@ local updateHealth = function(self, event, unit, bar)
 	else
 		self.Name:SetText(string.format("-%.1f", def / 1000))
 	end
+end
 
 	if UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) then
 		bar.bg:SetVertexColor(.6, .6, .6)
@@ -403,7 +424,10 @@ local func = function(self, unit)
 	if(db.manabars)then
 	  if(db.vertical)then
 	    hp:SetWidth(db.width*.90)
-	    hp:SetOrientation("VERTICAL")
+	    if self:GetAttribute('unitsuffix') == 'pet' then
+	    else
+	      hp:SetOrientation("VERTICAL")
+            end
 	    hp:SetParent(self)
 	    hp:SetPoint"TOP"
 	    hp:SetPoint"BOTTOM"
@@ -418,7 +442,10 @@ local func = function(self, unit)
   	else
 	  if(db.vertical)then
 	    hp:SetWidth(db.width)
-	    hp:SetOrientation("VERTICAL")
+	    if self:GetAttribute('unitsuffix') == 'pet' then
+	    else
+	      hp:SetOrientation("VERTICAL")
+    	    end
 	    hp:SetParent(self)
 	    hp:SetPoint"TOPLEFT"
 	    hp:SetPoint"BOTTOMRIGHT"
@@ -442,18 +469,20 @@ local func = function(self, unit)
 	self:SetBackdrop(backdrop)
 	self:SetBackdropColor(0, 0, 0)
 
-	-- Health Text
+	--[[ Health Text
 	local hpp = hp:CreateFontString(nil, "OVERLAY")
 	hpp:SetFont(db.font, db.fontsize)
 	hpp:SetShadowOffset(1,-1)
 	hpp:SetPoint("CENTER")
-	hpp:SetJustifyH("CENTER")
+	hpp:SetJustifyH("CENTER")]]
 
 	hp.bg = hpbg
-	hp.value = hpp
+	--hp.value = hpp
 	self.Health = hp
 	self.OverrideUpdateHealth = updateHealth
-
+	
+if self:GetAttribute('unitsuffix') == 'pet' then
+else
 	-- PowerBars
 	if(db.manabars)then
 	  local pp = CreateFrame"StatusBar"
@@ -486,6 +515,64 @@ local func = function(self, unit)
 	  self.PostUpdatePower = updatePower
 	end
 	
+	local heal = hp:CreateFontString(nil, "OVERLAY")
+	heal:SetPoint("BOTTOM")
+	heal:SetJustifyH("CENTER")
+	heal:SetFont(db.font, db.fontsize-2)
+	heal:SetShadowOffset(1.25, -1.25)
+	heal:SetTextColor(0,1,0,1)
+
+	self.HealCommText = heal
+
+	-- Leader/Assistant Icon
+	if(db.Licon)then
+	  self.Leader = self.Health:CreateTexture(nil, "OVERLAY")
+	  self.Leader:SetPoint("TOPLEFT", self, 0, 8)
+	  self.Leader:SetHeight(db.iconSize)
+	  self.Leader:SetWidth(db.iconSize)
+	  
+	  self.Assistant = self.Health:CreateTexture(nil, "OVERLAY")
+	  self.Assistant:SetPoint("TOPLEFT", self, 0, 8)
+	  self.Assistant:SetHeight(db.iconSize)
+	  self.Assistant:SetWidth(db.iconSize)
+	end
+
+-- Raid Icon
+	if(db.ricon)then
+	  self.RaidIcon = self.Health:CreateTexture(nil, "OVERLAY")
+  	  self.RaidIcon:SetPoint("TOP", self, 0, 8)
+	  self.RaidIcon:SetHeight(db.iconSize)
+	  self.RaidIcon:SetWidth(db.iconSize)
+	end
+
+-- ReadyCheck	
+	self.ReadyCheck = self.Health:CreateTexture(nil, "OVERLAY")
+	self.ReadyCheck:SetPoint("TOP", self)
+	self.ReadyCheck:SetHeight(db.iconSize)
+	self.ReadyCheck:SetWidth(db.iconSize)
+	self.ReadyCheck.delayTime = 8
+	self.ReadyCheck.fadeTime = 1
+end
+
+	-- Name
+	local name = hp:CreateFontString(nil, "OVERLAY")
+	name:SetPoint("CENTER")
+	name:SetJustifyH("CENTER")
+	name:SetFont(db.font, db.fontsize)
+	name:SetShadowOffset(1.25, -1.25)
+	name:SetTextColor(1,1,1,1)
+
+	self.Name = name
+
+	local DDG = hp:CreateFontString(nil, "OVERLAY")
+	DDG:SetPoint("BOTTOM")
+	DDG:SetJustifyH("CENTER")
+	DDG:SetFont(db.font, db.fontsize-2)
+	DDG:SetShadowOffset(1.25, -1.25)
+	DDG:SetTextColor(.8,.8,.8,1)
+
+	self.DDG = DDG
+	
 	-- Highlight
 	if(db.highlight)then
 	  local hl = hp:CreateTexture(nil, "OVERLAY")
@@ -504,34 +591,6 @@ local func = function(self, unit)
 		self.inRangeAlpha = 1
 		self.outsideRangeAlpha = .5
 	end
-
-	-- Name
-	local name = hp:CreateFontString(nil, "OVERLAY")
-	name:SetPoint("CENTER")
-	name:SetJustifyH("CENTER")
-	name:SetFont(db.font, db.fontsize)
-	name:SetShadowOffset(1.25, -1.25)
-	name:SetTextColor(1,1,1,1)
-
-	self.Name = name
-	
-	local heal = hp:CreateFontString(nil, "OVERLAY")
-	heal:SetPoint("BOTTOM")
-	heal:SetJustifyH("CENTER")
-	heal:SetFont(db.font, db.fontsize-2)
-	heal:SetShadowOffset(1.25, -1.25)
-	heal:SetTextColor(0,1,0,1)
-
-	self.HealCommText = heal
-	
-	local DDG = hp:CreateFontString(nil, "OVERLAY")
-	DDG:SetPoint("BOTTOM")
-	DDG:SetJustifyH("CENTER")
-	DDG:SetFont(db.font, db.fontsize-2)
-	DDG:SetShadowOffset(1.25, -1.25)
-	DDG:SetTextColor(.8,.8,.8,1)
-
-	self.DDG = DDG
 
 	local manaborder = self:CreateTexture(nil, "OVERLAY")
 	manaborder:SetPoint("LEFT", self, "LEFT", -5, 0)
@@ -601,36 +660,7 @@ local func = function(self, unit)
 	border:SetVertexColor(1, 1, 1)
 	self.border = border
 
--- Leader/Assistant Icon
-	if(db.Licon)then
-	  self.Leader = self.Health:CreateTexture(nil, "OVERLAY")
-	  self.Leader:SetPoint("TOPLEFT", self, 0, 8)
-	  self.Leader:SetHeight(db.iconSize)
-	  self.Leader:SetWidth(db.iconSize)
-	  
-	  self.Assistant = self.Health:CreateTexture(nil, "OVERLAY")
-	  self.Assistant:SetPoint("TOPLEFT", self, 0, 8)
-	  self.Assistant:SetHeight(db.iconSize)
-	  self.Assistant:SetWidth(db.iconSize)
-	end
-
--- Raid Icon
-	if(db.ricon)then
-	  self.RaidIcon = self.Health:CreateTexture(nil, "OVERLAY")
-  	  self.RaidIcon:SetPoint("TOP", self, 0, 8)
-	  self.RaidIcon:SetHeight(db.iconSize)
-	  self.RaidIcon:SetWidth(db.iconSize)
-	end
-
--- ReadyCheck	
-	self.ReadyCheck = self.Health:CreateTexture(nil, "OVERLAY")
-	self.ReadyCheck:SetPoint("TOP", self)
-	self.ReadyCheck:SetHeight(db.iconSize)
-	self.ReadyCheck:SetWidth(db.iconSize)
-	self.ReadyCheck.delayTime = 8
-	self.ReadyCheck.fadeTime = 1
-
-	if (self:GetAttribute('unitsuffix') == 'target')then
+	if (self:GetAttribute('unitsuffix') == 'target') or (self:GetAttribute('unitsuffix') == 'pet') then
 	  self.ignoreHealComm = true
   	else
 	  if(db.indicators)then
@@ -643,9 +673,14 @@ local func = function(self, unit)
 	self:RegisterEvent('RAID_ROSTER_UPDATE', FocusTarget)
 	self:RegisterEvent('PLAYER_TARGET_CHANGED', ChangedTarget)
 	self:RegisterEvent("RAID_ROSTER_UPDATE", FrameBG)
+	self:RegisterEvent("PARTY_MEMBERS_CHANGED", FrameBG)
 	self:RegisterEvent("PLAYER_LOGIN", FrameBG)
 
-	self:SetAttribute('initial-height', db.height)
+	if (self:GetAttribute('unitsuffix') == 'pet') then
+	  self:SetAttribute('initial-height', db.petheight)
+	else
+	  self:SetAttribute('initial-height', db.height)
+	end
 	self:SetAttribute('initial-width', db.width)
 
 	return self
@@ -654,18 +689,27 @@ end
 function oUF_Freebgrid:OnEnable()
 	oUF:RegisterStyle("Freebgrid", func)
 	oUF:SetActiveStyle"Freebgrid"
+
+	if db.pets then
+		petspacing = db.petheight+2
+	else
+		petspacing = 0
+	end
 	
 	-- Credits to Zork for the drag frame
 	local function make_me_movable(f)
-   		
-      		f:SetMovable(true)
-      		f:SetUserPlaced(true)
-      		if db.locked == false then
-        		f:EnableMouse(true)
-        		f:RegisterForDrag("LeftButton","RightButton")
-        		f:SetScript("OnDragStart", function(self) if IsAltKeyDown() then self:StartMoving() end end)
-        		f:SetScript("OnDragStop", function(self) self:StopMovingOrSizing() end)
-     		end
+		if db.moveable == false then
+    			f:IsUserPlaced(false)
+    		else
+      			f:SetMovable(true)
+      			f:SetUserPlaced(true)
+      			if db.locked == false then
+        			f:EnableMouse(true)
+        			f:RegisterForDrag("LeftButton","RightButton")
+        			f:SetScript("OnDragStart", function(self) if IsAltKeyDown() then self:StartMoving() end end)
+        			f:SetScript("OnDragStop", function(self) self:StopMovingOrSizing() end)
+     			end
+		end
 	end
 
 	local oUF_FreebgridDragFrame = CreateFrame("Frame","oUF_FreebgridDragFrame",UIParent)
@@ -692,79 +736,71 @@ function oUF_Freebgrid:OnEnable()
 	make_me_movable(oUF_FreebgridMTDFrame)
 	
 	local pos, posRel, spacingX, spacingY
+	petsTemp = "oUF_FreebpetsDOWN"
 	-- SetPoint of MOTHERFUCKING DOOM!
 	if db.point == "TOP" and db.growth == "LEFT" then
 		pos = "TOPRIGHT"
 		posRel = "TOPLEFT"
 		spacingX = 0
-		spacingY = -(db.spacing)
+		spacingY = -(db.spacing)+(-(petspacing))
 		colX = -(db.spacing)
 		colY = 0
-		petsTemp = "oUF_FreebpetsLEFT"
 	elseif db.point == "TOP" and db.growth == "RIGHT" then
 		pos = "TOPLEFT"
 		posRel = "TOPRIGHT"
 		spacingX = 0
-		spacingY = -(db.spacing)
+		spacingY = -(db.spacing)+(-(petspacing))
 		colX = db.spacing
 		colY = 0
-		petsTemp = "oUF_FreebpetsRIGHT"
 	elseif db.point == "LEFT" and db.growth == "UP" then
 		pos = "BOTTOMLEFT"
 		posRel = "TOPLEFT"
 		spacingX = db.spacing
 		spacingY = 0
 		colX = 0
-		colY = db.spacing
-		petsTemp = "oUF_FreebpetsUP"
+		colY = db.spacing+((petspacing))
 	elseif db.point == "LEFT" and db.growth == "DOWN" then
 		pos = "TOPLEFT"
 		posRel = "BOTTOMLEFT"
 		spacingX = db.spacing
 		spacingY = 0
 		colX = 0
-		colY = -(db.spacing)
-		petsTemp = "oUF_FreebpetsDOWN"
+		colY = -(db.spacing)+(-(petspacing))
 	elseif db.point == "RIGHT" and db.growth == "UP" then
 		pos = "BOTTOMRIGHT"
 		posRel = "TOPRIGHT"
 		spacingX = -(db.spacing)
 		spacingY = 0
 		colX = 0
-		colY = db.spacing
-		petsTemp = "oUF_FreebpetsUP"
+		colY = db.spacing+((petspacing))
 	elseif db.point == "RIGHT" and db.growth == "DOWN" then
 		pos = "TOPRIGHT"
 		posRel = "BOTTOMRIGHT"
 		spacingX = -(db.spacing)
 		spacingY = 0
 		colX = 0
-		colY = -(db.spacing)
-		petsTemp = "oUF_FreebpetsDOWN"
+		colY = -(db.spacing)+(-(petspacing))
 	elseif db.point == "BOTTOM" and db.growth == "LEFT" then
 		pos = "BOTTOMRIGHT"
 		posRel = "BOTTOMLEFT"
 		spacingX = 0
-		spacingY = (db.spacing)
+		spacingY = (db.spacing)+((petspacing))
 		colX = -(db.spacing)
 		colY = 0
-		petsTemp = "oUF_FreebpetsLEFT"
 	elseif db.point == "BOTTOM" and db.growth == "RIGHT" then
 		pos = "BOTTOMLEFT"
 		posRel = "BOTTOMRIGHT"
 		spacingX = 0
-		spacingY = (db.spacing)
+		spacingY = (db.spacing)+((petspacing))
 		colX = (db.spacing)
 		colY = 0
-		petsTemp = "oUF_FreebpetsRIGHT"
 	else -- You failed to equal any of the above. So I give this...
 		pos = "TOPLEFT"
 		posRel = "TOPRIGHT"
 		spacingX = 0
-		spacingY = -(db.spacing)
+		spacingY = -(db.spacing)+(-(petspacing))
 		colX = db.spacing
 		colY = 0
-		petsTemp = "oUF_FreebpetsRIGHT"
 	end
 
 	local raid = {}
@@ -784,44 +820,13 @@ function oUF_Freebgrid:OnEnable()
 		else
 			raidg:SetPoint(pos, raid[i-1], posRel, colX, colY) 
 		end
+		if db.pets then
+			raidg:SetAttribute("template", petsTemp)
+		end
 		raidg:SetScale(db.scale)
 	end
+	for i,v in ipairs(raid) do v:Show() end
 
-	if db.partyON and db.partyPets then
-		local party = oUF:Spawn('header', 'oUF_FreebParty')
-		party:SetPoint("TOPLEFT", "oUF_FreebgridDragFrame", "TOPLEFT")
-		party:SetManyAttributes('showParty', true,
-					'showSolo', db.solo,
-					'showPlayer', true,
-					'point', db.point,
-					'xoffset', spacingX,
-					'yOffset', spacingY)
-		party:SetAttribute("template", petsTemp)
-	
-		local partyToggle = CreateFrame('Frame')
-		partyToggle:RegisterEvent('PLAYER_LOGIN')
-		partyToggle:RegisterEvent('RAID_ROSTER_UPDATE')
-		partyToggle:RegisterEvent('PARTY_LEADER_CHANGED')
-		partyToggle:RegisterEvent('PARTY_MEMBERS_CHANGED')
-		partyToggle:SetScript('OnEvent', function(self)
-			if(InCombatLockdown()) then
-				self:RegisterEvent('PLAYER_REGEN_ENABLED')
-			else
-				self:UnregisterEvent('PLAYER_REGEN_ENABLED')
-					if(GetNumRaidMembers() > 5) then
-						party:Hide()
-						for i,v in ipairs(raid) do v:Show() end
-					else
-						party:Show()
-						for i,v in ipairs(raid) do v:Hide() end
-					end
-			end
-		end)
-		party:SetScale(db.scale)
-	else
-		for i,v in ipairs(raid) do v:Show() end
-	end
-	
 	if db.MTs then
 
 		local tank = oUF:Spawn('header', 'oUF_FreebMainTank')

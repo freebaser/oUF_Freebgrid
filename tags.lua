@@ -101,7 +101,7 @@ oUF.Tags["[gotw]"] = function(u) local c = UnitAura(u, L["Gift of the Wild"]) or
 oUF.TagEvents["[gotw]"] = "UNIT_AURA"
 
 --warrior
-oUF.Tags["[Bsh]"] = function(u) if UnitAura(u, L["Battle Shout"]) then return "|cffff00000"..x.."|r" end end
+oUF.Tags["[Bsh]"] = function(u) if UnitAura(u, L["Battle Shout"]) then return "|cffff0000"..x.."|r" end end
 oUF.TagEvents["[Bsh]"] = "UNIT_AURA"
 oUF.Tags["[Csh]"] = function(u) if UnitAura(u, L["Commanding Shout"]) then return "|cffffff00"..x.."|r" end end
 oUF.TagEvents["[Csh]"] = "UNIT_AURA"
@@ -191,9 +191,9 @@ oUF.classIndicators={
 				["Cen"] = "",
 		},
 		["WARRIOR"] = {
-				["TL"] = "",
-				["TR"] = "[Bsh][Csh]",
-				["BL"] = "[vigil][Freebaggro]",
+				["TL"] = "[vigil]",
+				["TR"] = "",
+				["BL"] = "[Freebaggro]",
 				["BR"] = "",
 				["Cen"] = "",
 		},
