@@ -1,5 +1,5 @@
 local major = "LibHealComm-4.0"
-local minor = 43
+local minor = 45
 assert(LibStub, string.format("%s requires LibStub.", major))
 
 local HealComm = LibStub:NewLibrary(major, minor)
@@ -188,27 +188,32 @@ if( not HealComm.spellToID ) then
 end
 
 -- This gets filled out after data has been loaded, this is only for casted heals. Hots just directly pull from the averages as they do not increase in power with level, Cataclysm will change this though.
+if( HealComm.averageHealMT and not HealComm.fixedAverage ) then
+	HealComm.averageHealMT = nil
+	HealComm.fixedAverage = true
+end
+
 HealComm.averageHeal = HealComm.averageHeal or {}
 HealComm.averageHealMT = HealComm.averageHealMT or {
 	__index = function(tbl, index)
 		local rank = HealComm.rankNumbers[index]
 		local spellData = HealComm.spellData[rawget(tbl, "spell")]
 		local spellLevel = spellData.levels[rank]
-
+		
 		-- No increase, it doesn't scale with levely
-		if( not spellData.increase or playerLevel <= spellLevel ) then
+		if( not spellData.increase or UnitLevel("player") <= spellLevel ) then
 			rawset(tbl, index, spellData.averages[rank])
 			return spellData.averages[rank]
 		end
 		
 		local average = spellData.averages[rank]
-		if( playerLevel >= MAX_PLAYER_LEVEL ) then
+		if( UnitLevel("level") >= MAX_PLAYER_LEVEL ) then
 			average = average + spellData.increase[rank]
 		-- Here's how this works: If a spell increases 1,000 between 70 and 80, the player is level 75 the spell is 70
 		-- it's 1000 / (80 - 70) so 100, the player learned the spell 5 levels ago which means that the spell average increases by 500
 		-- This figures out how much it increases per level and how ahead of the spells level they are to figure out how much to add
 		else
-			average = average + (playerLevel - spellLevel) * (spellData.increase[rank] / (MAX_PLAYER_LEVEL - spellLevel))
+			average = average + (UnitLevel("player") - spellLevel) * (spellData.increase[rank] / (MAX_PLAYER_LEVEL - spellLevel))
 		end
 		
 		rawset(tbl, index, average)
@@ -1489,11 +1494,16 @@ HealComm.healingModifiers = HealComm.healingModifiers or {
 	[getName(41350)] = 2.00, -- Aura of Desire
 }
 
+-- Temporary to ensure the new fixed version is used even when upgrading from an older version
+if( HealComm.healingStackMods ) then
+	HealComm.healingStackMods[getName(45242)] = function(name, rank, icon, stacks) return 1 + (stacks * (0.02 + rankNumbers[rank] / 100)) end
+end
+
 HealComm.healingStackMods = HealComm.healingStackMods or {
 	-- Tenacity
 	[getName(58549)] = function(name, rank, icon, stacks) return icon == "Interface\\Icons\\Ability_Warrior_StrengthOfArms" and stacks ^ 1.18 or 1 end,
 	-- Focused Will
-	[getName(45242)] = function(name, rank, icon, stacks) return 1 + (stacks * (0.02 + rankNumbers[rank])) end,
+	[getName(45242)] = function(name, rank, icon, stacks) return 1 + (stacks * (0.02 + rankNumbers[rank] / 100)) end,
 	-- Nether Portal - Dominance
 	[getName(30423)] = function(name, rank, icon, stacks) return 1 + stacks * 0.01 end,
 	-- Dark Touched
@@ -1600,7 +1610,7 @@ function HealComm:UNIT_AURA(unit)
 	while( true ) do
 		local name, rank, icon, stack = UnitAura(unit, id, "HELPFUL")
 		if( not name ) then break end
-		-- Don't want to calculate a modifier twice, or spells such as ToL will show be extra 1.06 for Druids in TOL
+		-- Prevent buffs like Tree of Life that have the same name for the shapeshift/healing increase from being calculated twice
 		if( not alreadyAdded[name] ) then
 			alreadyAdded[name] = true
 

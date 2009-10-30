@@ -178,14 +178,13 @@ local SubGroups = function()
 end
 
 local partyBG = function(self)
-	if UnitInRaid("player") then return end
+	if not UnitInParty("player") and not db.solo then bg:Hide() return end
 
 	bg:ClearAllPoints()
 	bg:SetPoint("TOP", "oUF_FreebRaid1", "TOP", 0, 8)
 	bg:SetPoint("LEFT", "oUF_FreebRaid1", "LEFT", -8 , 0)
 	bg:SetPoint("RIGHT", "oUF_FreebRaid1", "RIGHT", 8, 0)
 	bg:SetPoint("BOTTOM", "oUF_FreebRaid1", "BOTTOM", 0, -8+(-(petspacing)))
-
 	bg:Show()
 end
 
@@ -243,7 +242,6 @@ local FrameBG = function(self)
 		bg:SetPoint("RIGHT", "oUF_FreebRaid" .. last, "RIGHT", 8, 0)
 		bg:SetPoint("BOTTOM", "oUF_FreebRaid" .. h, "BOTTOM", 0, -8+(-(petspacing)))
 	end
-
 end
 
 --=======================================================================================--
@@ -333,38 +331,33 @@ local updateHealth = function(self, event, unit, bar)
 		self.DDG:Hide()
 	end
 		
-if self:GetAttribute('unitsuffix') == 'pet' then
-else
-	self.Name:SetTextColor(r, g, b)
-	
-	local name = UnitName(unit) or "Unknown"
-	if(per > 90) or UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) then
-		if nameCache[name] then 
-			self.Name:SetText(nameCache[name]) 
-		else 
-			local substring 
-			for length=#name, 1, -1 do 
-			substring = utf8sub(name, 1, length) 
-			self.Name:SetText(substring) 
-				if self.Name:GetStringWidth() <= db.width-2 then break end 
-			end 
-		end
-		nameCache[name] = substring
+	if self:GetAttribute('unitsuffix') == 'pet' then
 	else
-		self.Name:SetText(string.format("-%.1f", def / 1000))
+		self.Name:SetTextColor(r, g, b)
+		
+		local name = UnitName(unit) or "Unknown"
+		if(per > 90) or UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) or self:GetAttribute('unitsuffix') == 'target' then
+			if nameCache[name] then 
+				self.Name:SetText(nameCache[name]) 
+			else 
+				local substring 
+				for length=#name, 1, -1 do 
+				substring = utf8sub(name, 1, length) 
+				self.Name:SetText(substring) 
+					if self.Name:GetStringWidth() <= db.width-2 then break end 
+				end 
+			end
+			nameCache[name] = substring
+		else
+			self.Name:SetText(string.format("-%.1f", def / 1000))
+		end
 	end
-end
 
-	if UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) then
-		bar.bg:SetVertexColor(.6, .6, .6)
-		bar:SetStatusBarColor(.6, .6, .6)
-	else
-		bar.bg:SetVertexColor(r, g, b)
-		if(db.reverseColors)then
-			bar:SetStatusBarColor(r, g, b)
-  		else	
-			bar:SetStatusBarColor(0, 0, 0)
-		end
+	bar.bg:SetVertexColor(r, g, b)
+	if(db.reverseColors)then
+		bar:SetStatusBarColor(r, g, b)
+  	else	
+		bar:SetStatusBarColor(0, 0, 0)
 	end
 end
 
@@ -401,6 +394,17 @@ local function menu(self)
   end
 end
 
+local function updateThreat(self, event, unit)
+	if unit ~= self.unit then return end
+	local s = UnitThreatSituation(unit)
+	if s and s > 1 then
+		r, g, b = GetThreatStatusColor(s)
+		self.FrameBackdrop:SetBackdropBorderColor(r, g, b)
+	else
+		self.FrameBackdrop:SetBackdropBorderColor(0, 0, 0)
+	end
+end
+
 -- Style
 local func = function(self, unit)
 	self.colors = colors
@@ -427,7 +431,7 @@ local func = function(self, unit)
 	    if self:GetAttribute('unitsuffix') == 'pet' then
 	    else
 	      hp:SetOrientation("VERTICAL")
-            end
+        end
 	    hp:SetParent(self)
 	    hp:SetPoint"TOP"
 	    hp:SetPoint"BOTTOM"
@@ -445,7 +449,7 @@ local func = function(self, unit)
 	    if self:GetAttribute('unitsuffix') == 'pet' then
 	    else
 	      hp:SetOrientation("VERTICAL")
-    	    end
+    	end
 	    hp:SetParent(self)
 	    hp:SetPoint"TOPLEFT"
 	    hp:SetPoint"BOTTOMRIGHT"
@@ -465,94 +469,97 @@ local func = function(self, unit)
 	  hpbg:SetAlpha(1)
   	end
 
-	-- Backdrop
-	self:SetBackdrop(backdrop)
-	self:SetBackdropColor(0, 0, 0)
-
-	--[[ Health Text
-	local hpp = hp:CreateFontString(nil, "OVERLAY")
-	hpp:SetFont(db.font, db.fontsize)
-	hpp:SetShadowOffset(1,-1)
-	hpp:SetPoint("CENTER")
-	hpp:SetJustifyH("CENTER")]]
-
 	hp.bg = hpbg
-	--hp.value = hpp
 	self.Health = hp
 	self.OverrideUpdateHealth = updateHealth
+
+	-- Backdrop
+	self:SetBackdrop(backdrop)
+	self:SetBackdropColor(0, 0, 0)	
+
+	self.FrameBackdrop = CreateFrame("Frame", nil, self)
+	self.FrameBackdrop:SetPoint("TOPLEFT", self, "TOPLEFT", -4.5, 4.5)
+	self.FrameBackdrop:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 4.5, -4.5)
+	self.FrameBackdrop:SetFrameStrata("BACKGROUND")
+	self.FrameBackdrop:SetBackdrop {
+	  edgeFile = db.glowTex, edgeSize = 5,
+	  insets = {left = 3, right = 3, top = 3, bottom = 3}
+	}
+	self.FrameBackdrop:SetBackdropColor(0, 0, 0, 0)
+	self.FrameBackdrop:SetBackdropBorderColor(0, 0, 0)
 	
-if self:GetAttribute('unitsuffix') == 'pet' then
-else
-	-- PowerBars
-	if(db.manabars)then
-	  local pp = CreateFrame"StatusBar"
-	  pp:SetStatusBarTexture(db.texture)
-	  pp.colorPower = true
-	  pp.frequentUpdates = true
-	
-	  if(db.vertical)then
-	    pp:SetWidth(db.width*.08)
-	    pp:SetOrientation("VERTICAL")
-	    pp:SetParent(self)
-	    pp:SetPoint"TOP"
-	    pp:SetPoint"BOTTOM"
-	    pp:SetPoint"RIGHT"
-  	  else
-	    pp:SetHeight(db.height*.08)
-	    pp:SetParent(self)
-	    pp:SetPoint"LEFT"
-	    pp:SetPoint"RIGHT"
-	    pp:SetPoint"BOTTOM"
-	  end
+	if self:GetAttribute('unitsuffix') == 'pet' then
+	else
+		-- PowerBars
+		if(db.manabars)then
+		  local pp = CreateFrame"StatusBar"
+		  pp:SetStatusBarTexture(db.texture)
+		  pp.colorPower = true
+		  pp.frequentUpdates = true
+		
+		  if(db.vertical)then
+			pp:SetWidth(db.width*.08)
+			pp:SetOrientation("VERTICAL")
+			pp:SetParent(self)
+			pp:SetPoint"TOP"
+			pp:SetPoint"BOTTOM"
+			pp:SetPoint"RIGHT"
+		  else
+			pp:SetHeight(db.height*.08)
+			pp:SetParent(self)
+			pp:SetPoint"LEFT"
+			pp:SetPoint"RIGHT"
+			pp:SetPoint"BOTTOM"
+		  end
 
-	  local ppbg = pp:CreateTexture(nil, "BORDER")
-	  ppbg:SetAllPoints(pp)
-	  ppbg:SetTexture(db.texture)
-	  ppbg.multiplier = .3
-	  pp.bg = ppbg
+		  local ppbg = pp:CreateTexture(nil, "BORDER")
+		  ppbg:SetAllPoints(pp)
+		  ppbg:SetTexture(db.texture)
+		  ppbg.multiplier = .3
+		  pp.bg = ppbg
 
-	  self.Power = pp
-	  self.PostUpdatePower = updatePower
+		  self.Power = pp
+		  self.PostUpdatePower = updatePower
+		end
+		
+		local heal = hp:CreateFontString(nil, "OVERLAY")
+		heal:SetPoint("BOTTOM")
+		heal:SetJustifyH("CENTER")
+		heal:SetFont(db.font, db.fontsize-2)
+		heal:SetShadowOffset(1.25, -1.25)
+		heal:SetTextColor(0,1,0,1)
+
+		self.HealCommText = heal
+
+		-- Leader/Assistant Icon
+		if(db.Licon)then
+		  self.Leader = self.Health:CreateTexture(nil, "OVERLAY")
+		  self.Leader:SetPoint("TOPLEFT", self, 0, 8)
+		  self.Leader:SetHeight(db.iconSize)
+		  self.Leader:SetWidth(db.iconSize)
+		  
+		  self.Assistant = self.Health:CreateTexture(nil, "OVERLAY")
+		  self.Assistant:SetPoint("TOPLEFT", self, 0, 8)
+		  self.Assistant:SetHeight(db.iconSize)
+		  self.Assistant:SetWidth(db.iconSize)
+		end
+
+	-- Raid Icon
+		if(db.ricon)then
+		  self.RaidIcon = self.Health:CreateTexture(nil, "OVERLAY")
+		  self.RaidIcon:SetPoint("TOP", self, 0, 5)
+		  self.RaidIcon:SetHeight(db.iconSize)
+		  self.RaidIcon:SetWidth(db.iconSize)
+		end
+
+	-- ReadyCheck	
+		self.ReadyCheck = self.Health:CreateTexture(nil, "OVERLAY")
+		self.ReadyCheck:SetPoint("TOP", self)
+		self.ReadyCheck:SetHeight(db.iconSize)
+		self.ReadyCheck:SetWidth(db.iconSize)
+		self.ReadyCheck.delayTime = 8
+		self.ReadyCheck.fadeTime = 1
 	end
-	
-	local heal = hp:CreateFontString(nil, "OVERLAY")
-	heal:SetPoint("BOTTOM")
-	heal:SetJustifyH("CENTER")
-	heal:SetFont(db.font, db.fontsize-2)
-	heal:SetShadowOffset(1.25, -1.25)
-	heal:SetTextColor(0,1,0,1)
-
-	self.HealCommText = heal
-
-	-- Leader/Assistant Icon
-	if(db.Licon)then
-	  self.Leader = self.Health:CreateTexture(nil, "OVERLAY")
-	  self.Leader:SetPoint("TOPLEFT", self, 0, 8)
-	  self.Leader:SetHeight(db.iconSize)
-	  self.Leader:SetWidth(db.iconSize)
-	  
-	  self.Assistant = self.Health:CreateTexture(nil, "OVERLAY")
-	  self.Assistant:SetPoint("TOPLEFT", self, 0, 8)
-	  self.Assistant:SetHeight(db.iconSize)
-	  self.Assistant:SetWidth(db.iconSize)
-	end
-
--- Raid Icon
-	if(db.ricon)then
-	  self.RaidIcon = self.Health:CreateTexture(nil, "OVERLAY")
-  	  self.RaidIcon:SetPoint("TOP", self, 0, 5)
-	  self.RaidIcon:SetHeight(db.iconSize)
-	  self.RaidIcon:SetWidth(db.iconSize)
-	end
-
--- ReadyCheck	
-	self.ReadyCheck = self.Health:CreateTexture(nil, "OVERLAY")
-	self.ReadyCheck:SetPoint("TOP", self)
-	self.ReadyCheck:SetHeight(db.iconSize)
-	self.ReadyCheck:SetWidth(db.iconSize)
-	self.ReadyCheck.delayTime = 8
-	self.ReadyCheck.fadeTime = 1
-end
 
 	-- Name
 	local name = hp:CreateFontString(nil, "OVERLAY")
@@ -567,7 +574,11 @@ end
 	local DDG = hp:CreateFontString(nil, "OVERLAY")
 	DDG:SetPoint("BOTTOM")
 	DDG:SetJustifyH("CENTER")
-	DDG:SetFont(db.font, db.fontsize-2)
+	if self:GetAttribute('unitsuffix') == 'pet' then
+	  DDG:SetFont(db.font, db.fontsize-4)
+  	else
+	  DDG:SetFont(db.font, db.fontsize-2)
+  	end
 	DDG:SetShadowOffset(1.25, -1.25)
 	DDG:SetTextColor(.8,.8,.8,1)
 
@@ -586,10 +597,13 @@ end
 	end
 
 	-- Range Alpha
-	if(not unit) then
+	if self:GetAttribute('unitsuffix') == 'target' then
+	else
+	  if(not unit) then
 		self.Range = true
 		self.inRangeAlpha = 1
 		self.outsideRangeAlpha = .5
+	  end
 	end
 
 	local manaborder = self:CreateTexture(nil, "OVERLAY")
@@ -675,6 +689,8 @@ end
 	self:RegisterEvent("RAID_ROSTER_UPDATE", FrameBG)
 	self:RegisterEvent("PARTY_MEMBERS_CHANGED", FrameBG)
 	self:RegisterEvent("PLAYER_LOGIN", FrameBG)
+	self:RegisterEvent("UNIT_THREAT_LIST_UPDATE", updateThreat)
+	self:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE", updateThreat)
 
 	if (self:GetAttribute('unitsuffix') == 'pet') then
 	  self:SetAttribute('initial-height', db.petheight)
@@ -803,9 +819,16 @@ function oUF_Freebgrid:OnEnable()
 		colY = 0
 	end
 
+	local disableBlizz
+	if db.ShowBlizzParty then
+		disableBlizz = ''
+	else
+		disableBlizz = 'party'
+	end
+
 	local raid = {}
 	for i = 1, db.numRaidgroups do
-		local raidg = oUF:Spawn('header', 'oUF_FreebRaid'..i)
+		local raidg = oUF:Spawn('header', 'oUF_FreebRaid'..i, nil, disableBlizz)
 		raidg:SetManyAttributes('groupFilter', tostring(i),
 					'showRaid', true,
 					'showSolo', db.solo,
@@ -836,7 +859,8 @@ function oUF_Freebgrid:OnEnable()
                     	"yOffset", -5,
                     	"template", "oUF_FreebMtargets"
         	)
-        	if oRA3 then
+		
+		if oRA3 and not select(2,IsInInstance()) == "pvp" and not select(2,IsInInstance()) == "arena" then
             		tank:SetAttribute(
                 		"initial-unitWatch", true,
                		     	"nameList", table.concat(oRA3:GetSortedTanks(), ",")
@@ -900,5 +924,3 @@ function oUF_Freebgrid:ADDON_LOADED(event, addon)
 	oUF_Freebgrid:OnEnable()
 	self:UnregisterEvent("ADDON_LOADED")
 end
-
-

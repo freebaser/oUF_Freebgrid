@@ -8,6 +8,7 @@ FreebgridDefaults = {
 	borderTex = mediaPath.."border",
 	iconborder = mediaPath.."border2",
 	trans = mediaPath.."trans",
+	glowTex = mediaPath.."glowTex",
 	
 	height = 42,
 	petheight = 10,
@@ -29,7 +30,7 @@ FreebgridDefaults = {
 	iconSize = 14,	-- Size of raid symbols, leader, etc.
 	debuffsize = 16,
 	
-	moveable = true,
+	moveable = true, -- setting this to false will override any saved position to the one set here.
 	locked = true, -- false to move frames
 
 	position = {"LEFT", "UIParent", "LEFT", 10, 0},
@@ -46,7 +47,9 @@ FreebgridDefaults = {
 
 	solo = true,
 	partyON = true,	-- dude?
-	pets = true,	-- Party/Raid pets
+	ShowBlizzParty = false, -- Show the blizzard default party frames?
+	pets = false,	-- Party/Raid pets
+
 	reverseColors = false,	-- Reverse Units color
 	highlight = true,		-- MouseOver Highlight?
 	indicators = true, 		-- Class Indicators?
@@ -54,7 +57,7 @@ FreebgridDefaults = {
 	manabars = false,		-- Mana Bars?
 	Licon = true,			-- Leader icon?
 	ricon = true,			-- Raid icon?
-	noHealbar = true,		-- Disable HealComm Bar
+	noHealbar = false,		-- Disable HealComm Bar
 	Healtext = true,		-- Enable HealComm Text
 	frameBG = true,			-- apply raid Background?
 	
