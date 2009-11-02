@@ -57,7 +57,7 @@ FreebgridDefaults = {
 	manabars = false,		-- Mana Bars?
 	Licon = true,			-- Leader icon?
 	ricon = true,			-- Raid icon?
-	noHealbar = false,		-- Disable HealComm Bar
+	noHealbar = true,		-- Disable HealComm Bar
 	Healtext = true,		-- Enable HealComm Text
 	frameBG = true,			-- apply raid Background?
 	

@@ -158,9 +158,9 @@ bg:SetBackdrop({
 	edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", edgeSize = 10,
 	insets = {left = 2, right = 2, top = 2, bottom = 2}
 })
-bg:SetBackdropColor(0, 0, 0, 0.6)
+bg:SetBackdropColor(0, 0, 0, 0.7)
 bg:SetBackdropBorderColor(0.4, 0.4, 0.4, 1)
-bg:SetFrameLevel(0)
+bg:SetFrameStrata("BACKGROUND")
 bg:EnableMouse(true)
 
 local petspacing
@@ -178,7 +178,7 @@ local SubGroups = function()
 end
 
 local partyBG = function(self)
-	if not UnitInParty("player") and not db.solo then bg:Hide() return end
+	if not UnitInParty("player") and not db.solo then return end
 
 	bg:ClearAllPoints()
 	bg:SetPoint("TOP", "oUF_FreebRaid1", "TOP", 0, 8)
@@ -394,9 +394,9 @@ local function menu(self)
   end
 end
 
-local function updateThreat(self, event, unit)
-	if unit ~= self.unit then return end
-	local s = UnitThreatSituation(unit)
+local function updateThreat(self, event, u)
+	if (self.unit ~= u) then return end
+	local s = UnitThreatSituation(u)
 	if s and s > 1 then
 		r, g, b = GetThreatStatusColor(s)
 		self.FrameBackdrop:SetBackdropBorderColor(r, g, b)
@@ -478,9 +478,9 @@ local func = function(self, unit)
 	self:SetBackdropColor(0, 0, 0)	
 
 	self.FrameBackdrop = CreateFrame("Frame", nil, self)
-	self.FrameBackdrop:SetPoint("TOPLEFT", self, "TOPLEFT", -4.5, 4.5)
-	self.FrameBackdrop:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 4.5, -4.5)
-	self.FrameBackdrop:SetFrameStrata("BACKGROUND")
+	self.FrameBackdrop:SetPoint("TOPLEFT", self, "TOPLEFT", -4, 4)
+	self.FrameBackdrop:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 4, -4)
+	self.FrameBackdrop:SetFrameStrata("LOW")
 	self.FrameBackdrop:SetBackdrop {
 	  edgeFile = db.glowTex, edgeSize = 5,
 	  insets = {left = 3, right = 3, top = 3, bottom = 3}
@@ -682,6 +682,8 @@ local func = function(self, unit)
   	  end
 	end
 	self.ignoreHealComm = db.noHealbar
+	
+	self.OverrideUpdateThreat = updateThreat
 	
 	self:RegisterEvent('PLAYER_FOCUS_CHANGED', FocusTarget)
 	self:RegisterEvent('RAID_ROSTER_UPDATE', FocusTarget)
