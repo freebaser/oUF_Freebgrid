@@ -3,13 +3,9 @@
 ## Author: Freebaser
 ## Version: 1.9
 ## Notes: oUF layout.
-## SavedVariables: oUF_FreebgridDB, oUF_FreebgridDBdebuffs
-## OptionalDeps: LibHealComm-4.0, LibWrapperHealComm-1.0, oUF_ReadyCheck
+## OptionalDeps: LibHealComm-3.0, LibHealComm-4.0, LibWrapperHealComm-1.0, oUF_ReadyCheck
 ## X-Embeds: LibHealComm-4.0, LibWrapperHealComm-1.0
 ## X-oUF: Freebgrid
 
-libs\lib.xml
 oUF\oUF.xml
-pets.xml
-mtargets.xml
 oUF_Freebgrid.xml

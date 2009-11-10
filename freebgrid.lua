@@ -1,9 +1,12 @@
-oUF_Freebgrid = CreateFrame('Frame', 'oUF_Freebgrid', UIParent)
-oUF_Freebgrid:SetScript('OnEvent', function(self, event, ...) self[event](self, event, ...) end)
-oUF_Freebgrid:RegisterEvent("ADDON_LOADED")
 local oUF = Freebgrid
-local db
-local dbDebuffs 
+local db = FreebgridDefaults
+local dbDebuffs = FreebgridDebuffs
+local petspacing
+if db.pets then
+	petspacing = db.petheight+2
+else
+	petspacing = 0
+end
 
 local playerClass = select(2, UnitClass("player"))
 
@@ -162,8 +165,9 @@ bg:SetBackdropColor(0, 0, 0, 0.7)
 bg:SetBackdropBorderColor(0.4, 0.4, 0.4, 1)
 bg:SetFrameStrata("BACKGROUND")
 bg:EnableMouse(true)
-
-local petspacing
+bg:SetScript("OnEvent", function(self, event, ...)
+	return self[event](self, event, ...)
+end)
 
 local SubGroups = function()
 	local t = {}
@@ -177,23 +181,25 @@ local SubGroups = function()
 	return t
 end
 
-local partyBG = function(self)
-	if not UnitInParty("player") and not db.solo then return end
+function bg:PARTY_MEMBERS_CHANGED()
+	if not db.frameBG or UnitInRaid("player") then return end
+	if not db.solo then return end
 
-	bg:ClearAllPoints()
-	bg:SetPoint("TOP", "oUF_FreebRaid1", "TOP", 0, 8)
-	bg:SetPoint("LEFT", "oUF_FreebRaid1", "LEFT", -8 , 0)
-	bg:SetPoint("RIGHT", "oUF_FreebRaid1", "RIGHT", 8, 0)
-	bg:SetPoint("BOTTOM", "oUF_FreebRaid1", "BOTTOM", 0, -8+(-(petspacing)))
-	bg:Show()
+	self:ClearAllPoints()
+	self:SetPoint("TOP", "oUF_FreebRaid1", "TOP", 0, 8)
+	self:SetPoint("LEFT", "oUF_FreebRaid1", "LEFT", -8 , 0)
+	self:SetPoint("RIGHT", "oUF_FreebRaid1", "RIGHT", 8, 0)
+	self:SetPoint("BOTTOM", "oUF_FreebRaid1", "BOTTOM", 0, -8+(-(petspacing)))
+	self:Show()
 end
 
-local FrameBG = function(self)
+function bg:RAID_ROSTER_UPDATE()
 	if not db.frameBG then return end
 	if not UnitInRaid("player") then
-		return partyBG()
+		self:Hide() 
+		return self:PARTY_MEMBERS_CHANGED()
 	else
-		bg:Show()
+		self:Show()
 	end
 
 	local roster = SubGroups()
@@ -212,37 +218,42 @@ local FrameBG = function(self)
 	end
 	
 	if db.growth == "RIGHT" then
-		bg:ClearAllPoints()
-		bg:SetPoint("TOP", "oUF_FreebRaid1", "TOP", 0, 8)
-		bg:SetPoint("LEFT", "oUF_FreebRaid" .. first, "LEFT", -8 , 0)
-		bg:SetPoint("RIGHT", "oUF_FreebRaid" .. last, "RIGHT", 8, 0)
-		bg:SetPoint("BOTTOM", "oUF_FreebRaid" .. h, "BOTTOM", 0, -8+(-(petspacing)))
+		self:ClearAllPoints()
+		self:SetPoint("TOP", "oUF_FreebRaid1", "TOP", 0, 8)
+		self:SetPoint("LEFT", "oUF_FreebRaid" .. first, "LEFT", -8 , 0)
+		self:SetPoint("RIGHT", "oUF_FreebRaid" .. last, "RIGHT", 8, 0)
+		self:SetPoint("BOTTOM", "oUF_FreebRaid" .. h, "BOTTOM", 0, -8+(-(petspacing)))
 	elseif db.growth == "UP" then
-		bg:ClearAllPoints()
-		bg:SetPoint("LEFT", "oUF_FreebRaid1", "LEFT", -8, 0)
-		bg:SetPoint("BOTTOM", "oUF_FreebRaid" .. first, "BOTTOM", 0, -8+(-(petspacing)))
-		bg:SetPoint("TOP", "oUF_FreebRaid" .. last, "TOP", 0, 8)
-		bg:SetPoint("RIGHT", "oUF_FreebRaid" .. h, "RIGHT", 8, 0)
+		self:ClearAllPoints()
+		self:SetPoint("LEFT", "oUF_FreebRaid1", "LEFT", -8, 0)
+		self:SetPoint("BOTTOM", "oUF_FreebRaid" .. first, "BOTTOM", 0, -8+(-(petspacing)))
+		self:SetPoint("TOP", "oUF_FreebRaid" .. last, "TOP", 0, 8)
+		self:SetPoint("RIGHT", "oUF_FreebRaid" .. h, "RIGHT", 8, 0)
 	elseif db.growth == "DOWN" then
-		bg:ClearAllPoints()
-		bg:SetPoint("LEFT", "oUF_FreebRaid1", "LEFT", -8, 0)
-		bg:SetPoint("TOP", "oUF_FreebRaid" .. first, "TOP", 0, 8)
-		bg:SetPoint("BOTTOM", "oUF_FreebRaid" .. last, "BOTTOM", 0, -8+(-(petspacing)))
-		bg:SetPoint("RIGHT", "oUF_FreebRaid" .. h, "RIGHT", 8, 0)
+		self:ClearAllPoints()
+		self:SetPoint("LEFT", "oUF_FreebRaid1", "LEFT", -8, 0)
+		self:SetPoint("TOP", "oUF_FreebRaid" .. first, "TOP", 0, 8)
+		self:SetPoint("BOTTOM", "oUF_FreebRaid" .. last, "BOTTOM", 0, -8+(-(petspacing)))
+		self:SetPoint("RIGHT", "oUF_FreebRaid" .. h, "RIGHT", 8, 0)
 	elseif db.growth == "LEFT" then
-		bg:ClearAllPoints()
-		bg:SetPoint("TOP", "oUF_FreebRaid1", "TOP", 0, 8)
-		bg:SetPoint("RIGHT", "oUF_FreebRaid" .. first, "RIGHT", 8 , 0)
-		bg:SetPoint("LEFT", "oUF_FreebRaid" .. last, "LEFT", -8, 0)
-		bg:SetPoint("BOTTOM", "oUF_FreebRaid" .. h, "BOTTOM", 0, -8+(-(petspacing)))
+		self:ClearAllPoints()
+		self:SetPoint("TOP", "oUF_FreebRaid1", "TOP", 0, 8)
+		self:SetPoint("RIGHT", "oUF_FreebRaid" .. first, "RIGHT", 8 , 0)
+		self:SetPoint("LEFT", "oUF_FreebRaid" .. last, "LEFT", -8, 0)
+		self:SetPoint("BOTTOM", "oUF_FreebRaid" .. h, "BOTTOM", 0, -8+(-(petspacing)))
 	else
-		bg:ClearAllPoints()
-		bg:SetPoint("TOP", "oUF_FreebRaid1", "TOP", 0, 8)
-		bg:SetPoint("LEFT", "oUF_FreebRaid" .. first, "LEFT", -8 , 0)
-		bg:SetPoint("RIGHT", "oUF_FreebRaid" .. last, "RIGHT", 8, 0)
-		bg:SetPoint("BOTTOM", "oUF_FreebRaid" .. h, "BOTTOM", 0, -8+(-(petspacing)))
+		self:ClearAllPoints()
+		self:SetPoint("TOP", "oUF_FreebRaid1", "TOP", 0, 8)
+		self:SetPoint("LEFT", "oUF_FreebRaid" .. first, "LEFT", -8 , 0)
+		self:SetPoint("RIGHT", "oUF_FreebRaid" .. last, "RIGHT", 8, 0)
+		self:SetPoint("BOTTOM", "oUF_FreebRaid" .. h, "BOTTOM", 0, -8+(-(petspacing)))
 	end
 end
+
+bg.PLAYER_ENTERING_WORLD = bg.RAID_ROSTER_UPDATE
+bg:RegisterEvent("RAID_ROSTER_UPDATE")
+bg:RegisterEvent("PARTY_MEMBERS_CHANGED")
+bg:RegisterEvent("PLAYER_ENTERING_WORLD")
 
 --=======================================================================================--
 
@@ -683,14 +694,11 @@ local func = function(self, unit)
 	end
 	self.ignoreHealComm = db.noHealbar
 	
-	self.OverrideUpdateThreat = updateThreat
+	self.MoveableFrames = true
 	
 	self:RegisterEvent('PLAYER_FOCUS_CHANGED', FocusTarget)
 	self:RegisterEvent('RAID_ROSTER_UPDATE', FocusTarget)
 	self:RegisterEvent('PLAYER_TARGET_CHANGED', ChangedTarget)
-	self:RegisterEvent("RAID_ROSTER_UPDATE", FrameBG)
-	self:RegisterEvent("PARTY_MEMBERS_CHANGED", FrameBG)
-	self:RegisterEvent("PLAYER_LOGIN", FrameBG)
 	self:RegisterEvent("UNIT_THREAT_LIST_UPDATE", updateThreat)
 	self:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE", updateThreat)
 
@@ -704,225 +712,192 @@ local func = function(self, unit)
 	return self
 end
 
-function oUF_Freebgrid:OnEnable()
-	oUF:RegisterStyle("Freebgrid", func)
-	oUF:SetActiveStyle"Freebgrid"
+oUF:RegisterStyle("Freebgrid", func)
+oUF:SetActiveStyle"Freebgrid"
 
-	if db.pets then
-		petspacing = db.petheight+2
-	else
-		petspacing = 0
-	end
-	
-	-- Credits to Zork for the drag frame
-	local function make_me_movable(f)
-		if db.moveable == false then
-    			f:IsUserPlaced(false)
-    		else
-      			f:SetMovable(true)
-      			f:SetUserPlaced(true)
-      			if db.locked == false then
-        			f:EnableMouse(true)
-        			f:RegisterForDrag("LeftButton","RightButton")
-        			f:SetScript("OnDragStart", function(self) if IsAltKeyDown() then self:StartMoving() end end)
-        			f:SetScript("OnDragStop", function(self) self:StopMovingOrSizing() end)
-     			end
-		end
-	end
+local pos, posRel, spacingX, spacingY
+petsTemp = "oUF_FreebpetsDOWN"
+-- SetPoint of MOTHERFUCKING DOOM!
+if db.point == "TOP" and db.growth == "LEFT" then
+	pos = "TOPRIGHT"
+	posRel = "TOPLEFT"
+	spacingX = 0
+	spacingY = -(db.spacing)+(-(petspacing))
+	colX = -(db.spacing)
+	colY = 0
+elseif db.point == "TOP" and db.growth == "RIGHT" then
+	pos = "TOPLEFT"
+	posRel = "TOPRIGHT"
+	spacingX = 0
+	spacingY = -(db.spacing)+(-(petspacing))
+	colX = db.spacing
+	colY = 0
+elseif db.point == "LEFT" and db.growth == "UP" then
+	pos = "BOTTOMLEFT"
+	posRel = "TOPLEFT"
+	spacingX = db.spacing
+	spacingY = 0
+	colX = 0
+	colY = db.spacing+((petspacing))
+elseif db.point == "LEFT" and db.growth == "DOWN" then
+	pos = "TOPLEFT"
+	posRel = "BOTTOMLEFT"
+	spacingX = db.spacing
+	spacingY = 0
+	colX = 0
+	colY = -(db.spacing)+(-(petspacing))
+elseif db.point == "RIGHT" and db.growth == "UP" then
+	pos = "BOTTOMRIGHT"
+	posRel = "TOPRIGHT"
+	spacingX = -(db.spacing)
+	spacingY = 0
+	colX = 0
+	colY = db.spacing+((petspacing))
+elseif db.point == "RIGHT" and db.growth == "DOWN" then
+	pos = "TOPRIGHT"
+	posRel = "BOTTOMRIGHT"
+	spacingX = -(db.spacing)
+	spacingY = 0
+	colX = 0
+	colY = -(db.spacing)+(-(petspacing))
+elseif db.point == "BOTTOM" and db.growth == "LEFT" then
+	pos = "BOTTOMRIGHT"
+	posRel = "BOTTOMLEFT"
+	spacingX = 0
+	spacingY = (db.spacing)+((petspacing))
+	colX = -(db.spacing)
+	colY = 0
+elseif db.point == "BOTTOM" and db.growth == "RIGHT" then
+	pos = "BOTTOMLEFT"
+	posRel = "BOTTOMRIGHT"
+	spacingX = 0
+	spacingY = (db.spacing)+((petspacing))
+	colX = (db.spacing)
+	colY = 0
+else -- You failed to equal any of the above. So I give this...
+	pos = "TOPLEFT"
+	posRel = "TOPRIGHT"
+	spacingX = 0
+	spacingY = -(db.spacing)+(-(petspacing))
+	colX = db.spacing
+	colY = 0
+end
 
-	local oUF_FreebgridDragFrame = CreateFrame("Frame","oUF_FreebgridDragFrame",UIParent)
-	oUF_FreebgridDragFrame:SetWidth(db.height)
-	oUF_FreebgridDragFrame:SetHeight(db.width)
-	oUF_FreebgridDragFrame:SetScale(db.scale)
-	oUF_FreebgridDragFrame:SetFrameStrata("HIGH")
-	if db.locked == false then
-		oUF_FreebgridDragFrame:SetBackdrop({bgFile = "Interface/Tooltips/UI-Tooltip-Background", edgeFile = "", tile = true, tileSize = 16, edgeSize = 16, insets = { left = 0, right = 0, top = 0, bottom = 0 }})
-	end
-	oUF_FreebgridDragFrame:SetPoint(db.position[1], db.position[2], db.position[3], db.position[4], db.position[5])
-	
-	local oUF_FreebgridMTDFrame = CreateFrame("Frame","oUF_FreebgridMTDFrame",UIParent)
-	oUF_FreebgridMTDFrame:SetWidth(db.height)
-	oUF_FreebgridMTDFrame:SetHeight(db.width)
-	oUF_FreebgridMTDFrame:SetScale(db.scale)
-	oUF_FreebgridMTDFrame:SetFrameStrata("HIGH")
-	if db.locked == false then
-		oUF_FreebgridMTDFrame:SetBackdrop({bgFile = "Interface/Tooltips/UI-Tooltip-Background", edgeFile = "", tile = true, tileSize = 16, edgeSize = 16, insets = { left = 0, right = 0, top = 0, bottom = 0 }})
-	end
-	oUF_FreebgridMTDFrame:SetPoint(db.MTposition[1], db.MTposition[2], db.MTposition[3], db.MTposition[4], db.MTposition[5])
-
-	make_me_movable(oUF_FreebgridDragFrame)
-	make_me_movable(oUF_FreebgridMTDFrame)
-	
-	local pos, posRel, spacingX, spacingY
-	petsTemp = "oUF_FreebpetsDOWN"
-	-- SetPoint of MOTHERFUCKING DOOM!
-	if db.point == "TOP" and db.growth == "LEFT" then
-		pos = "TOPRIGHT"
-		posRel = "TOPLEFT"
-		spacingX = 0
-		spacingY = -(db.spacing)+(-(petspacing))
-		colX = -(db.spacing)
-		colY = 0
-	elseif db.point == "TOP" and db.growth == "RIGHT" then
-		pos = "TOPLEFT"
-		posRel = "TOPRIGHT"
-		spacingX = 0
-		spacingY = -(db.spacing)+(-(petspacing))
-		colX = db.spacing
-		colY = 0
-	elseif db.point == "LEFT" and db.growth == "UP" then
-		pos = "BOTTOMLEFT"
-		posRel = "TOPLEFT"
-		spacingX = db.spacing
-		spacingY = 0
-		colX = 0
-		colY = db.spacing+((petspacing))
-	elseif db.point == "LEFT" and db.growth == "DOWN" then
-		pos = "TOPLEFT"
-		posRel = "BOTTOMLEFT"
-		spacingX = db.spacing
-		spacingY = 0
-		colX = 0
-		colY = -(db.spacing)+(-(petspacing))
-	elseif db.point == "RIGHT" and db.growth == "UP" then
-		pos = "BOTTOMRIGHT"
-		posRel = "TOPRIGHT"
-		spacingX = -(db.spacing)
-		spacingY = 0
-		colX = 0
-		colY = db.spacing+((petspacing))
-	elseif db.point == "RIGHT" and db.growth == "DOWN" then
-		pos = "TOPRIGHT"
-		posRel = "BOTTOMRIGHT"
-		spacingX = -(db.spacing)
-		spacingY = 0
-		colX = 0
-		colY = -(db.spacing)+(-(petspacing))
-	elseif db.point == "BOTTOM" and db.growth == "LEFT" then
-		pos = "BOTTOMRIGHT"
-		posRel = "BOTTOMLEFT"
-		spacingX = 0
-		spacingY = (db.spacing)+((petspacing))
-		colX = -(db.spacing)
-		colY = 0
-	elseif db.point == "BOTTOM" and db.growth == "RIGHT" then
-		pos = "BOTTOMLEFT"
-		posRel = "BOTTOMRIGHT"
-		spacingX = 0
-		spacingY = (db.spacing)+((petspacing))
-		colX = (db.spacing)
-		colY = 0
-	else -- You failed to equal any of the above. So I give this...
-		pos = "TOPLEFT"
-		posRel = "TOPRIGHT"
-		spacingX = 0
-		spacingY = -(db.spacing)+(-(petspacing))
-		colX = db.spacing
-		colY = 0
-	end
-
-	local disableBlizz
-	if db.ShowBlizzParty then
-		disableBlizz = ''
-	else
-		disableBlizz = 'party'
-	end
-
-	local raid = {}
-	for i = 1, db.numRaidgroups do
-		local raidg = oUF:Spawn('header', 'oUF_FreebRaid'..i, nil, disableBlizz)
-		raidg:SetManyAttributes('groupFilter', tostring(i),
-					'showRaid', true,
-					'showSolo', db.solo,
-					'showParty', db.partyON,
-					'showPlayer', true,
-					'point', db.point,
-					'xoffset', spacingX,
-					'yOffset', spacingY)
-		table.insert(raid, raidg)
-		if(i == 1) then	
-			raidg:SetPoint("TOPLEFT", "oUF_FreebgridDragFrame", "TOPLEFT")
+-- Credits to Zork for the drag frame
+local function make_me_movable(f)
+	if db.moveable == false then
+			f:IsUserPlaced(false)
 		else
-			raidg:SetPoint(pos, raid[i-1], posRel, colX, colY) 
-		end
-		if db.pets then
-			raidg:SetAttribute("template", petsTemp)
-		end
-		raidg:SetScale(db.scale)
+			f:SetMovable(true)
+			f:SetUserPlaced(true)
+			if db.locked == false then
+				f:EnableMouse(true)
+				f:RegisterForDrag("LeftButton","RightButton")
+				f:SetScript("OnDragStart", function(self) if IsAltKeyDown() then self:StartMoving() end end)
+				f:SetScript("OnDragStop", function(self) self:StopMovingOrSizing() end)
+			end
 	end
-	for i,v in ipairs(raid) do v:Show() end
+end
 
-	if db.MTs then
+local oUF_FreebgridDragFrame = CreateFrame("Frame","oUF_FreebgridDragFrame",UIParent)
+oUF_FreebgridDragFrame:SetWidth(db.height)
+oUF_FreebgridDragFrame:SetHeight(db.width)
+oUF_FreebgridDragFrame:SetScale(db.scale)
+oUF_FreebgridDragFrame:SetFrameStrata("HIGH")
+if db.locked == false then
+	oUF_FreebgridDragFrame:SetBackdrop({bgFile = "Interface/Tooltips/UI-Tooltip-Background", edgeFile = "", tile = true, tileSize = 16, edgeSize = 16, insets = { left = 0, right = 0, top = 0, bottom = 0 }})
+end
+oUF_FreebgridDragFrame:SetPoint(db.position[1], db.position[2], db.position[3], db.position[4], db.position[5])
 
-		local tank = oUF:Spawn('header', 'oUF_FreebMainTank')
-       		tank:SetPoint("TOPLEFT", "oUF_FreebgridMTDFrame", "TOPLEFT")
-        	tank:SetManyAttributes(
-                	"showRaid", true, 
-                    	"yOffset", -5,
-                    	"template", "oUF_FreebMtargets"
-        	)
+local oUF_FreebgridMTDFrame = CreateFrame("Frame","oUF_FreebgridMTDFrame",UIParent)
+oUF_FreebgridMTDFrame:SetWidth(db.height)
+oUF_FreebgridMTDFrame:SetHeight(db.width)
+oUF_FreebgridMTDFrame:SetScale(db.scale)
+oUF_FreebgridMTDFrame:SetFrameStrata("HIGH")
+if db.locked == false then
+	oUF_FreebgridMTDFrame:SetBackdrop({bgFile = "Interface/Tooltips/UI-Tooltip-Background", edgeFile = "", tile = true, tileSize = 16, edgeSize = 16, insets = { left = 0, right = 0, top = 0, bottom = 0 }})
+end
+oUF_FreebgridMTDFrame:SetPoint(db.MTposition[1], db.MTposition[2], db.MTposition[3], db.MTposition[4], db.MTposition[5])
+
+make_me_movable(oUF_FreebgridDragFrame)
+make_me_movable(oUF_FreebgridMTDFrame)
+
+
+local disableBlizz
+if db.ShowBlizzParty then
+	disableBlizz = ''
+else
+	disableBlizz = 'party'
+end
+
+local raid = {}
+for i = 1, db.numRaidgroups do
+	local raidg = oUF:Spawn('header', 'oUF_FreebRaid'..i, nil, disableBlizz)
+	raidg:SetManyAttributes('groupFilter', tostring(i),
+				'showRaid', true,
+				'showSolo', db.solo,
+				'showParty', db.partyON,
+				'showPlayer', true,
+				'point', db.point,
+				'xoffset', spacingX,
+				'yOffset', spacingY)
+	table.insert(raid, raidg)
+	if(i == 1) then	
+		raidg:SetPoint("TOPLEFT", "oUF_FreebgridDragFrame", "TOPLEFT")
+	else
+		raidg:SetPoint(pos, raid[i-1], posRel, colX, colY) 
+	end
+	if db.pets then
+		raidg:SetAttribute("template", petsTemp)
+	end
+	raidg:SetScale(db.scale)
+end
+for i,v in ipairs(raid) do v:Show() end
+
+if db.MTs then
+
+	local tank = oUF:Spawn('header', 'oUF_FreebMainTank')
+		tank:SetPoint("TOPLEFT", "oUF_FreebgridMTDFrame", "TOPLEFT")
+		tank:SetManyAttributes(
+				"showRaid", true, 
+					"yOffset", -5,
+					"template", "oUF_FreebMtargets"
+		)
+	
+	if oRA3 and not select(2,IsInInstance()) == "pvp" and not select(2,IsInInstance()) == "arena" then
+				tank:SetAttribute(
+					"initial-unitWatch", true,
+						"nameList", table.concat(oRA3:GetSortedTanks(), ",")
+				)
 		
-		if oRA3 and not select(2,IsInInstance()) == "pvp" and not select(2,IsInInstance()) == "arena" then
-            		tank:SetAttribute(
-                		"initial-unitWatch", true,
-               		     	"nameList", table.concat(oRA3:GetSortedTanks(), ",")
-            		)
-            
-            		local tankhandler = CreateFrame('Frame')
+				local tankhandler = CreateFrame('Frame')
 
-            		function tankhandler:OnEvent()
-                		if(InCombatLockdown()) then
-                    			self:RegisterEvent('PLAYER_REGEN_ENABLED')
-                		else
-                    			self:UnregisterEvent('PLAYER_REGEN_ENABLED')
-                    			if self.tanks then
-                        			tank:SetAttribute(
-                            			"nameList", table.concat(self.tanks, ",")
-                        			)
-                        			self.tanks = nil
-                    			end
-                		end
-            		end
+				function tankhandler:OnEvent()
+					if(InCombatLockdown()) then
+							self:RegisterEvent('PLAYER_REGEN_ENABLED')
+					else
+							self:UnregisterEvent('PLAYER_REGEN_ENABLED')
+							if self.tanks then
+								tank:SetAttribute(
+									"nameList", table.concat(self.tanks, ",")
+								)
+								self.tanks = nil
+							end
+					end
+				end
 
-            		function tankhandler:OnTanksUpdated(event, tanks)
-                		self.tanks = tanks
-                		self:OnEvent()
-            		end
-            
-            		tankhandler:SetScript('OnEvent', tankhandler.OnEvent)
-            		oRA3.RegisterCallback(tankhandler, "OnTanksUpdated")
-            
-        	else
-            		tank:SetAttribute(
-                    	'groupFilter', 'MAINTANK'
-            		)
-        	end
-        	tank:Show()
-	end
-end
-
-function oUF_Freebgrid:LoadDB()
-	oUF_FreebgridDB = oUF_FreebgridDB or {}
-	for k, v in pairs(FreebgridDefaults) do
-		if(type(oUF_FreebgridDB[k]) == 'nil') then
-			oUF_FreebgridDB[k] = v
+				function tankhandler:OnTanksUpdated(event, tanks)
+					self.tanks = tanks
+					self:OnEvent()
+				end
+		
+				tankhandler:SetScript('OnEvent', tankhandler.OnEvent)
+				oRA3.RegisterCallback(tankhandler, "OnTanksUpdated")
+		
+		else
+				tank:SetAttribute(
+					'groupFilter', 'MAINTANK'
+				)
 		end
-	end
-	oUF_FreebgridDBdebuffs = oUF_FreebgridDBdebuffs or {}
-	for i, z in pairs(FreebgridDebuffs) do
-		if(type(oUF_FreebgridDBdebuffs[i]) == 'nil') then
-			oUF_FreebgridDBdebuffs[i] = z
-		end
-	end
-
-	--db = oUF_FreebgridDB -- not used yet
-	db = FreebgridDefaults
-	dbDebuffs = FreebgridDebuffs
-end
-
-function oUF_Freebgrid:ADDON_LOADED(event, addon)
-	if addon ~= "oUF_Freebgrid" then return end
-	oUF_Freebgrid:LoadDB()
-	oUF_Freebgrid:OnEnable()
-	self:UnregisterEvent("ADDON_LOADED")
+		tank:Show()
 end

@@ -30,7 +30,7 @@ FreebgridDefaults = {
 	iconSize = 14,	-- Size of raid symbols, leader, etc.
 	debuffsize = 16,
 	
-	moveable = true, -- setting this to false will override any saved position to the one set here.
+	moveable = true, -- will use "position"(below) instead of any savedvarible if false.
 	locked = true, -- false to move frames
 
 	position = {"LEFT", "UIParent", "LEFT", 10, 0},
@@ -45,9 +45,9 @@ FreebgridDefaults = {
 						
 	spacing = 5,	-- space between units and raid groups
 
-	solo = true,
+	solo = false,
 	partyON = true,	-- dude?
-	ShowBlizzParty = false, -- Show the blizzard default party frames?
+	ShowBlizzParty = true, -- Show the blizzard default party frames?
 	pets = false,	-- Party/Raid pets
 
 	reverseColors = false,	-- Reverse Units color
