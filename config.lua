@@ -47,7 +47,7 @@ FreebgridDefaults = {
 
 	solo = false,
 	partyON = true,	-- dude?
-	ShowBlizzParty = true, -- Show the blizzard default party frames?
+	ShowBlizzParty = false, -- Show the blizzard default party frames?
 	pets = false,	-- Party/Raid pets
 
 	reverseColors = false,	-- Reverse Units color

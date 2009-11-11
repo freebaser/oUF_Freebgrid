@@ -10,6 +10,16 @@ end
 
 local playerClass = select(2, UnitClass("player"))
 
+local numberize = function(val)
+	if(val >= 1e6) then
+        	return ("%.1fm"):format(val / 1e6)
+	elseif (val >= 1e3) then
+		return ("%.1fk"):format(val / 1e3)
+	else
+		return ("%d"):format(val)
+	end
+end
+
 local function applyAuraIndicator(self)
 	self.AuraStatusTL = self.Health:CreateFontString(nil, "OVERLAY")
 	self.AuraStatusTL:ClearAllPoints()
@@ -360,7 +370,7 @@ local updateHealth = function(self, event, unit, bar)
 			end
 			nameCache[name] = substring
 		else
-			self.Name:SetText(string.format("-%.1f", def / 1000))
+			self.Name:SetText('-'..numberize(def))
 		end
 	end
 
@@ -438,17 +448,22 @@ local func = function(self, unit)
 	hp.frequentUpdates = true
 	if(db.manabars)then
 	  if(db.vertical)then
-	    hp:SetWidth(db.width*.90)
 	    if self:GetAttribute('unitsuffix') == 'pet' then
+		  hp:SetWidth(db.width)
 	    else
 	      hp:SetOrientation("VERTICAL")
+		  hp:SetWidth(db.width*.90)
         end
 	    hp:SetParent(self)
 	    hp:SetPoint"TOP"
 	    hp:SetPoint"BOTTOM"
 	    hp:SetPoint"LEFT"
   	  else
-	    hp:SetHeight(db.height*.90)
+		if self:GetAttribute('unitsuffix') == 'pet' then
+		  hp:SetHeight(db.petheight)
+		else
+	      hp:SetHeight(db.height*.90)
+		end
 	    hp:SetParent(self)
 	    hp:SetPoint"LEFT"
 	    hp:SetPoint"RIGHT"
@@ -694,8 +709,6 @@ local func = function(self, unit)
 	end
 	self.ignoreHealComm = db.noHealbar
 	
-	self.MoveableFrames = true
-	
 	self:RegisterEvent('PLAYER_FOCUS_CHANGED', FocusTarget)
 	self:RegisterEvent('RAID_ROSTER_UPDATE', FocusTarget)
 	self:RegisterEvent('PLAYER_TARGET_CHANGED', ChangedTarget)
@@ -821,7 +834,6 @@ oUF_FreebgridMTDFrame:SetPoint(db.MTposition[1], db.MTposition[2], db.MTposition
 
 make_me_movable(oUF_FreebgridDragFrame)
 make_me_movable(oUF_FreebgridMTDFrame)
-
 
 local disableBlizz
 if db.ShowBlizzParty then

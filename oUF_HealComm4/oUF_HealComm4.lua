@@ -29,9 +29,9 @@ local color = {
 
 local oUF_HealComm = {}
 
-local  numberize = function(val)
+local numberize = function(val)
 	if(val >= 1e6) then
-        	return ("%.1fm"):format(val / 1e6)
+        return ("%.1fm"):format(val / 1e6)
 	elseif (val >= 1e3) then
 		return ("%.1fk"):format(val / 1e3)
 	else
