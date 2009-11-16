@@ -835,16 +835,9 @@ oUF_FreebgridMTDFrame:SetPoint(db.MTposition[1], db.MTposition[2], db.MTposition
 make_me_movable(oUF_FreebgridDragFrame)
 make_me_movable(oUF_FreebgridMTDFrame)
 
-local disableBlizz
-if db.ShowBlizzParty then
-	disableBlizz = ''
-else
-	disableBlizz = 'party'
-end
-
 local raid = {}
 for i = 1, db.numRaidgroups do
-	local raidg = oUF:Spawn('header', 'oUF_FreebRaid'..i, nil, disableBlizz)
+	local raidg = oUF:Spawn('header', 'oUF_FreebRaid'..i, nil)
 	raidg:SetManyAttributes('groupFilter', tostring(i),
 				'showRaid', true,
 				'showSolo', db.solo,

@@ -349,7 +349,9 @@ function oUF:Spawn(unit, name, template, disableBlizz)
 			template = "SecureGroupHeaderTemplate"
 		end
 
-		HandleUnit(disableBlizz or 'party')
+		if FreebgridDefaults.ShowBlizzParty == false then
+			HandleUnit(disableBlizz or 'party')
+		end
 
 		local header = CreateFrame("Frame", name, UIParent, template)
 		header:SetAttribute("template", "SecureUnitButtonTemplate")

@@ -1,7 +1,7 @@
 ## Interface: 30200
 ## Title: oUF_Freebgrid
 ## Author: Freebaser
-## Version: 1.9
+## Version: 2.0
 ## Notes: oUF layout.
 ## OptionalDeps: LibHealComm-3.0, LibHealComm-4.0, LibWrapperHealComm-1.0, oUF_ReadyCheck
 ## X-Embeds: LibHealComm-4.0, LibWrapperHealComm-1.0
