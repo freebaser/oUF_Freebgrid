@@ -1,0 +1,12 @@
+tag 5.1-release
+75290870f26bea7e54ccb8b4f540a27a9c65ed1c
+Shadowed <shadowed.wow@gmail.com>
+2009-11-03 12:06:12 -0800
+
+Tagging as release 5.1
+
+
+--------------------
+
+Adirelle:
+	- Added LibHealComm-3.0 and LibHealComm-4.0 as optional dependencies to ensure correct loading order in disembedded library environment.

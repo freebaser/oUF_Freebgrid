@@ -261,9 +261,11 @@ function bg:RAID_ROSTER_UPDATE()
 end
 
 bg.PLAYER_ENTERING_WORLD = bg.RAID_ROSTER_UPDATE
+bg.PLAYER_LOGIN = bg.RAID_ROSTER_UPDATE
 bg:RegisterEvent("RAID_ROSTER_UPDATE")
 bg:RegisterEvent("PARTY_MEMBERS_CHANGED")
 bg:RegisterEvent("PLAYER_ENTERING_WORLD")
+bg:RegisterEvent("PLAYER_LOGIN")
 
 --=======================================================================================--
 
