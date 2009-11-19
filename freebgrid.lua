@@ -191,23 +191,11 @@ local SubGroups = function()
 	return t
 end
 
-function bg:PARTY_MEMBERS_CHANGED()
-	if not db.frameBG or UnitInRaid("player") then return end
-	if not db.solo then return end
-
-	self:ClearAllPoints()
-	self:SetPoint("TOP", "oUF_FreebRaid1", "TOP", 0, 8)
-	self:SetPoint("LEFT", "oUF_FreebRaid1", "LEFT", -8 , 0)
-	self:SetPoint("RIGHT", "oUF_FreebRaid1", "RIGHT", 8, 0)
-	self:SetPoint("BOTTOM", "oUF_FreebRaid1", "BOTTOM", 0, -8+(-(petspacing)))
-	self:Show()
-end
-
 function bg:RAID_ROSTER_UPDATE()
 	if not db.frameBG then return end
 	if not UnitInRaid("player") then
-		self:Hide() 
-		return self:PARTY_MEMBERS_CHANGED()
+		self:Hide()
+		return
 	else
 		self:Show()
 	end
@@ -261,11 +249,8 @@ function bg:RAID_ROSTER_UPDATE()
 end
 
 bg.PLAYER_ENTERING_WORLD = bg.RAID_ROSTER_UPDATE
-bg.PLAYER_LOGIN = bg.RAID_ROSTER_UPDATE
 bg:RegisterEvent("RAID_ROSTER_UPDATE")
-bg:RegisterEvent("PARTY_MEMBERS_CHANGED")
 bg:RegisterEvent("PLAYER_ENTERING_WORLD")
-bg:RegisterEvent("PLAYER_LOGIN")
 
 --=======================================================================================--
 
