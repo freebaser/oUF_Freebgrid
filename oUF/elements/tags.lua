@@ -8,10 +8,22 @@
 --	- Tag and Untag should be able to handle more than one fontstring at a time.
 ]]
 
-local parent = debugstack():match[[\AddOns\(.-)\]]
+local oUF
+local parent
+if(...) then
+	parent = ...
+else
+	parent = debugstack():match[[\AddOns\(.-)\]]
+end
+
 local global = GetAddOnMetadata(parent, 'X-oUF')
 assert(global, 'X-oUF needs to be defined in the parent add-on.')
-local oUF = _G[global]
+if(...) then
+	local _, ns = ...
+	oUF = ns.oUF
+else
+	oUF = _G[global]
+end
 
 local classColors = oUF.colors.class
 
@@ -315,7 +327,7 @@ local funcPool = {}
 local tmp = {}
 
 local Tag = function(self, fs, tagstr)
-	if(not fs or not tagstr or self == oUF) then return end
+	if(not fs or not tagstr) then return end
 
 	if(not self.__tags) then
 		self.__tags = {}
@@ -430,7 +442,7 @@ local Tag = function(self, fs, tagstr)
 end
 
 local Untag = function(self, fs)
-	if(not fs or self == oUF) then return end
+	if(not fs) then return end
 
 	UnregisterEvents(fs)
 	for _, timers in next, eventlessUnits do
@@ -454,5 +466,5 @@ oUF.Tags = tags
 oUF.TagEvents = tagEvents
 oUF.UnitlessTagEvents = unitlessEvents
 
-oUF.Tag = Tag
-oUF.Untag = Untag
+oUF.frame_metatable.__index.Tag = Tag
+oUF.frame_metatable.__index.Untag = Untag

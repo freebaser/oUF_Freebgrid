@@ -7,8 +7,6 @@
 ## Dependencies: oUF
 ## DefaultState: enabled
 
-## X-oUF: oUF
-
 ## OptionalDeps: LibHealComm-4.0, LibWrapperHealComm-1.0
 ## X-Embeds: LibHealComm-4.0, LibWrapperHealComm-1.0
 

@@ -12,7 +12,7 @@ local playerClass = select(2, UnitClass("player"))
 
 local numberize = function(val)
 	if(val >= 1e6) then
-        	return ("%.1fm"):format(val / 1e6)
+        return ("%.1fm"):format(val / 1e6)
 	elseif (val >= 1e3) then
 		return ("%.1fk"):format(val / 1e3)
 	else
@@ -382,16 +382,12 @@ end
 
 local OnEnter = function(self)
 	UnitFrame_OnEnter(self)
-	if(db.highlight)then
-	  self.Highlight:Show()	
-  	end
+	self.Highlight:Show()	
 end
 
 local OnLeave = function(self)
 	UnitFrame_OnLeave(self)
-	if(db.highlight)then
-	  self.Highlight:Hide()	
-  	end
+	self.Highlight:Hide()	
 end
 
 local function menu(self)
@@ -419,8 +415,10 @@ local func = function(self, unit)
 	self.menu = menu
 	
 	self:EnableMouse(true)
-	self:SetScript("OnEnter", OnEnter)
-	self:SetScript("OnLeave", OnLeave)
+	if(db.highlight)then
+		self:SetScript("OnEnter", OnEnter)
+		self:SetScript("OnLeave", OnLeave)
+	end
 	self:RegisterForClicks"anyup"
 	self:SetAttribute("*type2", "menu")
 
@@ -542,7 +540,8 @@ local func = function(self, unit)
 		heal:SetShadowOffset(1.25, -1.25)
 		heal:SetTextColor(0,1,0,1)
 
-		self.HealCommText = heal
+		self.HealCommText = db.Healtext and heal or nil
+		self.HealCommTextFormat = numberize
 
 		-- Leader/Assistant Icon
 		if(db.Licon)then
@@ -572,6 +571,13 @@ local func = function(self, unit)
 		self.ReadyCheck:SetWidth(db.iconSize)
 		self.ReadyCheck.delayTime = 8
 		self.ReadyCheck.fadeTime = 1
+		
+	-- Range
+		if(not unit) then
+			self.Range = true
+			self.inRangeAlpha = 1
+			self.outsideRangeAlpha = .5
+		end
 	end
 
 	-- Name
@@ -607,16 +613,6 @@ local func = function(self, unit)
 	  hl:Hide()
 
 	  self.Highlight = hl
-	end
-
-	-- Range Alpha
-	if self:GetAttribute('unitsuffix') == 'target' then
-	else
-	  if(not unit) then
-		self.Range = true
-		self.inRangeAlpha = 1
-		self.outsideRangeAlpha = .5
-	  end
 	end
 
 	local manaborder = self:CreateTexture(nil, "OVERLAY")
@@ -690,11 +686,11 @@ local func = function(self, unit)
 	if (self:GetAttribute('unitsuffix') == 'target') or (self:GetAttribute('unitsuffix') == 'pet') then
 	  self.ignoreHealComm = true
   	else
+	  self.ignoreHealComm = db.noHealbar
 	  if(db.indicators)then
 	    applyAuraIndicator(self)
   	  end
 	end
-	self.ignoreHealComm = db.noHealbar
 	
 	self:RegisterEvent('PLAYER_FOCUS_CHANGED', FocusTarget)
 	self:RegisterEvent('RAID_ROSTER_UPDATE', FocusTarget)

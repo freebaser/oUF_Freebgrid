@@ -28,8 +28,18 @@ local L = {
   ["Sacred Shield"] = GetSpellInfo(53601),
   ['Earth Shield'] = GetSpellInfo(49284),
   ['Riptide'] = GetSpellInfo(61301),
+  ['Flash of Light'] = GetSpellInfo(66922),
 }
 local x = "M"
+
+local getTime = function(expirationTime)
+	if expirationTime > 0 then
+		local timeleft = format("%.0f",-1*(GetTime()-expirationTime))
+		local spellTimer = "|cffffff00"..timeleft.."|r"
+		return spellTimer
+	end
+	return 0
+end
 
 oUF.Tags["[Freebaggro]"] = function(u) 
 	local s = UnitThreatSituation(u) if s == 2 or s == 3 then return "|cffFF0000"..x.."|r" end end
@@ -49,9 +59,8 @@ oUF.TagEvents["[rnw]"] = "UNIT_AURA"
 -- rnwtime
 oUF.Tags["[rnwTime]"] = function(u)
   local name, _,_,_,_,_, expirationTime, fromwho,_ = UnitAura(u, L["Renew"])
-  if not (fromwho == "player") then return end
-  local spellTimer = "|cffffff00"..format("%.0f",-1*(GetTime()-expirationTime)).."|r"
-  return spellTimer end
+  if (fromwho == "player") then return getTime(expirationTime) end 
+end
 oUF.TagEvents["[rnwTime]"] = "UNIT_AURA"
 oUF.Tags["[pws]"] = function(u) if UnitAura(u, L["Power Word: Shield"]) then return "|cff33FF33"..x.."|r" end end
 oUF.TagEvents["[pws]"] = "UNIT_AURA"
@@ -87,9 +96,8 @@ oUF.TagEvents["[rejuv]"] = "UNIT_AURA"
 -- rejuvtime
 oUF.Tags["[rejuvTime]"] = function(u)
   local name, _,_,_,_,_, expirationTime, fromwho,_ = UnitAura(u, L["Rejuvenation"])
-  if not (fromwho == "player") then return end
-  local spellTimer = "|cffffff00"..format("%.0f",-1*(GetTime()-expirationTime)).."|r"
-  return spellTimer end
+  if (fromwho == "player") then return getTime(expirationTime) end 
+end
 oUF.TagEvents["[rejuvTime]"] = "UNIT_AURA"
 oUF.Tags["[regrow]"] = function(u) if UnitAura(u, L["Regrowth"]) then return "|cff00FF10"..x.."|r" end end
 oUF.TagEvents["[regrow]"] = "UNIT_AURA"
@@ -136,10 +144,14 @@ oUF.Tags["[selfbeacon]"] = function(u)
 oUF.TagEvents["[selfbeacon]"] = "UNIT_AURA"
 oUF.Tags["[beaconTime]"] = function(u)
   local name, _,_,_,_,_, expirationTime, fromwho,_ = UnitAura(u, L["Beacon of Light"])
-  if not (fromwho == "player") then return end
-  local spellTimer = "|cffff33ff"..format("%.0f",-1*(GetTime()-expirationTime)).."|r"
-  return spellTimer end
+  if (fromwho == "player") then return getTime(expirationTime) end 
+end
 oUF.TagEvents["[beaconTime]"] = "UNIT_AURA"
+oUF.Tags["[FoLTime]"] = function(u)
+  local name, _,_,_,_,_, expirationTime, fromwho,_ = UnitAura(u, L['Flash of Light'])
+  if (fromwho == "player") then return getTime(expirationTime) end 
+end
+oUF.TagEvents["[FoLTime]"] = "UNIT_AURA"
 
 --shaman
 oUF.Tags['[rip]'] = function(u) 
@@ -150,9 +162,8 @@ oUF.TagEvents['[rip]'] = 'UNIT_AURA'
 
 oUF.Tags['[ripTime]'] = function(u)
 	local name, _,_,_,_,_, expirationTime, fromwho,_ = UnitAura(u, L['Riptide'])
-	if not (fromwho == 'player') then return end
-	local spellTimer = '|cffffff00'..format('%.0f',-1*(GetTime()-expirationTime))..'|r'
-	return spellTimer end
+	if (fromwho == "player") then return getTime(expirationTime) end 
+end
 oUF.TagEvents['[ripTime]'] = 'UNIT_AURA'
 
 oUF.earthCount = {'i','h','g','f','p','q','Z','Y'}

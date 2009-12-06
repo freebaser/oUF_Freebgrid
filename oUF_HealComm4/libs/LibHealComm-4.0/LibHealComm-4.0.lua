@@ -1,5 +1,5 @@
 local major = "LibHealComm-4.0"
-local minor = 45
+local minor = 49
 assert(LibStub, string.format("%s requires LibStub.", major))
 
 local HealComm = LibStub:NewLibrary(major, minor)
@@ -20,7 +20,7 @@ HealComm.ALL_HEALS, HealComm.CHANNEL_HEALS, HealComm.DIRECT_HEALS, HealComm.HOT_
 
 local COMM_PREFIX = "LHC40"
 local playerGUID, playerName, playerLevel
-local IS_BUILD30300 = tonumber((select(2, GetBuildInfo()))) >= 10554
+local IS_BUILD30300 = tonumber((select(4, GetBuildInfo()))) >= 30300
 
 HealComm.callbacks = HealComm.callbacks or LibStub:GetLibrary("CallbackHandler-1.0"):New(HealComm)
 HealComm.spellData = HealComm.spellData or {}
@@ -53,7 +53,7 @@ local isHealerClass = playerClass == "DRUID" or playerClass == "PRIEST" or playe
 
 -- Stolen from Threat-2.0, compresses GUIDs from 18 characters to around 8 - 9, 50%/55% savings
 -- 44 = , / 58 = : / 255 = \255 / 0 = line break? / 64 = @
-if( not HealComm.compressGUID or not HealComm.revisedCompressor ) then
+if( not HealComm.compressGUID ) then
 	local map = {[58] = "\254\250", [64] = "\254\251",  [44] = "\254\252", [255] = "\254\253", [0] = "\255"}
 	local function guidCompressHelper(x)
 	   local a = tonumber(x, 16)
@@ -78,40 +78,14 @@ if( not HealComm.compressGUID or not HealComm.revisedCompressor ) then
 			return str
 	end})
 	
-	local throttle
-	HealComm.revisedCompressor = true
 	HealComm.decompressGUID = setmetatable({}, {
 		__index = function(tbl, str)
 			if( not str ) then return nil end
 			local usc = unescape(str)
 			local a, b, c, d, e, f, g, h = string.byte(usc, 1, 8)
 
-			-- Failed to decompress
+			-- Failed to decompress, silently exit
 			if( not a or not b or not c or not d or not e or not f or not g or not h ) then
-				if( not throttle or throttle < GetTime() ) then
-					-- Only give this alert once every 5 minutes
-					throttle = GetTime() + 300
-
-					-- This isn't optimal, but need checking them all is the only "real" way to find out
-					-- what GUID errored in the group
-					for guid, unit in pairs(HealComm.guidToUnit) do
-						local compressed = HealComm.compressGUID[guid]
-						compressed = string.gsub(compressed, ",", "")
-						compressed = string.gsub(compressed, ":", "")
-						compressed = compressed .. ":"
-						compressed = string.split(":", compressed)
-						
-						local decompressed = HealComm.decompressGUID[compressed]
-						if( not decompressed or decompressed ~= guid ) then
-							print(string.format("%s-%s: Had GUID failure, found source %s, %s, %s (%s, %s)", major, minor, guid, unit, compressed, str, usc))
-							return ""
-						end
-					end
-					
-					print(string.format("%s-%s: Had GUID failure, but could not find source (%s, %s)", major, minor, str, usc))
-					print(string.format("a %s, b %s, d %s, c %s, e %s, f %s, g %s, h %s", tostring(a), tostring(b), tostring(c), tostring(d), tostring(e), tostring(f), tostring(g), tostring(h)))
-				end
-				
 				return ""
 			end
 			
@@ -126,7 +100,7 @@ local compressGUID, decompressGUID = HealComm.compressGUID, HealComm.decompressG
 
 -- Handles caching of tables for variable tick spells, like Wild Growth
 if( not HealComm.tableCache ) then
-	HealComm.tableCache = {}
+	HealComm.tableCache = setmetatable({}, {__mode = "k"})
 	function HealComm:RetrieveTable()
 		return table.remove(HealComm.tableCache, 1) or {}
 	end
@@ -190,9 +164,9 @@ end
 -- This gets filled out after data has been loaded, this is only for casted heals. Hots just directly pull from the averages as they do not increase in power with level, Cataclysm will change this though.
 if( HealComm.averageHealMT and not HealComm.fixedAverage ) then
 	HealComm.averageHealMT = nil
-	HealComm.fixedAverage = true
 end
 
+HealComm.fixedAverage = true
 HealComm.averageHeal = HealComm.averageHeal or {}
 HealComm.averageHealMT = HealComm.averageHealMT or {
 	__index = function(tbl, index)
@@ -386,13 +360,15 @@ function HealComm:GUIDHasHealed(guid)
 end
 
 -- Returns the guid to unit table
-HealComm.protectedMap = HealComm.protectedMap or setmetatable({}, {
-	__index = function(tbl, key) return HealComm.guidToUnit[key] end,
-	__newindex = function() error("This is a read only table and cannot be modified.", 2) end,
-	__metatable = false
-})
-
 function HealComm:GetGUIDUnitMapTable()
+	if( not HealComm.protectedMap ) then
+		HealComm.protectedMap = setmetatable({}, {
+			__index = function(tbl, key) return HealComm.guidToUnit[key] end,
+			__newindex = function() error("This is a read only table and cannot be modified.", 2) end,
+			__metatable = false
+		})
+	end
+	
 	return HealComm.protectedMap
 end
 
@@ -575,7 +551,7 @@ end
 	
 	AuraHandler: Specific aura tracking needed for this class, who has Beacon up on them and such
 	
-	ResetChargeData: Due to spell "queuing" you can't always rely on aura data for buffs that last one or two casts, for example take Divine Favor (+100% crit, one spell)
+	ResetChargeData: Due to spell "queuing" you can't always rely on aura data for buffs that last one or two casts, for example Divine Favor (+100% crit, one spell)
 	if you cast Holy Light and queue Flash of Light the library would still see they have Divine Favor and give them crits on both spells. The reset means that the flag that indicates
 	they have the aura can be killed and if they interrupt the cast then it will call this and let you reset the flags.
 	
@@ -589,7 +565,7 @@ end
 	
 	CalculateHealing: Calculates the healing value, does all the formula calculations talent modifiers and such
 	
-	CalculateHotHealing: Is used specifically for calculating the heals of hots
+	CalculateHotHealing: Used specifically for calculating the heals of hots
 	
 	GetHealTargets: Who the heal is going to hit, used for setting extra targets for Beacon of Light + Paladin heal or Prayer of Healing.
 	The returns should either be:
@@ -675,6 +651,8 @@ if( playerClass == "DRUID" ) then
 		itemSetsData["T7 Resto"] = {40460, 40461, 40462, 40463, 40465, 39531, 39538, 39539, 39542, 39543}
 		--itemSetsData["T8 Resto"] = {46183, 46184, 46185, 46186, 46187, 45345, 45346, 45347, 45348, 45349} 
 		--itemSetsData["T9 Resto"] = {48102, 48129, 48130, 48131, 48132, 48153, 48154, 48155, 48156, 48157, 48133, 48134, 48135, 48136, 48137, 48142, 48141, 48140, 48139, 48138, 48152, 48151, 48150, 48149, 48148, 48143, 48144, 48145, 48146, 48147}
+		-- 2 piece, 30% less healing lost on WG
+		itemSetsData["T10 Resto"] = {50106, 50107, 50108, 50109, 50113, 51139, 51138, 51137, 51136, 51135}
 		
 		local hotTotals, hasRegrowth = {}, {}
 		AuraHandler = function(unit, guid)
@@ -814,6 +792,8 @@ if( playerClass == "DRUID" ) then
 				spellPower = calculateSpellPower(hotData[spellName].levels[rank], spellPower)
 				healAmount = healAmount / hotData[spellName].ticks
 				
+				--if( equippedSetCache["T10 Resto"] >= 2 ) then
+								
 				table.wipe(wgTicks)
 				local tickModifier = healAmount / hotData[spellName].ticks
 				for i=1, hotData[spellName].ticks do
@@ -1433,7 +1413,10 @@ HealComm.selfModifiers = HealComm.selfModifiers or {
 	[64850] = 0.50, -- Unrelenting Assault
 	[65925] = 0.50, -- Unrelenting Assault
 	[54428] = 0.50, -- Divine Plea
+	[32346] = 0.50, -- Stolen Soul
 	[64849] = 0.75, -- Unrelenting Assault
+	[72221] = 1.05, -- Luck of the Draw
+	[70873] = 1.10, -- Emerald Vigor (Valithria Dreamwalker)
 	[31884] = 1.20, -- Avenging Wrath
 }
 
@@ -1466,6 +1449,7 @@ HealComm.healingModifiers = HealComm.healingModifiers or {
 	[getName(57974)] = 0.50, -- 6
 	[getName(57975)] = 0.50, -- 7
 	[getName(20900)] = 0.50, -- Aimed Shot
+	[getName(44534)] = 0.50, -- Wretched Strike
 	[getName(21551)] = 0.50, -- Mortal Strike
 	[getName(40599)] = 0.50, -- Arcing Smash
 	[getName(36917)] = 0.50, -- Magma-Throwser's Curse
@@ -1484,6 +1468,7 @@ HealComm.healingModifiers = HealComm.healingModifiers or {
 	[getName(54525)] = 0.80, -- Shroud of Darkness (This might be wrong)
 	[getName(48301)] = 0.80, -- Mind Trauma (Improved Mind Blast)
 	[getName(68391)] = 0.80, -- Permafrost, the debuff is generic no way of seeing 7/13/20, go with 20
+	[getName(52645)] = 0.80, -- Hex of Weakness
 	[getName(34073)] = 0.85, -- Curse of the Bleeding Hollow
 	[getName(43410)] = 0.90, -- Chop
 	[getName(34123)] = 1.06, -- Tree of Life
@@ -1494,9 +1479,10 @@ HealComm.healingModifiers = HealComm.healingModifiers or {
 	[getName(41350)] = 2.00, -- Aura of Desire
 }
 
--- Temporary to ensure the new fixed version is used even when upgrading from an older version
-if( HealComm.healingStackMods ) then
-	HealComm.healingStackMods[getName(45242)] = function(name, rank, icon, stacks) return 1 + (stacks * (0.02 + rankNumbers[rank] / 100)) end
+if( IS_BUILD30300 ) then
+	HealComm.healingModifiers[getName(70588)] = 0.90 -- Suppression (Valithria Dreamwalker NPCs?)
+	HealComm.healingModifiers[getName(69674)] = 0.50 -- Mutated Infection (Rotface)
+	HealComm.healingModifiers[getName(71473)] = 2.00 -- Essence of the Vampyr Queen (Bood Queen Lana'thel)
 end
 
 HealComm.healingStackMods = HealComm.healingStackMods or {
@@ -1512,15 +1498,18 @@ HealComm.healingStackMods = HealComm.healingStackMods or {
 	[getName(60626)] = function(name, rank, icon, stacks) return 1 - stacks * 0.10 end, 
 	-- Mortal Wound
 	[getName(28467)] = function(name, rank, icon, stacks) return 1 - stacks * 0.10 end, 
+	-- Furious Strikes
+	[getName(56112)] = function(name, rank, icon, stacks) return 1 - stacks * 0.25 end,
 }
 
 local healingStackMods, selfModifiers = HealComm.healingStackMods, HealComm.selfModifiers
 local healingModifiers, currentModifiers = HealComm.healingModifiers, HealComm.currentModifiers
 
 local distribution
+local CTL = ChatThrottleLib
 local function sendMessage(msg)
 	if( distribution ) then
-		SendAddonMessage(COMM_PREFIX, msg, distribution)
+		CTL:SendAddonMessage("BULK", COMM_PREFIX, msg, distribution)
 	end
 end
 
@@ -1542,20 +1531,20 @@ local function updateDistributionChannel()
 	
 	-- If the player is not a healer, some events can be disabled until the players grouped.
 	if( distribution ) then
-		HealComm.frame:RegisterEvent("CHAT_MSG_ADDON")
+		HealComm.eventFrame:RegisterEvent("CHAT_MSG_ADDON")
 		if( not isHealerClass ) then
-			HealComm.frame:RegisterEvent("UNIT_AURA")
-			HealComm.frame:RegisterEvent("UNIT_SPELLCAST_DELAYED")
-			HealComm.frame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE")
-			HealComm.frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+			HealComm.eventFrame:RegisterEvent("UNIT_AURA")
+			HealComm.eventFrame:RegisterEvent("UNIT_SPELLCAST_DELAYED")
+			HealComm.eventFrame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE")
+			HealComm.eventFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 		end
 	else
-		HealComm.frame:UnregisterEvent("CHAT_MSG_ADDON")
+		HealComm.eventFrame:UnregisterEvent("CHAT_MSG_ADDON")
 		if( not isHealerClass ) then
-			HealComm.frame:UnregisterEvent("UNIT_AURA")
-			HealComm.frame:UnregisterEvent("UNIT_SPELLCAST_DELAYED")
-			HealComm.frame:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE")
-			HealComm.frame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+			HealComm.eventFrame:UnregisterEvent("UNIT_AURA")
+			HealComm.eventFrame:UnregisterEvent("UNIT_SPELLCAST_DELAYED")
+			HealComm.eventFrame:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE")
+			HealComm.eventFrame:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 		end
 	end
 end
@@ -1572,7 +1561,7 @@ function HealComm:ZONE_CHANGED_NEW_AREA()
 		
 		-- Changes the value of Necrotic Poison based on zone type, if there are more difficulty type MS's I'll support those too
 		-- Heroic = 90%, Non-Heroic = 75%
-		-- Apparently the Chinese version of WoW is on 3.1.x still, this is a quick fix so it'll work for them
+		-- Not all versions of WoW are on 3.2, as such only check difficulty if they are, otherwise default to the heroic version
 		if( GetRaidDifficulty and ( GetRaidDifficulty() == 2 or GetRaidDifficulty() == 4 ) ) then
 			healingModifiers[GetSpellInfo(53121)] = 0.25
 		else
@@ -2609,7 +2598,7 @@ end
 -- PLAYER_ALIVE = got talent data
 function HealComm:PLAYER_ALIVE()
 	self:PLAYER_TALENT_UPDATE()
-	self.frame:UnregisterEvent("PLAYER_ALIVE")
+	self.eventFrame:UnregisterEvent("PLAYER_ALIVE")
 end
 
 -- Initialize the library
@@ -2644,34 +2633,34 @@ function HealComm:OnInitialize()
 	-- When first logging in talent data isn't available until at least PLAYER_ALIVE, so if we don't have data
 	-- will wait for that event otherwise will just cache it right now
 	if( GetNumTalentTabs() == 0 ) then
-		self.frame:RegisterEvent("PLAYER_ALIVE")
+		self.eventFrame:RegisterEvent("PLAYER_ALIVE")
 	else
 		self:PLAYER_TALENT_UPDATE()
 	end
 	
 	if( ResetChargeData ) then
-		HealComm.frame:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED")
+		HealComm.eventFrame:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED")
 	end
 	
 	-- Finally, register it all
-	self.frame:RegisterEvent("UNIT_SPELLCAST_SENT")
-	self.frame:RegisterEvent("UNIT_SPELLCAST_START")
-	self.frame:RegisterEvent("UNIT_SPELLCAST_STOP")
-	self.frame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP")
-	self.frame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START")
-	self.frame:RegisterEvent("UNIT_SPELLCAST_DELAYED")
-	self.frame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE")
-	self.frame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
-	self.frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-	self.frame:RegisterEvent("PLAYER_TALENT_UPDATE")
-	self.frame:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
-	self.frame:RegisterEvent("PLAYER_TARGET_CHANGED")
-	self.frame:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
-	self.frame:RegisterEvent("PLAYER_LEVEL_UP")
-	self.frame:RegisterEvent("GLYPH_ADDED")
-	self.frame:RegisterEvent("GLYPH_REMOVED")
-	self.frame:RegisterEvent("GLYPH_UPDATED")
-	self.frame:RegisterEvent("UNIT_AURA")
+	self.eventFrame:RegisterEvent("UNIT_SPELLCAST_SENT")
+	self.eventFrame:RegisterEvent("UNIT_SPELLCAST_START")
+	self.eventFrame:RegisterEvent("UNIT_SPELLCAST_STOP")
+	self.eventFrame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP")
+	self.eventFrame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START")
+	self.eventFrame:RegisterEvent("UNIT_SPELLCAST_DELAYED")
+	self.eventFrame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE")
+	self.eventFrame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
+	self.eventFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+	self.eventFrame:RegisterEvent("PLAYER_TALENT_UPDATE")
+	self.eventFrame:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
+	self.eventFrame:RegisterEvent("PLAYER_TARGET_CHANGED")
+	self.eventFrame:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
+	self.eventFrame:RegisterEvent("PLAYER_LEVEL_UP")
+	self.eventFrame:RegisterEvent("GLYPH_ADDED")
+	self.eventFrame:RegisterEvent("GLYPH_REMOVED")
+	self.eventFrame:RegisterEvent("GLYPH_UPDATED")
+	self.eventFrame:RegisterEvent("UNIT_AURA")
 	
 	if( self.initialized ) then return end
 	self.initialized = true
@@ -2704,10 +2693,11 @@ local function OnEvent(self, event, ...)
 end
 
 -- Event handler
-HealComm.frame = HealComm.frame or CreateFrame("Frame")
-HealComm.frame:UnregisterAllEvents()
-HealComm.frame:RegisterEvent("UNIT_PET")
-HealComm.frame:SetScript("OnEvent", OnEvent)
+HealComm.eventFrame = HealComm.frame or HealComm.eventFrame or CreateFrame("Frame")
+HealComm.eventFrame:UnregisterAllEvents()
+HealComm.eventFrame:RegisterEvent("UNIT_PET")
+HealComm.eventFrame:SetScript("OnEvent", OnEvent)
+HealComm.frame = nil
 
 -- At PLAYER_LEAVING_WORLD (Actually more like MIRROR_TIMER_STOP but anyway) UnitGUID("player") returns nil, delay registering
 -- events and set a playerGUID/playerName combo for all players on PLAYER_LOGIN not just the healers.
@@ -2723,10 +2713,10 @@ function HealComm:PLAYER_LOGIN()
 		self:OnInitialize()
 	end
 
-	self.frame:UnregisterEvent("PLAYER_LOGIN")
-	self.frame:RegisterEvent("ZONE_CHANGED_NEW_AREA")
-	self.frame:RegisterEvent("PARTY_MEMBERS_CHANGED")
-	self.frame:RegisterEvent("RAID_ROSTER_UPDATE")
+	self.eventFrame:UnregisterEvent("PLAYER_LOGIN")
+	self.eventFrame:RegisterEvent("ZONE_CHANGED_NEW_AREA")
+	self.eventFrame:RegisterEvent("PARTY_MEMBERS_CHANGED")
+	self.eventFrame:RegisterEvent("RAID_ROSTER_UPDATE")
 	
 	self:ZONE_CHANGED_NEW_AREA()
 	self:RAID_ROSTER_UPDATE()
@@ -2734,7 +2724,7 @@ function HealComm:PLAYER_LOGIN()
 end
 
 if( not IsLoggedIn() ) then
-	HealComm.frame:RegisterEvent("PLAYER_LOGIN")
+	HealComm.eventFrame:RegisterEvent("PLAYER_LOGIN")
 else
 	HealComm:PLAYER_LOGIN()
 end

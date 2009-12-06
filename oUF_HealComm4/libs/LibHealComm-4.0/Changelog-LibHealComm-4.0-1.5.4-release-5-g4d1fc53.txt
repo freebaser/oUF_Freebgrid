@@ -1,0 +1,5 @@
+Shadowed:
+	- I am smart and accidentally committed a slight bit of debug code in CTL
+	- Reembedded ChatThrottleLib as well
+	- Changed GUID decompression to silently fail if it finds a bad GUID
+	- Messages will now be sent through ChatThrottleLib
