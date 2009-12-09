@@ -16,6 +16,8 @@ FreebgridDefaults = {
 
 	scale = 1.0,
 	
+	OoR = 0.2, -- Out of Range alpha
+	
 	font = mediaPath.."calibri.ttf",
 	fontsize = 16,
 	
@@ -57,8 +59,9 @@ FreebgridDefaults = {
 	manabars = false,		-- Mana Bars?
 	Licon = true,			-- Leader icon?
 	ricon = true,			-- Raid icon?
-	noHealbar = true,		-- Disable HealComm Bar
+	Healbar = false,		-- Enable HealComm Bar
 	Healtext = true,		-- Enable HealComm Text
+	healOverflow = true, 	-- Allow Healbar to overlap the frame
 	frameBG = true,			-- apply raid Background?
 	
 	MTs = true, 			-- Main Tanks?

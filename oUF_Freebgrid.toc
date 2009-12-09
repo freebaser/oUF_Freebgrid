@@ -1,8 +1,8 @@
-## Interface: 30200
+## Interface: 30300
 ## Title: oUF_Freebgrid
 ## Author: Freebaser
-## Version: 2.0
-## Notes: oUF layout.
+## Version: 2.1
+## Notes: Raid Frames using the oUF framework.
 ## OptionalDeps: LibHealComm-3.0, LibHealComm-4.0, LibWrapperHealComm-1.0, oUF_ReadyCheck
 ## X-Embeds: LibHealComm-4.0, LibWrapperHealComm-1.0
 ## X-oUF: Freebgrid

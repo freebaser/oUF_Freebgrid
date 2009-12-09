@@ -1,11 +1,13 @@
-## Interface: 30200
+## Interface: 30300
 ## Title: oUF HealComm4
 ## Notes: Adds incoming healing bars to oUF frames.
-## Author: EvilPaul
-## Version: 1.4
+## Author: EvilPaul, Tekkub
+## Version: 2.0.0
 ## X-Category: UnitFrame
 ## Dependencies: oUF
 ## DefaultState: enabled
+
+## X-oUF: oUF
 
 ## OptionalDeps: LibHealComm-4.0, LibWrapperHealComm-1.0
 ## X-Embeds: LibHealComm-4.0, LibWrapperHealComm-1.0

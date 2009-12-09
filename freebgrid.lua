@@ -414,7 +414,7 @@ local func = function(self, unit)
 	self.colors = colors
 	self.menu = menu
 	
-	self:EnableMouse(true)
+	--self:EnableMouse(true)
 	if(db.highlight)then
 		self:SetScript("OnEnter", OnEnter)
 		self:SetScript("OnLeave", OnLeave)
@@ -533,6 +533,7 @@ local func = function(self, unit)
 		  self.PostUpdatePower = updatePower
 		end
 		
+		--Heal Text
 		local heal = hp:CreateFontString(nil, "OVERLAY")
 		heal:SetPoint("BOTTOM")
 		heal:SetJustifyH("CENTER")
@@ -576,7 +577,7 @@ local func = function(self, unit)
 		if(not unit) then
 			self.Range = true
 			self.inRangeAlpha = 1
-			self.outsideRangeAlpha = .5
+			self.outsideRangeAlpha = db.OoR
 		end
 	end
 
@@ -686,7 +687,20 @@ local func = function(self, unit)
 	if (self:GetAttribute('unitsuffix') == 'target') or (self:GetAttribute('unitsuffix') == 'pet') then
 	  self.ignoreHealComm = true
   	else
-	  self.ignoreHealComm = db.noHealbar
+	-- Healcomm Bar
+	  if db.Healbar then
+		  self.HealCommBar = CreateFrame('StatusBar', nil, self.Health)
+		  self.HealCommBar:SetStatusBarTexture(self.Health:GetStatusBarTexture():GetTexture())
+		  self.HealCommBar:SetStatusBarColor(0, 1, 0, 0.4)
+		  if db.vertical then
+			self.HealCommBar:SetPoint('BOTTOM', self.Health, 'BOTTOM')
+		  else
+			self.HealCommBar:SetPoint('LEFT', self.Health, 'LEFT')
+		  end
+
+		  self.allowHealCommOverflow = db.healOverflow
+	  end
+	  
 	  if(db.indicators)then
 	    applyAuraIndicator(self)
   	  end
