@@ -35,7 +35,7 @@ FreebgridDebuffs = {
 		-- Standard: Add debuff name and priority
 		--["Weakened Soul"] = 12,
 
-		-- or Add an Item for the tabe above that uses a spellID
+		-- or Add an Item from the table above that uses a spellID
 		--[L["Weakened Soul"]] = 12,
 
 		[L["Viper Sting"]] = 12,

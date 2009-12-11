@@ -23,19 +23,19 @@ end
 local function applyAuraIndicator(self)
 	self.AuraStatusTL = self.Health:CreateFontString(nil, "OVERLAY")
 	self.AuraStatusTL:ClearAllPoints()
-	self.AuraStatusTL:SetPoint("TOPLEFT", -1, 0)
+	self.AuraStatusTL:SetPoint("TOPLEFT", 0, 0)
 	self.AuraStatusTL:SetFont(db.aurafont, db.indicatorSize, "THINOUTLINE")
 	self:Tag(self.AuraStatusTL, oUF.classIndicators[playerClass]["TL"])
 	
 	self.AuraStatusTR = self.Health:CreateFontString(nil, "OVERLAY")
 	self.AuraStatusTR:ClearAllPoints()
-	self.AuraStatusTR:SetPoint("TOPRIGHT", 1, 0)
+	self.AuraStatusTR:SetPoint("TOPRIGHT", 2, 0)
 	self.AuraStatusTR:SetFont(db.aurafont, db.indicatorSize, "THINOUTLINE")
 	self:Tag(self.AuraStatusTR, oUF.classIndicators[playerClass]["TR"])
 
 	self.AuraStatusBL = self.Health:CreateFontString(nil, "OVERLAY")
 	self.AuraStatusBL:ClearAllPoints()
-	self.AuraStatusBL:SetPoint("BOTTOMLEFT", -1, 0)
+	self.AuraStatusBL:SetPoint("BOTTOMLEFT", 0, 0)
 	self.AuraStatusBL:SetFont(db.aurafont, db.indicatorSize, "THINOUTLINE")
 	self:Tag(self.AuraStatusBL, oUF.classIndicators[playerClass]["BL"])	
 
@@ -255,14 +255,19 @@ bg:RegisterEvent("PLAYER_ENTERING_WORLD")
 --=======================================================================================--
 
 local backdrop = {
-	bgFile = [=[Interface\ChatFrame\ChatFrameBackground]=],
+	bgFile = db.highlightTex,
+	insets = {top = 0, left = 0, bottom = 0, right = 0},
+}
+
+local border = {
+	bgFile = db.highlightTex,
 	insets = {top = -1, left = -1, bottom = -1, right = -1},
 }
 
 -- Target Border
 local ChangedTarget = function(self)
-	if (UnitInRaid'player' == 1 or GetNumPartyMembers() > 0 ) and UnitIsUnit('target', self.unit) then
-		if self:GetAttribute('unitsuffix') == 'pet' then return end
+	if UnitIsUnit('target', self.unit) then
+		self.TargetBorder:SetBackdropColor(.8, .8, .8, 1)
 		self.TargetBorder:Show()
 	else
 		self.TargetBorder:Hide()
@@ -271,7 +276,7 @@ end
 
 local FocusTarget = function(self)
 	if UnitIsUnit('focus', self.unit) then
-		if self:GetAttribute('unitsuffix') == 'pet' then return end
+		self.FocusHighlight:SetBackdropColor(db.focusHighlightcolor[1], db.focusHighlightcolor[2], db.focusHighlightcolor[3], db.focusHighlightcolor[4])
 		self.FocusHighlight:Show()
 	else
 		self.FocusHighlight:Hide()
@@ -374,6 +379,7 @@ local updatePower = function(self, event, unit)
 
 	local perc = oUF.Tags["[perpp]"](unit)
 	if (perc < 10 and UnitIsConnected(unit) and powerTypeString == 'MANA' and not UnitIsDeadOrGhost(unit)) then
+		self.manaborder:SetBackdropColor(0, .1, .9, .7)
 		self.manaborder:Show()
 	else
 		self.manaborder:Hide()
@@ -485,8 +491,12 @@ local func = function(self, unit)
 	self.OverrideUpdateHealth = updateHealth
 
 	-- Backdrop
-	self:SetBackdrop(backdrop)
-	self:SetBackdropColor(0, 0, 0)	
+	self.BG = CreateFrame("Frame", nil, self)
+	self.BG:SetPoint("TOPLEFT", self, "TOPLEFT")
+	self.BG:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT")
+	self.BG:SetFrameLevel(3)
+	self.BG:SetBackdrop(backdrop)
+	self.BG:SetBackdropColor(0, 0, 0)
 
 	self.FrameBackdrop = CreateFrame("Frame", nil, self)
 	self.FrameBackdrop:SetPoint("TOPLEFT", self, "TOPLEFT", -4, 4)
@@ -498,6 +508,7 @@ local func = function(self, unit)
 	}
 	self.FrameBackdrop:SetBackdropColor(0, 0, 0, 0)
 	self.FrameBackdrop:SetBackdropBorderColor(0, 0, 0)
+	--self.FrameBackdrop:Hide()
 	
 	if self:GetAttribute('unitsuffix') == 'pet' then
 	else
@@ -526,7 +537,7 @@ local func = function(self, unit)
 		  local ppbg = pp:CreateTexture(nil, "BORDER")
 		  ppbg:SetAllPoints(pp)
 		  ppbg:SetTexture(db.texture)
-		  ppbg.multiplier = .3
+		  ppbg.multiplier = .2
 		  pp.bg = ppbg
 
 		  self.Power = pp
@@ -616,35 +627,32 @@ local func = function(self, unit)
 	  self.Highlight = hl
 	end
 
-	local manaborder = self:CreateTexture(nil, "OVERLAY")
-	manaborder:SetPoint("LEFT", self, "LEFT", -5, 0)
-	manaborder:SetPoint("RIGHT", self, "RIGHT", 5, 0)
-	manaborder:SetPoint("TOP", self, "TOP", 0, 5)
-	manaborder:SetPoint("BOTTOM", self, "BOTTOM", 0, -5)
-	manaborder:SetTexture(db.borderTex)
-	manaborder:Hide()
-	manaborder:SetVertexColor(0, .1, .9, .8)
-	self.manaborder = manaborder
-
-	local tBorder = self:CreateTexture(nil, "OVERLAY")
-	tBorder:SetPoint("LEFT", self, "LEFT", -6, 0)
-	tBorder:SetPoint("RIGHT", self, "RIGHT", 6, 0)
-	tBorder:SetPoint("TOP", self, "TOP", 0, 6)
-	tBorder:SetPoint("BOTTOM", self, "BOTTOM", 0, -6)
-	tBorder:SetTexture(db.borderTex)
+	local tBorder = CreateFrame("Frame", nil, self)
+	tBorder:SetPoint("TOPLEFT", self, "TOPLEFT")
+	tBorder:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT")
+	tBorder:SetBackdrop(border)
+	tBorder:SetFrameLevel(2)
 	tBorder:Hide()
-	tBorder:SetVertexColor(.8, .8, .8, .8)
+	
 	self.TargetBorder = tBorder
-
-	local fBorder = self:CreateTexture(nil, "OVERLAY")
-	fBorder:SetPoint("LEFT", self, "LEFT", -6, 0)
-	fBorder:SetPoint("RIGHT", self, "RIGHT", 6, 0)
-	fBorder:SetPoint("TOP", self, "TOP", 0, 6)
-	fBorder:SetPoint("BOTTOM", self, "BOTTOM", 0, -6)
-	fBorder:SetTexture(db.borderTex)
+	
+	local fBorder = CreateFrame("Frame", nil, self)
+	fBorder:SetPoint("TOPLEFT", self, "TOPLEFT")
+	fBorder:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT")
+	fBorder:SetBackdrop(border)
+	fBorder:SetFrameLevel(2)
 	fBorder:Hide()
-	fBorder:SetVertexColor(db.focusHighlightcolor[1], db.focusHighlightcolor[2], db.focusHighlightcolor[3], db.focusHighlightcolor[4])
+	
 	self.FocusHighlight = fBorder
+	
+	local mBorder = CreateFrame("Frame", nil, self)
+	mBorder:SetPoint("TOPLEFT", self, "TOPLEFT")
+	mBorder:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT")
+	mBorder:SetBackdrop(border)
+	mBorder:SetFrameLevel(2)
+	mBorder:Hide()
+	
+	self.manaborder = mBorder
 	
 --==========--
 --  ICONS   --
@@ -709,8 +717,10 @@ local func = function(self, unit)
 	self:RegisterEvent('PLAYER_FOCUS_CHANGED', FocusTarget)
 	self:RegisterEvent('RAID_ROSTER_UPDATE', FocusTarget)
 	self:RegisterEvent('PLAYER_TARGET_CHANGED', ChangedTarget)
-	self:RegisterEvent("UNIT_THREAT_LIST_UPDATE", updateThreat)
-	self:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE", updateThreat)
+	self:RegisterEvent('UNIT_THREAT_LIST_UPDATE', updateThreat)
+	self:RegisterEvent('UNIT_THREAT_SITUATION_UPDATE', updateThreat)
+	-- Trying this to see if it fixes aggro color getting stuck sometimes.
+	self:RegisterEvent('PLAYER_REGEN_ENABLED', updateThreat)
 
 	if (self:GetAttribute('unitsuffix') == 'pet') then
 	  self:SetAttribute('initial-height', db.petheight)
