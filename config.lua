@@ -32,6 +32,7 @@ FreebgridDefaults = {
 	iconSize = 14,	-- Size of raid symbols, leader, etc.
 	debuffsize = 16,
 
+	-- Not really used at this point. /freeb to unlock and move frames
 	position = {"LEFT", "UIParent", "LEFT", 10, 0},
 	
 	point = "TOP", --[[ usage: "TOP", "LEFT", "RIGHT", "BOTTOM"

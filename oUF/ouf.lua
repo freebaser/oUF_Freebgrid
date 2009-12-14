@@ -1,10 +1,4 @@
-local parent
-if(...) then
-	parent = ...
-else
-	parent = debugstack():match[[\AddOns\(.-)\]]
-end
-
+local parent, ns = ...
 local global = GetAddOnMetadata(parent, 'X-oUF')
 local _VERSION = GetAddOnMetadata(parent, 'version')
 
@@ -90,7 +84,7 @@ end
 local oUF = {}
 local event_metatable = {
 	__call = function(funcs, self, ...)
-		for _, func in ipairs(funcs) do
+		for _, func in next, funcs do
 			func(self, ...)
 		end
 	end,
@@ -274,10 +268,9 @@ for k, v in pairs{
 		local element = elements[name]
 		if(not element) then return end
 
-		for k, update in ipairs(self.__elements) do
+		for k, update in next, self.__elements do
 			if(update == element.update) then
 				table.remove(self.__elements, k)
-				element.disable(self)
 
 				-- We need to run a new update cycle incase we knocked ourself out of sync.
 				-- The main reason we do this is to make sure the full update is completed
@@ -287,6 +280,8 @@ for k, v in pairs{
 				break
 			end
 		end
+
+		return element.disable(self)
 	end,
 
 	UpdateElement = function(self, name)
@@ -334,7 +329,7 @@ do
 			if(type(curev) == 'function') then
 				self[event] = setmetatable({curev, func}, event_metatable)
 			else
-				for _, infunc in ipairs(curev) do
+				for _, infunc in next, curev do
 					if(infunc == func) then return end
 				end
 
@@ -361,7 +356,7 @@ do
 
 		local curev = self[event]
 		if(type(curev) == 'table' and func) then
-			for k, infunc in ipairs(curev) do
+			for k, infunc in next, curev do
 				if(infunc == func) then
 					curev[k] = nil
 
@@ -369,6 +364,8 @@ do
 						table.remove(curev, k)
 						UnregisterEvent(self, event)
 					end
+
+					break
 				end
 			end
 		else
@@ -518,7 +515,7 @@ function oUF:Spawn(unit, name, template, disableBlizz)
 		if FreebgridDefaults.ShowBlizzParty == false then
 			HandleUnit(disableBlizz or 'party')
 		end
-
+		
 		local header = CreateFrame("Frame", name, UIParent, template)
 		header:SetAttribute("template", "SecureUnitButtonTemplate")
 		header.initialConfigFunction = walkObject
@@ -564,9 +561,5 @@ oUF.colors = colors
 oUF.frame_metatable = frame_metatable
 oUF.ColorGradient = frame_metatable.__index.ColorGradient
 
-if(...) then
-	local _, ns = ...
-	ns.oUF = oUF
-end
-
-if global then _G[global] = oUF end
+if(global) then _G[global] = oUF end
+ns.oUF = oUF

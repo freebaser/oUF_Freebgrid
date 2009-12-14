@@ -8,24 +8,10 @@
 --	- Tag and Untag should be able to handle more than one fontstring at a time.
 ]]
 
-local oUF
-local parent
-if(...) then
-	parent = ...
-else
-	parent = debugstack():match[[\AddOns\(.-)\]]
-end
+local parent, ns = ...
+local oUF = ns.oUF
 
-local global = GetAddOnMetadata(parent, 'X-oUF')
-assert(global, 'X-oUF needs to be defined in the parent add-on.')
-if(...) then
-	local _, ns = ...
-	oUF = ns.oUF
-else
-	oUF = _G[global]
-end
-
-local classColors = oUF.colors.class
+local classColors
 
 local function Hex(r, g, b)
 	if type(r) == "table" then
@@ -232,7 +218,7 @@ local tagEvents = {
 	['[rare]']                = 'UNIT_CLASSIFICATION_CHANGED',
 	['[classification]']      = 'UNIT_CLASSIFICATION_CHANGED',
 	['[shortclassification]'] = 'UNIT_CLASSIFICATION_CHANGED',
-	["[group]"]                 = "RAID_ROSTER_UPDATE",
+	["[group]"]               = "RAID_ROSTER_UPDATE",
 }
 
 local unitlessEvents = {
@@ -247,6 +233,8 @@ frame:SetScript('OnEvent', function(self, event, unit)
 	if(strings) then
 		for k, fontstring in next, strings do
 			if(not unitlessEvents[event] and fontstring.parent.unit == unit and fontstring:IsVisible()) then
+				-- XXX: Fix this for 1.4
+				classColors = fontstring.parent.colors.class
 				fontstring:UpdateTag()
 			end
 		end
@@ -268,6 +256,8 @@ local createOnUpdate = function(timer)
 			if(total >= timer) then
 				for k, fs in next, strings do
 					if(fs.parent:IsShown() and UnitExists(fs.parent.unit)) then
+						-- XXX: Fix this for 1.4.
+						classColors = fs.parent.colors.class
 						fs:UpdateTag()
 					end
 				end
@@ -283,6 +273,8 @@ local createOnUpdate = function(timer)
 end
 
 local OnShow = function(self)
+	-- XXX: Fix this for 1.4.
+	classColors = self.colors.class
 	for _, fs in next, self.__tags do
 		fs:UpdateTag()
 	end
