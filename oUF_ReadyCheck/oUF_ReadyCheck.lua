@@ -9,7 +9,9 @@
 
 	Add-on originally made by Starlon
 --]]
-local oUF = Freebgrid
+local _, ns = ...
+local oUF = ns.oUF
+
 local GetReadyCheckStatus = GetReadyCheckStatus
 
 local statusTexture = {

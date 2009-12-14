@@ -419,7 +419,7 @@ end
 local func = function(self, unit)
 	self.colors = colors
 	self.menu = menu
-	
+
 	--self:EnableMouse(true)
 	if(db.highlight)then
 		self:SetScript("OnEnter", OnEnter)
@@ -803,45 +803,6 @@ else -- You failed to equal any of the above. So I give this...
 	colY = 0
 end
 
--- Credits to Zork for the drag frame
-local function make_me_movable(f)
-	if db.moveable == false then
-			f:IsUserPlaced(false)
-		else
-			f:SetMovable(true)
-			f:SetUserPlaced(true)
-			if db.locked == false then
-				f:EnableMouse(true)
-				f:RegisterForDrag("LeftButton","RightButton")
-				f:SetScript("OnDragStart", function(self) if IsAltKeyDown() then self:StartMoving() end end)
-				f:SetScript("OnDragStop", function(self) self:StopMovingOrSizing() end)
-			end
-	end
-end
-
-local oUF_FreebgridDragFrame = CreateFrame("Frame","oUF_FreebgridDragFrame",UIParent)
-oUF_FreebgridDragFrame:SetWidth(db.height)
-oUF_FreebgridDragFrame:SetHeight(db.width)
-oUF_FreebgridDragFrame:SetScale(db.scale)
-oUF_FreebgridDragFrame:SetFrameStrata("HIGH")
-if db.locked == false then
-	oUF_FreebgridDragFrame:SetBackdrop({bgFile = "Interface/Tooltips/UI-Tooltip-Background", edgeFile = "", tile = true, tileSize = 16, edgeSize = 16, insets = { left = 0, right = 0, top = 0, bottom = 0 }})
-end
-oUF_FreebgridDragFrame:SetPoint(db.position[1], db.position[2], db.position[3], db.position[4], db.position[5])
-
-local oUF_FreebgridMTDFrame = CreateFrame("Frame","oUF_FreebgridMTDFrame",UIParent)
-oUF_FreebgridMTDFrame:SetWidth(db.height)
-oUF_FreebgridMTDFrame:SetHeight(db.width)
-oUF_FreebgridMTDFrame:SetScale(db.scale)
-oUF_FreebgridMTDFrame:SetFrameStrata("HIGH")
-if db.locked == false then
-	oUF_FreebgridMTDFrame:SetBackdrop({bgFile = "Interface/Tooltips/UI-Tooltip-Background", edgeFile = "", tile = true, tileSize = 16, edgeSize = 16, insets = { left = 0, right = 0, top = 0, bottom = 0 }})
-end
-oUF_FreebgridMTDFrame:SetPoint(db.MTposition[1], db.MTposition[2], db.MTposition[3], db.MTposition[4], db.MTposition[5])
-
-make_me_movable(oUF_FreebgridDragFrame)
-make_me_movable(oUF_FreebgridMTDFrame)
-
 local raid = {}
 for i = 1, db.numRaidgroups do
 	local raidg = oUF:Spawn('header', 'oUF_FreebRaid'..i, nil)
@@ -855,7 +816,7 @@ for i = 1, db.numRaidgroups do
 				'yOffset', spacingY)
 	table.insert(raid, raidg)
 	if(i == 1) then	
-		raidg:SetPoint("TOPLEFT", "oUF_FreebgridDragFrame", "TOPLEFT")
+		raidg:SetPoint(db.position[1], db.position[2], db.position[3], db.position[4], db.position[5])
 	else
 		raidg:SetPoint(pos, raid[i-1], posRel, colX, colY) 
 	end
@@ -869,7 +830,7 @@ for i,v in ipairs(raid) do v:Show() end
 if db.MTs then
 
 	local tank = oUF:Spawn('header', 'oUF_FreebMainTank')
-		tank:SetPoint("TOPLEFT", "oUF_FreebgridMTDFrame", "TOPLEFT")
+		tank:SetPoint(db.MTposition[1], db.MTposition[2], db.MTposition[3], db.MTposition[4], db.MTposition[5])
 		tank:SetManyAttributes(
 				"showRaid", true, 
 					"yOffset", -5,
@@ -913,3 +874,6 @@ if db.MTs then
 		end
 		tank:Show()
 end
+
+oUF_Freebgrid_HEADER("oUF_FreebRaid" .. 1, oUF_FreebRaidAnchor, 0, 0)
+oUF_Freebgrid_HEADER("oUF_FreebMainTank", oUF_FreebMainTankAnchor, 0, 100)

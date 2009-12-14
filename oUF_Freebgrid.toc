@@ -3,6 +3,7 @@
 ## Author: Freebaser
 ## Version: 2.1
 ## Notes: Raid Frames using the oUF framework.
+## SavedVariables: oUF_Freebgrid
 ## OptionalDeps: LibHealComm-3.0, LibHealComm-4.0, LibWrapperHealComm-1.0, oUF_ReadyCheck
 ## X-Embeds: LibHealComm-4.0, LibWrapperHealComm-1.0
 ## X-oUF: Freebgrid

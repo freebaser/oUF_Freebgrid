@@ -13,22 +13,8 @@
 	Functions that can be overridden from within a layout:
 	:HealCommTextFormat(value)         Formats the heal amount passed for display on .HealCommText
 ]]
-local oUF
-local parent
-if(...) then
-	parent = ...
-else
-	parent = debugstack():match[[\AddOns\(.-)\]]
-end
-
-local global = GetAddOnMetadata(parent, 'X-oUF')
-assert(global, 'X-oUF needs to be defined in the parent add-on.')
-if(...) then
-	local _, ns = ...
-	oUF = ns.oUF
-else
-	oUF = _G[global]
-end
+local _, ns = ...
+local oUF = ns.oUF
 
 local healcomm = LibStub("LibHealComm-4.0")
 

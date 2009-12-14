@@ -31,9 +31,6 @@ FreebgridDefaults = {
 
 	iconSize = 14,	-- Size of raid symbols, leader, etc.
 	debuffsize = 16,
-	
-	moveable = true, -- will use "position"(below) instead of any savedvarible if false.
-	locked = true, -- false to move frames
 
 	position = {"LEFT", "UIParent", "LEFT", 10, 0},
 	
