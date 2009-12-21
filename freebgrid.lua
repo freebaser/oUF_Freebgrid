@@ -1,12 +1,6 @@
 local oUF = Freebgrid
 local db = FreebgridDefaults
 local dbDebuffs = FreebgridDebuffs
-local petspacing
-if db.pets then
-	petspacing = db.petheight+2
-else
-	petspacing = 0
-end
 
 local playerClass = select(2, UnitClass("player"))
 
@@ -120,7 +114,7 @@ end)
 function f:UNIT_AURA(unit)
 	local frame = oUF.units[unit]
 	if not frame or frame.unit ~= unit then return end
-	if frame:GetAttribute('unitsuffix') == 'pet' then return end
+	if frame:GetAttribute('unitsuffix') == 'pet' or frame:GetAttribute('unitsuffix') == 'target'then return end
 	local cur, tex, dis
 	local name, rank, buffTexture, count, duration, expire, dtype, isPlayer
 	local dispellPriority, debuffs = db.dispellPriority, dbDebuffs.debuffs
@@ -178,73 +172,19 @@ bg:EnableMouse(true)
 bg:SetScript("OnEvent", function(self, event, ...)
 	return self[event](self, event, ...)
 end)
-
-local SubGroups = function()
-	local t = {}
-	local last = db.numRaidgroups
-	for i = 1, last do t[i] = 0 end
-	for i = 1, GetNumRaidMembers() do
-			local s = select(3, GetRaidRosterInfo(i))
-			if s > last then break end
-			t[s] = t[s] + 1
-	end
-	return t
-end
-
+	
 function bg:RAID_ROSTER_UPDATE()
 	if not db.frameBG then return end
-	if not UnitInRaid("player") then
-		self:Hide()
-		return
-	else
-		self:Show()
-	end
-
-	local roster = SubGroups()
-
-	local h, last, first = 1
-	for k, v in ipairs(roster) do
-		if v > 0 then
-			if not first then
-				first = k
-			end
-			last = k
-		end
-		if v > roster[h] then
-			h = k
-		end
-	end
 	
-	if db.growth == "RIGHT" then
+	if UnitInRaid("player") then
 		self:ClearAllPoints()
-		self:SetPoint("TOP", "oUF_FreebRaid1", "TOP", 0, 8)
-		self:SetPoint("LEFT", "oUF_FreebRaid" .. first, "LEFT", -8 , 0)
-		self:SetPoint("RIGHT", "oUF_FreebRaid" .. last, "RIGHT", 8, 0)
-		self:SetPoint("BOTTOM", "oUF_FreebRaid" .. h, "BOTTOM", 0, -8+(-(petspacing)))
-	elseif db.growth == "UP" then
-		self:ClearAllPoints()
-		self:SetPoint("LEFT", "oUF_FreebRaid1", "LEFT", -8, 0)
-		self:SetPoint("BOTTOM", "oUF_FreebRaid" .. first, "BOTTOM", 0, -8+(-(petspacing)))
-		self:SetPoint("TOP", "oUF_FreebRaid" .. last, "TOP", 0, 8)
-		self:SetPoint("RIGHT", "oUF_FreebRaid" .. h, "RIGHT", 8, 0)
-	elseif db.growth == "DOWN" then
-		self:ClearAllPoints()
-		self:SetPoint("LEFT", "oUF_FreebRaid1", "LEFT", -8, 0)
-		self:SetPoint("TOP", "oUF_FreebRaid" .. first, "TOP", 0, 8)
-		self:SetPoint("BOTTOM", "oUF_FreebRaid" .. last, "BOTTOM", 0, -8+(-(petspacing)))
-		self:SetPoint("RIGHT", "oUF_FreebRaid" .. h, "RIGHT", 8, 0)
-	elseif db.growth == "LEFT" then
-		self:ClearAllPoints()
-		self:SetPoint("TOP", "oUF_FreebRaid1", "TOP", 0, 8)
-		self:SetPoint("RIGHT", "oUF_FreebRaid" .. first, "RIGHT", 8 , 0)
-		self:SetPoint("LEFT", "oUF_FreebRaid" .. last, "LEFT", -8, 0)
-		self:SetPoint("BOTTOM", "oUF_FreebRaid" .. h, "BOTTOM", 0, -8+(-(petspacing)))
+		self:SetPoint("TOP", "Raid_Freebgrid", "TOP", 0, 8)
+		self:SetPoint("LEFT", "Raid_Freebgrid", "LEFT", -8 , 0)
+		self:SetPoint("RIGHT", "Raid_Freebgrid", "RIGHT", 8, 0)
+		self:SetPoint("BOTTOM", "Raid_Freebgrid", "BOTTOM", 0, -8)
+		self:Show()
 	else
-		self:ClearAllPoints()
-		self:SetPoint("TOP", "oUF_FreebRaid1", "TOP", 0, 8)
-		self:SetPoint("LEFT", "oUF_FreebRaid" .. first, "LEFT", -8 , 0)
-		self:SetPoint("RIGHT", "oUF_FreebRaid" .. last, "RIGHT", 8, 0)
-		self:SetPoint("BOTTOM", "oUF_FreebRaid" .. h, "BOTTOM", 0, -8+(-(petspacing)))
+		self:Hide()
 	end
 end
 
@@ -344,26 +284,23 @@ local updateHealth = function(self, event, unit, bar)
 		self.DDG:Hide()
 	end
 		
-	if self:GetAttribute('unitsuffix') == 'pet' then
-	else
-		self.Name:SetTextColor(r, g, b)
-		
-		local name = UnitName(unit) or "Unknown"
-		if(per > 90) or UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) or self:GetAttribute('unitsuffix') == 'target' then
-			if nameCache[name] then 
-				self.Name:SetText(nameCache[name]) 
-			else 
-				local substring 
-				for length=#name, 1, -1 do 
-				substring = utf8sub(name, 1, length) 
-				self.Name:SetText(substring) 
-					if self.Name:GetStringWidth() <= db.width-2 then break end 
-				end 
+	self.Name:SetTextColor(r, g, b)
+	
+	local name = UnitName(unit) or "Unknown"
+	if(per > 90) or UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) or self:GetAttribute('unitsuffix') == 'target' then
+		if nameCache[name] then 
+			self.Name:SetText(nameCache[name]) 
+		else 
+			local substring 
+			for length=#name, 1, -1 do 
+			substring = utf8sub(name, 1, length) 
+			self.Name:SetText(substring) 
+				if self.Name:GetStringWidth() <= db.width-2 then break end 
 			end
 			nameCache[name] = substring
-		else
-			self.Name:SetText('-'..numberize(def))
 		end
+	else
+		self.Name:SetText('-'..numberize(def))
 	end
 
 	bar.bg:SetVertexColor(r, g, b)
@@ -420,7 +357,6 @@ local func = function(self, unit)
 	self.colors = colors
 	self.menu = menu
 
-	--self:EnableMouse(true)
 	if(db.highlight)then
 		self:SetScript("OnEnter", OnEnter)
 		self:SetScript("OnLeave", OnLeave)
@@ -439,22 +375,14 @@ local func = function(self, unit)
 	hp.frequentUpdates = true
 	if(db.manabars)then
 	  if(db.vertical)then
-	    if self:GetAttribute('unitsuffix') == 'pet' then
-		  hp:SetWidth(db.width)
-	    else
-	      hp:SetOrientation("VERTICAL")
-		  hp:SetWidth(db.width*.90)
-        end
+	    hp:SetOrientation("VERTICAL")
+		hp:SetWidth(db.width*.90)
 	    hp:SetParent(self)
 	    hp:SetPoint"TOP"
 	    hp:SetPoint"BOTTOM"
 	    hp:SetPoint"LEFT"
   	  else
-		if self:GetAttribute('unitsuffix') == 'pet' then
-		  hp:SetHeight(db.petheight)
-		else
-	      hp:SetHeight(db.height*.90)
-		end
+	    hp:SetHeight(db.height*.90)
 	    hp:SetParent(self)
 	    hp:SetPoint"LEFT"
 	    hp:SetPoint"RIGHT"
@@ -463,10 +391,7 @@ local func = function(self, unit)
   	else
 	  if(db.vertical)then
 	    hp:SetWidth(db.width)
-	    if self:GetAttribute('unitsuffix') == 'pet' then
-	    else
-	      hp:SetOrientation("VERTICAL")
-    	end
+	    hp:SetOrientation("VERTICAL")
 	    hp:SetParent(self)
 	    hp:SetPoint"TOPLEFT"
 	    hp:SetPoint"BOTTOMRIGHT"
@@ -508,88 +433,84 @@ local func = function(self, unit)
 	}
 	self.FrameBackdrop:SetBackdropColor(0, 0, 0, 0)
 	self.FrameBackdrop:SetBackdropBorderColor(0, 0, 0)
-	--self.FrameBackdrop:Hide()
 	
-	if self:GetAttribute('unitsuffix') == 'pet' then
-	else
-		-- PowerBars
-		if(db.manabars)then
-		  local pp = CreateFrame"StatusBar"
-		  pp:SetStatusBarTexture(db.texture)
-		  pp.colorPower = true
-		  pp.frequentUpdates = true
-		
-		  if(db.vertical)then
-			pp:SetWidth(db.width*.08)
-			pp:SetOrientation("VERTICAL")
-			pp:SetParent(self)
-			pp:SetPoint"TOP"
-			pp:SetPoint"BOTTOM"
-			pp:SetPoint"RIGHT"
-		  else
-			pp:SetHeight(db.height*.08)
-			pp:SetParent(self)
-			pp:SetPoint"LEFT"
-			pp:SetPoint"RIGHT"
-			pp:SetPoint"BOTTOM"
-		  end
+	-- PowerBars
+	if(db.manabars)then
+	  local pp = CreateFrame"StatusBar"
+	  pp:SetStatusBarTexture(db.texture)
+	  pp.colorPower = true
+	  pp.frequentUpdates = true
+	
+	  if(db.vertical)then
+		pp:SetWidth(db.width*.08)
+		pp:SetOrientation("VERTICAL")
+		pp:SetParent(self)
+		pp:SetPoint"TOP"
+		pp:SetPoint"BOTTOM"
+		pp:SetPoint"RIGHT"
+	  else
+		pp:SetHeight(db.height*.08)
+		pp:SetParent(self)
+		pp:SetPoint"LEFT"
+		pp:SetPoint"RIGHT"
+		pp:SetPoint"BOTTOM"
+	  end
 
-		  local ppbg = pp:CreateTexture(nil, "BORDER")
-		  ppbg:SetAllPoints(pp)
-		  ppbg:SetTexture(db.texture)
-		  ppbg.multiplier = .2
-		  pp.bg = ppbg
+	  local ppbg = pp:CreateTexture(nil, "BORDER")
+	  ppbg:SetAllPoints(pp)
+	  ppbg:SetTexture(db.texture)
+	  ppbg.multiplier = .2
+	  pp.bg = ppbg
 
-		  self.Power = pp
-		  self.PostUpdatePower = updatePower
-		end
-		
-		--Heal Text
-		local heal = hp:CreateFontString(nil, "OVERLAY")
-		heal:SetPoint("BOTTOM")
-		heal:SetJustifyH("CENTER")
-		heal:SetFont(db.font, db.fontsize-2)
-		heal:SetShadowOffset(1.25, -1.25)
-		heal:SetTextColor(0,1,0,1)
+	  self.Power = pp
+	  self.PostUpdatePower = updatePower
+	end
+	
+	--Heal Text
+	local heal = hp:CreateFontString(nil, "OVERLAY")
+	heal:SetPoint("BOTTOM")
+	heal:SetJustifyH("CENTER")
+	heal:SetFont(db.font, db.fontsize-2)
+	heal:SetShadowOffset(1.25, -1.25)
+	heal:SetTextColor(0,1,0,1)
 
-		self.HealCommText = db.Healtext and heal or nil
-		self.HealCommTextFormat = numberize
+	self.HealCommText = db.Healtext and heal or nil
+	self.HealCommTextFormat = numberize
 
-		-- Leader/Assistant Icon
-		if(db.Licon)then
-		  self.Leader = self.Health:CreateTexture(nil, "OVERLAY")
-		  self.Leader:SetPoint("TOPLEFT", self, 0, 8)
-		  self.Leader:SetHeight(db.iconSize)
-		  self.Leader:SetWidth(db.iconSize)
-		  
-		  self.Assistant = self.Health:CreateTexture(nil, "OVERLAY")
-		  self.Assistant:SetPoint("TOPLEFT", self, 0, 8)
-		  self.Assistant:SetHeight(db.iconSize)
-		  self.Assistant:SetWidth(db.iconSize)
-		end
+	-- Leader/Assistant Icon
+	if(db.Licon)then
+	  self.Leader = self.Health:CreateTexture(nil, "OVERLAY")
+	  self.Leader:SetPoint("TOPLEFT", self, 0, 8)
+	  self.Leader:SetHeight(db.iconSize)
+	  self.Leader:SetWidth(db.iconSize)
+	  
+	  self.Assistant = self.Health:CreateTexture(nil, "OVERLAY")
+	  self.Assistant:SetPoint("TOPLEFT", self, 0, 8)
+	  self.Assistant:SetHeight(db.iconSize)
+	  self.Assistant:SetWidth(db.iconSize)
+	end
 
-	-- Raid Icon
-		if(db.ricon)then
-		  self.RaidIcon = self.Health:CreateTexture(nil, "OVERLAY")
-		  self.RaidIcon:SetPoint("TOP", self, 0, 5)
-		  self.RaidIcon:SetHeight(db.iconSize)
-		  self.RaidIcon:SetWidth(db.iconSize)
-		end
+-- Raid Icon
+	if(db.ricon)then
+	  self.RaidIcon = self.Health:CreateTexture(nil, "OVERLAY")
+	  self.RaidIcon:SetPoint("TOP", self, 0, 5)
+	  self.RaidIcon:SetHeight(db.iconSize)
+	  self.RaidIcon:SetWidth(db.iconSize)
+	end
 
-	-- ReadyCheck	
-		self.ReadyCheck = self.Health:CreateTexture(nil, "OVERLAY")
-		self.ReadyCheck:SetPoint("TOP", self)
-		self.ReadyCheck:SetHeight(db.iconSize)
-		self.ReadyCheck:SetWidth(db.iconSize)
-		self.ReadyCheck.delayTime = 8
-		self.ReadyCheck.fadeTime = 1
-		
-	-- Range
-		if(not unit) then
-			self.Range = true
-			self.inRangeAlpha = 1
-			self.outsideRangeAlpha = db.OoR
-		end
+-- ReadyCheck	
+	self.ReadyCheck = self.Health:CreateTexture(nil, "OVERLAY")
+	self.ReadyCheck:SetPoint("TOP", self)
+	self.ReadyCheck:SetHeight(db.iconSize)
+	self.ReadyCheck:SetWidth(db.iconSize)
+	self.ReadyCheck.delayTime = 8
+	self.ReadyCheck.fadeTime = 1
+	
+-- Range
+	if(not unit) then
+		self.Range = true
+		self.inRangeAlpha = 1
+		self.outsideRangeAlpha = db.OoR
 	end
 
 	-- Name
@@ -605,11 +526,7 @@ local func = function(self, unit)
 	local DDG = hp:CreateFontString(nil, "OVERLAY")
 	DDG:SetPoint("BOTTOM")
 	DDG:SetJustifyH("CENTER")
-	if self:GetAttribute('unitsuffix') == 'pet' then
-	  DDG:SetFont(db.font, db.fontsize-4)
-  	else
-	  DDG:SetFont(db.font, db.fontsize-2)
-  	end
+	DDG:SetFont(db.font, db.fontsize-2)
 	DDG:SetShadowOffset(1.25, -1.25)
 	DDG:SetTextColor(.8,.8,.8,1)
 
@@ -692,8 +609,7 @@ local func = function(self, unit)
 	border:SetVertexColor(1, 1, 1)
 	self.border = border
 
-	if (self:GetAttribute('unitsuffix') == 'target') or (self:GetAttribute('unitsuffix') == 'pet') then
-	  self.ignoreHealComm = true
+	if (self:GetAttribute('unitsuffix') == 'target') then
   	else
 	-- Healcomm Bar
 	  if db.Healbar then
@@ -719,14 +635,8 @@ local func = function(self, unit)
 	self:RegisterEvent('PLAYER_TARGET_CHANGED', ChangedTarget)
 	self:RegisterEvent('UNIT_THREAT_LIST_UPDATE', updateThreat)
 	self:RegisterEvent('UNIT_THREAT_SITUATION_UPDATE', updateThreat)
-	-- Trying this to see if it fixes aggro color getting stuck sometimes.
-	self:RegisterEvent('PLAYER_REGEN_ENABLED', updateThreat)
 
-	if (self:GetAttribute('unitsuffix') == 'pet') then
-	  self:SetAttribute('initial-height', db.petheight)
-	else
-	  self:SetAttribute('initial-height', db.height)
-	end
+	self:SetAttribute('initial-height', db.height)
 	self:SetAttribute('initial-width', db.width)
 
 	return self
@@ -735,101 +645,68 @@ end
 oUF:RegisterStyle("Freebgrid", func)
 oUF:SetActiveStyle"Freebgrid"
 
-local pos, posRel, spacingX, spacingY
-petsTemp = "oUF_FreebpetsDOWN"
+local spacingX, spacingY, growth
 -- SetPoint of MOTHERFUCKING DOOM!
 if db.point == "TOP" and db.growth == "LEFT" then
-	pos = "TOPRIGHT"
-	posRel = "TOPLEFT"
+	growth = "RIGHT"
 	spacingX = 0
-	spacingY = -(db.spacing)+(-(petspacing))
-	colX = -(db.spacing)
-	colY = 0
+	spacingY = -(db.spacing)
 elseif db.point == "TOP" and db.growth == "RIGHT" then
-	pos = "TOPLEFT"
-	posRel = "TOPRIGHT"
+	growth = "LEFT"
 	spacingX = 0
-	spacingY = -(db.spacing)+(-(petspacing))
-	colX = db.spacing
-	colY = 0
+	spacingY = -(db.spacing)
 elseif db.point == "LEFT" and db.growth == "UP" then
-	pos = "BOTTOMLEFT"
-	posRel = "TOPLEFT"
+	growth = "BOTTOM"
 	spacingX = db.spacing
 	spacingY = 0
-	colX = 0
-	colY = db.spacing+((petspacing))
 elseif db.point == "LEFT" and db.growth == "DOWN" then
-	pos = "TOPLEFT"
-	posRel = "BOTTOMLEFT"
+	growth = "TOP"
 	spacingX = db.spacing
 	spacingY = 0
-	colX = 0
-	colY = -(db.spacing)+(-(petspacing))
 elseif db.point == "RIGHT" and db.growth == "UP" then
-	pos = "BOTTOMRIGHT"
-	posRel = "TOPRIGHT"
+	growth = "BOTTOM"
 	spacingX = -(db.spacing)
 	spacingY = 0
-	colX = 0
-	colY = db.spacing+((petspacing))
 elseif db.point == "RIGHT" and db.growth == "DOWN" then
-	pos = "TOPRIGHT"
-	posRel = "BOTTOMRIGHT"
+	growth = "TOP"
 	spacingX = -(db.spacing)
 	spacingY = 0
-	colX = 0
-	colY = -(db.spacing)+(-(petspacing))
 elseif db.point == "BOTTOM" and db.growth == "LEFT" then
-	pos = "BOTTOMRIGHT"
-	posRel = "BOTTOMLEFT"
+	growth = "RIGHT"
 	spacingX = 0
-	spacingY = (db.spacing)+((petspacing))
-	colX = -(db.spacing)
-	colY = 0
+	spacingY = (db.spacing)
 elseif db.point == "BOTTOM" and db.growth == "RIGHT" then
-	pos = "BOTTOMLEFT"
-	posRel = "BOTTOMRIGHT"
+	growth = "LEFT"
 	spacingX = 0
-	spacingY = (db.spacing)+((petspacing))
-	colX = (db.spacing)
-	colY = 0
+	spacingY = (db.spacing)
 else -- You failed to equal any of the above. So I give this...
-	pos = "TOPLEFT"
-	posRel = "TOPRIGHT"
+	growth = "RIGHT"
 	spacingX = 0
-	spacingY = -(db.spacing)+(-(petspacing))
-	colX = db.spacing
-	colY = 0
+	spacingY = -(db.spacing)
 end
 
-local raid = {}
-for i = 1, db.numRaidgroups do
-	local raidg = oUF:Spawn('header', 'oUF_FreebRaid'..i, nil)
-	raidg:SetManyAttributes('groupFilter', tostring(i),
-				'showRaid', true,
-				'showSolo', db.solo,
-				'showParty', db.partyON,
-				'showPlayer', true,
-				'point', db.point,
-				'xoffset', spacingX,
-				'yOffset', spacingY)
-	table.insert(raid, raidg)
-	if(i == 1) then	
-		raidg:SetPoint(db.position[1], db.position[2], db.position[3], db.position[4], db.position[5])
-	else
-		raidg:SetPoint(pos, raid[i-1], posRel, colX, colY) 
-	end
-	if db.pets then
-		raidg:SetAttribute("template", petsTemp)
-	end
-	raidg:SetScale(db.scale)
-end
-for i,v in ipairs(raid) do v:Show() end
+local raid = oUF:Spawn('header', 'Raid_Freebgrid')
+raid:SetPoint(db.position[1], db.position[2], db.position[3], db.position[4], db.position[5])
+raid:SetManyAttributes(
+	'showPlayer', true,
+	'showSolo', db.solo,
+	'showParty', db.partyON,
+	'showRaid', true,
+	'xoffset', spacingX,
+	'yOffset', spacingY,
+	'point', db.point,
+	'groupingOrder', '1,2,3,4,5,6,7,8',
+	'groupBy', 'GROUP',
+	'maxColumns', db.numRaidgroups,
+	'unitsPerColumn', db.units,
+	'columnSpacing', db.spacing,
+	'columnAnchorPoint', growth
+)
+raid:Show()
+
 
 if db.MTs then
-
-	local tank = oUF:Spawn('header', 'oUF_FreebMainTank')
+	local tank = oUF:Spawn('header', 'MT_Freebgrid')
 		tank:SetPoint(db.MTposition[1], db.MTposition[2], db.MTposition[3], db.MTposition[4], db.MTposition[5])
 		tank:SetManyAttributes(
 				"showRaid", true, 
@@ -874,6 +751,3 @@ if db.MTs then
 		end
 		tank:Show()
 end
-
-oUF_Freebgrid_HEADER("oUF_FreebRaid" .. 1, oUF_FreebRaidAnchor, 0, 0)
-oUF_Freebgrid_HEADER("oUF_FreebMainTank", oUF_FreebMainTankAnchor, 0, 100)

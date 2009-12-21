@@ -5,7 +5,7 @@
 	<Include file="mtargets.xml"/>
 	<Include file="oUF_HealComm4\oUF_HealComm4.xml"/>
 	
-	<Script file="freebMF.lua"/>
+	<Script file="oUF_MovableFrames\movable.lua"/>
 	<Script file="config.lua"/>
 	<Script file="raid_debuffs.lua"/>
 	<Script file="tags.lua"/>

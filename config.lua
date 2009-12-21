@@ -48,7 +48,6 @@ FreebgridDefaults = {
 	solo = false,
 	partyON = true,	-- dude?
 	ShowBlizzParty = false, -- Show the blizzard default party frames?
-	pets = false,	-- Party/Raid pets
 
 	reverseColors = false,	-- Reverse Units color
 	highlight = true,		-- MouseOver Highlight?
@@ -69,6 +68,7 @@ FreebgridDefaults = {
 	petColor = {.1, .8, .3},
 	
 	numRaidgroups = 8,		-- Number of Raid Groups
+	units = 5, 				-- Number of units per group
 	
 	dispellPriority = {
 		["Magic"] = 4,
