@@ -25,49 +25,59 @@ end
 
 local backdropPool = {}
 
--- XXX: Should possibly just be replaced with something that steals the points
--- of the anchor, as it does most of the work for us already.
-local getPoint = function(obj)
-	-- VARIABLE NAMES OF DOOM!
-	local S = obj:GetEffectiveScale()
-	local L, R = obj:GetLeft(), obj:GetRight()
-	local T, B = obj:GetTop(), obj:GetBottom()
-	local Cx, Cy = obj:GetCenter()
-	-- Quantum state!
-	if(not L) then return end
+local getPoint = function(obj, anchor)
+	if(not anchor) then
+		local UIx, UIy = UIParent:GetCenter()
+		local Ox, Oy = obj:GetCenter()
 
-	local width, height = UIParent:GetRight(), UIParent:GetTop()
-	local left = width / 3
-	local right = width - left
-	local bottom = height / 3
-	local top = height - bottom
+		-- Frame doesn't really have a positon yet.
+		if(not Ox) then return end
 
-	local point, x, y
-	if(Cx >= left and not(Cx <= right)) then
-		point = 'RIGHT'
-		x = R - width
-	elseif(Cx <= left) then
-		point = 'LEFT'
-		x = L
+		local UIS = UIParent:GetEffectiveScale()
+		local OS = obj:GetEffectiveScale()
+
+		local UIWidth, UIHeight = UIParent:GetRight(), UIParent:GetTop()
+
+		local LEFT = UIWidth / 3
+		local RIGHT = UIWidth * 2 / 3
+
+		local point, x, y
+		if(Ox >= RIGHT) then
+			point = 'RIGHT'
+			x = obj:GetRight() - UIWidth
+		elseif(Ox <= LEFT) then
+			point = 'LEFT'
+			x = obj:GetLeft()
+		else
+			x = Ox - UIx
+		end
+
+		local BOTTOM = UIHeight / 3
+		local TOP = UIHeight * 2 / 3
+
+		if(Oy >= TOP) then
+			point = 'TOP' .. (point or '')
+			y = obj:GetTop() - UIHeight
+		elseif(Oy <= BOTTOM) then
+			point = 'BOTTOM' .. (point or '')
+			y = obj:GetBottom()
+		else
+			if(not point) then point = 'CENTER' end
+			y = Oy - UIy
+		end
+
+		return string.format(
+			'%s\031%s\031%d\031%d',
+			point, 'UIParent', round(x * UIS / OS),  round(y * UIS / OS)
+		)
 	else
-		x = Cx - (width / 2)
-	end
+		local point, parent, _, x, y = anchor:GetPoint()
 
-	if(Cy > bottom and Cy < top) then
-		if(not point) then point = 'CENTER' end
-		y = Cy - (height / 2)
-	elseif(Cy >= bottom and not(Cy <= top)) then
-		point = 'TOP' .. (point or '')
-		y = T - height
-	elseif(Cy <= bottom) then
-		y = B
-		point = 'BOTTOM' .. (point or '')
+		return string.format(
+			'%s\031%s\031%d\031%d',
+			point, 'UIParent', round(x), round(y)
+		)
 	end
-
-	return string.format(
-		'%s\031%s\031%d\031%d',
-		point, 'UIParent', round(x * S), round(y * S)
-	)
 end
 
 local getObjectInformation  = function(obj)
@@ -97,7 +107,7 @@ local function restorePosition(obj)
 	-- We've not saved any custom position for this style.
 	if(not _DB[style] or not _DB[style][identifier]) then return end
 
-	local scale = UIParent:GetScale()
+	local scale = obj:GetScale()
 	local parent = (isHeader and obj:GetParent())
 	local SetPoint = getmetatable(parent or obj).__index.SetPoint;
 
@@ -113,63 +123,105 @@ local function restorePosition(obj)
 	SetPoint(parent or obj, point, parentName, point, x / scale, y / scale)
 end
 
-local savePosition = function(obj, override)
+local savePosition = function(obj, anchor)
 	local style, identifier, isHeader = getObjectInformation(obj)
 	if(not _DB[style]) then _DB[style] = {} end
 
-	if(isHeader and not override) then
-		_DB[style][identifier] = getPoint(obj:GetParent())
+	if(isHeader) then
+		_DB[style][identifier] = getPoint(obj:GetParent(), anchor)
 	else
-		_DB[style][identifier] = getPoint(override or obj)
+		_DB[style][identifier] = getPoint(obj, anchor)
 	end
 end
 
 -- Attempt to figure out a more sane name to dispaly.
-local smartName = function(obj, header)
-	if(type(obj) == 'string') then
-		-- Probably what we're after.
-		if(obj:match('_')) then
-			local name = obj:lower()
-			local group, id, subType = name:match('_([%a%d_]+)unitbutton(%d+)(%w+)$')
-			if(subType) then
-				return group .. id .. subType
-			end
+local smartName
+do
+	local nameCache = {}
+	local validNames = {
+		'player',
+		'target',
+		'focus',
+		'raid',
+		'pet',
+		'party',
+		'maintank',
+		'mainassist',
+		'arena',
+	}
 
-			-- odds of this being used is _slim_
-			local group, id = name:match('_([%a%d_]+)unitbutton(%d+)$')
-			if(id) then
-				return group .. id
-			end
-
-			local group = name:match('_([%a%d_]+)')
-			if(group) then
-				return group
-			end
-		else
-			return obj
+	local validName = function(smartName)
+		-- Not really a valid name, but we'll accept it for simplicities sake.
+		if(tonumber(smartName)) then
+			return smartName
 		end
-	else
-		if(header) then
-			-- XXX: Check the attributes for a valid description.
-			local name = header:GetName()
-			local group = name:lower():match('_([%a%d_]+)')
-			if(group) then
-				return group:gsub('frames?', '')
-			else
-				return name
+
+		if(type(smartName) == 'string') then
+			if(smartName == 'mt') then
+				return 'maintank'
 			end
 
-			return header:GetName()
+			for _, v in next, validNames do
+				if(v == smartName) then
+					return smartName
+				end
+			end
+
+			if(
+				smartName:match'^party%d?$' or
+				smartName:match'^arena%d?$' or
+				smartName:match'^boss%d?$' or
+				smartName:match'^partypet%d?$' or
+				smartName:match'^raid%d?%d?$' or
+				smartName:match'%w+target$' or
+				smartName:match'%w+pet$'
+				) then
+				return smartName
+			end
+		end
+	end
+
+	local function guessName(...)
+		local name = validName(select(1, ...))
+
+		local n = select('#', ...)
+		if(n > 1) then
+			for i=2, n do
+				local inp = validName(select(i, ...))
+				if(inp) then
+					name = (name or '') .. inp
+				end
+			end
+		end
+
+		return name
+	end
+
+	local smartString = function(name)
+		if(nameCache[name]) then
+			return nameCache[name]
+		end
+
+		-- Here comes the substitute train!
+		local n = name:gsub('(%l)(%u)', '%1_%2'):gsub('([%l%u])(%d)', '%1_%2_'):lower()
+		n = guessName(string.split('_', n))
+		if(n) then
+			nameCache[name] = n
+			return n
+		end
+
+		return name
+	end
+
+	smartName = function(obj, header)
+		if(type(obj) == 'string') then
+			return smartString(obj)
+		elseif(header) then
+			return smartString(header:GetName())
 		else
-			local match = (obj.hasChildren and '_([%a_]+)unitbutton(%d+)$') or '_([%a_]+)unitbutton(%d+)(%w+)$'
 			local name = obj:GetName()
 			if(name) then
-				local group, id, subType = name:lower():match(match)
-				if(subType) then
-					return group .. id .. subType
-				elseif(id) then
-					return group .. id
-				end
+				return smartString(name)
 			end
 
 			return obj.unit or '<unknown>'
@@ -226,20 +278,20 @@ do
 
 	local OnDragStop = function(self)
 		self:StopMovingOrSizing()
-		savePosition(self.obj, self.header and self)
+		savePosition(self.obj, self)
 	end
 
 	getBackdrop = function(obj, isHeader)
 		local header = (isHeader and obj:GetParent())
-		if(not getPoint(header or obj)) then return end
+		if(not (header or obj):GetCenter()) then return end
 		if(backdropPool[header or obj]) then return backdropPool[header or obj] end
 
 		local backdrop = CreateFrame"Frame"
+		backdrop:SetParent(UIParent)
 		backdrop:Hide()
 
 		backdrop:SetBackdrop(_BACKDROP)
 		backdrop:SetFrameStrata"TOOLTIP"
-		backdrop:SetScale(obj:GetEffectiveScale())
 		backdrop:SetAllPoints(header or obj)
 
 		backdrop:EnableMouse(true)
@@ -535,8 +587,8 @@ do
 	InterfaceOptions_AddCategory(opt)
 end
 
-SLASH_OUF_Freebgrid_MF1 = '/freeb'
-SlashCmdList['OUF_Freebgrid_MF'] = function(inp)
+SLASH_OUF_FREEBGRID1 = '/freeb'
+SlashCmdList['OUF_FREEBGRID'] = function(inp)
 	if(InCombatLockdown()) then
 		return print"Frames cannot be moved while in combat. Bailing out."
 	end

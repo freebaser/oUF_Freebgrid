@@ -1,0 +1,4 @@
+Shadowed:
+	- Added Hopelessness (Halls of Reflection, -25% healing done)
+	Moved 3.3 spells to the table
+	- Added #69633 Veil of Shadow, same name in English but it's different in German so probably the same issue for other languages

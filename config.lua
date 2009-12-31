@@ -49,6 +49,8 @@ FreebgridDefaults = {
 	partyON = true,	-- dude?
 	ShowBlizzParty = false, -- Show the blizzard default party frames?
 
+	pets = true,
+
 	reverseColors = false,	-- Reverse Units color
 	highlight = true,		-- MouseOver Highlight?
 	indicators = true, 		-- Class Indicators?
@@ -59,7 +61,7 @@ FreebgridDefaults = {
 	Healbar = false,		-- Enable HealComm Bar
 	Healtext = true,		-- Enable HealComm Text
 	healOverflow = true, 	-- Allow Healbar to overlap the frame
-	frameBG = true,			-- apply raid Background?
+	frameBG = false,			-- apply raid Background?
 	
 	MTs = true, 			-- Main Tanks?
 	MTposition = {"TOPLEFT", "UIParent", "TOPLEFT", 10, -150},

@@ -114,7 +114,7 @@ end)
 function f:UNIT_AURA(unit)
 	local frame = oUF.units[unit]
 	if not frame or frame.unit ~= unit then return end
-	if frame:GetAttribute('unitsuffix') == 'pet' or frame:GetAttribute('unitsuffix') == 'target'then return end
+	if frame:GetAttribute('unitsuffix') == 'target'then return end
 	local cur, tex, dis
 	local name, rank, buffTexture, count, duration, expire, dtype, isPlayer
 	local dispellPriority, debuffs = db.dispellPriority, dbDebuffs.debuffs
@@ -638,6 +638,7 @@ local func = function(self, unit)
 
 	self:SetAttribute('initial-height', db.height)
 	self:SetAttribute('initial-width', db.width)
+	self:SetAttribute('initial-scale', db.scale)
 
 	return self
 end
@@ -704,6 +705,24 @@ raid:SetManyAttributes(
 )
 raid:Show()
 
+if db.pets then
+	local pets = oUF:Spawn('header', 'Pet_Freebgrid', 'SecureGroupPetHeaderTemplate')
+	pets:SetPoint('TOPLEFT', 'Raid_Freebgrid', 'TOPRIGHT', db.spacing, 0)
+	pets:SetManyAttributes(
+		'showPlayer', true,
+		'showSolo', db.solo,
+		'showParty', db.partyON,
+		'showRaid', true,
+		'xoffset', spacingX,
+		'yOffset', spacingY,
+		'point', db.point,
+		'maxColumns', db.numRaidgroups,
+		'unitsPerColumn', db.units,
+		'columnSpacing', db.spacing,
+		'columnAnchorPoint', growth
+	)
+	pets:Show()
+end
 
 if db.MTs then
 	local tank = oUF:Spawn('header', 'MT_Freebgrid')
