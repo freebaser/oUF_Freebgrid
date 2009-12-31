@@ -1,6 +1,6 @@
 local L = {
 	--Ex.
-	--["Weakened Soul"] = GetSpellInfo(6788),
+	["Weakened Soul"] = GetSpellInfo(6788),
 
 	["Viper Sting"] = GetSpellInfo(3034),
 
@@ -34,6 +34,7 @@ FreebgridDebuffs = {
 		--Ex.
 		-- Standard: Add debuff name and priority
 		--["Weakened Soul"] = 12,
+		["Mark of the Fallen Champion"] = 1,
 
 		-- or Add an Item from the table above that uses a spellID
 		--[L["Weakened Soul"]] = 12,

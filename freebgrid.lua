@@ -114,8 +114,8 @@ end)
 function f:UNIT_AURA(unit)
 	local frame = oUF.units[unit]
 	if not frame or frame.unit ~= unit then return end
-	if frame:GetAttribute('unitsuffix') == 'target'then return end
-	local cur, tex, dis
+	if frame:GetAttribute('unitsuffix') == 'target' then return end
+	local cur, tex, dis, cnt
 	local name, rank, buffTexture, count, duration, expire, dtype, isPlayer
 	local dispellPriority, debuffs = db.dispellPriority, dbDebuffs.debuffs
 	for i = 1, 40 do
@@ -127,10 +127,12 @@ function f:UNIT_AURA(unit)
 				cur = name
 				tex = buffTexture
 				dis = dtype or "none"
+				cnt = count
 			elseif dtype and dtype ~= "none" then
 				if not dis or (dispellPriority[dtype] > dispellPriority[dis]) then
 					tex = buffTexture
 					dis = dtype
+					cnt = count
 				end
 			end	
 		end
@@ -143,16 +145,22 @@ function f:UNIT_AURA(unit)
 			frame.Dispell = true
 			frame.border:Show()
 			frame.Icon:SetTexture(tex)
+			if cnt > 1 then
+				frame.Icon.count:SetText(cnt)
+				frame.Icon.count:Show()
+			end
 			frame.Icon:Show()
 			frame.Name:Hide()
 		elseif frame.Dispell then
 			frame.border:Hide()
 			frame.Dispell = false
+			frame.Icon.count:Hide()
 			frame.Icon:Hide()
 			frame.Name:Show()
 		end
 	else
 		frame.border:Hide()
+		frame.Icon.count:Hide()
 		frame.Icon:Hide()
 		frame.Name:Show()
 	end
@@ -323,6 +331,18 @@ local updatePower = function(self, event, unit)
 	end
 end
 
+local updateThreat = function(self, event, unit, status)
+	local threat = self.Threat
+
+	if(status and status > 1) then
+		local r, g, b = GetThreatStatusColor(status)
+		threat:SetBackdropBorderColor(r, g, b, 1)
+	else
+		threat:SetBackdropBorderColor(0, 0, 0, 1)
+	end
+	threat:Show()
+end
+
 local OnEnter = function(self)
 	UnitFrame_OnEnter(self)
 	self.Highlight:Show()	
@@ -341,17 +361,6 @@ local function menu(self)
   end
 end
 
-local function updateThreat(self, event, u)
-	if (self.unit ~= u) then return end
-	local s = UnitThreatSituation(u)
-	if s and s > 1 then
-		r, g, b = GetThreatStatusColor(s)
-		self.FrameBackdrop:SetBackdropBorderColor(r, g, b)
-	else
-		self.FrameBackdrop:SetBackdropBorderColor(0, 0, 0)
-	end
-end
-
 -- Style
 local func = function(self, unit)
 	self.colors = colors
@@ -363,6 +372,9 @@ local func = function(self, unit)
 	end
 	self:RegisterForClicks"anyup"
 	self:SetAttribute("*type2", "menu")
+
+	self:SetAttribute("toggleForVehicle", true)
+	self.VehicleSwap2 = true
 
 	-- Health
 	local hp = CreateFrame"StatusBar"
@@ -423,16 +435,20 @@ local func = function(self, unit)
 	self.BG:SetBackdrop(backdrop)
 	self.BG:SetBackdropColor(0, 0, 0)
 
-	self.FrameBackdrop = CreateFrame("Frame", nil, self)
-	self.FrameBackdrop:SetPoint("TOPLEFT", self, "TOPLEFT", -4, 4)
-	self.FrameBackdrop:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 4, -4)
-	self.FrameBackdrop:SetFrameStrata("LOW")
-	self.FrameBackdrop:SetBackdrop {
+	-- Threat
+	local threat = CreateFrame("Frame", nil, self)
+	threat:SetPoint("TOPLEFT", self, "TOPLEFT", -4, 4)
+	threat:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 4, -4)
+	threat:SetFrameStrata("LOW")
+	threat:SetBackdrop {
 	  edgeFile = db.glowTex, edgeSize = 5,
 	  insets = {left = 3, right = 3, top = 3, bottom = 3}
 	}
-	self.FrameBackdrop:SetBackdropColor(0, 0, 0, 0)
-	self.FrameBackdrop:SetBackdropBorderColor(0, 0, 0)
+	threat:SetBackdropColor(0, 0, 0, 0)
+	threat:SetBackdropBorderColor(0, 0, 0, 1)
+	
+	self.Threat = threat
+	self.OverrideUpdateThreat = updateThreat
 	
 	-- PowerBars
 	if(db.manabars)then
@@ -609,6 +625,11 @@ local func = function(self, unit)
 	border:SetVertexColor(1, 1, 1)
 	self.border = border
 
+	local count = dummy:CreateFontString(nil, "OVERLAY")
+	count:SetFontObject(NumberFontNormalSmall)
+	count:SetPoint("LEFT", dummy, "BOTTOM")
+	self.Icon.count = count
+
 	if (self:GetAttribute('unitsuffix') == 'target') then
   	else
 	-- Healcomm Bar
@@ -633,9 +654,7 @@ local func = function(self, unit)
 	self:RegisterEvent('PLAYER_FOCUS_CHANGED', FocusTarget)
 	self:RegisterEvent('RAID_ROSTER_UPDATE', FocusTarget)
 	self:RegisterEvent('PLAYER_TARGET_CHANGED', ChangedTarget)
-	self:RegisterEvent('UNIT_THREAT_LIST_UPDATE', updateThreat)
-	self:RegisterEvent('UNIT_THREAT_SITUATION_UPDATE', updateThreat)
-
+		
 	self:SetAttribute('initial-height', db.height)
 	self:SetAttribute('initial-width', db.width)
 	self:SetAttribute('initial-scale', db.scale)
@@ -709,7 +728,6 @@ if db.pets then
 	local pets = oUF:Spawn('header', 'Pet_Freebgrid', 'SecureGroupPetHeaderTemplate')
 	pets:SetPoint('TOPLEFT', 'Raid_Freebgrid', 'TOPRIGHT', db.spacing, 0)
 	pets:SetManyAttributes(
-		'showPlayer', true,
 		'showSolo', db.solo,
 		'showParty', db.partyON,
 		'showRaid', true,

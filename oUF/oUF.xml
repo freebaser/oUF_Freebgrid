@@ -8,6 +8,7 @@
 	<Script file='elements\range.lua' />
 	<Script file='elements\tags.lua' />
 	<Script file='elements\assistant.lua' />
+	<Script file='elements\threat.lua' />	
 
 	<!--
 		This template requires the layout to set the anchoring positions from the

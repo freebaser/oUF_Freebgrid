@@ -210,7 +210,7 @@ function CommWrapper:CHAT_MSG_ADDON(prefix, message, channel, sender)
 	if( sender == playerName ) then return end
 	
 	-- Alright, we got HealComm data let us do fun parsing stuff
-	if( prefix == "HealComm" and not self.blacklisted[sender] ) then
+	if( prefix == "HealComm" and not self.blacklisted[sender] and message ~= "999888888" ) then
 		local commType = tonumber(string.sub(message, 1, 3))
 
 		-- Got a HC-3.0 message so we know someone is using it
