@@ -35,6 +35,7 @@ FreebgridDebuffs = {
 		-- Standard: Add debuff name and priority
 		--["Weakened Soul"] = 12,
 		["Mark of the Fallen Champion"] = 1,
+		["Boiling Blood"] = 2,
 
 		-- or Add an Item from the table above that uses a spellID
 		--[L["Weakened Soul"]] = 12,

@@ -715,6 +715,7 @@ raid:SetManyAttributes(
 	'xoffset', spacingX,
 	'yOffset', spacingY,
 	'point', db.point,
+	'groupFilter', '1,2,3,4,5,6,7,8',
 	'groupingOrder', '1,2,3,4,5,6,7,8',
 	'groupBy', 'GROUP',
 	'maxColumns', db.numRaidgroups,
