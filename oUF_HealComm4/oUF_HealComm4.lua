@@ -14,7 +14,7 @@
 	:HealCommTextFormat(value)         Formats the heal amount passed for display on .HealCommText
 ]]
 local _, ns = ...
-local oUF = ns.oUF
+local oUF = oUF or ns.oUF
 
 local healcomm = LibStub("LibHealComm-4.0")
 

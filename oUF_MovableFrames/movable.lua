@@ -1,5 +1,5 @@
 local _, ns = ...
-local oUF = ns.oUF or oUF
+local oUF = oUF or ns.oUF
 
 assert(oUF, "oUF_MovableFrames was unable to locate oUF install.")
 

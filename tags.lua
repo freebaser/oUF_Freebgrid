@@ -1,4 +1,5 @@
-local oUF = Freebgrid
+local _, ns = ...
+local oUF = oUF or ns.oUF
 local L = {
   ["Prayer of Mending"] = GetSpellInfo(33076),
   ["Gift of the Naaru"] = GetSpellInfo(59542),

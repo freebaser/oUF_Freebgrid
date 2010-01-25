@@ -1,4 +1,5 @@
-local oUF = Freebgrid
+local _, ns = ...
+local oUF = oUF or ns.oUF
 
 -- how long the OnUpdate should run on the frame after vehicle-state changed
 local UPDATE_TIME = 3

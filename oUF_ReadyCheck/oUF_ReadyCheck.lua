@@ -10,7 +10,7 @@
 	Add-on originally made by Starlon
 --]]
 local _, ns = ...
-local oUF = ns.oUF
+local oUF = oUF or ns.oUF
 
 local GetReadyCheckStatus = GetReadyCheckStatus
 

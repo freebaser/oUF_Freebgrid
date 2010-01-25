@@ -11,12 +11,11 @@ FreebgridDefaults = {
 	glowTex = mediaPath.."glowTex",
 	
 	height = 42,
-	petheight = 10,
 	width = 42,
 
 	scale = 1.0,
 	
-	OoR = 0.2, -- Out of Range alpha
+	OoR = 0.4, -- Out of Range alpha
 	
 	font = mediaPath.."calibri.ttf",
 	fontsize = 16,
@@ -49,7 +48,7 @@ FreebgridDefaults = {
 	partyON = true,	-- dude?
 	ShowBlizzParty = false, -- Show the blizzard default party frames?
 
-	pets = true,
+	pets = false, -- will show the pet header but it does not disable vehicle switching
 
 	reverseColors = false,	-- Reverse Units color
 	highlight = true,		-- MouseOver Highlight?
@@ -61,7 +60,7 @@ FreebgridDefaults = {
 	Healbar = false,		-- Enable HealComm Bar
 	Healtext = true,		-- Enable HealComm Text
 	healOverflow = true, 	-- Allow Healbar to overlap the frame
-	frameBG = false,			-- apply raid Background?
+	frameBG = true,			-- apply raid Background?
 	
 	MTs = true, 			-- Main Tanks?
 	MTposition = {"TOPLEFT", "UIParent", "TOPLEFT", 10, -150},

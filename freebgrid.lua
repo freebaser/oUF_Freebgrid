@@ -1,4 +1,5 @@
-local oUF = Freebgrid
+local _, ns = ...
+local oUF = oUF or ns.oUF
 local db = FreebgridDefaults
 local dbDebuffs = FreebgridDebuffs
 
@@ -158,7 +159,7 @@ function f:UNIT_AURA(unit)
 			frame.Icon:Hide()
 			frame.Name:Show()
 		end
-	else
+	elseif frame.border and frame.Icon then
 		frame.border:Hide()
 		frame.Icon.count:Hide()
 		frame.Icon:Hide()
