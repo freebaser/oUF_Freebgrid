@@ -139,7 +139,7 @@ function f:UNIT_AURA(unit)
 		end
 	end
 
-	if dis then
+	if dis and frame.border and frame.Icon then
 		if dispellClass[dis] or cur then
 			local col = DebuffTypeColor[dis]
 			frame.border:SetVertexColor(col.r, col.g, col.b)

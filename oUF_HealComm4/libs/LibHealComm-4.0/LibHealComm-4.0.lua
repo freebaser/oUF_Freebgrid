@@ -1,5 +1,5 @@
 local major = "LibHealComm-4.0"
-local minor = 50
+local minor = 54
 assert(LibStub, string.format("%s requires LibStub.", major))
 
 local HealComm = LibStub:NewLibrary(major, minor)
@@ -52,9 +52,9 @@ local playerClass = select(2, UnitClass("player"))
 local isHealerClass = playerClass == "DRUID" or playerClass == "PRIEST" or playerClass == "SHAMAN" or playerClass == "PALADIN"
 
 -- Stolen from Threat-2.0, compresses GUIDs from 18 characters to around 8 - 9, 50%/55% savings
--- 44 = , / 58 = : / 255 = \255 / 0 = line break? / 64 = @
-if( not HealComm.compressGUID ) then
-	local map = {[58] = "\254\250", [64] = "\254\251",  [44] = "\254\252", [255] = "\254\253", [0] = "\255"}
+-- 44 = , / 58 = : / 255 = \255 / 0 = line break / 64 = @ / 254 = FE, used for escape code so has to be escaped
+if( not HealComm.compressGUID or not HealComm.fixedCompress ) then
+	local map = {[58] = "\254\250", [64] = "\254\251",  [44] = "\254\252", [255] = "\254\253", [0] = "\255", [254] = "\254\249"}
 	local function guidCompressHelper(x)
 	   local a = tonumber(x, 16)
 	   return map[a] or string.char(a)
@@ -66,9 +66,11 @@ if( not HealComm.compressGUID ) then
 		str = string.gsub(str, "\254\250", "\058")
 		str = string.gsub(str, "\254\251", "\064")
 		str = string.gsub(str, "\254\252", "\044")
-		return string.gsub(str, "\254\253", "\255")
+		str = string.gsub(str, "\254\253", "\255")
+		return string.gsub(str, "\254\249", "\254")
 	end
 	
+	HealComm.fixedCompress = true
 	HealComm.compressGUID = setmetatable({}, {
 		__index = function(tbl, guid)
 			local cguid = string.match(guid, "0x(.*)")
@@ -652,7 +654,7 @@ if( playerClass == "DRUID" ) then
 		--itemSetsData["T8 Resto"] = {46183, 46184, 46185, 46186, 46187, 45345, 45346, 45347, 45348, 45349} 
 		--itemSetsData["T9 Resto"] = {48102, 48129, 48130, 48131, 48132, 48153, 48154, 48155, 48156, 48157, 48133, 48134, 48135, 48136, 48137, 48142, 48141, 48140, 48139, 48138, 48152, 48151, 48150, 48149, 48148, 48143, 48144, 48145, 48146, 48147}
 		-- 2 piece, 30% less healing lost on WG
-		itemSetsData["T10 Resto"] = {50106, 50107, 50108, 50109, 50113, 51139, 51138, 51137, 51136, 51135}
+		itemSetsData["T10 Resto"] = {50106, 50107, 50108, 50109, 50113, 51139, 51138, 51137, 51136, 51135, 51300, 51301, 51302, 51303, 51304}
 		
 		local hotTotals, hasRegrowth = {}, {}
 		AuraHandler = function(unit, guid)
@@ -675,7 +677,7 @@ if( playerClass == "DRUID" ) then
 				local playerGroup = guidToGroup[playerGUID]
 				
 				for groupGUID, id in pairs(guidToGroup) do
-					if( id == playerGroup and playerGUID ~= groupGUID and IsSpellInRange(Innervate, guidToUnit[groupGUID]) == 1 ) then
+					if( id == playerGroup and playerGUID ~= groupGUID and not UnitHasVehicleUI(guidToUnit[groupID]) and IsSpellInRange(Innervate, guidToUnit[groupGUID]) == 1 ) then
 						targets = targets .. "," .. compressGUID[groupGUID]
 					end
 				end
@@ -697,7 +699,7 @@ if( playerClass == "DRUID" ) then
 			local spellPower = GetSpellBonusHealing()
 			local healModifier, spModifier = playerHealModifier, 1
 			local bombAmount, totalTicks
-			
+						
 			healModifier = healModifier + talentData[GiftofNature].current
 			healModifier = healModifier + talentData[Genesis].current
 					
@@ -784,7 +786,6 @@ if( playerClass == "DRUID" ) then
 				if( glyphCache[54826] ) then totalTicks = totalTicks + 1 end
 				-- Nature's Splendor, +2 seconds
 				if( talentData[NaturesSplendor].mod >= 1 ) then totalTicks = totalTicks + 1 end
-
 			-- Wild Growth
 			elseif( spellName == WildGrowth ) then
 				spellPower = spellPower * (hotData[spellName].coeff * (1 + talentData[EmpoweredRejuv].current))
@@ -792,12 +793,11 @@ if( playerClass == "DRUID" ) then
 				spellPower = calculateSpellPower(hotData[spellName].levels[rank], spellPower)
 				healAmount = healAmount / hotData[spellName].ticks
 				
-				--if( equippedSetCache["T10 Resto"] >= 2 ) then
-								
 				table.wipe(wgTicks)
-				local tickModifier = healAmount / hotData[spellName].ticks
+				local tickModifier = equippedSetCache["T10 Resto"] >= 2 and 0.70 or 1
+				local tickAmount = healAmount / hotData[spellName].ticks
 				for i=1, hotData[spellName].ticks do
-					table.insert(wgTicks, math.ceil(healModifier * ((healAmount + tickModifier * (4 - i)) + (spellPower * spModifier))))
+					table.insert(wgTicks, math.ceil(healModifier * ((healAmount + tickAmount * (3 - (i - 1) * tickModifier)) + (spellPower * spModifier))))
 				end
 				
 				return HOT_HEALS, wgTicks, hotData[spellName].ticks, hotData[spellName].interval, nil, true
@@ -943,6 +943,8 @@ if( playerClass == "PALADIN" ) then
 		local DivineFavor = GetSpellInfo(20216)
 		-- Seal of Light + Glyph = 5% healing
 		local SealofLight = GetSpellInfo(20165)
+		-- Divine Illumination, used in T10 holy
+		local DivineIllumination = GetSpellInfo(31842)
 		
 		local flashLibrams = {[42615] = 375, [42614] = 331, [42613] = 293, [42612] = 204, [28592] = 89, [25644] = 79, [23006] = 43, [23201] = 28}
 		local holyLibrams = {[45436] = 160, [40268] = 141, [28296] = 47}
@@ -951,6 +953,7 @@ if( playerClass == "PALADIN" ) then
 		--itemSetsData["T8 Holy"] = { 45370, 45371, 45372, 45373, 45374, 46178, 46179, 46180, 46181, 46182 }
 		-- +100% to the hot when using Flash of Light + Sacred Shield
 		--itemSetsData["T9 Holy"] = { 48595, 48596, 48597, 48598, 48599, 48564, 48566, 48568, 48572, 48574, 48593, 48591, 48592, 48590, 48594, 48588, 48586, 48587, 48585, 48589, 48576, 48578, 48577, 48579, 48575, 48583, 48581, 48582, 48580, 48584}
+		itemSetsData["T10 Holy"] = {50865, 50866, 50867, 50868, 50869, 51270, 51271, 51272, 51273, 51274, 51165, 51166, 51167, 51168, 51169}
 				
 		-- Need the GUID of whoever has beacon on them so we can make sure they are visible to us and so we can check the mapping
 		local activeBeaconGUID, hasDivineFavor
@@ -1006,10 +1009,15 @@ if( playerClass == "PALADIN" ) then
 				end
 			end
 			
+			-- +35% healing while Divine Illumination is active
+			if( equippedSetCache["T10 Holy"] >= 2 and unitHasAura("player", DivineIllumination) ) then
+				healModifier = healModifier * 1.35
+			end
+			
 			-- Normal calculations
 			spellPower = spellPower * (spellData[spellName].coeff * 1.88)
 			healAmount = calculateGeneralAmount(spellData[spellName].levels[rank], healAmount, spellPower, spModifier, healModifier)
-	
+			
 			-- Divine Favor, 100% chance to crit
 			if( hasDivineFavor ) then
 				hasDivineFavor = nil
@@ -1108,7 +1116,8 @@ if( playerClass == "PRIEST" ) then
 				local group = guidToGroup[guid]
 				
 				for groupGUID, id in pairs(guidToGroup) do
-					if( id == group and guid ~= groupGUID and UnitIsVisible(guidToUnit[groupGUID]) ) then
+					local unit = guidToUnit[groupGUID]
+					if( id == group and guid ~= groupGUID and UnitIsVisible(unit) and not UnitHasVehicleUI(unit) ) then
 						targets = targets .. "," .. compressGUID[groupGUID]
 					end
 				end
@@ -1507,7 +1516,7 @@ local healingModifiers, currentModifiers = HealComm.healingModifiers, HealComm.c
 local distribution
 local CTL = ChatThrottleLib
 local function sendMessage(msg)
-	if( distribution ) then
+	if( distribution and string.len(msg) <= 240 ) then
 		CTL:SendAddonMessage("BULK", COMM_PREFIX, msg, distribution)
 	end
 end
@@ -2514,17 +2523,22 @@ end
 function HealComm:UNIT_PET(unit)
 	local pet = self.unitToPet[unit]
 	local guid = pet and UnitGUID(pet)
+	
+	-- We have an active pet guid from this user and it's different, kill it
+	local activeGUID = activePets[unit]
+	if( activeGUID and activeGUID ~= guid ) then
+		removeAllRecords(activeGUID)
+
+		guidToUnit[activeGUID] = nil
+		guidToGroup[activeGUID] = nil
+		activePets[unit] = nil
+	end
+
+	-- Add the new record
 	if( guid ) then
 		guidToUnit[guid] = pet
 		guidToGroup[guid] = guidToGroup[UnitGUID(unit)]
 		activePets[unit] = guid
-	-- This used to be an active pet, need to invalidate pending heals
-	elseif( activePets[unit] and guidToUnit[guid] ) then
-		removeAllRecords(activePets[unit])
-
-		guidToUnit[guid] = nil
-		guidToGroup[guid] = nil
-		activePets[unit] = nil
 	end
 end
 
