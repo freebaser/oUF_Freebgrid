@@ -46,7 +46,7 @@ FreebgridDefaults = {
 
 	solo = false,
 	partyON = true,	-- dude?
-	ShowBlizzParty = false, -- Show the blizzard default party frames?
+	disableBlizz = 'party', -- 'party' or 'WTFBBQ' ; Disable the blizzard default party frames?
 
 	pets = false, -- will show the pet header but it does not disable vehicle switching
 
@@ -64,6 +64,7 @@ FreebgridDefaults = {
 	
 	MTs = true, 			-- Main Tanks?
 	MTposition = {"TOPLEFT", "UIParent", "TOPLEFT", 10, -150},
+	MTtarget = true,
 	
 	focusHighlightcolor = {.8, .8, .2, .7},
 	petColor = {.1, .8, .3},

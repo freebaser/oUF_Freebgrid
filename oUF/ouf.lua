@@ -14,7 +14,7 @@ local function argcheck(value, num, ...)
 	error(("Bad argument #%d to '%s' (%s expected, got %s"):format(num, name, types, type(value)), 3)
 end
 
-local print = function(a) ChatFrame1:AddMessage("|cff33ff99oUF:|r "..tostring(a)) end
+local print = function(...) print("|cff33ff99oUF:|r", ...) end
 local error = function(...) print("|cffff0000Error:|r "..string.format(...)) end
 local dummy = function() end
 
@@ -28,7 +28,6 @@ end
 
 -- Colors
 local colors = {
-	health = {49/255, 207/255, 37/255}, -- Health
 	happiness = {
 		[1] = {1, 0, 0}, -- need.... | unhappy
 		[2] = {1, 1, 0}, -- new..... | content
@@ -43,7 +42,6 @@ local colors = {
 	tapped = {.6,.6,.6},
 	class = {},
 	reaction = {},
-	power = {},
 }
 
 -- We do this because people edit the vars directly, and changing the default
@@ -54,7 +52,7 @@ if(IsAddOnLoaded'!ClassColors' and CUSTOM_CLASS_COLORS) then
 			colors.class[eclass] = {color.r, color.g, color.b}
 		end
 
-		local oUF = _G[parent]
+		local oUF = ns.oUF or _G[parent]
 		if(oUF) then
 			for _, obj in next, oUF.objects do
 				obj:PLAYER_ENTERING_WORLD"PLAYER_ENTERING_WORLD"
@@ -67,12 +65,6 @@ if(IsAddOnLoaded'!ClassColors' and CUSTOM_CLASS_COLORS) then
 else
 	for eclass, color in next, RAID_CLASS_COLORS do
 		colors.class[eclass] = {color.r, color.g, color.b}
-	end
-end
-
-for power, color in next, PowerBarColor do
-	if(type(power) == 'string') then
-		colors.power[power] = {color.r, color.g, color.b}
 	end
 end
 
@@ -93,10 +85,8 @@ local event_metatable = {
 local styles, style = {}
 local callback, units, objects = {}, {}, {}
 
-local	_G, select, type, tostring, math_modf =
-		_G, select, type, tostring, math.modf
-local	UnitExists, UnitName =
-		UnitExists, UnitName
+local select  = select
+local UnitExists = UnitExists
 
 local conv = {
 	['playerpet'] = 'pet',
@@ -126,7 +116,7 @@ end
 
 -- Events
 local OnEvent = function(self, event, ...)
-	if(not self:IsShown() and not self.vehicleUnit) then return end
+	if(not self:IsShown()) then return end
 	return self[event](self, event, ...)
 end
 
@@ -155,7 +145,7 @@ local OnAttributeChanged = function(self, name, value)
 				iterateChildren(self:GetChildren())
 			end
 
-			self.unit = value
+			self.unit = SecureButton_GetModifiedUnit(self)
 			self.id = value:match"^.-(%d+)"
 			self:PLAYER_ENTERING_WORLD"PLAYER_ENTERING_WORLD"
 		end
@@ -163,6 +153,7 @@ local OnAttributeChanged = function(self, name, value)
 end
 
 -- Gigantic function of doom
+-- XXX: Clean it up for 1.4.
 local HandleUnit = function(unit, object)
 	if(unit == "player") then
 		-- Hide the blizzard stuff
@@ -208,6 +199,20 @@ local HandleUnit = function(unit, object)
 		object:RegisterEvent("PLAYER_FOCUS_CHANGED", 'PLAYER_ENTERING_WORLD')
 	elseif(unit == "mouseover") then
 		object:RegisterEvent("UPDATE_MOUSEOVER_UNIT", 'PLAYER_ENTERING_WORLD')
+	elseif(unit:match'boss%d') then
+		for i=1,MAX_BOSS_FRAMES do
+			local name = "Boss" .. i .."TargetFrame"
+			local frame = _G[name]
+
+			frame:UnregisterAllEvents()
+			frame.Show = dummy
+			frame:Hide()
+
+			_G[name..'HealthBar']:UnregisterAllEvents()
+			_G[name..'ManaBar']:UnregisterAllEvents()
+		end
+
+		enableTargetUpdate(object)
 	elseif(unit:match"target") then
 		-- Hide the blizzard stuff
 		if(unit == "targettarget") then
@@ -507,14 +512,13 @@ function oUF:Spawn(unit, name, template, disableBlizz)
 	if(not style) then return error("Unable to create frame. No styles have been registered.") end
 
 	local object
+	unit = unit:lower()
 	if(unit == "header") then
 		if(not template) then
 			template = "SecureGroupHeaderTemplate"
 		end
 
-		if FreebgridDefaults.ShowBlizzParty == false then
-			HandleUnit(disableBlizz or 'party')
-		end
+		HandleUnit(disableBlizz or 'party')
 
 		local header = CreateFrame("Frame", name, UIParent, template)
 		header:SetAttribute("template", "SecureUnitButtonTemplate")
@@ -561,5 +565,11 @@ oUF.colors = colors
 oUF.frame_metatable = frame_metatable
 oUF.ColorGradient = frame_metatable.__index.ColorGradient
 
-if(global) then _G[global] = oUF end
+if(global) then
+	if(parent ~= 'oUF' and global == 'oUF' and IsAddOnLoaded'oUF') then
+		error("%s attempted to override oUF's default global with its internal oUF.", parent)
+	else
+		_G[global] = oUF
+	end
+end
 ns.oUF = oUF

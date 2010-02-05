@@ -27,19 +27,29 @@
 local parent, ns = ...
 local oUF = ns.oUF
 
-local UnitManaMax = UnitManaMax
-local UnitPowerType = UnitPowerType
+oUF.colors.power = {}
+for power, color in next, PowerBarColor do
+	if(type(power) == 'string') then
+		oUF.colors.power[power] = {color.r, color.g, color.b}
+	end
+end
 
 local Update = function(self, event, unit)
 	if(self.unit ~= unit) then return end
 	if(self.PreUpdatePower) then self:PreUpdatePower(event, unit) end
 
-	local min, max = UnitMana(unit), UnitManaMax(unit)
+	local min, max = UnitPower(unit), UnitPowerMax(unit)
+	local disconnected = not UnitIsConnected(unit)
 	local bar = self.Power
 	bar:SetMinMaxValues(0, max)
-	bar:SetValue(min)
 
-	bar.disconnected = not UnitIsConnected(unit)
+	if(disconnected) then
+		bar:SetValue(max)
+	else
+		bar:SetValue(min)
+	end
+
+	bar.disconnected = disconnected
 	bar.unit = unit
 
 	if(not self.OverrideUpdatePower) then
@@ -92,10 +102,10 @@ end
 
 local OnPowerUpdate
 do
-	local UnitMana = UnitMana
+	local UnitPower = UnitPower
 	OnPowerUpdate = function(self)
 		if(self.disconnected) then return end
-		local power = UnitMana(self.unit)
+		local power = UnitPower(self.unit)
 
 		if(power ~= self.min) then
 			self.min = power

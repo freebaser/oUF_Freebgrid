@@ -706,7 +706,7 @@ else -- You failed to equal any of the above. So I give this...
 	spacingY = -(db.spacing)
 end
 
-local raid = oUF:Spawn('header', 'Raid_Freebgrid')
+local raid = oUF:Spawn('header', 'Raid_Freebgrid', nil, db.disableBlizz)
 raid:SetPoint(db.position[1], db.position[2], db.position[3], db.position[4], db.position[5])
 raid:SetManyAttributes(
 	'showPlayer', true,
@@ -749,9 +749,11 @@ if db.MTs then
 		tank:SetPoint(db.MTposition[1], db.MTposition[2], db.MTposition[3], db.MTposition[4], db.MTposition[5])
 		tank:SetManyAttributes(
 				"showRaid", true, 
-					"yOffset", -5,
-					"template", "oUF_FreebMtargets"
+				"yOffset", -5
 		)
+		if db.MTtarget then
+			tank:SetAttribute("template", "oUF_FreebMtargets")
+		end
 	
 	if oRA3 and not select(2,IsInInstance()) == "pvp" and not select(2,IsInInstance()) == "arena" then
 				tank:SetAttribute(
