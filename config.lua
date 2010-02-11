@@ -46,7 +46,7 @@ FreebgridDefaults = {
 
 	solo = false,
 	partyON = true,	-- dude?
-	disableBlizz = 'party', -- 'party' or 'WTFBBQ' ; Disable the blizzard default party frames?
+	disableBlizz = 'party', -- 'party' hides party OR 'WTFBBQ' -- random sting to not disable party
 
 	pets = false, -- will show the pet header but it does not disable vehicle switching
 

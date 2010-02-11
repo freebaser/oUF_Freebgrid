@@ -374,9 +374,6 @@ local func = function(self, unit)
 	self:RegisterForClicks"anyup"
 	self:SetAttribute("*type2", "menu")
 
-	self:SetAttribute("toggleForVehicle", true)
-	self.VehicleSwap2 = true
-
 	-- Health
 	local hp = CreateFrame"StatusBar"
 	hp:SetStatusBarTexture(db.texture)
