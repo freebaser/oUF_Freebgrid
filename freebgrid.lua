@@ -739,6 +739,7 @@ if db.pets then
 		'columnSpacing', db.spacing,
 		'columnAnchorPoint', growth
 	)
+	pets:SetScale(db.scale)
 	pets:Show()
 end
 
@@ -788,5 +789,6 @@ if db.MTs then
 					'groupFilter', 'MAINTANK'
 				)
 		end
+		tank:SetScale(db.scale)
 		tank:Show()
 end
