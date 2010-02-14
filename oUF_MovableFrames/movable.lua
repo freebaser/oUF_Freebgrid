@@ -302,8 +302,8 @@ do
 
 	function frame:VARIABLES_LOADED()
 		-- I honestly don't trust the load order of SVs.
-		_DB = bb08df87101dd7f2161e5b77cf750f753c58ef1b or {}
-		bb08df87101dd7f2161e5b77cf750f753c58ef1b = _DB
+		_DB = oUF_Freebgrid or {}
+		oUF_Freebgrid = _DB
 		-- Got to catch them all!
 		for _, obj in next, oUF.objects do
 			restorePosition(obj)
