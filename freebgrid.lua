@@ -655,7 +655,7 @@ local func = function(self, unit)
 		
 	self:SetAttribute('initial-height', db.height)
 	self:SetAttribute('initial-width', db.width)
-	self:SetAttribute('initial-scale', db.scale)
+	--self:SetAttribute('initial-scale', db.scale)
 
 	return self
 end
@@ -721,6 +721,7 @@ raid:SetManyAttributes(
 	'columnSpacing', db.spacing,
 	'columnAnchorPoint', growth
 )
+raid:SetScale(db.scale)
 raid:Show()
 
 if db.pets then
