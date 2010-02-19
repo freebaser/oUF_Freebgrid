@@ -375,7 +375,7 @@ end
 -- Style
 local func = function(self, unit)
 	self.colors = colors
-	--self.menu = menu
+	self.menu = menu
 
 	if(db.highlight)then
 		self:SetScript("OnEnter", OnEnter)
