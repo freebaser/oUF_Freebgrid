@@ -29,9 +29,9 @@ FreebgridDefaults = {
 	indicatorSize = 6,	-- Size of the Corner Indicators
 
 	iconSize = 14,	-- Size of raid symbols, leader, etc.
-	debuffsize = 16,
+	debuffsize = 18, -- must be 18 or high for omnicc to work
 
-	-- Not relevant anymore. /freeb to unlock and move frames
+	-- default position. /omf to unlock and move frames
 	position = {"LEFT", "UIParent", "LEFT", 10, 0},
 	
 	point = "TOP", --[[ usage: "TOP", "LEFT", "RIGHT", "BOTTOM"

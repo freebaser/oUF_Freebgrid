@@ -116,7 +116,7 @@ function f:UNIT_AURA(unit)
 	local frame = oUF.units[unit]
 	if not frame or frame.unit ~= unit then return end
 	if frame:GetAttribute('unitsuffix') == 'target' then return end
-	local cur, tex, dis, cnt
+	local cur, tex, dis, cnt, exp, dur
 	local name, rank, buffTexture, count, duration, expire, dtype, isPlayer
 	local dispellPriority, debuffs = db.dispellPriority, dbDebuffs.debuffs
 	for i = 1, 40 do
@@ -129,11 +129,15 @@ function f:UNIT_AURA(unit)
 				tex = buffTexture
 				dis = dtype or "none"
 				cnt = count
+				exp = expire
+				dur = duration
 			elseif dtype and dtype ~= "none" then
 				if not dis or (dispellPriority[dtype] > dispellPriority[dis]) then
 					tex = buffTexture
 					dis = dtype
 					cnt = count
+					exp = expire
+					dur = duration
 				end
 			end	
 		end
@@ -150,18 +154,24 @@ function f:UNIT_AURA(unit)
 				frame.Icon.count:SetText(cnt)
 				frame.Icon.count:Show()
 			end
+			if exp and dur then
+				frame.Icon.cd:SetCooldown(exp - dur, dur)
+				frame.Icon.cd:Show()
+			end
 			frame.Icon:Show()
 			frame.Name:Hide()
 		elseif frame.Dispell then
 			frame.border:Hide()
 			frame.Dispell = false
 			frame.Icon.count:Hide()
+			frame.Icon.cd:Hide()
 			frame.Icon:Hide()
 			frame.Name:Show()
 		end
 	elseif frame.border and frame.Icon then
 		frame.border:Hide()
 		frame.Icon.count:Hide()
+		frame.Icon.cd:Hide()
 		frame.Icon:Hide()
 		frame.Name:Show()
 	end
@@ -365,7 +375,7 @@ end
 -- Style
 local func = function(self, unit)
 	self.colors = colors
-	self.menu = menu
+	--self.menu = menu
 
 	if(db.highlight)then
 		self:SetScript("OnEnter", OnEnter)
@@ -627,6 +637,10 @@ local func = function(self, unit)
 	count:SetFontObject(NumberFontNormalSmall)
 	count:SetPoint("LEFT", dummy, "BOTTOM")
 	self.Icon.count = count
+
+	local cd = CreateFrame("Cooldown", nil, dummy)
+	cd:SetAllPoints(dummy)
+	self.Icon.cd = cd
 
 	if (self:GetAttribute('unitsuffix') == 'target') then
   	else
