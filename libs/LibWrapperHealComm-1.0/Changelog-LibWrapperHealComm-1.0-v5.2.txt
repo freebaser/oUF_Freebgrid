@@ -1,0 +1,13 @@
+tag v5.2
+03c68656e46de1aa7a7eb5a91319b2b38418f281
+Shadowed <shadowed.wow@gmail.com>
+2009-12-31 12:03:06 -0800
+
+Tagging as release 5.2
+
+
+--------------------
+
+Shadowed:
+	- TOC Bump 30300
+	- Fixed the wrapper thinking that somebody was running LHC3 and so sending LHC3 data if another person was running the wrapper

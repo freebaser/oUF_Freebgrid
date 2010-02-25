@@ -1,5 +1,28 @@
 local _, ns = ...
-local oUF = oUF or ns.oUF
+local oUF = ns.oUF
+if not oUF then return end
+
+oUF.Tags['[FGname]'] = function(u, r)
+	local name = UnitName(u or r) or "unknown"
+	return name
+end
+oUF.TagEvents['[FGname]'] = 'UNIT_NAME_UPDATE'
+
+oUF.Tags['[DDG]'] = function(u)
+	local x
+	if UnitIsDead(u) then
+		x = "Dead"
+	elseif UnitIsGhost(u) then
+		x = "Ghost"
+	elseif not UnitIsConnected(u) then
+		x = "D/C"
+	else
+		x = " "
+	end
+	return "|cffCFCFCF"..x.."|r"
+end
+oUF.TagEvents['[DDG]'] = 'UNIT_HEALTH'
+
 local L = {
   ["Prayer of Mending"] = GetSpellInfo(33076),
   ["Gift of the Naaru"] = GetSpellInfo(59542),
@@ -171,7 +194,6 @@ oUF.earthCount = {'i','h','g','f','p','q','Z','Y'}
 oUF.Tags['[earth]'] = function(u) local c = select(4, UnitAura(u, L['Earth Shield'])) if c then return '|cffFFCF7F'..oUF.earthCount[c]..'|r' end end
 oUF.TagEvents['[earth]'] = 'UNIT_AURA'
 
-
 oUF.classIndicators={
 		["DRUID"] = {
 				["TL"] = "[tree]",
@@ -244,5 +266,4 @@ oUF.classIndicators={
 				["BR"] = "",
 				["Cen"] = "",
 		}
-		
-	}
+}

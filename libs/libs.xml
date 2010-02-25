@@ -1,0 +1,14 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+
+	<Script file ='LibHealComm-4.0\libs\LibStub\LibStub.lua' />
+	<Include file='LibHealComm-4.0\libs\CallbackHandler-1.0\CallbackHandler-1.0\CallbackHandler-1.0.xml' />
+
+	<Include file='LibHealComm-4.0\LibHealComm-4.0.xml' />
+	<Include file='LibWrapperHealComm-1.0\LibWrapperHealComm-1.0.xml' />
+
+	<Include file='tekkonfig\tekKonfig.xml' />
+
+	<Script file='UTF8\utf8data.lua' />
+	<Script file='UTF8\utf8.lua' />
+
+</Ui>

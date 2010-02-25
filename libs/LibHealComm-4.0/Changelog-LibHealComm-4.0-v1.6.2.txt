@@ -1,0 +1,12 @@
+tag v1.6.2
+5510501c4ef32be979f4d804159f0de9755101ef
+Shadowed <shadowed.wow@gmail.com>
+2010-02-20 16:50:28 -0800
+
+Tagging as release 1.6.2
+
+
+--------------------
+
+Shadowed:
+	- Fixed GetNextHealAmount ignoring by guid for the target it's landing on, not the person who is casting
