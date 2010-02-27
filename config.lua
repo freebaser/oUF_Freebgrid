@@ -7,10 +7,10 @@ FreebgridDefaults = {
 	width = 42,
 	height = 42,
     
-    powerbar = false,
-    powerbarsize = 0.08,
+	powerbar = false,
+	powerbarsize = 0.08,
     
-    reversecolors = false,
+	reversecolors = false,
 	
 	iconsize = 12,
 	debuffsize = 18,
@@ -29,8 +29,8 @@ FreebgridDefaults = {
 	
 	pets = false,
     
-    MT = true,
-    MTT = false,
+	MT = true,
+	MTT = false,
 	
 	symbolsize = 11,
 	indicatorsize = 6,
@@ -48,11 +48,11 @@ FreebgridDefaults = {
 	healcommtext = true,
 	healcommbar = false,
 	healcommoverflow = true,
-    healonlymy = false,
-    healalpha = 0.4, 
+	healonlymy = false,
+	healalpha = 0.4, 
     
-    rescomm =  true,
-    rescommalpha = 0.6,
+	rescomm =  true,
+	rescommalpha = 0.6,
 	
 }
 
@@ -62,17 +62,17 @@ oUF_Freebgrid.orientation = {
 }
 
 oUF_Freebgrid.point = {
-    ["TOP"] = "TOP",
-    ["RIGHT"] = "RIGHT",
-    ["BOTTOM"] = "BOTTOM",
-    ["LEFT"] = "LEFT",
+	["TOP"] = "TOP",
+	["RIGHT"] = "RIGHT",
+	["BOTTOM"] = "BOTTOM",
+	["LEFT"] = "LEFT",
 }
 
 oUF_Freebgrid.growth = {
-    ["UP"] = "UP",
-    ["RIGHT"] = "RIGHT",
-    ["DOWN"] = "DOWN",
-    ["LEFT"] = "LEFT",
+	["UP"] = "UP",
+	["RIGHT"] = "RIGHT",
+	["DOWN"] = "DOWN",
+	["LEFT"] = "LEFT",
 }
 
 function oUF_Freebgrid:SetTex(v)
@@ -106,7 +106,7 @@ local tekdropdown = LibStub("tekKonfig-Dropdown")
 local GAP = 8
 
 local function texfunc(frame)
-    local texturedropdown, texturedropdowntext, texturedropdowncontainer = tekdropdown.new(frame, "Texture", "TOPRIGHT", frame, 0, 0)
+	local texturedropdown, texturedropdowntext, texturedropdowncontainer = tekdropdown.new(frame, "Texture", "TOPRIGHT", frame, 0, 0)
 	texturedropdowntext:SetText(oUF_Freebgrid.db.texture or FreebgridDefaults.texture)
 	texturedropdown.tiptext = "Change the unit's texture."
 
@@ -129,7 +129,7 @@ local function texfunc(frame)
 end
 
 local function fontfunc(frame)
-    local fontdropdown, fontdropdowntext, fontdropdowncontainer = tekdropdown.new(frame, "Font", "TOPRIGHT", frame, 0, -50)
+	local fontdropdown, fontdropdowntext, fontdropdowncontainer = tekdropdown.new(frame, "Font", "TOPRIGHT", frame, 0, -50)
 	fontdropdowntext:SetText(oUF_Freebgrid.db.font or FreebgridDefaults.font)
 	fontdropdown.tiptext = "Change the unit's font."
 
@@ -152,7 +152,7 @@ local function fontfunc(frame)
 end
 
 local function orientationfunc(frame)
-    local orientationdropdown, orientationdropdowntext, orientationdropdowncontainer = tekdropdown.new(frame, "Statusbar Orientation", "TOPRIGHT", frame, 0, -100)
+	local orientationdropdown, orientationdropdowntext, orientationdropdowncontainer = tekdropdown.new(frame, "Statusbar Orientation", "TOPRIGHT", frame, 0, -100)
 	orientationdropdowntext:SetText(oUF_Freebgrid.db.orientation or FreebgridDefaults.orientation)
 	orientationdropdown.tiptext = "Change the orientation of the statusbars."
 
@@ -176,7 +176,7 @@ local function orientationfunc(frame)
 end
 
 local function pointfunc(frame)
-    local pointdropdown, pointdropdowntext, pointdropdowncontainer = tekdropdown.new(frame, "Point Direction", "TOPRIGHT", frame, 0, -150)
+	local pointdropdown, pointdropdowntext, pointdropdowncontainer = tekdropdown.new(frame, "Point Direction", "TOPRIGHT", frame, 0, -150)
 	pointdropdowntext:SetText(oUF_Freebgrid.db.point or FreebgridDefaults.point)
 	pointdropdown.tiptext = "Set the point to have additional units added."
 
@@ -200,7 +200,7 @@ local function pointfunc(frame)
 end
 
 local function growthfunc(frame)
-    local growthdropdown, growthdropdowntext, growthdropdowncontainer = tekdropdown.new(frame, "Growth Direction", "TOPRIGHT", frame, 0, -200)
+	local growthdropdown, growthdropdowntext, growthdropdowncontainer = tekdropdown.new(frame, "Growth Direction", "TOPRIGHT", frame, 0, -200)
 	growthdropdowntext:SetText(oUF_Freebgrid.db.growth or FreebgridDefaults.growth)
 	growthdropdown.tiptext = "Set the growth direction for additional groups."
 
@@ -312,7 +312,7 @@ frame:SetScript("OnShow", function(frame)
 		debuffsizeslidertext:SetText(string.format("Debuff Size: %d", oUF_Freebgrid.db.debuffsize or FreebgridDefaults.debuffsize))
 	end)
     
-    local spacingslider, spacingslidertext, spacingcontainer = tekslider.new(frame, string.format("Spacing: %d", oUF_Freebgrid.db.spacing or FreebgridDefaults.spacing), 0, 30, "TOPRIGHT", frame, -40, -265)
+	local spacingslider, spacingslidertext, spacingcontainer = tekslider.new(frame, string.format("Spacing: %d", oUF_Freebgrid.db.spacing or FreebgridDefaults.spacing), 0, 30, "TOPRIGHT", frame, -40, -265)
 	spacingslider.tiptext = "Set the amount of space between units."
 	spacingslider:SetValue(oUF_Freebgrid.db.spacing or FreebgridDefaults.spacing)
 	spacingslider:SetValueStep(1)
@@ -321,7 +321,7 @@ frame:SetScript("OnShow", function(frame)
 		spacingslidertext:SetText(string.format("Spacing: %d", oUF_Freebgrid.db.spacing or FreebgridDefaults.spacing))
 	end)
 	
-    local numColslider, numColslidertext, numColcontainer = tekslider.new(frame, string.format("Number of groups: %d", oUF_Freebgrid.db.numCol or FreebgridDefaults.numCol), 1, 8, "TOPLEFT", spacingslider, "BOTTOMLEFT", 0, -GAP)
+	local numColslider, numColslidertext, numColcontainer = tekslider.new(frame, string.format("Number of groups: %d", oUF_Freebgrid.db.numCol or FreebgridDefaults.numCol), 1, 8, "TOPLEFT", spacingslider, "BOTTOMLEFT", 0, -GAP)
 	numColslider.tiptext = "Set the number of groups."
 	numColslider:SetValue(oUF_Freebgrid.db.numCol or FreebgridDefaults.numCol)
 	numColslider:SetValueStep(1)
@@ -330,7 +330,7 @@ frame:SetScript("OnShow", function(frame)
 		numColslidertext:SetText(string.format("Number of groups: %d", oUF_Freebgrid.db.numCol or FreebgridDefaults.numCol))
 	end)
     
-    local numUnitsslider, numUnitsslidertext, numUnitscontainer = tekslider.new(frame, string.format("Units per group: %d", oUF_Freebgrid.db.numUnits or FreebgridDefaults.numUnits), 1, 40, "TOPLEFT", numColslider, "BOTTOMLEFT", 0, -GAP)
+	local numUnitsslider, numUnitsslidertext, numUnitscontainer = tekslider.new(frame, string.format("Units per group: %d", oUF_Freebgrid.db.numUnits or FreebgridDefaults.numUnits), 1, 40, "TOPLEFT", numColslider, "BOTTOMLEFT", 0, -GAP)
 	numUnitsslider.tiptext = "Set the number of units per group."
 	numUnitsslider:SetValue(oUF_Freebgrid.db.numUnits or FreebgridDefaults.numUnits)
 	numUnitsslider:SetValueStep(1)
@@ -339,11 +339,11 @@ frame:SetScript("OnShow", function(frame)
 		numUnitsslidertext:SetText(string.format("Units per group: %d", oUF_Freebgrid.db.numUnits or FreebgridDefaults.numUnits))
 	end)
     
-    texfunc(frame)
+	texfunc(frame)
 	fontfunc(frame)
-    orientationfunc(frame)
-    pointfunc(frame)
-    growthfunc(frame)
+	orientationfunc(frame)
+	pointfunc(frame)
+	growthfunc(frame)
     
 	local reload = tekbutton.new_small(frame)
 	reload:SetPoint("BOTTOMRIGHT", -16, 16)
@@ -388,32 +388,32 @@ f:SetScript("OnShow", function(f)
 	blizzparty:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.showBlizzParty = not oUF_Freebgrid.db.showBlizzParty; end)
 	blizzparty:SetChecked(oUF_Freebgrid.db.showBlizzParty)
     
-    local reversecolors = tekcheck.new(f, nil, "Reverse the health and bg colors.", "TOPLEFT", blizzparty, "BOTTOMLEFT", 0, -GAP)
+	local reversecolors = tekcheck.new(f, nil, "Reverse the health and bg colors.", "TOPLEFT", blizzparty, "BOTTOMLEFT", 0, -GAP)
 	reversecolors:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.reversecolors = not oUF_Freebgrid.db.reversecolors; end)
 	reversecolors:SetChecked(oUF_Freebgrid.db.reversecolors)
     
-    local healgroup = LibStub("tekKonfig-Group").new(f, "HealComm Settings")
-    healgroup:SetHeight(190)
-    healgroup:SetWidth(180)
-    healgroup:SetPoint("TOPRIGHT", f, "TOPRIGHT", -10, -15)
+	local healgroup = LibStub("tekKonfig-Group").new(f, "HealComm Settings")
+	healgroup:SetHeight(190)
+	healgroup:SetWidth(180)
+	healgroup:SetPoint("TOPRIGHT", f, "TOPRIGHT", -10, -15)
     
-    local healcommtext = tekcheck.new(f, nil, "Enable heal text.", "TOPLEFT", healgroup, "TOPLEFT", 15, -GAP)
+	local healcommtext = tekcheck.new(f, nil, "Enable heal text.", "TOPLEFT", healgroup, "TOPLEFT", 15, -GAP)
 	healcommtext:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.healcommtext = not oUF_Freebgrid.db.healcommtext; end)
 	healcommtext:SetChecked(oUF_Freebgrid.db.healcommtext)
     
-    local healcommbar = tekcheck.new(f, nil, "Enable heal bar.", "TOPLEFT", healcommtext, "BOTTOMLEFT", 0, -GAP)
+	local healcommbar = tekcheck.new(f, nil, "Enable heal bar.", "TOPLEFT", healcommtext, "BOTTOMLEFT", 0, -GAP)
 	healcommbar:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.healcommbar = not oUF_Freebgrid.db.healcommbar; end)
 	healcommbar:SetChecked(oUF_Freebgrid.db.healcommbar)
 
-    local healcommoverflow = tekcheck.new(f, nil, "Enable heal bar overflow.", "TOPLEFT", healcommbar, "BOTTOMLEFT", 0, -GAP)
+	local healcommoverflow = tekcheck.new(f, nil, "Enable heal bar overflow.", "TOPLEFT", healcommbar, "BOTTOMLEFT", 0, -GAP)
 	healcommoverflow:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.healcommoverflow = not oUF_Freebgrid.db.healcommoverflow; end)
 	healcommoverflow:SetChecked(oUF_Freebgrid.db.healcommoverflow)
     
-    local healonlymy = tekcheck.new(f, nil, "Only show my heals.", "TOPLEFT", healcommoverflow, "BOTTOMLEFT", 0, -GAP)
+	local healonlymy = tekcheck.new(f, nil, "Only show my heals.", "TOPLEFT", healcommoverflow, "BOTTOMLEFT", 0, -GAP)
 	healonlymy:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.healonlymy = not oUF_Freebgrid.db.healonlymy; end)
 	healonlymy:SetChecked(oUF_Freebgrid.db.healonlymy)
     
-    local healalphaslider, healalphaslidertext, healalphacontainer = tekslider.new(f, string.format("Heal bar alpha: %.2f", oUF_Freebgrid.db.healalpha or FreebgridDefaults.healalpha), 0, 1, "TOPLEFT", healonlymy, "BOTTOMLEFT", 0, -GAP)
+	local healalphaslider, healalphaslidertext, healalphacontainer = tekslider.new(f, string.format("Heal bar alpha: %.2f", oUF_Freebgrid.db.healalpha or FreebgridDefaults.healalpha), 0, 1, "TOPLEFT", healonlymy, "BOTTOMLEFT", 0, -GAP)
 	healalphaslider.tiptext = "Set the alpha of the heal bar."
 	healalphaslider:SetValue(oUF_Freebgrid.db.healalpha or FreebgridDefaults.healalpha)
 	healalphaslider:SetValueStep(.05)
@@ -422,16 +422,16 @@ f:SetScript("OnShow", function(f)
 		healalphaslidertext:SetText(string.format("Heal bar alpha: %.2f", oUF_Freebgrid.db.healalpha or FreebgridDefaults.healalpha))
 	end)
     
-    local resgroup = LibStub("tekKonfig-Group").new(f, "ResComm Settings")
-    resgroup:SetHeight(85)
-    resgroup:SetWidth(180)
-    resgroup:SetPoint("TOPRIGHT", healgroup, "BOTTOMRIGHT", 0, -GAP-2)
+	local resgroup = LibStub("tekKonfig-Group").new(f, "ResComm Settings")
+	resgroup:SetHeight(85)
+	resgroup:SetWidth(180)
+	resgroup:SetPoint("TOPRIGHT", healgroup, "BOTTOMRIGHT", 0, -GAP-2)
     
-    local rescomm = tekcheck.new(f, nil, "Enable ResComm.", "TOPLEFT", resgroup, "TOPLEFT", 15, -GAP)
+	local rescomm = tekcheck.new(f, nil, "Enable ResComm.", "TOPLEFT", resgroup, "TOPLEFT", 15, -GAP)
 	rescomm:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.rescomm = not oUF_Freebgrid.db.rescomm; end)
 	rescomm:SetChecked(oUF_Freebgrid.db.rescomm)
     
-    local rescommalphaslider, rescommalphaslidertext, rescommalphacontainer = tekslider.new(f, string.format("ResComm alpha: %.2f", oUF_Freebgrid.db.rescommalpha or FreebgridDefaults.rescommalpha), 0, 1, "TOPLEFT", rescomm, "BOTTOMLEFT", 0, -GAP)
+	local rescommalphaslider, rescommalphaslidertext, rescommalphacontainer = tekslider.new(f, string.format("ResComm alpha: %.2f", oUF_Freebgrid.db.rescommalpha or FreebgridDefaults.rescommalpha), 0, 1, "TOPLEFT", rescomm, "BOTTOMLEFT", 0, -GAP)
 	rescommalphaslider.tiptext = "Set the alpha of the Rescomm statusbar."
 	rescommalphaslider:SetValue(oUF_Freebgrid.db.rescommalpha or FreebgridDefaults.rescommalpha)
 	rescommalphaslider:SetValueStep(.05)
@@ -440,11 +440,11 @@ f:SetScript("OnShow", function(f)
 		rescommalphaslidertext:SetText(string.format("Rescomm alpha: %.2f", oUF_Freebgrid.db.rescommalpha or FreebgridDefaults.rescommalpha))
 	end)
     
-    local powerbar = tekcheck.new(f, nil, "Enable Powerbars.", "TOPLEFT", resgroup, "BOTTOMLEFT", 15, -GAP)
+	local powerbar = tekcheck.new(f, nil, "Enable Powerbars.", "TOPLEFT", resgroup, "BOTTOMLEFT", 15, -GAP)
 	powerbar:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.powerbar = not oUF_Freebgrid.db.powerbar; end)
 	powerbar:SetChecked(oUF_Freebgrid.db.powerbar)
     
-    local powerbarsizeslider, powerbarsizeslidertext, powerbarsizecontainer = tekslider.new(f, string.format("Powerbar size: %.2f", oUF_Freebgrid.db.powerbarsize or FreebgridDefaults.powerbarsize), .02, .30, "TOPLEFT", powerbar, "BOTTOMLEFT", 0, -GAP)
+	local powerbarsizeslider, powerbarsizeslidertext, powerbarsizecontainer = tekslider.new(f, string.format("Powerbar size: %.2f", oUF_Freebgrid.db.powerbarsize or FreebgridDefaults.powerbarsize), .02, .30, "TOPLEFT", powerbar, "BOTTOMLEFT", 0, -GAP)
 	powerbarsizeslider.tiptext = "Set the size of the powerbars."
 	powerbarsizeslider:SetValue(oUF_Freebgrid.db.powerbarsize or FreebgridDefaults.powerbarsize)
 	powerbarsizeslider:SetValueStep(.02)
@@ -453,19 +453,19 @@ f:SetScript("OnShow", function(f)
 		powerbarsizeslidertext:SetText(string.format("Powerbar size: %.2f", oUF_Freebgrid.db.powerbarsize or FreebgridDefaults.powerbarsize))
 	end)
     
-    local pets = tekcheck.new(f, nil, "Enable Party/Raid pets.", "TOPLEFT", reversecolors, "BOTTOMLEFT", 0, -GAP)
+	local pets = tekcheck.new(f, nil, "Enable Party/Raid pets.", "TOPLEFT", reversecolors, "BOTTOMLEFT", 0, -GAP)
 	pets:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.pets = not oUF_Freebgrid.db.pets; end)
 	pets:SetChecked(oUF_Freebgrid.db.pets)
     
-    local MT = tekcheck.new(f, nil, "Enable MainTanks.", "TOPLEFT", pets, "BOTTOMLEFT", 0, -GAP)
+	local MT = tekcheck.new(f, nil, "Enable MainTanks.", "TOPLEFT", pets, "BOTTOMLEFT", 0, -GAP)
 	MT:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.MT = not oUF_Freebgrid.db.MT; end)
 	MT:SetChecked(oUF_Freebgrid.db.MT)
     
-    local MTT = tekcheck.new(f, nil, "Enable MT taragets.", "TOPLEFT", MT, "BOTTOMLEFT", 0, -GAP)
+	local MTT = tekcheck.new(f, nil, "Enable MT taragets.", "TOPLEFT", MT, "BOTTOMLEFT", 0, -GAP)
 	MTT:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.MTT = not oUF_Freebgrid.db.MTT; end)
 	MTT:SetChecked(oUF_Freebgrid.db.MTT)
     
-    local symbolsizeslider, symbolsizeslidertext, symbolsizecontainer = tekslider.new(f, string.format("Symbol Size: %d", oUF_Freebgrid.db.symbolsize or FreebgridDefaults.symbolsize), 8, 20, "BOTTOMLEFT", f, "BOTTOMLEFT", 15, GAP)
+	local symbolsizeslider, symbolsizeslidertext, symbolsizecontainer = tekslider.new(f, string.format("Symbol size: %d", oUF_Freebgrid.db.symbolsize or FreebgridDefaults.symbolsize), 8, 20, "BOTTOMLEFT", f, "BOTTOMLEFT", 15, GAP)
 	symbolsizeslider.tiptext = "Size of the bottom right indicator."
 	symbolsizeslider:SetValue(oUF_Freebgrid.db.symbolsize or FreebgridDefaults.symbolsize)
 	symbolsizeslider:SetValueStep(1)
@@ -474,13 +474,13 @@ f:SetScript("OnShow", function(f)
 		symbolsizeslidertext:SetText(string.format("Symbol size: %d", oUF_Freebgrid.db.symbolsize or FreebgridDefaults.symbolsize))
 	end)
     
-    local indicatorsizeslider, indicatorsizeslidertext, indicatorsizecontainer = tekslider.new(f, string.format("Symbol Size: %d", oUF_Freebgrid.db.indicatorsize or FreebgridDefaults.indicatorsize), 4, 20, "BOTTOMLEFT", symbolsizeslider, "TOPLEFT", 0, GAP)
-	indicatorsizeslider.tiptext = "Size of the bottom right indicator."
+	local indicatorsizeslider, indicatorsizeslidertext, indicatorsizecontainer = tekslider.new(f, string.format("Indicator size: %d", oUF_Freebgrid.db.indicatorsize or FreebgridDefaults.indicatorsize), 4, 20, "BOTTOMLEFT", symbolsizeslider, "TOPLEFT", 0, GAP)
+	indicatorsizeslider.tiptext = "Size of the corner indicators."
 	indicatorsizeslider:SetValue(oUF_Freebgrid.db.indicatorsize or FreebgridDefaults.indicatorsize)
 	indicatorsizeslider:SetValueStep(1)
 	indicatorsizeslider:SetScript("OnValueChanged", function(self)
 		oUF_Freebgrid.db.indicatorsize = self:GetValue()
-		indicatorsizeslidertext:SetText(string.format("Symbol size: %d", oUF_Freebgrid.db.indicatorsize or FreebgridDefaults.indicatorsize))
+		indicatorsizeslidertext:SetText(string.format("Indicator size: %d", oUF_Freebgrid.db.indicatorsize or FreebgridDefaults.indicatorsize))
 	end)
     
 	local reload = tekbutton.new_small(f)

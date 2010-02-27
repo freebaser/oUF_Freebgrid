@@ -260,7 +260,7 @@ end
 
 local style = function(self, unit)
 	self.menu = menu
-    self.colors = colors
+	self.colors = colors
 
 	-- Backdrop
 	self.BG = CreateFrame("Frame", nil, self)
@@ -282,12 +282,12 @@ local style = function(self, unit)
 	hp:SetOrientation(oUF_Freebgrid.db.orientation)
 	hp:SetParent(self)
 	hp:SetPoint"TOP"
-    hp:SetPoint"LEFT"
-    if oUF_Freebgrid.db.orientation == "VERTICAL" then
-        hp:SetPoint"BOTTOM"
-    else
-        hp:SetPoint"RIGHT"
-    end
+	hp:SetPoint"LEFT"
+	if oUF_Freebgrid.db.orientation == "VERTICAL" then
+		hp:SetPoint"BOTTOM"
+	else
+		hp:SetPoint"RIGHT"
+	end
 	hp.frequentUpdates = true
 	
 	-- HP background
@@ -299,9 +299,9 @@ local style = function(self, unit)
 	self.Health = hp
 	self.OverrideUpdateHealth = updateHealth
     
-    if oUF_Freebgrid.db.powerbar then
-        powerbar(self)
-    end
+	if oUF_Freebgrid.db.powerbar then
+		powerbar(self)
+	end
 
 	-- Threat
 	local threat = CreateFrame("Frame", nil, self)
@@ -386,13 +386,13 @@ local style = function(self, unit)
 	self.ReadyCheck.fadeTime = 1
     
     -- ResComm
-    if oUF_Freebgrid.db.rescomm then
-        local rescomm = CreateFrame("StatusBar", nil, hp)
-        rescomm:SetStatusBarTexture([=[Interface\Icons\Spell_Holy_Resurrection]=])
-        rescomm:SetAllPoints(hp)
-        rescomm:SetAlpha(oUF_Freebgrid.db.rescommalpha)
-        self.ResComm = rescomm
-    end
+	if oUF_Freebgrid.db.rescomm then
+		local rescomm = CreateFrame("StatusBar", nil, hp)
+		rescomm:SetStatusBarTexture([=[Interface\Icons\Spell_Holy_Resurrection]=])
+		rescomm:SetAllPoints(hp)
+		rescomm:SetAlpha(oUF_Freebgrid.db.rescommalpha)
+		self.ResComm = rescomm
+	end
 	
 	-- Debuff
 	local debuff = CreateFrame("StatusBar", nil, self)
@@ -401,19 +401,19 @@ local style = function(self, unit)
 	debuff:SetWidth(oUF_Freebgrid.db.debuffsize)
 	self.freebDebuffs = debuff
 	
-    if (self:GetAttribute('unitsuffix') == 'target') then
-  	else
-        -- Enable Indicators
-        self.Indicators = true
+	if (self:GetAttribute('unitsuffix') == 'target') then
+	else
+		-- Enable Indicators
+		self.Indicators = true
         
-        -- Range
-        self.Range = true
-        self.inRangeAlpha = oUF_Freebgrid.db.inRange
-        self.outsideRangeAlpha = oUF_Freebgrid.db.outsideRange
+		-- Range
+		self.Range = true
+		self.inRangeAlpha = oUF_Freebgrid.db.inRange
+		self.outsideRangeAlpha = oUF_Freebgrid.db.outsideRange
         
-        -- Healcomm
-        addHealcomm(self)
-    end
+		-- Healcomm
+		addHealcomm(self)
+	end
 	
 	-- Add events
 	self:RegisterEvent('PLAYER_FOCUS_CHANGED', FocusTarget)

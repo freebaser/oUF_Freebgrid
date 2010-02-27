@@ -69,6 +69,7 @@ local Update = function(self, event, unit)
 			end
 			self.Info:Hide()
 		elseif debuff.Dispell then
+			debuff.count:SetText(nil)
 			debuff:Hide()
 			debuff.Dispell = false
 			self.Info:Show()
