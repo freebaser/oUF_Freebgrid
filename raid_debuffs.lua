@@ -36,6 +36,7 @@ FreebgridDebuffs = {
 		--["Weakened Soul"] = 12,
 		["Mark of the Fallen Champion"] = 12,
 		["Boiling Blood"] = 11,
+		["Ice Tomb"] = 12,
 
 		-- or Add an Item from the table above that uses a spellID
 		--[L["Weakened Soul"]] = 12,

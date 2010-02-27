@@ -679,7 +679,4 @@ OUF_FREEBGRIDMOVABLE = function()
 		_LOCK = nil
 	end
 end
-
-SLASH_OUF_FREEBGRIDOMF1 = '/freeb'
-SlashCmdList['OUF_FREEBGRIDOMF'] = OUF_FREEBGRIDMOVABLE
 -- It's not in your best interest to disconnect me. Someone could get hurt.
