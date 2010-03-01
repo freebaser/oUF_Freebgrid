@@ -10,7 +10,7 @@ local dispellClass = {
 	SHAMAN = { Poison = true, Disease = true, Curse = true, },
 	PALADIN = { Magic = true, Poison = true, Disease = true, },
 	MAGE = { Curse = true, },
-	DRUID = { Curse = true, Poison = true, }
+	DRUID = { Curse = true, Poison = true, },
 }
 local dispellist = dispellClass[class] or {}
 

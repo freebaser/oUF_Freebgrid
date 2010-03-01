@@ -376,14 +376,6 @@ local style = function(self, unit)
 	self.Assistant:SetPoint("TOPLEFT", self, 0, 8)
 	self.Assistant:SetHeight(oUF_Freebgrid.db.iconsize)
 	self.Assistant:SetWidth(oUF_Freebgrid.db.iconsize)
-	
-	-- ReadyCheck
-	self.ReadyCheck = hp:CreateTexture(nil, "OVERLAY")
-	self.ReadyCheck:SetPoint("TOP", self)
-	self.ReadyCheck:SetHeight(oUF_Freebgrid.db.iconsize)
-	self.ReadyCheck:SetWidth(oUF_Freebgrid.db.iconsize)
-	self.ReadyCheck.delayTime = 8
-	self.ReadyCheck.fadeTime = 1
     
     -- ResComm
 	if oUF_Freebgrid.db.rescomm then
@@ -393,13 +385,6 @@ local style = function(self, unit)
 		rescomm:SetAlpha(oUF_Freebgrid.db.rescommalpha)
 		self.ResComm = rescomm
 	end
-	
-	-- Debuff
-	local debuff = CreateFrame("StatusBar", nil, self)
-	debuff:SetPoint("CENTER", hp)
-	debuff:SetHeight(oUF_Freebgrid.db.debuffsize)
-	debuff:SetWidth(oUF_Freebgrid.db.debuffsize)
-	self.freebDebuffs = debuff
 	
 	if (self:GetAttribute('unitsuffix') == 'target') then
 	else
@@ -413,6 +398,21 @@ local style = function(self, unit)
         
 		-- Healcomm
 		addHealcomm(self)
+		
+		-- ReadyCheck
+		self.ReadyCheck = hp:CreateTexture(nil, "OVERLAY")
+		self.ReadyCheck:SetPoint("TOP", self)
+		self.ReadyCheck:SetHeight(oUF_Freebgrid.db.iconsize)
+		self.ReadyCheck:SetWidth(oUF_Freebgrid.db.iconsize)
+		self.ReadyCheck.delayTime = 8
+		self.ReadyCheck.fadeTime = 1
+		
+		-- Debuff
+		local debuff = CreateFrame("StatusBar", nil, self)
+		debuff:SetPoint("CENTER", hp)
+		debuff:SetHeight(oUF_Freebgrid.db.debuffsize)
+		debuff:SetWidth(oUF_Freebgrid.db.debuffsize)
+		self.freebDebuffs = debuff
 	end
 	
 	-- Add events
