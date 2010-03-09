@@ -40,10 +40,9 @@ local Update = function(self, event, destUnit, endTime)
 		end
 		
 		local beingRessed, resserName = libResComm:IsUnitBeingRessed(unitName)
-		
 		if beingRessed and not (resComm.OthersOnly and resserName == playerName) then
 			if resComm:IsObjectType("Statusbar") then
-				if endTime and type(endTime) ~= "string" then
+				if endTime then
 					local maxValue = endTime - GetTime()
 					
 					resComm.duration = 0
@@ -75,8 +74,7 @@ end
 
 local Enable = function(self)
 	local resComm = self.ResComm
-	
-	if resComm then		
+	if resComm then
 		if resComm:IsObjectType("Texture") and not resComm:GetTexture() then
 			resComm:SetTexture([=[Interface\Icons\Spell_Holy_Resurrection]=])
 		elseif resComm:IsObjectType("Statusbar") and not resComm:GetStatusBarTexture() then
@@ -89,10 +87,12 @@ end
 
 oUF:AddElement("ResComm", Update, Enable, nil)
 
-local ResComm_Update = function(event, _, endTime)
+local ResComm_Update = function(event, ...)
+	local endTime = type(select(2, ...)) == "number" and select(2, ...) or nil
+	
 	local destUnit
 	for _, frame in ipairs(oUF.objects) do
-		if frame.unit then
+		if frame.unit and frame.ResComm then
 			destUnit = frame.unit
 			Update(frame, event, destUnit, endTime)
 		end
