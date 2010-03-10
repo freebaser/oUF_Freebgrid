@@ -85,7 +85,7 @@ local function Disable(self)
 end
 
 
-oUF:AddElement('HealComm4', Update, Enable, Disable)
+oUF:AddElement('HealComm', Update, Enable, Disable)
 
 
 local function MultiUpdate(...)
@@ -106,9 +106,9 @@ local function HealComm_Modified(event, guid)
 	MultiUpdate(guid)
 end
 
-healcomm.RegisterCallback("oUF_HealComm4", "HealComm_HealStarted", HealComm_Heal_Update)
-healcomm.RegisterCallback("oUF_HealComm4", "HealComm_HealUpdated", HealComm_Heal_Update)
-healcomm.RegisterCallback("oUF_HealComm4", "HealComm_HealDelayed", HealComm_Heal_Update)
-healcomm.RegisterCallback("oUF_HealComm4", "HealComm_HealStopped", HealComm_Heal_Update)
-healcomm.RegisterCallback("oUF_HealComm4", "HealComm_ModifierChanged", HealComm_Modified)
-healcomm.RegisterCallback("oUF_HealComm4", "HealComm_GUIDDisappeared", HealComm_Modified)
+healcomm.RegisterCallback("oUF_HealComm", "HealComm_HealStarted", HealComm_Heal_Update)
+healcomm.RegisterCallback("oUF_HealComm", "HealComm_HealUpdated", HealComm_Heal_Update)
+healcomm.RegisterCallback("oUF_HealComm", "HealComm_HealDelayed", HealComm_Heal_Update)
+healcomm.RegisterCallback("oUF_HealComm", "HealComm_HealStopped", HealComm_Heal_Update)
+healcomm.RegisterCallback("oUF_HealComm", "HealComm_ModifierChanged", HealComm_Modified)
+healcomm.RegisterCallback("oUF_HealComm", "HealComm_GUIDDisappeared", HealComm_Modified)
