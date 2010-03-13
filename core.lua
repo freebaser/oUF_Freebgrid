@@ -510,7 +510,7 @@ local Spawn = function()
 	raid:Show()
     
     if oUF_Freebgrid.db.pets then
-        local pets = oUF:Spawn('header', 'Pet_Freebgrid', 'SecureGroupPetHeaderTemplate')
+        local pets = oUF:Spawn('header', 'Pet_Freebgrid', 'SecureGroupPetHeaderTemplate', disableblizz)
         pets:SetPoint('TOPLEFT', 'Raid_Freebgrid', 'TOPRIGHT', oUF_Freebgrid.db.spacing, 0)
         pets:SetManyAttributes(
             'showSolo', oUF_Freebgrid.db.solo,
@@ -529,7 +529,7 @@ local Spawn = function()
     end
     
     if oUF_Freebgrid.db.MT then
-        local tank = oUF:Spawn('header', 'MT_Freebgrid')
+        local tank = oUF:Spawn('header', 'MT_Freebgrid', nil, disableblizz)
         tank:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 8, -25)
         tank:SetManyAttributes(
                 "showRaid", true, 
