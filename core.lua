@@ -63,12 +63,14 @@ bg:SetFrameStrata("BACKGROUND")
 bg:EnableMouse(true)
 	
 local function Framebg(self)
-	if not oUF_Freebgrid.db.framebg then return bg:Hide() end
+	if not oUF_Freebgrid.db.framebg then return end
+
 	bg:ClearAllPoints()
 	bg:SetPoint("TOP", "Raid_Freebgrid", "TOP", 0, 8)
 	bg:SetPoint("LEFT", "Raid_Freebgrid", "LEFT", -8 , 0)
 	bg:SetPoint("RIGHT", "Raid_Freebgrid", "RIGHT", 8, 0)
 	bg:SetPoint("BOTTOM", "Raid_Freebgrid", "BOTTOM", 0, -8)
+
 	if GetNumPartyMembers() > 0 or GetNumRaidMembers() > 0 then
 		bg:Show()
 	else
@@ -87,8 +89,8 @@ local border = {
 }
 
 local glowBorder = {
-	  edgeFile = [=[Interface\AddOns\oUF_Freebgrid\media\glowTex.tga]=], edgeSize = 5,
-	  insets = {left = 3, right = 3, top = 3, bottom = 3}
+	edgeFile = [=[Interface\AddOns\oUF_Freebgrid\media\glowTex.tga]=], edgeSize = 5,
+	insets = {left = 3, right = 3, top = 3, bottom = 3}
 }
 
 -- Show Target Border
@@ -140,7 +142,7 @@ local updateHealth = function(self, event, unit, bar)
         val = 8
     end
 
-	if per > 90 or per == 0 then
+	if per > 90 or per == 0 or oUF_Freebgrid.db.showname then
 		if nameCache[name] then 
 			self.Info:SetText(nameCache[name]) 
 		else 
@@ -236,15 +238,15 @@ local addHealcomm = function(self)
 	local healbar = CreateFrame('StatusBar', nil, self.Health)
 	healbar:SetStatusBarTexture(oUF_Freebgrid.textures[oUF_Freebgrid.db.texture])
 	healbar:SetStatusBarColor(0, 1, 0, oUF_Freebgrid.db.healalpha)
-    if oUF_Freebgrid.db.orientation == "VERTICAL" then
-        healbar:SetPoint('BOTTOM', self.Health, 'BOTTOM')
-    else
-        healbar:SetPoint('LEFT', self.Health, 'LEFT')
-    end
+	if oUF_Freebgrid.db.orientation == "VERTICAL" then
+		healbar:SetPoint('BOTTOM', self.Health, 'BOTTOM')
+	else
+		healbar:SetPoint('LEFT', self.Health, 'LEFT')
+	end
 
 	self.HealCommBar = oUF_Freebgrid.db.healcommbar and healbar or nil
 	self.allowHealCommOverflow = oUF_Freebgrid.db.healcommoverflow
-    self.HealCommOthersOnly = oUF_Freebgrid.db.healonlymy
+	self.HealCommOthersOnly = oUF_Freebgrid.db.healonlymy
 end
 
 -- Show Mouseover highlight

@@ -53,6 +53,8 @@ FreebgridDefaults = {
     
 	rescomm =  true,
 	rescommalpha = 0.6,
+
+   showname = false,
 	
 }
 
@@ -103,7 +105,7 @@ local tekcheck = LibStub("tekKonfig-Checkbox")
 local tekbutton = LibStub("tekKonfig-Button")
 local tekslider = LibStub("tekKonfig-Slider")
 local tekdropdown = LibStub("tekKonfig-Dropdown")
-local GAP = 8
+local GAP = 7
 
 local function texfunc(frame)
 	local texturedropdown, texturedropdowntext, texturedropdowncontainer = tekdropdown.new(frame, "Texture", "TOPRIGHT", frame, 0, 0)
@@ -464,6 +466,10 @@ f:SetScript("OnShow", function(f)
 	local MTT = tekcheck.new(f, nil, "Enable MT taragets.", "TOPLEFT", MT, "BOTTOMLEFT", 0, -GAP)
 	MTT:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.MTT = not oUF_Freebgrid.db.MTT; end)
 	MTT:SetChecked(oUF_Freebgrid.db.MTT)
+	
+	local showname = tekcheck.new(f, nil, "Always show names.", "TOPLEFT", MTT, "BOTTOMLEFT", 0, -GAP)
+	showname:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.showname = not oUF_Freebgrid.db.showname; end)
+	showname:SetChecked(oUF_Freebgrid.db.showname)
     
 	local symbolsizeslider, symbolsizeslidertext, symbolsizecontainer = tekslider.new(f, string.format("Symbol size: %d", oUF_Freebgrid.db.symbolsize or FreebgridDefaults.symbolsize), 8, 20, "BOTTOMLEFT", f, "BOTTOMLEFT", 15, GAP)
 	symbolsizeslider.tiptext = "Size of the bottom right indicator."
