@@ -539,35 +539,17 @@ local Spawn = function()
             tank:SetAttribute("template", "oUF_FreebMtargets")
         end
 	
-        if oRA3 and not select(2,IsInInstance()) == "pvp" and not select(2,IsInInstance()) == "arena" then
-            tank:SetAttribute(
-                "initial-unitWatch", true,
-                    "nameList", table.concat(oRA3:GetSortedTanks(), ",")
-            )
+        if oRA3 --[[and not select(2,IsInInstance()) == "pvp" and not select(2,IsInInstance()) == "arena"]] then
+		    tank:SetManyAttributes(
+				"initial-unitWatch", true,
+			    "nameList", table.concat(oRA3:GetSortedTanks(), ",")
+		    )
 
-            local tankhandler = CreateFrame('Frame')
-
-            function tankhandler:OnEvent()
-                if(InCombatLockdown()) then
-                        self:RegisterEvent('PLAYER_REGEN_ENABLED')
-                else
-                        self:UnregisterEvent('PLAYER_REGEN_ENABLED')
-                        if self.tanks then
-                            tank:SetAttribute(
-                                "nameList", table.concat(self.tanks, ",")
-                            )
-                            self.tanks = nil
-                        end
-                end
-            end
-
-            function tankhandler:OnTanksUpdated(event, tanks)
-                self.tanks = tanks
-                self:OnEvent()
-            end
-
-            tankhandler:SetScript('OnEvent', tankhandler.OnEvent)
-            oRA3.RegisterCallback(tankhandler, "OnTanksUpdated")
+			local tankhandler = {}
+			function tankhandler:OnTanksUpdated(event, tanks) 
+				tank:SetAttribute("nameList", table.concat(tanks, ","))
+			end
+			oRA3.RegisterCallback(tankhandler, "OnTanksUpdated")
         
         else
             tank:SetAttribute(
