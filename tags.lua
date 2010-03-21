@@ -57,12 +57,12 @@ local L = {
 local x = "M"
 
 local getTime = function(expirationTime)
-	if expirationTime > 0 then
-		local timeleft = format("%.0f",-1*(GetTime()-expirationTime))
+	local expire = -1*(GetTime()-expirationTime)
+	local timeleft = format("%.0f", expire)
+	if expire > 0.5 then
 		local spellTimer = "|cffffff00"..timeleft.."|r"
 		return spellTimer
 	end
-	return 0
 end
 
 oUF.Tags["[Freebaggro]"] = function(u) 
@@ -98,6 +98,11 @@ oUF.Tags["[fort]"] = function(u) local c = UnitAura(u, L["Prayer of Fortitude"])
 oUF.TagEvents["[fort]"] = "UNIT_AURA"
 oUF.Tags["[ds]"] = function(u) local c = UnitAura(u, L["Prayer of Spirit"]) or UnitAura(u, L["Divine Spirit"]) if not c then return "|cffffff00"..x.."|r" end end
 oUF.TagEvents["[ds]"] = "UNIT_AURA"
+oUF.Tags["[wsTime]"] = function(u)
+  local name, _,_,_,_,_, expirationTime = UnitDebuff(u, L["Weakened Soul"])
+  if UnitDebuff(u, L["Weakened Soul"]) then return getTime(expirationTime) end
+end
+oUF.TagEvents["[wsTime]"] = "UNIT_AURA"
 
 --druid
 oUF.lbCount = { 4, 2, 3 }

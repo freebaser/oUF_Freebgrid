@@ -1,5 +1,6 @@
 if not oUF_Freebgrid then return end
 
+-- These are just the defaults that are created as a base.
 FreebgridDefaults = {
 	locked = true,
 	
@@ -43,7 +44,7 @@ FreebgridDefaults = {
 	point = "TOP",
 	growth = "RIGHT",
 	
-	framebg = true,
+	framebg = false,
 	
 	healcommtext = true,
 	healcommbar = false,
@@ -53,8 +54,8 @@ FreebgridDefaults = {
     
 	rescomm =  true,
 	rescommalpha = 0.6,
-
-   showname = false,
+	
+	showname = false,
 	
 }
 
