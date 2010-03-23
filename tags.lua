@@ -1,5 +1,5 @@
 local _, ns = ...
-local oUF = ns.oUF
+local oUF = ns.oUF or oUF
 if not oUF then return end
 
 oUF.Tags['[FGname]'] = function(u, r)
