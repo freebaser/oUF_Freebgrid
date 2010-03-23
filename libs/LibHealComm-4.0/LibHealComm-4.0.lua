@@ -1,5 +1,5 @@
 local major = "LibHealComm-4.0"
-local minor = 56
+local minor = 59
 assert(LibStub, string.format("%s requires LibStub.", major))
 
 local HealComm = LibStub:NewLibrary(major, minor)
@@ -29,7 +29,6 @@ HealComm.talentData = HealComm.talentData or {}
 HealComm.itemSetsData = HealComm.itemSetsData or {}
 HealComm.glyphCache = HealComm.glyphCache or {}
 HealComm.equippedSetCache = HealComm.equippedSetCache or {}
-HealComm.playerModifiers = HealComm.playerModifiers or {}
 HealComm.guidToGroup = HealComm.guidToGroup or {}
 HealComm.guidToUnit = HealComm.guidToUnit or {}
 HealComm.pendingHeals = HealComm.pendingHeals or {}
@@ -508,7 +507,7 @@ end
 -- Thanks to Gagorian (DrDamage) for letting me steal his formulas and such
 local playerHealModifier, playerCurrentRelic = 1
 
-local playerModifiers, averageHeal, rankNumbers = HealComm.playerModifiers, HealComm.averageHeal, HealComm.rankNumbers
+local averageHeal, rankNumbers = HealComm.averageHeal, HealComm.rankNumbers
 local guidToUnit, guidToGroup, glyphCache = HealComm.guidToUnit, HealComm.guidToGroup, HealComm.glyphCache
 
 -- UnitBuff priortizes our buffs over everyone elses when there is a name conflict, so yay for that
@@ -948,8 +947,9 @@ if( playerClass == "PALADIN" ) then
 		-- Divine Illumination, used in T10 holy
 		local DivineIllumination = GetSpellInfo(31842)
 		
-		local flashLibrams = {[42615] = 375, [42614] = 331, [42613] = 293, [42612] = 204, [28592] = 89, [25644] = 79, [23006] = 43, [23201] = 28}
+		local flashLibrams = {[42616] = 436, [42615] = 375, [42614] = 331, [42613] = 293, [42612] = 204, [28592] = 89, [25644] = 79, [23006] = 43, [23201] = 28}
 		local holyLibrams = {[45436] = 160, [40268] = 141, [28296] = 47}
+		local flashSPLibrams = {[51472] = 510}
 		
 		-- Holy Shock crits put a hot that heals for 15% of the HS over 9s
 		--itemSetsData["T8 Holy"] = { 45370, 45371, 45372, 45373, 45374, 46178, 46179, 46180, 46181, 46182 }
@@ -996,18 +996,20 @@ if( playerClass == "PALADIN" ) then
 			
 			-- Glyph of Seal of Light, +5% healing if the player has Seal of Light up
 			if( glyphCache[54943] and unitHasAura("player", SealofLight) ) then
-				healModifier = healModifier * 1.05
+				healModifier = healModifier + 0.05
 			end
 			
+			healModifier = healModifier + talentData[HealingLight].current
 			healModifier = healModifier * (1 + talentData[Divinity].current)
-			healModifier = healModifier * (1 + talentData[HealingLight].current)
 			
 			-- Apply extra spell power based on libram
 			if( playerCurrentRelic ) then
 				if( spellName == HolyLight and holyLibrams[playerCurrentRelic] ) then
-					spellPower = spellPower + holyLibrams[playerCurrentRelic]
+					healAmount = healAmount + (holyLibrams[playerCurrentRelic] * 0.805)
 				elseif( spellName == FlashofLight and flashLibrams[playerCurrentRelic] ) then
-					spellPower = spellPower + flashLibrams[playerCurrentRelic]
+					healAmount = healAmount + (flashLibrams[playerCurrentRelic] * 0.805)
+				elseif( spellName == FlashofLight and flashSPLibrams[playerCurrentRelic] ) then
+					spellPower = spellPower + flashSPLibrams[playerCurrentRelic]
 				end
 			end
 			
@@ -1021,12 +1023,10 @@ if( playerClass == "PALADIN" ) then
 			healAmount = calculateGeneralAmount(spellData[spellName].levels[rank], healAmount, spellPower, spModifier, healModifier)
 			
 			-- Divine Favor, 100% chance to crit
-			if( hasDivineFavor ) then
+			-- ... or the player has over a 100% chance to crit with Holy spells
+			if( hasDivineFavor or GetSpellCritChance(2) >= 100 ) then
 				hasDivineFavor = nil
-				healAmount = healAmount * (1.50 + talentData[TouchedbytheLight].current)
-			-- Or the player has over a 100% chance to crit with Holy spells
-			elseif( GetSpellCritChance(2) >= 100 ) then
-				healAmount = healAmount * (1.50 + talentData[TouchedbytheLight].current)
+				healAmount = healAmount * (1.50 * (1 + talentData[TouchedbytheLight].current))
 			end
 			
 			return DIRECT_HEALS, math.ceil(healAmount)
@@ -1427,6 +1427,12 @@ local function getName(spellID)
 end
 
 -- Healing modifiers
+if( not HealComm.aurasUpdated ) then
+	HealComm.aurasUpdated = true
+	HealComm.selfModifiers = nil
+	HealComm.healingModifiers = nil
+end
+
 HealComm.currentModifiers = HealComm.currentModifiers or {}
 
 HealComm.selfModifiers = HealComm.selfModifiers or {
@@ -1438,20 +1444,27 @@ HealComm.selfModifiers = HealComm.selfModifiers or {
 	[72221] = 1.05, -- Luck of the Draw
 	[70873] = 1.10, -- Emerald Vigor (Valithria Dreamwalker)
 	[31884] = 1.20, -- Avenging Wrath
+	[72393] = 0.25, -- Hopelessness
+	[72397] = 0.40, -- Hopelessness
+	[72391] = 0.50, -- Hopelessness
+	[72396] = 0.60, -- Hopelessness
+	[72390] = 0.75, -- Hopelessness
+	[72395] = 0.80, -- Hopelessness
 }
-
-HealComm.selfModifiers[getName(72390)] = 0.75 -- Hopelessness
 
 -- The only spell in the game with a name conflict is Ray of Pain from the Nagrand Void Walkers
 HealComm.healingModifiers = HealComm.healingModifiers or {
 	[getName(30843)] = 0.00, -- Enfeeble
 	[getName(41292)] = 0.00, -- Aura of Suffering
-	[getName(59513)] = 0.00, -- Embrace of the Vampyr
+	[59513] = 0.00, -- Embrace of the Vampyr
 	[getName(55593)] = 0.00, -- Necrotic Aura
+	[28776] = 0.10, -- Necrotic Poison
 	[getName(34625)] = 0.25, -- Demolish
 	[getName(19716)] = 0.25, -- Gehennas' Curse
 	[getName(24674)] = 0.25, -- Veil of Shadow
-	[getName(69633)] = 0.25, -- Veil of Shadow, in German this is translated differently from the one above
+	[69633] = 0.25, -- Veil of Shadow, in German this is translated differently from the one above
+	[46296] = 0.25, -- Necrotic Poison
+	[54121] = 0.25, -- Necrotic Poison
 	-- Wound Poison still uses a unique spellID/spellName despite the fact that it's a static 50% reduction.
 	[getName(13218)] = 0.50, -- 1
 	[getName(13222)] = 0.50, -- 2
@@ -1475,6 +1488,7 @@ HealComm.healingModifiers = HealComm.healingModifiers or {
 	[getName(60084)] = 0.50, -- The Veil of Shadow
 	[getName(45885)] = 0.50, -- Shadow Spike
 	[getName(69674)] = 0.50, -- Mutated Infection (Rotface)
+	[36693] = 0.55, -- Necrotic Poison
 	[getName(63038)] = 0.75, -- Dark Volley
 	[getName(52771)] = 0.75, -- Wounding Strike
 	[getName(48291)] = 0.75, -- Fetid Healing
@@ -1492,6 +1506,18 @@ HealComm.healingModifiers = HealComm.healingModifiers or {
 	[getName(38387)] = 1.50, -- Bane of Infinity
 	[getName(31977)] = 1.50, -- Curse of Infinity
 	[getName(41350)] = 2.00, -- Aura of Desire
+	[73762] = 1.05, -- Strength of Wrynn (5%)
+	[73816] = 1.05, -- Hellscream's Warsong (5%)
+	[73824] = 1.10, -- Strength of Wrynn (10%)
+	[73818] = 1.10, -- Hellscream's Warsong (10%)
+	[73825] = 1.15, -- Strength of Wrynn (15%)
+	[73819] = 1.15, -- Hellscream's Warsong (15%)
+	[73826] = 1.20, -- Strength of Wrynn (20%)
+	[73820] = 1.20, -- Hellscream's Warsong (20%)
+	[73827] = 1.25, -- Strength of Wrynn (25%)
+	[73821] = 1.25, -- Hellscream's Warsong (25%)
+	[73828] = 1.30, -- Strength of Wrynn (30%)
+	[73822] = 1.30, -- Hellscream's Warsong (30%)
 }
 
 HealComm.healingStackMods = HealComm.healingStackMods or {
@@ -1559,6 +1585,11 @@ local function updateDistributionChannel()
 end
 
 -- Figure out where we should be sending messages and wipe some caches
+function HealComm:PLAYER_ENTERING_WORLD()
+	HealComm.eventFrame:UnregisterEvent("PLAYER_ENTERING_WORLD")
+	HealComm:ZONE_CHANGED_NEW_AREA()
+end
+
 function HealComm:ZONE_CHANGED_NEW_AREA()
 	local pvpType = GetZonePVPInfo()
 	local type = select(2, IsInInstance())
@@ -1574,56 +1605,36 @@ function HealComm:ZONE_CHANGED_NEW_AREA()
 		updateDistributionChannel()
 		clearPendingHeals()
 		table.wipe(activeHots)
-		
-		-- Changes the value of Necrotic Poison based on zone type, if there are more difficulty type MS's I'll support those too
-		-- Heroic = 90%, Non-Heroic = 75%
-		-- Not all versions of WoW are on 3.2, as such only check difficulty if they are, otherwise default to the heroic version
-		if( GetRaidDifficulty and ( GetRaidDifficulty() == 2 or GetRaidDifficulty() == 4 ) ) then
-			healingModifiers[GetSpellInfo(53121)] = 0.25
-		else
-			healingModifiers[GetSpellInfo(53121)] = 0.10
-		end
 	end
 
 	instanceType = type
 end
 
--- Figure out the modifier for the players healing in general
--- Because Unrelenting Assault can be applied while casting, it should probably fire a heal changed if modifier changes
--- while a cast is going on
-local function recalculatePlayerModifiers()
-	local increase, decrease = 1, 1
-	for _, modifier in pairs(playerModifiers) do
-		if( modifier >= 1 ) then
-			increase = increase * modifier
-		else
-			decrease = math.min(decrease, modifier)
-		end
-	end
-	
-	playerHealModifier = increase * decrease
-end
-
-
 local alreadyAdded = {}
 function HealComm:UNIT_AURA(unit)
 	local guid = UnitGUID(unit)
 	if( not guidToUnit[guid] ) then return end
-	local increase, decrease = 1, 1
-	
+	local increase, decrease, playerIncrease, playerDecrease = 1, 1, 1, 1
+		
 	-- Scan buffs
 	local id = 1
 	while( true ) do
-		local name, rank, icon, stack = UnitAura(unit, id, "HELPFUL")
+		local name, rank, icon, stack, _, _, _, _, _, _, spellID = UnitAura(unit, id, "HELPFUL")
 		if( not name ) then break end
 		-- Prevent buffs like Tree of Life that have the same name for the shapeshift/healing increase from being calculated twice
 		if( not alreadyAdded[name] ) then
 			alreadyAdded[name] = true
 
-			if( healingModifiers[name] ) then
+			if( healingModifiers[spellID] ) then
+				increase = increase * healingModifiers[spellID]
+			elseif( healingModifiers[name] ) then
 				increase = increase * healingModifiers[name]
 			elseif( healingStackMods[name] ) then
 				increase = increase * healingStackMods[name](name, rank, icon, stack)
+			end
+			
+			if( unit == "player" and selfModifiers[spellID] ) then
+				playerIncrease = playerIncrease * selfModifiers[spellID]
 			end
 		end
 		
@@ -1633,12 +1644,19 @@ function HealComm:UNIT_AURA(unit)
 	-- Scan debuffs
 	id = 1
 	while( true ) do
-		local name, rank, icon, stack = UnitAura(unit, id, "HARMFUL")
+		local name, rank, icon, stack, _, _, _, _, _, _, spellID = UnitAura(unit, id, "HARMFUL")
 		if( not name ) then break end
-		if( healingModifiers[name] ) then
+		
+		if( healingModifiers[spellID] ) then
+			decrease = math.min(decrease, healingModifiers[spellID])
+		elseif( healingModifiers[name] ) then
 			decrease = math.min(decrease, healingModifiers[name])
 		elseif( healingStackMods[name] ) then
 			decrease = math.min(decrease, healingStackMods[name](name, rank, icon, stack))
+		end
+
+		if( unit == "player" and selfModifiers[spellID] ) then
+			playerDecrease = math.min(playerDecrease, selfModifiers[spellID])
 		end
 		
 		id = id + 1
@@ -1656,6 +1674,10 @@ function HealComm:UNIT_AURA(unit)
 	end
 
 	table.wipe(alreadyAdded)
+	
+	if( unit == "player" ) then
+		playerHealModifier = playerIncrease * playerDecrease
+	end
 	
 	-- Class has a specific monitor it needs for auras
 	if( AuraHandler ) then
@@ -2135,11 +2157,6 @@ function HealComm:COMBAT_LOG_EVENT_UNFILTERED(timestamp, eventType, sourceGUID, 
 	-- New hot was applied
 	elseif( ( eventType == "SPELL_AURA_APPLIED" or eventType == "SPELL_AURA_REFRESH" or eventType == "SPELL_AURA_APPLIED_DOSE" ) and bit.band(sourceFlags, COMBATLOG_OBJECT_AFFILIATION_MINE) == COMBATLOG_OBJECT_AFFILIATION_MINE ) then
 		local spellID, spellName, spellSchool, auraType = ...
-		if( eventType == "SPELL_AURA_APPLIED" and selfModifiers[spellID] ) then
-			playerModifiers[spellID] = selfModifiers[spellID]
-			recalculatePlayerModifiers()
-		end
-
 		if( hotData[spellName] ) then
 			-- Multi target heal so put it in the bucket
 			if( hotData[spellName].isMulti ) then
@@ -2213,12 +2230,6 @@ function HealComm:COMBAT_LOG_EVENT_UNFILTERED(timestamp, eventType, sourceGUID, 
 	-- Aura faded		
 	elseif( eventType == "SPELL_AURA_REMOVED" ) then
 		local spellID, spellName, spellSchool, auraType = ...
-		
-		-- It was applied to the player so it might be a modifierhopthal
-		if( playerModifiers[spellID] and bit.band(destFlags, COMBATLOG_OBJECT_AFFILIATION_MINE) == COMBATLOG_OBJECT_AFFILIATION_MINE ) then
-			playerModifiers[spellID] = nil
-			recalculatePlayerModifiers()
-		end
 		
 		-- Hot faded that we cast 
 		if( hotData[spellName] and bit.band(sourceFlags, COMBATLOG_OBJECT_AFFILIATION_MINE) == COMBATLOG_OBJECT_AFFILIATION_MINE ) then
@@ -2737,6 +2748,7 @@ function HealComm:PLAYER_LOGIN()
 
 	self.eventFrame:UnregisterEvent("PLAYER_LOGIN")
 	self.eventFrame:RegisterEvent("ZONE_CHANGED_NEW_AREA")
+	self.eventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 	self.eventFrame:RegisterEvent("PARTY_MEMBERS_CHANGED")
 	self.eventFrame:RegisterEvent("RAID_ROSTER_UPDATE")
 	
