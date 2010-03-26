@@ -181,9 +181,14 @@ local updateHealth = function(self, event, unit, bar)
     end
 end
 
-local powerbar = function(self)
+local fixStatusbar = function(bar)
+	bar:GetStatusBarTexture():SetHorizTile(false)
+end
+
+local powerbar = function(self, unit)
     local pp = CreateFrame"StatusBar"
     pp:SetStatusBarTexture(oUF_Freebgrid.textures[oUF_Freebgrid.db.texture])
+	fixStatusbar(pp)
     pp:SetOrientation(oUF_Freebgrid.db.orientation)
     pp.colorPower = true
     pp.frequentUpdates = true
@@ -237,6 +242,7 @@ local addHealcomm = function(self)
 
 	local healbar = CreateFrame('StatusBar', nil, self.Health)
 	healbar:SetStatusBarTexture(oUF_Freebgrid.textures[oUF_Freebgrid.db.texture])
+	fixStatusbar(healbar)
 	healbar:SetStatusBarColor(0, 1, 0, oUF_Freebgrid.db.healalpha)
 	if oUF_Freebgrid.db.orientation == "VERTICAL" then
 		healbar:SetPoint('BOTTOM', self.Health, 'BOTTOM')
@@ -281,6 +287,7 @@ local style = function(self, unit)
 	-- Health bar
 	local hp = CreateFrame"StatusBar"
 	hp:SetStatusBarTexture(oUF_Freebgrid.textures[oUF_Freebgrid.db.texture])
+	fixStatusbar(hp)
 	hp:SetOrientation(oUF_Freebgrid.db.orientation)
 	hp:SetParent(self)
 	hp:SetPoint"TOP"
@@ -302,7 +309,7 @@ local style = function(self, unit)
 	self.OverrideUpdateHealth = updateHealth
     
 	if oUF_Freebgrid.db.powerbar then
-		powerbar(self)
+		powerbar(self, unit)
 	end
 
 	-- Threat
@@ -383,6 +390,7 @@ local style = function(self, unit)
 	if oUF_Freebgrid.db.rescomm then
 		local rescomm = CreateFrame("StatusBar", nil, hp)
 		rescomm:SetStatusBarTexture([=[Interface\Icons\Spell_Holy_Resurrection]=])
+		fixStatusbar(rescomm)
 		rescomm:SetAllPoints(hp)
 		rescomm:SetAlpha(oUF_Freebgrid.db.rescommalpha)
 		self.ResComm = rescomm
