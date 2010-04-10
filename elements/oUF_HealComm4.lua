@@ -8,6 +8,7 @@
 
 	Optional:
 	.HealCommOthersOnly: (boolean)       Ignore the player's outbound heals
+	.HealCommTimeframe: (integer)        Only show heals that land in the next x seconds
 	.allowHealCommOverflow: (boolean)    Allow the HealComm bar to flow beyond the end of the Health bar
 
 	Functions that can be overridden from within a layout:
@@ -38,10 +39,14 @@ local function Update(self)
 
 	incHeals = incHeals * healcomm:GetHealModifier(guid)
 
+	if self.HealCommText then self.HealCommText:SetText(self.HealCommTextFormat and self.HealCommTextFormat(incHeals) or format("%d", incHeals)) end
+
 	if self.HealCommBar then
 		local curHP = UnitHealth(self.unit)
 		local percHP = curHP / maxHP
 		local percInc = (self.allowHealCommOverflow and incHeals or math.min(incHeals, maxHP - curHP)) / maxHP
+
+		if percInc == 0 then return self.HealCommBar:Hide() end
 
 		self.HealCommBar:ClearAllPoints()
 
@@ -57,8 +62,6 @@ local function Update(self)
 
 		self.HealCommBar:Show()
 	end
-
-	if self.HealCommText then self.HealCommText:SetText(self.HealCommTextFormat and self.HealCommTextFormat(incHeals) or format("%d", incHeals)) end
 end
 
 
