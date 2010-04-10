@@ -91,10 +91,10 @@ local Enable = function(self)
 	
 	local border = debuff:CreateTexture(nil, "OVERLAY")
 	border:SetTexture("Interface\\AddOns\\oUF_Freebgrid\\media\\border")
-	border:SetPoint("TOP", debuff, "TOP", 0, 2)
-	border:SetPoint("RIGHT", debuff, "RIGHT", 2, 0)
-	border:SetPoint("BOTTOM", debuff, "BOTTOM", 0, -2)
-	border:SetPoint("LEFT", debuff, "LEFT", -2, 0)
+	border:SetPoint("TOP", debuff, "TOP", 0, 3)
+	border:SetPoint("RIGHT", debuff, "RIGHT", 3, 0)
+	border:SetPoint("BOTTOM", debuff, "BOTTOM", 0, -3)
+	border:SetPoint("LEFT", debuff, "LEFT", -3, 0)
 	debuff.border = border
 
 	local count = debuff:CreateFontString(nil, "OVERLAY")
