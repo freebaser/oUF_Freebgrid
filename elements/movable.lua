@@ -304,6 +304,8 @@ do
 		-- I honestly don't trust the load order of SVs.
 		_DB = Freebgridomf or {}
 		Freebgridomf = _DB
+		
+		if oUF_Freebgrid.db.disableomf then return end
 		-- Got to catch them all!
 		for _, obj in next, oUF.objects do
 			restorePosition(obj)
@@ -659,6 +661,7 @@ do
 end
 
 OUF_FREEBGRIDMOVABLE = function()
+	if oUF_Freebgrid.db.disableomf then return end
 	if(InCombatLockdown()) then
 		return print"Frames cannot be moved while in combat. Bailing out."
 	end

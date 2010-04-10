@@ -15,16 +15,19 @@ local oUF = ns.oUF or oUF
 local libResComm = LibStub("LibResComm-1.0")
 local playerName = UnitName("player")
 
-local duration
-local onUpdate = function(self, elapsed)
-	duration = self.duration + elapsed
-	
-	if duration >= self.endTime then
-		self:Hide()
+local onUpdate
+do
+	local duration
+	onUpdate = function(self, elapsed)
+		duration = self.duration + elapsed
+		
+		if duration >= self.endTime then
+			self:Hide()
+		end
+		
+		self.duration = duration
+		self:SetValue(duration)
 	end
-	
-	self.duration = duration
-	self:SetValue(duration)
 end
 
 local Update = function(self, event, destUnit, endTime)
@@ -77,7 +80,7 @@ local Enable = function(self)
 	if resComm then
 		if resComm:IsObjectType("Texture") and not resComm:GetTexture() then
 			resComm:SetTexture([=[Interface\Icons\Spell_Holy_Resurrection]=])
-		elseif resComm:IsObjectType("Statusbar") and not resComm:GetStatusBarTexture() then
+		elseif resComm:IsObjectType("Statusbar") and not resComm:GetStatusBarTexture():GetTexture() then
 			resComm:SetStatusBarTexture([=[Interface\TargetingFrame\UI-StatusBar]=])
 		end
 		

@@ -495,9 +495,9 @@ local Spawn = function()
 	end
 	
 	local spacingX, spacingY, growth = SAP()
-		
+	local setpoint = oUF_Freebgrid.setpoint.raid.position
 	local raid = oUF:Spawn('header', 'Raid_Freebgrid', nil, disableblizz)
-	raid:SetPoint("LEFT", UIParent, "LEFT", 8, 0)
+	raid:SetPoint(setpoint[1], setpoint[2], setpoint[3], setpoint[4], setpoint[5])
 	raid:SetManyAttributes(
 		'showPlayer', oUF_Freebgrid.db.player,
 		'showSolo', oUF_Freebgrid.db.solo,
@@ -517,9 +517,10 @@ local Spawn = function()
 	raid:SetScale(oUF_Freebgrid.db.scale)
 	raid:Show()
     
+	setpoint = oUF_Freebgrid.setpoint.pet.position
     if oUF_Freebgrid.db.pets then
         local pets = oUF:Spawn('header', 'Pet_Freebgrid', 'SecureGroupPetHeaderTemplate', disableblizz)
-        pets:SetPoint('TOPLEFT', 'Raid_Freebgrid', 'TOPRIGHT', oUF_Freebgrid.db.spacing, 0)
+        pets:SetPoint(setpoint[1], setpoint[2], setpoint[3], setpoint[4], setpoint[5])
         pets:SetManyAttributes(
             'showSolo', oUF_Freebgrid.db.solo,
             'showParty', oUF_Freebgrid.db.partyOn,
@@ -536,9 +537,10 @@ local Spawn = function()
         pets:Show()
     end
     
+	setpoint = oUF_Freebgrid.setpoint.mt.position
     if oUF_Freebgrid.db.MT then
         local tank = oUF:Spawn('header', 'MT_Freebgrid', nil, disableblizz)
-        tank:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 8, -25)
+        tank:SetPoint(setpoint[1], setpoint[2], setpoint[3], setpoint[4], setpoint[5])
         tank:SetManyAttributes(
                 "showRaid", true, 
                 "yOffset", -oUF_Freebgrid.db.spacing

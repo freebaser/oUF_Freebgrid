@@ -2,8 +2,8 @@ local _, ns = ...
 local oUF = ns.oUF or oUF
 if not oUF then return end
 
-oUF.Tags['[FGname]'] = function(u, r)
-	local name = UnitName(u or r) or "unknown"
+oUF.Tags['[FGname]'] = function(u)
+	local name = UnitName(u) or "unknown"
 	return name
 end
 oUF.TagEvents['[FGname]'] = 'UNIT_NAME_UPDATE'

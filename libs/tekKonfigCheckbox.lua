@@ -22,7 +22,7 @@ function lib.new(parent, size, label, ...)
 	check:SetHeight(size or 26)
 	if select(1, ...) then check:SetPoint(...) end
 
-	check:SetHitRectInsets(0, -100, 0, 0)
+	check:SetHitRectInsets(0, -50, 0, 0)
 
 	check:SetNormalTexture("Interface\\Buttons\\UI-CheckBox-Up")
 	check:SetPushedTexture("Interface\\Buttons\\UI-CheckBox-Down")

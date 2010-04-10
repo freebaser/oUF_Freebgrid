@@ -4,6 +4,7 @@
 
 	<Script file='tags.lua' />
 	<Script file='core.lua' />
+	<Script file='setpoint.lua' />
 	<Script file='media.lua' />
 	<Script file='config.lua' />
 	<Script file='raid_debuffs.lua' />

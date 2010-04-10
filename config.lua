@@ -57,6 +57,8 @@ FreebgridDefaults = {
 	
 	showname = false,
 	
+	disableomf = false,
+	
 }
 
 oUF_Freebgrid.orientation = {
@@ -242,6 +244,10 @@ frame:SetScript("OnShow", function(frame)
 	local checksound = lockpos:GetScript("OnClick")
 	lockpos:SetScript("OnClick", function() OUF_FREEBGRIDMOVABLE() end)
 	lockpos:SetChecked(not oUF_Freebgrid.db.locked)
+	
+	local disableomf = tekcheck.new(frame, nil, "Disable oMF", "LEFT", lockpos, "RIGHT", 50, 0)
+	disableomf:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.disableomf = not oUF_Freebgrid.db.disableomf; end)
+	disableomf:SetChecked(oUF_Freebgrid.db.disableomf)
 
 	local scaleslider, scaleslidertext, scalecontainer = tekslider.new(frame, string.format("Scale: %.2f", oUF_Freebgrid.db.scale or FreebgridDefaults.scale), 0.5, 2, "TOPLEFT", lockpos, "BOTTOMLEFT", 0, -GAP)
 	scaleslider.tiptext = "Set the units scale."
