@@ -49,7 +49,7 @@ FreebgridDefaults = {
 	healcommtext = true,
 	healcommbar = false,
 	healcommoverflow = true,
-	healonlymy = false,
+	healothersonly = false,
 	healalpha = 0.4, 
     
 	rescomm =  true,
@@ -418,9 +418,9 @@ f:SetScript("OnShow", function(f)
 	healcommoverflow:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.healcommoverflow = not oUF_Freebgrid.db.healcommoverflow; end)
 	healcommoverflow:SetChecked(oUF_Freebgrid.db.healcommoverflow)
     
-	local healonlymy = tekcheck.new(f, nil, "Only show my heals.", "TOPLEFT", healcommoverflow, "BOTTOMLEFT", 0, -GAP)
-	healonlymy:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.healonlymy = not oUF_Freebgrid.db.healonlymy; end)
-	healonlymy:SetChecked(oUF_Freebgrid.db.healonlymy)
+	local healothersonly = tekcheck.new(f, nil, "Only show others heals.", "TOPLEFT", healcommoverflow, "BOTTOMLEFT", 0, -GAP)
+	healothersonly:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.healothersonly = not oUF_Freebgrid.db.healothersonly; end)
+	healothersonly:SetChecked(oUF_Freebgrid.db.healothersonly)
     
 	local healalphaslider, healalphaslidertext, healalphacontainer = tekslider.new(f, string.format("Heal bar alpha: %.2f", oUF_Freebgrid.db.healalpha or FreebgridDefaults.healalpha), 0, 1, "TOPLEFT", healonlymy, "BOTTOMLEFT", 0, -GAP)
 	healalphaslider.tiptext = "Set the alpha of the heal bar."

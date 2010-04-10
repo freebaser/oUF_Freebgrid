@@ -252,7 +252,7 @@ local addHealcomm = function(self)
 
 	self.HealCommBar = oUF_Freebgrid.db.healcommbar and healbar or nil
 	self.allowHealCommOverflow = oUF_Freebgrid.db.healcommoverflow
-	self.HealCommOthersOnly = oUF_Freebgrid.db.healonlymy
+	self.HealCommOthersOnly = oUF_Freebgrid.db.healothersonly
 end
 
 -- Show Mouseover highlight
