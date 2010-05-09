@@ -182,6 +182,22 @@ local updateHealth = function(health, unit)
     end
 end
 
+local updateThreat = function(self, event, unit)
+	if(unit ~= self.unit) then return end
+	local threat = self.Threat
+
+	unit = unit or self.unit
+	local status = UnitThreatSituation(unit)
+
+	if(status and status > 1) then
+		local r, g, b = GetThreatStatusColor(status)
+		threat:SetBackdropBorderColor(r, g, b, 1)
+	else
+		threat:SetBackdropBorderColor(0, 0, 0, 1)
+	end
+	threat:Show()
+end
+
 local fixStatusbar = function(bar)
 	bar:GetStatusBarTexture():SetHorizTile(false)
 end
@@ -308,7 +324,8 @@ local style = function(self)
 	threat:SetBackdrop(glowBorder)
 	threat:SetBackdropColor(0, 0, 0, 0)
 	threat:SetBackdropBorderColor(0, 0, 0, 1)
-	self.freebThreat = threat
+	threat.Update = updateThreat
+	self.Threat = threat
 
 	-- Name/Hp
 	local info = hp:CreateFontString(nil, "OVERLAY")
