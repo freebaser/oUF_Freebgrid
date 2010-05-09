@@ -492,7 +492,10 @@ local Spawn = function()
 	local spacingX, spacingY, growth = SAP()
 	local setpoint = oUF_Freebgrid.setpoint.raid.position
 	local raid = oUF:SpawnHeader('Raid_Freebgrid', nil, visible,
-		'showPlayer', oUF_Freebgrid.db.player, 
+		'showPlayer', oUF_Freebgrid.db.player,
+		'showSolo', oUF_Freebgrid.db.solo,
+		'showParty', oUF_Freebgrid.db.partyOn,
+		'showRaid', true,
 		'xoffset', spacingX, 
 		'yOffset', spacingY,
 		'point', oUF_Freebgrid.db.point,
@@ -510,6 +513,9 @@ local Spawn = function()
 	setpoint = oUF_Freebgrid.setpoint.pet.position
     if oUF_Freebgrid.db.pets then
         local pets = oUF:SpawnHeader('Pet_Freebgrid', 'SecureGroupPetHeaderTemplate', visible,
+			'showSolo', oUF_Freebgrid.db.solo,
+			'showParty', oUF_Freebgrid.db.partyOn,
+			'showRaid', true,
 			'xoffset', spacingX,
             'yOffset', spacingY,
             'point', oUF_Freebgrid.db.point,
@@ -524,9 +530,11 @@ local Spawn = function()
     
 	setpoint = oUF_Freebgrid.setpoint.mt.position
     if oUF_Freebgrid.db.MT then
-        local tank = oUF:SpawnHeader('MT_Freebgrid', nil, visible)
+        local tank = oUF:SpawnHeader('MT_Freebgrid', nil, visible,
+			"showRaid", true,
+			"yOffset", -oUF_Freebgrid.db.spacing
+		)
         tank:SetPoint(setpoint[1], setpoint[2], setpoint[3], setpoint[4], setpoint[5])
-			tank:SetAttribute("yOffset", -oUF_Freebgrid.db.spacing)
         if oUF_Freebgrid.db.MTT then
             tank:SetAttribute("template", "oUF_FreebMtargets")
         end
