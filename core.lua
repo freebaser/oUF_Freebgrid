@@ -26,7 +26,7 @@ local colors = setmetatable({
 -- Unit Menu
 local menu = function(self)
 	local unit = self.unit:sub(1, -2)
-	local cunit = self.unit:gsub("(.)", string.upper, 1)
+	local cunit = self.unit:gsub("^%l", string.upper)
 
 	if(cunit == 'Vehicle') then
 		cunit = 'Pet'
@@ -133,10 +133,11 @@ end
 local nameCache = {}
 
 -- Upate Health, Name, and coloring
-local updateHealth = function(self, event, unit, bar)
-	local def = oUF.Tags["[missinghp]"](unit)
-	local per = oUF.Tags["[perhp]"](unit)
-	local name = oUF.Tags["[FGname]"](unit)
+local updateHealth = function(health, unit)
+	local def = oUF.Tags['missinghp'](unit)
+	local per = oUF.Tags['perhp'](unit)
+	local name = oUF.Tags['freebgrid:name'](unit)
+	local self = health:GetParent()
     local val = 1
     if oUF_Freebgrid.db.powerbar then
         val = 8
@@ -161,7 +162,7 @@ local updateHealth = function(self, event, unit, bar)
 	local r, g, b, t
 	if(UnitIsPlayer(unit)) then
 		local _, class = UnitClass(unit)
-		t = self.colors.class[class]
+		t = oUF.colors.class[class]
 	else		
 		r, g, b = .2, .9, .1
 	end
@@ -173,11 +174,11 @@ local updateHealth = function(self, event, unit, bar)
 	self.Info:SetTextColor(r, g, b)
 	
     if oUF_Freebgrid.db.reversecolors then
-        bar.bg:SetVertexColor(r*.2, g*.2, b*.2)
-        bar:SetStatusBarColor(r, g, b)
+        health.bg:SetVertexColor(r*.2, g*.2, b*.2)
+        health:SetStatusBarColor(r, g, b)
     else
-        bar.bg:SetVertexColor(r, g, b)
-        bar:SetStatusBarColor(0, 0, 0, .8)
+        health.bg:SetVertexColor(r, g, b)
+        health:SetStatusBarColor(0, 0, 0, .8)
     end
 end
 
@@ -185,7 +186,7 @@ local fixStatusbar = function(bar)
 	bar:GetStatusBarTexture():SetHorizTile(false)
 end
 
-local powerbar = function(self, unit)
+local powerbar = function(self)
     local pp = CreateFrame"StatusBar"
     pp:SetStatusBarTexture(oUF_Freebgrid.textures[oUF_Freebgrid.db.texture])
 	fixStatusbar(pp)
@@ -213,19 +214,6 @@ local powerbar = function(self, unit)
     pp.bg = ppbg
 
     self.Power = pp
-end
-
--- Upate border with threat
-local updateThreat = function(self, event, unit, status)
-	local threat = self.Threat
-
-	if(status and status > 1) then
-		local r, g, b = GetThreatStatusColor(status)
-		threat:SetBackdropBorderColor(r, g, b, 1)
-	else
-		threat:SetBackdropBorderColor(0, 0, 0, 1)
-	end
-	threat:Show()
 end
 
 -- Add healcomm stuff
@@ -266,7 +254,7 @@ local OnLeave = function(self)
 	self.Highlight:Hide()	
 end
 
-local style = function(self, unit)
+local style = function(self)
 	self.menu = menu
 	self.colors = colors
 
@@ -305,11 +293,11 @@ local style = function(self, unit)
 	hpbg:SetAllPoints(hp)
 
 	hp.bg = hpbg
+	hp.PostUpdate = updateHealth
 	self.Health = hp
-	self.OverrideUpdateHealth = updateHealth
     
 	if oUF_Freebgrid.db.powerbar then
-		powerbar(self, unit)
+		powerbar(self)
 	end
 
 	-- Threat
@@ -320,8 +308,7 @@ local style = function(self, unit)
 	threat:SetBackdrop(glowBorder)
 	threat:SetBackdropColor(0, 0, 0, 0)
 	threat:SetBackdropBorderColor(0, 0, 0, 1)
-	self.Threat = threat
-	self.OverrideUpdateThreat = updateThreat
+	self.freebThreat = threat
 
 	-- Name/Hp
 	local info = hp:CreateFontString(nil, "OVERLAY")
@@ -337,7 +324,7 @@ local style = function(self, unit)
 	DDG:SetJustifyH("CENTER")
 	DDG:SetFont(oUF_Freebgrid.fonts[oUF_Freebgrid.db.font], oUF_Freebgrid.db.fontsize-2)
 	DDG:SetShadowOffset(1.25, -1.25)
-	self:Tag(DDG, '[DDG]')
+	self:Tag(DDG, '[freebgrid:ddg]')
 
 	-- Highliget tex
 	local hl = hp:CreateTexture(nil, "OVERLAY")
@@ -489,21 +476,24 @@ local Spawn = function()
 	oUF:RegisterStyle("Freebgrid", style)
 	oUF:SetActiveStyle"Freebgrid"
 
-	local disableblizz = 'party'
-	if oUF_Freebgrid.db.showBlizzParty then
-		disableblizz = 'WTFBBQ'
+	--oUF_Freebgrid.db.showBlizzParty
+	
+	local visible
+	if oUF_Freebgrid.db.solo and oUF_Freebgrid.db.partyOn then
+		visible = 'raid,party,solo'
+	elseif oUF_Freebgrid.db.solo and not oUF_Freebgrid.db.partyOn then
+		visible = 'raid,solo'
+	elseif oUF_Freebgrid.db.partyOn and not oUF_Freebgrid.db.solo then
+		visible = 'raid,party'
+	else
+		visible = 'raid'
 	end
 	
 	local spacingX, spacingY, growth = SAP()
 	local setpoint = oUF_Freebgrid.setpoint.raid.position
-	local raid = oUF:Spawn('header', 'Raid_Freebgrid', nil, disableblizz)
-	raid:SetPoint(setpoint[1], setpoint[2], setpoint[3], setpoint[4], setpoint[5])
-	raid:SetManyAttributes(
-		'showPlayer', oUF_Freebgrid.db.player,
-		'showSolo', oUF_Freebgrid.db.solo,
-		'showParty', oUF_Freebgrid.db.partyOn,
-		'showRaid', true,
-		'xoffset', spacingX,
+	local raid = oUF:SpawnHeader('Raid_Freebgrid', nil, visible,
+		'showPlayer', oUF_Freebgrid.db.player, 
+		'xoffset', spacingX, 
 		'yOffset', spacingY,
 		'point', oUF_Freebgrid.db.point,
 		'groupFilter', '1,2,3,4,5,6,7,8',
@@ -514,46 +504,36 @@ local Spawn = function()
 		'columnSpacing', oUF_Freebgrid.db.spacing,
 		'columnAnchorPoint', growth
 	)
+	raid:SetPoint(setpoint[1], setpoint[2], setpoint[3], setpoint[4], setpoint[5])
 	raid:SetScale(oUF_Freebgrid.db.scale)
-	raid:Show()
     
 	setpoint = oUF_Freebgrid.setpoint.pet.position
     if oUF_Freebgrid.db.pets then
-        local pets = oUF:Spawn('header', 'Pet_Freebgrid', 'SecureGroupPetHeaderTemplate', disableblizz)
-        pets:SetPoint(setpoint[1], setpoint[2], setpoint[3], setpoint[4], setpoint[5])
-        pets:SetManyAttributes(
-            'showSolo', oUF_Freebgrid.db.solo,
-            'showParty', oUF_Freebgrid.db.partyOn,
-            'showRaid', true,
-            'xoffset', spacingX,
+        local pets = oUF:SpawnHeader('Pet_Freebgrid', 'SecureGroupPetHeaderTemplate', visible,
+			'xoffset', spacingX,
             'yOffset', spacingY,
             'point', oUF_Freebgrid.db.point,
             'maxColumns', oUF_Freebgrid.db.numCol,
             'unitsPerColumn', oUF_Freebgrid.db.numUnits,
             'columnSpacing', oUF_Freebgrid.db.spacing,
             'columnAnchorPoint', growth
-        )
+		)
+        pets:SetPoint(setpoint[1], setpoint[2], setpoint[3], setpoint[4], setpoint[5])
         pets:SetScale(oUF_Freebgrid.db.scale)
-        pets:Show()
     end
     
 	setpoint = oUF_Freebgrid.setpoint.mt.position
     if oUF_Freebgrid.db.MT then
-        local tank = oUF:Spawn('header', 'MT_Freebgrid', nil, disableblizz)
+        local tank = oUF:SpawnHeader('MT_Freebgrid', nil, visible)
         tank:SetPoint(setpoint[1], setpoint[2], setpoint[3], setpoint[4], setpoint[5])
-        tank:SetManyAttributes(
-                "showRaid", true, 
-                "yOffset", -oUF_Freebgrid.db.spacing
-        )
+			tank:SetAttribute("yOffset", -oUF_Freebgrid.db.spacing)
         if oUF_Freebgrid.db.MTT then
             tank:SetAttribute("template", "oUF_FreebMtargets")
         end
 	
-        if oRA3 --[[and not select(2,IsInInstance()) == "pvp" and not select(2,IsInInstance()) == "arena"]] then
-		    tank:SetManyAttributes(
-				"initial-unitWatch", true,
-			    "nameList", table.concat(oRA3:GetSortedTanks(), ",")
-		    )
+        if oRA3 then
+			tank:SetAttribute("initial-unitWatch", true)
+			tank:SetAttribute("nameList", table.concat(oRA3:GetSortedTanks(), ","))
 
 			local tankhandler = {}
 			function tankhandler:OnTanksUpdated(event, tanks) 
@@ -562,12 +542,9 @@ local Spawn = function()
 			oRA3.RegisterCallback(tankhandler, "OnTanksUpdated")
         
         else
-            tank:SetAttribute(
-                'groupFilter', 'MAINTANK'
-            )
+            tank:SetAttribute('groupFilter', 'MAINTANK')
         end
         tank:SetScale(oUF_Freebgrid.db.scale)
-        tank:Show()
     end
 end
 

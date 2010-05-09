@@ -19,6 +19,7 @@ local oUF = ns.oUF or oUF
 assert(oUF, "oUF_HealComm4 was unable to locate oUF install")
 
 local healcomm = LibStub("LibHealComm-4.0")
+local format = string.format
 
 local function Hide(self)
 	if self.HealCommBar then self.HealCommBar:Hide() end

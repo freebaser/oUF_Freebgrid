@@ -2,13 +2,13 @@ local _, ns = ...
 local oUF = ns.oUF or oUF
 if not oUF then return end
 
-oUF.Tags['[FGname]'] = function(u)
+oUF.Tags['freebgrid:name'] = function(u)
 	local name = UnitName(u) or "unknown"
 	return name
 end
-oUF.TagEvents['[FGname]'] = 'UNIT_NAME_UPDATE'
+oUF.TagEvents['freebgrid:name'] = 'UNIT_NAME_UPDATE'
 
-oUF.Tags['[DDG]'] = function(u)
+oUF.Tags['freebgrid:ddg'] = function(u)
 	local x
 	if UnitIsDead(u) then
 		x = "Dead"
@@ -21,7 +21,7 @@ oUF.Tags['[DDG]'] = function(u)
 	end
 	return "|cffCFCFCF"..x.."|r"
 end
-oUF.TagEvents['[DDG]'] = 'UNIT_HEALTH'
+oUF.TagEvents['freebgrid:ddg'] = 'UNIT_HEALTH'
 
 local L = {
   ["Prayer of Mending"] = GetSpellInfo(33076),
@@ -65,48 +65,48 @@ local getTime = function(expirationTime)
 	end
 end
 
-oUF.Tags["[Freebaggro]"] = function(u) 
+oUF.Tags['freebgrid:aggro'] = function(u) 
 	local s = UnitThreatSituation(u) if s == 2 or s == 3 then return "|cffFF0000"..x.."|r" end end
-oUF.TagEvents["[Freebaggro]"] = "UNIT_THREAT_SITUATION_UPDATE"
+oUF.TagEvents['freebgrid:aggro'] = "UNIT_THREAT_SITUATION_UPDATE"
 
 --priest
 oUF.pomCount = {"i","h","g","f","Z","Y"}
-oUF.Tags["[pom]"] = function(u) local c = select(4, UnitAura(u, L["Prayer of Mending"])) if c then return "|cffFFCF7F"..oUF.pomCount[c].."|r" end end
-oUF.TagEvents["[pom]"] = "UNIT_AURA"
-oUF.Tags["[gotn]"] = function(u) if UnitAura(u, L["Gift of the Naaru"]) then return "|cff33FF33"..x.."|r" end end
-oUF.TagEvents["[gotn]"] = "UNIT_AURA"
-oUF.Tags["[rnw]"] = function(u)
+oUF.Tags['freebgrid:pom'] = function(u) local c = select(4, UnitAura(u, L["Prayer of Mending"])) if c then return "|cffFFCF7F"..oUF.pomCount[c].."|r" end end
+oUF.TagEvents['freebgrid:pom'] = "UNIT_AURA"
+oUF.Tags['freebgrid:gotn'] = function(u) if UnitAura(u, L["Gift of the Naaru"]) then return "|cff33FF33"..x.."|r" end end
+oUF.TagEvents['freebgrid:gotn'] = "UNIT_AURA"
+oUF.Tags['freebgrid:rnw'] = function(u)
   local name, _,_,_,_,_,_, fromwho,_ = UnitAura(u, L["Renew"])
   if not (fromwho == "player") then return end
   if UnitAura(u, L["Renew"]) then return "|cff33FF33"..x.."|r" end end
-oUF.TagEvents["[rnw]"] = "UNIT_AURA"
+oUF.TagEvents['freebgrid:rnw'] = "UNIT_AURA"
 -- rnwtime
-oUF.Tags["[rnwTime]"] = function(u)
+oUF.Tags['freebgrid:rnwTime'] = function(u)
   local name, _,_,_,_,_, expirationTime, fromwho,_ = UnitAura(u, L["Renew"])
   if (fromwho == "player") then return getTime(expirationTime) end 
 end
-oUF.TagEvents["[rnwTime]"] = "UNIT_AURA"
-oUF.Tags["[pws]"] = function(u) if UnitAura(u, L["Power Word: Shield"]) then return "|cff33FF33"..x.."|r" end end
-oUF.TagEvents["[pws]"] = "UNIT_AURA"
-oUF.Tags["[ws]"] = function(u) if UnitDebuff(u, L["Weakened Soul"]) then return "|cffFF9900"..x.."|r" end end
-oUF.TagEvents["[ws]"] = "UNIT_AURA"
-oUF.Tags["[fw]"] = function(u) if UnitAura(u, L["Fear Ward"]) then return "|cff8B4513"..x.."|r" end end
-oUF.TagEvents["[fw]"] = "UNIT_AURA"
-oUF.Tags["[sp]"] = function(u) local c = UnitAura(u, L["Prayer of Shadow Protection"]) or UnitAura(u, "Shadow Protection") if not c then return "|cff9900FF"..x.."|r" end end
-oUF.TagEvents["[sp]"] = "UNIT_AURA"
-oUF.Tags["[fort]"] = function(u) local c = UnitAura(u, L["Prayer of Fortitude"]) or UnitAura(u, L["Power Word: Fortitude"]) if not c then return "|cff00A1DE"..x.."|r" end end
-oUF.TagEvents["[fort]"] = "UNIT_AURA"
-oUF.Tags["[ds]"] = function(u) local c = UnitAura(u, L["Prayer of Spirit"]) or UnitAura(u, L["Divine Spirit"]) if not c then return "|cffffff00"..x.."|r" end end
-oUF.TagEvents["[ds]"] = "UNIT_AURA"
-oUF.Tags["[wsTime]"] = function(u)
+oUF.TagEvents['freebgrid:rnwTime'] = "UNIT_AURA"
+oUF.Tags['freebgrid:pws'] = function(u) if UnitAura(u, L["Power Word: Shield"]) then return "|cff33FF33"..x.."|r" end end
+oUF.TagEvents['freebgrid:pws'] = "UNIT_AURA"
+oUF.Tags['freebgrid:ws'] = function(u) if UnitDebuff(u, L["Weakened Soul"]) then return "|cffFF9900"..x.."|r" end end
+oUF.TagEvents['freebgrid:ws'] = "UNIT_AURA"
+oUF.Tags['freebgrid:fw'] = function(u) if UnitAura(u, L["Fear Ward"]) then return "|cff8B4513"..x.."|r" end end
+oUF.TagEvents['freebgrid:fw'] = "UNIT_AURA"
+oUF.Tags['freebgrid:sp'] = function(u) local c = UnitAura(u, L["Prayer of Shadow Protection"]) or UnitAura(u, "Shadow Protection") if not c then return "|cff9900FF"..x.."|r" end end
+oUF.TagEvents['freebgrid:sp'] = "UNIT_AURA"
+oUF.Tags['freebgrid:fort'] = function(u) local c = UnitAura(u, L["Prayer of Fortitude"]) or UnitAura(u, L["Power Word: Fortitude"]) if not c then return "|cff00A1DE"..x.."|r" end end
+oUF.TagEvents['freebgrid:fort'] = "UNIT_AURA"
+oUF.Tags['freebgrid:ds'] = function(u) local c = UnitAura(u, L["Prayer of Spirit"]) or UnitAura(u, L["Divine Spirit"]) if not c then return "|cffffff00"..x.."|r" end end
+oUF.TagEvents['freebgrid:ds'] = "UNIT_AURA"
+oUF.Tags['freebgrid:wsTime'] = function(u)
   local name, _,_,_,_,_, expirationTime = UnitDebuff(u, L["Weakened Soul"])
   if UnitDebuff(u, L["Weakened Soul"]) then return getTime(expirationTime) end
 end
-oUF.TagEvents["[wsTime]"] = "UNIT_AURA"
+oUF.TagEvents['freebgrid:wsTime'] = "UNIT_AURA"
 
 --druid
 oUF.lbCount = { 4, 2, 3 }
-oUF.Tags["[lb]"] = function(u) 
+oUF.Tags['freebgrid:lb'] = function(u) 
 	local name, _,_, c,_,_, expirationTime, fromwho,_ = UnitAura(u, L["Lifebloom"])
 	if not (fromwho == "player") then return end
 	local spellTimer = GetTime()-expirationTime
@@ -116,110 +116,110 @@ oUF.Tags["[lb]"] = function(u)
 		return "|cffA7FD0A"..oUF.lbCount[c].."|r"
 	end
 end
-oUF.TagEvents["[lb]"] = "UNIT_AURA"
-oUF.Tags["[rejuv]"] = function(u) 
+oUF.TagEvents['freebgrid:lb'] = "UNIT_AURA"
+oUF.Tags['freebgrid:rejuv'] = function(u) 
   local name, _,_,_,_,_,_, fromwho,_ = UnitAura(u, L["Rejuvenation"])
   if not (fromwho == "player") then return end
   if UnitAura(u, L["Rejuvenation"]) then return "|cff00FEBF"..x.."|r" end end
-oUF.TagEvents["[rejuv]"] = "UNIT_AURA"
+oUF.TagEvents['freebgrid:rejuv'] = "UNIT_AURA"
 -- rejuvtime
-oUF.Tags["[rejuvTime]"] = function(u)
+oUF.Tags['freebgrid:rejuvTime'] = function(u)
   local name, _,_,_,_,_, expirationTime, fromwho,_ = UnitAura(u, L["Rejuvenation"])
   if (fromwho == "player") then return getTime(expirationTime) end 
 end
-oUF.TagEvents["[rejuvTime]"] = "UNIT_AURA"
-oUF.Tags["[regrow]"] = function(u) if UnitAura(u, L["Regrowth"]) then return "|cff00FF10"..x.."|r" end end
-oUF.TagEvents["[regrow]"] = "UNIT_AURA"
-oUF.Tags["[wg]"] = function(u) if UnitAura(u, L["Wild Growth"]) then return "|cff33FF33"..x.."|r" end end
-oUF.TagEvents["[wg]"] = "UNIT_AURA"
-oUF.Tags["[tree]"] = function(u) if UnitAura(u, L["Tree of Life"]) then return "|cff33FF33"..x.."|r" end end
-oUF.TagEvents["[tree]"] = "UNIT_AURA"
-oUF.Tags["[gotw]"] = function(u) local c = UnitAura(u, L["Gift of the Wild"]) or UnitAura(u, L["Mark of the Wild"]) if not c then return "|cffFF00FF"..x.."|r" end end
-oUF.TagEvents["[gotw]"] = "UNIT_AURA"
+oUF.TagEvents['freebgrid:rejuvTime'] = "UNIT_AURA"
+oUF.Tags['freebgrid:regrow'] = function(u) if UnitAura(u, L["Regrowth"]) then return "|cff00FF10"..x.."|r" end end
+oUF.TagEvents['freebgrid:regrow'] = "UNIT_AURA"
+oUF.Tags['freebgrid:wg'] = function(u) if UnitAura(u, L["Wild Growth"]) then return "|cff33FF33"..x.."|r" end end
+oUF.TagEvents['freebgrid:wg'] = "UNIT_AURA"
+oUF.Tags['freebgrid:tree'] = function(u) if UnitAura(u, L["Tree of Life"]) then return "|cff33FF33"..x.."|r" end end
+oUF.TagEvents['freebgrid:tree'] = "UNIT_AURA"
+oUF.Tags['freebgrid:gotw'] = function(u) local c = UnitAura(u, L["Gift of the Wild"]) or UnitAura(u, L["Mark of the Wild"]) if not c then return "|cffFF00FF"..x.."|r" end end
+oUF.TagEvents['freebgrid:gotw'] = "UNIT_AURA"
 
 --warrior
-oUF.Tags["[Bsh]"] = function(u) if UnitAura(u, L["Battle Shout"]) then return "|cffff0000"..x.."|r" end end
-oUF.TagEvents["[Bsh]"] = "UNIT_AURA"
-oUF.Tags["[Csh]"] = function(u) if UnitAura(u, L["Commanding Shout"]) then return "|cffffff00"..x.."|r" end end
-oUF.TagEvents["[Csh]"] = "UNIT_AURA"
-oUF.Tags["[vigil]"] = function(u)
+oUF.Tags['freebgrid:Bsh'] = function(u) if UnitAura(u, L["Battle Shout"]) then return "|cffff0000"..x.."|r" end end
+oUF.TagEvents['freebgrid:Bsh'] = "UNIT_AURA"
+oUF.Tags['freebgrid:Csh'] = function(u) if UnitAura(u, L["Commanding Shout"]) then return "|cffffff00"..x.."|r" end end
+oUF.TagEvents['freebgrid:Csh'] = "UNIT_AURA"
+oUF.Tags['freebgrid:vigil'] = function(u)
   local name, _,_,_,_,_,_, fromwho,_ = UnitAura(u, L["Vigilance"])
   if not (fromwho == "player") then return end
   if UnitAura(u, L["Vigilance"]) then return "|cffDEB887"..x.."|r" end end
-oUF.TagEvents["[vigil]"] = "UNIT_AURA"
+oUF.TagEvents['freebgrid:vigil'] = "UNIT_AURA"
 
 --deathknight
-oUF.Tags["[how]"] = function(u) if UnitAura(u, L["Horn of Winter"]) then return "|cffffff10"..x.."|r" end end
-oUF.TagEvents["[how]"] = "UNIT_AURA"
+oUF.Tags['freebgrid:how'] = function(u) if UnitAura(u, L["Horn of Winter"]) then return "|cffffff10"..x.."|r" end end
+oUF.TagEvents['freebgrid:how'] = "UNIT_AURA"
 
 --mage
-oUF.Tags["[mc]"] = function(u) if UnitAura(u, L["Magic Concentration"]) then return "|cffffff00"..x.."|r" end end
-oUF.TagEvents["[mc]"] = "UNIT_AURA"
+oUF.Tags['freebgrid:mc'] = function(u) if UnitAura(u, L["Magic Concentration"]) then return "|cffffff00"..x.."|r" end end
+oUF.TagEvents['freebgrid:mc'] = "UNIT_AURA"
 
 --paladin
-oUF.Tags["[sacred]"] = function(u) if UnitAura(u, L["Sacred Shield"]) then return "|cffffff10"..x.."|r" end end
-oUF.TagEvents["[sacred]"] = "UNIT_AURA"
-oUF.Tags["[beacon]"] = function(u) if UnitAura(u, L["Beacon of Light"]) then return "|cffffff10"..x.."|r" end end
-oUF.TagEvents["[beacon]"] = "UNIT_AURA"
-oUF.Tags["[selfsacred]"] = function(u)
+oUF.Tags['freebgrid:sacred'] = function(u) if UnitAura(u, L["Sacred Shield"]) then return "|cffffff10"..x.."|r" end end
+oUF.TagEvents['freebgrid:sacred'] = "UNIT_AURA"
+oUF.Tags['freebgrid:beacon'] = function(u) if UnitAura(u, L["Beacon of Light"]) then return "|cffffff10"..x.."|r" end end
+oUF.TagEvents['freebgrid:beacon'] = "UNIT_AURA"
+oUF.Tags['freebgrid:selfsacred'] = function(u)
   local name, _,_,_,_,_,_, fromwho,_ = UnitAura(u, L["Sacred Shield"])
   if not (fromwho == "player") then return end
   if UnitAura(u, L["Sacred Shield"]) then return "|cffff33ff"..x.."|r" end end
-oUF.TagEvents["[selfsacred]"] = "UNIT_AURA"
-oUF.Tags["[selfbeacon]"] = function(u)
+oUF.TagEvents['freebgrid:selfsacred'] = "UNIT_AURA"
+oUF.Tags['freebgrid:selfbeacon'] = function(u)
   local name, _,_,_,_,_,_, fromwho,_ = UnitAura(u, L["Beacon of Light"])
   if not (fromwho == "player") then return end
   if UnitAura(u, L["Beacon of Light"]) then return "|cffff33ff"..x.."|r" end end
-oUF.TagEvents["[selfbeacon]"] = "UNIT_AURA"
-oUF.Tags["[beaconTime]"] = function(u)
+oUF.TagEvents['freebgrid:selfbeacon'] = "UNIT_AURA"
+oUF.Tags['freebgrid:beaconTime'] = function(u)
   local name, _,_,_,_,_, expirationTime, fromwho,_ = UnitAura(u, L["Beacon of Light"])
   if (fromwho == "player") then return getTime(expirationTime) end 
 end
-oUF.TagEvents["[beaconTime]"] = "UNIT_AURA"
-oUF.Tags["[FoLTime]"] = function(u)
+oUF.TagEvents['freebgrid:beaconTime'] = "UNIT_AURA"
+oUF.Tags['freebgrid:FoLTime'] = function(u)
   local name, _,_,_,_,_, expirationTime, fromwho,_ = UnitAura(u, L['Flash of Light'])
   if (fromwho == "player") then return getTime(expirationTime) end 
 end
-oUF.TagEvents["[FoLTime]"] = "UNIT_AURA"
+oUF.TagEvents['freebgrid:FoLTime'] = "UNIT_AURA"
 
 --shaman
-oUF.Tags['[rip]'] = function(u) 
+oUF.Tags['freebgrid:rip'] = function(u) 
 	local name, _,_,_,_,_,_, fromwho,_ = UnitAura(u, L['Riptide'])
 	if not (fromwho == 'player') then return end
 	if UnitAura(u, L['Riptide']) then return '|cff00FEBF'..x..'|r' end end
-oUF.TagEvents['[rip]'] = 'UNIT_AURA'
+oUF.TagEvents['freebgrid:rip'] = 'UNIT_AURA'
 
-oUF.Tags['[ripTime]'] = function(u)
+oUF.Tags['freebgrid:ripTime'] = function(u)
 	local name, _,_,_,_,_, expirationTime, fromwho,_ = UnitAura(u, L['Riptide'])
 	if (fromwho == "player") then return getTime(expirationTime) end 
 end
-oUF.TagEvents['[ripTime]'] = 'UNIT_AURA'
+oUF.TagEvents['freebgrid:ripTime'] = 'UNIT_AURA'
 
 oUF.earthCount = {'i','h','g','f','p','q','Z','Y'}
-oUF.Tags['[earth]'] = function(u) local c = select(4, UnitAura(u, L['Earth Shield'])) if c then return '|cffFFCF7F'..oUF.earthCount[c]..'|r' end end
-oUF.TagEvents['[earth]'] = 'UNIT_AURA'
+oUF.Tags['freebgrid:earth'] = function(u) local c = select(4, UnitAura(u, L['Earth Shield'])) if c then return '|cffFFCF7F'..oUF.earthCount[c]..'|r' end end
+oUF.TagEvents['freebgrid:earth'] = 'UNIT_AURA'
 
 oUF.classIndicators={
 		["DRUID"] = {
-				["TL"] = "[tree]",
-				["TR"] = "[gotw]",
-				["BL"] = "[regrow][wg]",
-				["BR"] = "[lb]",
-				["Cen"] = "[rejuvTime]",
+				["TL"] = "[freebgrid:tree]",
+				["TR"] = "[freebgrid:gotw]",
+				["BL"] = "[freebgrid:regrow][freebgrid:wg]",
+				["BR"] = "[freebgrid:lb]",
+				["Cen"] = "[freebgrid:rejuvTime]",
 		},
 		["PRIEST"] = {
-				["TL"] = "[pws][ws]",
-				["TR"] = "[ds][sp][fort][fw]",
-				["BL"] = "[gotn]",
-				["BR"] = "[pom]",
-				["Cen"] = "[rnwTime]",
+				["TL"] = "[freebgrid:pws][freebgrid:ws]",
+				["TR"] = "[freebgrid:ds][freebgrid:sp][freebgrid:fort][freebgrid:fw]",
+				["BL"] = "[freebgrid:gotn]",
+				["BR"] = "[freebgrid:pom]",
+				["Cen"] = "[freebgrid:rnwTime]",
 		},
 		["PALADIN"] = {
-				["TL"] = "[selfsacred][sacred]",
-				["TR"] = "[selfbeacon][beacon]",
+				["TL"] = "[freebgrid:selfsacred][freebgrid:sacred]",
+				["TR"] = "[freebgrid:selfbeacon][freebgrid:beacon]",
 				["BL"] = "",
 				["BR"] = "",
-				["Cen"] = "[beaconTime]",
+				["Cen"] = "[freebgrid:beaconTime]",
 				
 		},
 		["WARLOCK"] = {
@@ -230,7 +230,7 @@ oUF.classIndicators={
 				["Cen"] = "",
 		},
 		["WARRIOR"] = {
-				["TL"] = "[vigil]",
+				["TL"] = "[freebgrid:vigil]",
 				["TR"] = "",
 				["BL"] = "",
 				["BR"] = "",
@@ -238,17 +238,17 @@ oUF.classIndicators={
 		},
 		["DEATHKNIGHT"] = {
 				["TL"] = "",
-				["TR"] = "[how]",
+				["TR"] = "[freebgrid:how]",
 				["BL"] = "",
 				["BR"] = "",
 				["Cen"] = "",
 		},
 		["SHAMAN"] = {
-				["TL"] = "[rip]",
+				["TL"] = "[freebgrid:rip]",
 				["TR"] = "",
 				["BL"] = "",
-				["BR"] = "[earth]",
-				["Cen"] = "[ripTime]",
+				["BR"] = "[freebgrid:earth]",
+				["Cen"] = "[freebgrid:ripTime]",
 		},
 		["HUNTER"] = {
 				["TL"] = "",
@@ -266,7 +266,7 @@ oUF.classIndicators={
 		},
 		["MAGE"] = {
 				["TL"] = "",
-				["TR"] = "[mc]",
+				["TR"] = "[freebgrid:mc]",
 				["BL"] = "",
 				["BR"] = "",
 				["Cen"] = "",
