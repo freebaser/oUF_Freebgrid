@@ -537,6 +537,18 @@ function oUF:SetActiveStyle(name)
 	style = name
 end
 
+
+do
+	local function iter(_, n)
+		-- don't expose the style functions.
+		return (next(styles, n))
+	end
+
+	function oUF.IterateStyles()
+		return iter, nil, nil
+	end
+end
+
 local getCondition
 do
 	local conditions = {
@@ -669,6 +681,40 @@ function oUF:Spawn(unit, overrideName)
 	self:DisableBlizzard(unit, object)
 
 	return object
+end
+
+do
+	local _QUEUE = {}
+	local _FACTORY = CreateFrame'Frame'
+	_FACTORY:SetScript('OnEvent', OnEvent)
+	_FACTORY:RegisterEvent'PLAYER_LOGIN'
+	_FACTORY.active = true
+
+	function _FACTORY:PLAYER_LOGIN()
+		if(not self.active) then return end
+
+		for _, func in next, _QUEUE do
+			func()
+		end
+	end
+
+	function oUF:Factory(func)
+		argcheck(func, 2, 'function')
+
+		if(IsLoggedIn()) then
+			func()
+		else
+			table.insert(_QUEUE, func)
+		end
+	end
+
+	function oUF:EnableFactory()
+		self.active = true
+	end
+
+	function oUF:DisableFactory()
+		self.active = nil
+	end
 end
 
 function oUF:AddElement(name, update, enable, disable)
