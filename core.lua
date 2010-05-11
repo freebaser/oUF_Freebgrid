@@ -509,7 +509,7 @@ local Spawn = function()
 	local raid = oUF:SpawnHeader('Raid_Freebgrid', nil, visible,
 		'showPlayer', oUF_Freebgrid.db.player,
 		'showSolo', true,
-		'showParty', oUF_Freebgrid.db.showBlizzParty,
+		'showParty', oUF_Freebgrid.db.partyOn,
 		'showRaid', true,
 		'xoffset', spacingX, 
 		'yOffset', spacingY,
@@ -529,7 +529,7 @@ local Spawn = function()
     if oUF_Freebgrid.db.pets then
         local pets = oUF:SpawnHeader('Pet_Freebgrid', 'SecureGroupPetHeaderTemplate', visible,
 			'showSolo', true,
-			'showParty', oUF_Freebgrid.db.showBlizzParty,
+			'showParty', oUF_Freebgrid.db.partyOn,
 			'showRaid', true,
 			'xoffset', spacingX,
 			'yOffset', spacingY,
