@@ -430,6 +430,10 @@ local style = function(self)
 	self.Assistant:SetPoint("TOPLEFT", self, 0, 8)
 	self.Assistant:SetHeight(oUF_Freebgrid.db.iconsize)
 	self.Assistant:SetWidth(oUF_Freebgrid.db.iconsize)
+	
+	self.LFDRole = hp:CreateTexture(nil, 'OVERLAY')
+	self.LFDRole:SetSize(oUF_Freebgrid.db.iconsize, oUF_Freebgrid.db.iconsize)
+	self.LFDRole:SetPoint('RIGHT', self, 'LEFT')
     
     -- ResComm
 	if oUF_Freebgrid.db.rescomm then
