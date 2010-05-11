@@ -207,6 +207,21 @@ local updatePower = function(power, unit)
 			self.Health:SetHeight(oUF_Freebgrid.db.height)
 		end
 	end
+	
+	local r, g, b, t
+	t = colors.power[ptype]
+	r, g, b = 1, 1, 1
+	if(t) then
+		r, g, b = t[1], t[2], t[3]
+	end
+	
+	if oUF_Freebgrid.db.reversecolors then
+        power.bg:SetVertexColor(r*.2, g*.2, b*.2)
+        power:SetStatusBarColor(r, g, b)
+    else
+        power.bg:SetVertexColor(r, g, b)
+        power:SetStatusBarColor(0, 0, 0, .8)
+    end
 end
 
 local updateThreat = function(self, event, unit)
@@ -234,7 +249,6 @@ local powerbar = function(self)
     pp:SetStatusBarTexture(oUF_Freebgrid.textures[oUF_Freebgrid.db.texture])
 	fixStatusbar(pp)
     pp:SetOrientation(oUF_Freebgrid.db.orientation)
-    pp.colorPower = true
     pp.frequentUpdates = true
 
     pp:SetParent(self)
@@ -244,7 +258,6 @@ local powerbar = function(self)
     local ppbg = pp:CreateTexture(nil, "BORDER")
     ppbg:SetAllPoints(pp)
     ppbg:SetTexture(oUF_Freebgrid.textures[oUF_Freebgrid.db.texture])
-    ppbg.multiplier = .2
     pp.bg = ppbg
 	pp.PostUpdate = updatePower
 
