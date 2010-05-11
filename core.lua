@@ -492,8 +492,6 @@ end
 local Spawn = function()
 	oUF:RegisterStyle("Freebgrid", style)
 	oUF:SetActiveStyle"Freebgrid"
-
-	--oUF_Freebgrid.db.showBlizzParty
 	
 	local visible
 	if oUF_Freebgrid.db.solo and oUF_Freebgrid.db.partyOn then
@@ -510,8 +508,8 @@ local Spawn = function()
 	local setpoint = oUF_Freebgrid.setpoint.raid.position
 	local raid = oUF:SpawnHeader('Raid_Freebgrid', nil, visible,
 		'showPlayer', oUF_Freebgrid.db.player,
-		'showSolo', oUF_Freebgrid.db.solo,
-		'showParty', oUF_Freebgrid.db.partyOn,
+		'showSolo', true,
+		'showParty', oUF_Freebgrid.db.showBlizzParty,
 		'showRaid', true,
 		'xoffset', spacingX, 
 		'yOffset', spacingY,
@@ -530,16 +528,16 @@ local Spawn = function()
 	setpoint = oUF_Freebgrid.setpoint.pet.position
     if oUF_Freebgrid.db.pets then
         local pets = oUF:SpawnHeader('Pet_Freebgrid', 'SecureGroupPetHeaderTemplate', visible,
-			'showSolo', oUF_Freebgrid.db.solo,
-			'showParty', oUF_Freebgrid.db.partyOn,
+			'showSolo', true,
+			'showParty', oUF_Freebgrid.db.showBlizzParty,
 			'showRaid', true,
 			'xoffset', spacingX,
-            'yOffset', spacingY,
-            'point', oUF_Freebgrid.db.point,
-            'maxColumns', oUF_Freebgrid.db.numCol,
-            'unitsPerColumn', oUF_Freebgrid.db.numUnits,
-            'columnSpacing', oUF_Freebgrid.db.spacing,
-            'columnAnchorPoint', growth
+			'yOffset', spacingY,
+			'point', oUF_Freebgrid.db.point,
+			'maxColumns', oUF_Freebgrid.db.numCol,
+			'unitsPerColumn', oUF_Freebgrid.db.numUnits,
+			'columnSpacing', oUF_Freebgrid.db.spacing,
+			'columnAnchorPoint', growth
 		)
         pets:SetPoint(setpoint[1], setpoint[2], setpoint[3], setpoint[4], setpoint[5])
         pets:SetScale(oUF_Freebgrid.db.scale)
