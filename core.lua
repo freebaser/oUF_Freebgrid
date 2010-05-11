@@ -182,6 +182,33 @@ local updateHealth = function(health, unit)
     end
 end
 
+local updatePower = function(power, unit)
+	local _, ptype = UnitPowerType(unit)
+	local self = power:GetParent()
+
+	if ptype == 'MANA' then
+		if(oUF_Freebgrid.db.orientation == "VERTICAL")then
+			power:SetPoint"TOP"
+			power:SetWidth(oUF_Freebgrid.db.width*oUF_Freebgrid.db.powerbarsize)
+			self.Health:SetWidth((0.98 - oUF_Freebgrid.db.powerbarsize)*oUF_Freebgrid.db.width)
+		else
+			power:SetPoint"LEFT"
+			power:SetHeight(oUF_Freebgrid.db.height*oUF_Freebgrid.db.powerbarsize)
+			self.Health:SetHeight((0.98 - oUF_Freebgrid.db.powerbarsize)*oUF_Freebgrid.db.height)
+		end
+	else
+		if(oUF_Freebgrid.db.orientation == "VERTICAL")then
+			power:SetPoint"TOP"
+			power:SetWidth(0.0000001) -- in this case absolute zero is something, rather than nothing
+			self.Health:SetWidth(oUF_Freebgrid.db.width)
+		else
+			power:SetPoint"LEFT"
+			power:SetHeight(0.0000001) -- ^ ditto
+			self.Health:SetHeight(oUF_Freebgrid.db.height)
+		end
+	end
+end
+
 local updateThreat = function(self, event, unit)
 	if(unit ~= self.unit) then return end
 	local threat = self.Threat
@@ -213,21 +240,13 @@ local powerbar = function(self)
     pp:SetParent(self)
     pp:SetPoint"BOTTOM"
     pp:SetPoint"RIGHT"
-    if(oUF_Freebgrid.db.orientation == "VERTICAL")then
-        pp:SetWidth(oUF_Freebgrid.db.width*oUF_Freebgrid.db.powerbarsize)
-        pp:SetPoint"TOP"
-        self.Health:SetWidth((0.98 - oUF_Freebgrid.db.powerbarsize)*oUF_Freebgrid.db.width)
-    else
-        pp:SetHeight(oUF_Freebgrid.db.height*oUF_Freebgrid.db.powerbarsize)
-        pp:SetPoint"LEFT"
-        self.Health:SetHeight((0.98 - oUF_Freebgrid.db.powerbarsize)*oUF_Freebgrid.db.height)
-    end
     
     local ppbg = pp:CreateTexture(nil, "BORDER")
     ppbg:SetAllPoints(pp)
     ppbg:SetTexture(oUF_Freebgrid.textures[oUF_Freebgrid.db.texture])
     ppbg.multiplier = .2
     pp.bg = ppbg
+	pp.PostUpdate = updatePower
 
     self.Power = pp
 end
