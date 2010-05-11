@@ -113,6 +113,22 @@ local FocusTarget = function(self)
 	end
 end
 
+local updateThreat = function(self, event, unit)
+	if(unit ~= self.unit) then return end
+	local threat = self.Threat
+
+	unit = unit or self.unit
+	local status = UnitThreatSituation(unit)
+
+	if(status and status > 1) then
+		local r, g, b = GetThreatStatusColor(status)
+		threat:SetBackdropBorderColor(r, g, b, 1)
+	else
+		threat:SetBackdropBorderColor(0, 0, 0, 1)
+	end
+	threat:Show()
+end
+
 local function utf8sub(str, start, numChars) 
 	local currentIndex = start 
 	while numChars > 0 and currentIndex <= #str do 
@@ -222,22 +238,15 @@ local updatePower = function(power, unit)
         power.bg:SetVertexColor(r, g, b)
         power:SetStatusBarColor(0, 0, 0, .8)
     end
-end
-
-local updateThreat = function(self, event, unit)
-	if(unit ~= self.unit) then return end
-	local threat = self.Threat
-
-	unit = unit or self.unit
-	local status = UnitThreatSituation(unit)
-
-	if(status and status > 1) then
-		local r, g, b = GetThreatStatusColor(status)
-		threat:SetBackdropBorderColor(r, g, b, 1)
+	
+	local perc = oUF.Tags['perpp'](unit)
+	-- This kinda conflicts with the threat module, but I don't really care
+	if (perc < 10 and UnitIsConnected(unit) and ptype == 'MANA' and not UnitIsDeadOrGhost(unit)) then
+		self.Threat:SetBackdropBorderColor(0, 0, 1, 1)
 	else
-		threat:SetBackdropBorderColor(0, 0, 0, 1)
+		-- pass the coloring back to the threat func
+		return updateThreat(self, nil, unit)
 	end
-	threat:Show()
 end
 
 local fixStatusbar = function(bar)
