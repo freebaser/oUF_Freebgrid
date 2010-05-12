@@ -59,6 +59,8 @@ FreebgridDefaults = {
 	
 	disableomf = false,
 	
+	lfdicon = true,
+	
 }
 
 oUF_Freebgrid.orientation = {
@@ -389,15 +391,19 @@ f:SetScript("OnShow", function(f)
 	player:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.player = not oUF_Freebgrid.db.player; end)
 	player:SetChecked(oUF_Freebgrid.db.player)
 	
-	local framebg = tekcheck.new(f, nil, "Show the frame background.", "TOPLEFT", player, "BOTTOMLEFT", 0, -GAP)
-	framebg:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.framebg = not oUF_Freebgrid.db.framebg; end)
-	framebg:SetChecked(oUF_Freebgrid.db.framebg)
+--	local framebg = tekcheck.new(f, nil, "Show the frame background.", "TOPLEFT", player, "BOTTOMLEFT", 0, -GAP)
+--	framebg:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.framebg = not oUF_Freebgrid.db.framebg; end)
+--	framebg:SetChecked(oUF_Freebgrid.db.framebg)
 	
-	local blizzparty = tekcheck.new(f, nil, "Show the Blizzard party frames.", "TOPLEFT", framebg, "BOTTOMLEFT", 0, -GAP)
-	blizzparty:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.showBlizzParty = not oUF_Freebgrid.db.showBlizzParty; end)
-	blizzparty:SetChecked(oUF_Freebgrid.db.showBlizzParty)
+--	local blizzparty = tekcheck.new(f, nil, "Show the Blizzard party frames.", "TOPLEFT", player, "BOTTOMLEFT", 0, -GAP)
+--	blizzparty:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.showBlizzParty = not oUF_Freebgrid.db.showBlizzParty; end)
+--	blizzparty:SetChecked(oUF_Freebgrid.db.showBlizzParty)
+
+	local lfdicon = tekcheck.new(f, nil, "Show the LFD role icon.", "TOPLEFT", player, "BOTTOMLEFT", 0, -GAP)
+	lfdicon:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.lfdicon = not oUF_Freebgrid.db.lfdicon; end)
+	lfdicon:SetChecked(oUF_Freebgrid.db.lfdicon)
     
-	local reversecolors = tekcheck.new(f, nil, "Reverse the health and bg colors.", "TOPLEFT", blizzparty, "BOTTOMLEFT", 0, -GAP)
+	local reversecolors = tekcheck.new(f, nil, "Reverse the health and bg colors.", "TOPLEFT", lfdicon, "BOTTOMLEFT", 0, -GAP)
 	reversecolors:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.reversecolors = not oUF_Freebgrid.db.reversecolors; end)
 	reversecolors:SetChecked(oUF_Freebgrid.db.reversecolors)
     

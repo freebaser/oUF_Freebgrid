@@ -51,6 +51,7 @@ local updateRIcon = function(self, event)
 end
 
 -- Raid Background
+--[[
 local bg = CreateFrame("Frame", nil, UIParent)
 bg:SetBackdrop({
 	bgFile = "Interface\\ChatFrame\\ChatFrameBackground", tile = true, tileSize = 16,
@@ -76,7 +77,7 @@ local function Framebg(self)
 	else
 		bg:Hide()
 	end
-end
+end ]]--
 
 local backdrop = {
 	bgFile = [=[Interface\ChatFrame\ChatFrameBackground]=],
@@ -431,9 +432,12 @@ local style = function(self)
 	self.Assistant:SetHeight(oUF_Freebgrid.db.iconsize)
 	self.Assistant:SetWidth(oUF_Freebgrid.db.iconsize)
 	
-	self.LFDRole = hp:CreateTexture(nil, 'OVERLAY')
-	self.LFDRole:SetSize(oUF_Freebgrid.db.iconsize, oUF_Freebgrid.db.iconsize)
-	self.LFDRole:SetPoint('RIGHT', self, 'LEFT')
+	-- LFD Icon
+	if oUF_Freebgrid.db.lfdicon then
+		self.LFDRole = hp:CreateTexture(nil, 'OVERLAY')
+		self.LFDRole:SetSize(oUF_Freebgrid.db.iconsize, oUF_Freebgrid.db.iconsize)
+		self.LFDRole:SetPoint('RIGHT', self, 'LEFT', oUF_Freebgrid.db.iconsize/2, oUF_Freebgrid.db.iconsize/2)
+	end
     
     -- ResComm
 	if oUF_Freebgrid.db.rescomm then
@@ -451,9 +455,10 @@ local style = function(self)
 		self.Indicators = true
         
 		-- Range
-		self.Range = true
-		self.inRangeAlpha = oUF_Freebgrid.db.inRange
-		self.outsideRangeAlpha = oUF_Freebgrid.db.outsideRange
+		self.Range = {
+			insideAlpha = oUF_Freebgrid.db.inRange,
+			outsideAlpha = oUF_Freebgrid.db.outsideRange,
+		}
         
 		-- Healcomm
 		addHealcomm(self)
@@ -479,8 +484,8 @@ local style = function(self)
 	self:RegisterEvent('RAID_ROSTER_UPDATE', FocusTarget)
 	self:RegisterEvent('PLAYER_TARGET_CHANGED', ChangedTarget)
 	self:RegisterEvent('RAID_ROSTER_UPDATE', ChangedTarget)
-	self:RegisterEvent('RAID_ROSTER_UPDATE', Framebg)
-	self:RegisterEvent('PARTY_MEMBERS_CHANGED', Framebg)
+	--self:RegisterEvent('RAID_ROSTER_UPDATE', Framebg)
+	--self:RegisterEvent('PARTY_MEMBERS_CHANGED', Framebg)
 		
 	-- Unit sizes
 	self:SetAttribute('initial-height', oUF_Freebgrid.db.height)
