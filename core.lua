@@ -301,6 +301,74 @@ local addHealcomm = function(self)
 	self.HealCommOthersOnly = oUF_Freebgrid.db.healothersonly
 end
 
+local PostCreateIcon = function(debuffs, button)
+	local count = button.count
+	count:ClearAllPoints()
+	count:SetPoint("LEFT", debuffs, "BOTTOM", 3, 2)
+	
+	button.icon:SetTexCoord(.07, .93, .07, .93)
+	
+	debuffs.showDebuffType = true
+	
+	button.overlay:SetTexture("Interface\\AddOns\\oUF_Freebgrid\\media\\border")
+	button.overlay:SetPoint("TOPLEFT", button, "TOPLEFT", -3, 3)
+	button.overlay:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 3, -3)
+	button.overlay:SetTexCoord(0, 1, 0.02, 1)
+	
+	button:EnableMouse(false)
+end
+
+local _, class = UnitClass("player")
+local dispellClass = {
+	PRIEST = { Magic = true, Disease = true, },
+	SHAMAN = { Poison = true, Disease = true, Curse = true, },
+	PALADIN = { Magic = true, Poison = true, Disease = true, },
+	MAGE = { Curse = true, },
+	DRUID = { Curse = true, Poison = true, },
+}
+local dispellist = dispellClass[class] or {}
+local dispellPriority = {
+	Magic = 4,
+	Poison = 3,
+	Curse = 2,
+	Disease = 1,
+}
+
+local debuffs = FreebgridDebuffs.debuffs
+local CustomFilter = function(icons, ...)
+	local _, icon, name, _, _, _, dtype = ...
+	
+	if debuffs[name] and debuffs[name] > 0 then
+		icon.priority = debuffs[name]
+	elseif dispellist[dtype] then
+		icon.priority = dispellPriority[dtype]
+	else
+		icon.priority = 0
+	end
+	
+	return true
+end
+
+local sort = function(a,b)
+	return a.priority > b.priority
+end
+
+local PreSetPosition = function(icons, max)
+	table.sort(icons, sort)
+	
+	if icons.visibleDebuffs and icons.visibleDebuffs > 1 then
+		for i = 2, icons.visibleDebuffs do
+			icons[i]:Hide()
+		end
+	end
+end
+
+local PostUpdateIcon = function(icons, unit, icon, index, offset)
+	if icon.priority == 0 then
+		icon:Hide()
+	end
+end
+
 -- Show Mouseover highlight
 local OnEnter = function(self)
 	UnitFrame_OnEnter(self)
@@ -471,12 +539,18 @@ local style = function(self)
 		self.ReadyCheck.delayTime = 8
 		self.ReadyCheck.fadeTime = 1
 		
-		-- Debuff
-		local debuff = CreateFrame("StatusBar", nil, self)
-		debuff:SetPoint("CENTER", hp)
-		debuff:SetHeight(oUF_Freebgrid.db.debuffsize)
-		debuff:SetWidth(oUF_Freebgrid.db.debuffsize)
-		self.freebDebuffs = debuff
+		-- Debuffs
+		local debuffs = CreateFrame("Frame", nil, self)
+		debuffs:SetSize(oUF_Freebgrid.db.debuffsize, oUF_Freebgrid.db.debuffsize)
+		debuffs:SetPoint("CENTER", hp)
+		debuffs.size = oUF_Freebgrid.db.debuffsize
+		debuffs.num = 20
+		
+		debuffs.PostCreateIcon = PostCreateIcon
+		debuffs.PreSetPosition = PreSetPosition
+		debuffs.CustomFilter = CustomFilter
+		debuffs.PostUpdateIcon = PostUpdateIcon
+		self.Debuffs = debuffs
 	end
 	
 	-- Add events
@@ -539,9 +613,10 @@ local function SAP()
 	return spacingX, spacingY, growth
 end
 
-local Spawn = function()
-	oUF:RegisterStyle("Freebgrid", style)
-	oUF:SetActiveStyle"Freebgrid"
+oUF:RegisterStyle("Freebgrid", style)
+	
+oUF:Factory(function(self)
+	self:SetActiveStyle"Freebgrid"
 	
 	local visible
 	if oUF_Freebgrid.db.solo and oUF_Freebgrid.db.partyOn then
@@ -556,7 +631,7 @@ local Spawn = function()
 	
 	local spacingX, spacingY, growth = SAP()
 	local setpoint = oUF_Freebgrid.setpoint.raid.position
-	local raid = oUF:SpawnHeader('Raid_Freebgrid', nil, visible,
+	local raid = self:SpawnHeader('Raid_Freebgrid', nil, visible,
 		'showPlayer', oUF_Freebgrid.db.player,
 		'showSolo', true,
 		'showParty', oUF_Freebgrid.db.partyOn,
@@ -574,10 +649,10 @@ local Spawn = function()
 	)
 	raid:SetPoint(setpoint[1], setpoint[2], setpoint[3], setpoint[4], setpoint[5])
 	raid:SetScale(oUF_Freebgrid.db.scale)
-    
+	
 	setpoint = oUF_Freebgrid.setpoint.pet.position
-    if oUF_Freebgrid.db.pets then
-        local pets = oUF:SpawnHeader('Pet_Freebgrid', 'SecureGroupPetHeaderTemplate', visible,
+	if oUF_Freebgrid.db.pets then
+		local pets = self:SpawnHeader('Pet_Freebgrid', 'SecureGroupPetHeaderTemplate', visible,
 			'showSolo', true,
 			'showParty', oUF_Freebgrid.db.partyOn,
 			'showRaid', true,
@@ -589,22 +664,22 @@ local Spawn = function()
 			'columnSpacing', oUF_Freebgrid.db.spacing,
 			'columnAnchorPoint', growth
 		)
-        pets:SetPoint(setpoint[1], setpoint[2], setpoint[3], setpoint[4], setpoint[5])
-        pets:SetScale(oUF_Freebgrid.db.scale)
-    end
-    
+		pets:SetPoint(setpoint[1], setpoint[2], setpoint[3], setpoint[4], setpoint[5])
+		pets:SetScale(oUF_Freebgrid.db.scale)
+	end
+	
 	setpoint = oUF_Freebgrid.setpoint.mt.position
-    if oUF_Freebgrid.db.MT then
-        local tank = oUF:SpawnHeader('MT_Freebgrid', nil, visible,
+	if oUF_Freebgrid.db.MT then
+		local tank = self:SpawnHeader('MT_Freebgrid', nil, visible,
 			"showRaid", true,
 			"yOffset", -oUF_Freebgrid.db.spacing
 		)
-        tank:SetPoint(setpoint[1], setpoint[2], setpoint[3], setpoint[4], setpoint[5])
-        if oUF_Freebgrid.db.MTT then
-            tank:SetAttribute("template", "oUF_FreebMtargets")
-        end
+		tank:SetPoint(setpoint[1], setpoint[2], setpoint[3], setpoint[4], setpoint[5])
+		if oUF_Freebgrid.db.MTT then
+			tank:SetAttribute("template", "oUF_FreebMtargets")
+		end
 	
-        if oRA3 then
+		if oRA3 then
 			tank:SetAttribute("initial-unitWatch", true)
 			tank:SetAttribute("nameList", table.concat(oRA3:GetSortedTanks(), ","))
 
@@ -613,13 +688,13 @@ local Spawn = function()
 				tank:SetAttribute("nameList", table.concat(tanks, ","))
 			end
 			oRA3.RegisterCallback(tankhandler, "OnTanksUpdated")
-        
-        else
-            tank:SetAttribute('groupFilter', 'MAINTANK')
-        end
-        tank:SetScale(oUF_Freebgrid.db.scale)
-    end
-end
+		
+		else
+			tank:SetAttribute('groupFilter', 'MAINTANK')
+		end
+		tank:SetScale(oUF_Freebgrid.db.scale)
+	end
+end)
 
 oUF_Freebgrid = {}
 local oUF_Freebgrid, f = oUF_Freebgrid, CreateFrame("Frame")
@@ -635,8 +710,6 @@ f:SetScript("OnEvent", function(self, event, addon)
 			FreebgridDB[k] = v
 		end
 	end
-	
-	Spawn()
 	
 	LibStub("tekKonfig-AboutPanel").new("oUF_Freebgrid", "oUF_Freebgrid")
 	

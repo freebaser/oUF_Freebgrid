@@ -39,7 +39,7 @@ local Enable = function(self)
 		self.AuraStatusCen:SetJustifyH("CENTER")
 		self.AuraStatusCen:SetFont(oUF_Freebgrid.fonts[oUF_Freebgrid.db.font], oUF_Freebgrid.db.fontsize-2)
 		self.AuraStatusCen:SetShadowOffset(1.25, -1.25)
-		self.AuraStatusCen.frequentUpdates = 1 -- Can be cpu intensive in large groups
+		--self.AuraStatusCen.frequentUpdates = 1 -- Can be cpu intensive in large groups
 		self:Tag(self.AuraStatusCen, oUF.classIndicators[class]["Cen"])
 
 		return true

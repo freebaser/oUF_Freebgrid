@@ -537,7 +537,6 @@ function oUF:SetActiveStyle(name)
 	style = name
 end
 
-
 do
 	local function iter(_, n)
 		-- don't expose the style functions.
@@ -556,7 +555,7 @@ do
 		raid25 = '[@raid11,exists] show;',
 		raid10 = '[@raid6,exists] show;',
 		raid = '[group:raid] show;',
-		party = '[group:party] show;',
+		party = '[group:party,nogroup:raid] show;',
 		solo = '[@player,exists,nogroup:party] show;',
 	}
 
@@ -694,26 +693,22 @@ do
 		if(not self.active) then return end
 
 		for _, func in next, _QUEUE do
-			func()
+			func(oUF)
 		end
 	end
 
 	function oUF:Factory(func)
 		argcheck(func, 2, 'function')
 
-		if(IsLoggedIn()) then
-			func()
-		else
-			table.insert(_QUEUE, func)
-		end
+		table.insert(_QUEUE, func)
 	end
 
 	function oUF:EnableFactory()
-		self.active = true
+		_FACTORY.active = true
 	end
 
 	function oUF:DisableFactory()
-		self.active = nil
+		_FACTORY.active = nil
 	end
 end
 
