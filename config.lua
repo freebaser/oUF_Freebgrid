@@ -61,6 +61,8 @@ FreebgridDefaults = {
 	
 	lfdicon = true,
 	
+	frequent = false,
+	
 }
 
 oUF_Freebgrid.orientation = {
@@ -402,8 +404,12 @@ f:SetScript("OnShow", function(f)
 	local lfdicon = tekcheck.new(f, nil, "Show the LFD role icon.", "TOPLEFT", player, "BOTTOMLEFT", 0, -GAP)
 	lfdicon:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.lfdicon = not oUF_Freebgrid.db.lfdicon; end)
 	lfdicon:SetChecked(oUF_Freebgrid.db.lfdicon)
+	
+	local frequent = tekcheck.new(f, nil, "Enable frequent updates.", "TOPLEFT", lfdicon, "BOTTOMLEFT", 0, -GAP)
+	frequent:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.frequent = not oUF_Freebgrid.db.frequent; end)
+	frequent:SetChecked(oUF_Freebgrid.db.frequent)
     
-	local reversecolors = tekcheck.new(f, nil, "Reverse the health and bg colors.", "TOPLEFT", lfdicon, "BOTTOMLEFT", 0, -GAP)
+	local reversecolors = tekcheck.new(f, nil, "Reverse the health and bg colors.", "TOPLEFT", frequent, "BOTTOMLEFT", 0, -GAP)
 	reversecolors:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.reversecolors = not oUF_Freebgrid.db.reversecolors; end)
 	reversecolors:SetChecked(oUF_Freebgrid.db.reversecolors)
     
