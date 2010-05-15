@@ -405,13 +405,29 @@ f:SetScript("OnShow", function(f)
 	lfdicon:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.lfdicon = not oUF_Freebgrid.db.lfdicon; end)
 	lfdicon:SetChecked(oUF_Freebgrid.db.lfdicon)
 	
-	local frequent = tekcheck.new(f, nil, "Enable frequent updates.", "TOPLEFT", lfdicon, "BOTTOMLEFT", 0, -GAP)
+	local frequent = tekcheck.new(f, nil, "Enable frequent tag updates.", "TOPLEFT", lfdicon, "BOTTOMLEFT", 0, -GAP)
 	frequent:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.frequent = not oUF_Freebgrid.db.frequent; end)
 	frequent:SetChecked(oUF_Freebgrid.db.frequent)
     
 	local reversecolors = tekcheck.new(f, nil, "Reverse the health and bg colors.", "TOPLEFT", frequent, "BOTTOMLEFT", 0, -GAP)
 	reversecolors:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.reversecolors = not oUF_Freebgrid.db.reversecolors; end)
 	reversecolors:SetChecked(oUF_Freebgrid.db.reversecolors)
+	
+	local pets = tekcheck.new(f, nil, "Enable Party/Raid pets.", "TOPLEFT", reversecolors, "BOTTOMLEFT", 0, -GAP)
+	pets:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.pets = not oUF_Freebgrid.db.pets; end)
+	pets:SetChecked(oUF_Freebgrid.db.pets)
+    
+	local MT = tekcheck.new(f, nil, "Enable MainTanks.", "TOPLEFT", pets, "BOTTOMLEFT", 0, -GAP)
+	MT:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.MT = not oUF_Freebgrid.db.MT; end)
+	MT:SetChecked(oUF_Freebgrid.db.MT)
+    
+	local MTT = tekcheck.new(f, nil, "Enable MT taragets.", "TOPLEFT", MT, "BOTTOMLEFT", 0, -GAP)
+	MTT:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.MTT = not oUF_Freebgrid.db.MTT; end)
+	MTT:SetChecked(oUF_Freebgrid.db.MTT)
+	
+	local showname = tekcheck.new(f, nil, "Always show names.", "TOPLEFT", MTT, "BOTTOMLEFT", 0, -GAP)
+	showname:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.showname = not oUF_Freebgrid.db.showname; end)
+	showname:SetChecked(oUF_Freebgrid.db.showname)
     
 	local healgroup = LibStub("tekKonfig-Group").new(f, "HealComm Settings")
 	healgroup:SetHeight(190)
@@ -473,22 +489,6 @@ f:SetScript("OnShow", function(f)
 		oUF_Freebgrid.db.powerbarsize = self:GetValue()
 		powerbarsizeslidertext:SetText(string.format("Powerbar size: %.2f", oUF_Freebgrid.db.powerbarsize or FreebgridDefaults.powerbarsize))
 	end)
-    
-	local pets = tekcheck.new(f, nil, "Enable Party/Raid pets.", "TOPLEFT", reversecolors, "BOTTOMLEFT", 0, -GAP)
-	pets:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.pets = not oUF_Freebgrid.db.pets; end)
-	pets:SetChecked(oUF_Freebgrid.db.pets)
-    
-	local MT = tekcheck.new(f, nil, "Enable MainTanks.", "TOPLEFT", pets, "BOTTOMLEFT", 0, -GAP)
-	MT:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.MT = not oUF_Freebgrid.db.MT; end)
-	MT:SetChecked(oUF_Freebgrid.db.MT)
-    
-	local MTT = tekcheck.new(f, nil, "Enable MT taragets.", "TOPLEFT", MT, "BOTTOMLEFT", 0, -GAP)
-	MTT:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.MTT = not oUF_Freebgrid.db.MTT; end)
-	MTT:SetChecked(oUF_Freebgrid.db.MTT)
-	
-	local showname = tekcheck.new(f, nil, "Always show names.", "TOPLEFT", MTT, "BOTTOMLEFT", 0, -GAP)
-	showname:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.showname = not oUF_Freebgrid.db.showname; end)
-	showname:SetChecked(oUF_Freebgrid.db.showname)
     
 	local symbolsizeslider, symbolsizeslidertext, symbolsizecontainer = tekslider.new(f, string.format("Symbol size: %d", oUF_Freebgrid.db.symbolsize or FreebgridDefaults.symbolsize), 8, 20, "BOTTOMLEFT", f, "BOTTOMLEFT", 15, GAP)
 	symbolsizeslider.tiptext = "Size of the bottom right indicator."
