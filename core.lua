@@ -252,6 +252,7 @@ end
 
 local fixStatusbar = function(bar)
 	bar:GetStatusBarTexture():SetHorizTile(false)
+	bar:GetStatusBarTexture():SetVertTile(false)
 end
 
 local powerbar = function(self)
@@ -509,9 +510,9 @@ local style = function(self)
     
     -- ResComm
 	if oUF_Freebgrid.db.rescomm then
-		local rescomm = CreateFrame("StatusBar", nil, hp)
-		rescomm:SetStatusBarTexture([=[Interface\Icons\Spell_Holy_Resurrection]=])
-		fixStatusbar(rescomm)
+		local rescomm = hp:CreateTexture(nil, "OVERLAY")
+		rescomm:SetTexture([=[Interface\Icons\Spell_Holy_Resurrection]=])
+		rescomm:SetTexCoord(0.07, 0.93, 0.07, 0.93)
 		rescomm:SetAllPoints(hp)
 		rescomm:SetAlpha(oUF_Freebgrid.db.rescommalpha)
 		self.ResComm = rescomm

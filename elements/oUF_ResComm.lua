@@ -44,7 +44,7 @@ local Update = function(self, event, destUnit, endTime)
 		
 		local beingRessed, resserName = libResComm:IsUnitBeingRessed(unitName)
 		if beingRessed and not (resComm.OthersOnly and resserName == playerName) then
-			if resComm:IsObjectType("Statusbar") then
+			if resComm:IsObjectType("Statusbar") and endTime and (not resComm:GetScript("OnUpdate")) then
 				if endTime then
 					local maxValue = endTime - GetTime()
 					

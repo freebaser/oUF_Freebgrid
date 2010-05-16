@@ -450,7 +450,7 @@ f:SetScript("OnShow", function(f)
 	healothersonly:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.healothersonly = not oUF_Freebgrid.db.healothersonly; end)
 	healothersonly:SetChecked(oUF_Freebgrid.db.healothersonly)
     
-	local healalphaslider, healalphaslidertext, healalphacontainer = tekslider.new(f, string.format("Heal bar alpha: %.2f", oUF_Freebgrid.db.healalpha or FreebgridDefaults.healalpha), 0, 1, "TOPLEFT", healonlymy, "BOTTOMLEFT", 0, -GAP)
+	local healalphaslider, healalphaslidertext, healalphacontainer = tekslider.new(f, string.format("Heal bar alpha: %.2f", oUF_Freebgrid.db.healalpha or FreebgridDefaults.healalpha), 0, 1, "TOPLEFT", healothersonly, "BOTTOMLEFT", 0, -GAP)
 	healalphaslider.tiptext = "Set the alpha of the heal bar."
 	healalphaslider:SetValue(oUF_Freebgrid.db.healalpha or FreebgridDefaults.healalpha)
 	healalphaslider:SetValueStep(.05)
