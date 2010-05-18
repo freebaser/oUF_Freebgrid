@@ -1,12 +1,7 @@
 
 FreebgridDebuffs = {
 	debuffs = {
-		-- [Name or GetSpellInfo(#)] = PRIORITY
-		--["Weakened Soul"] = 2,
-		["Mark of the Fallen Champion"] = 12,
-		["Boiling Blood"] = 11,
-		["Ice Tomb"] = 12,
-
+		-- Any Zone
 		[GetSpellInfo(3034)] = 12, -- Viper Sting
 
 		[GetSpellInfo(57978)] = 9, -- Wound Poison
@@ -30,6 +25,14 @@ FreebgridDebuffs = {
 		[GetSpellInfo(6215)] = 3, -- Fear
 		[GetSpellInfo(10890)] = 3, -- Psychic Scream
 		[GetSpellInfo(17928)] = 3, -- Howl of Terror
-
+	},
+	instances = {
+		--[[
+		["Zone"] = {
+			[Name or GetSpellInfo(#)] = PRIORITY,
+		}
+		]]--
+		
+		},
 	},
 }

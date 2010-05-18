@@ -308,6 +308,7 @@ local PostCreateIcon = function(debuffs, button)
 	count:SetPoint("LEFT", debuffs, "BOTTOM", 3, 2)
 	
 	button.icon:SetTexCoord(.07, .93, .07, .93)
+	button.cd:SetReverse()
 	
 	debuffs.showDebuffType = true
 	
@@ -335,11 +336,24 @@ local dispellPriority = {
 	Disease = 1,
 }
 
-local debuffs = FreebgridDebuffs.debuffs
+local instDebuffs = setmetatable({},{__index = function() return 0 end})
+local instances = setmetatable(FreebgridDebuffs.instances,{__index = function() return nil end}) 
+local getzone = function()
+	local zone = GetInstanceInfo()
+	if instances[zone] then
+		instDebuffs = setmetatable(instances[zone],{__index = function() return 0 end})
+	else
+		instDebuffs = setmetatable({},{__index = function() return 0 end})
+	end
+end
+
+local debuffs = setmetatable(FreebgridDebuffs.debuffs,{__index = function() return 0 end})
 local CustomFilter = function(icons, ...)
 	local _, icon, name, _, _, _, dtype = ...
 	
-	if debuffs[name] and debuffs[name] > 0 then
+	if instDebuffs[name] > 0 then
+		icon.priority = instDebuffs[name]
+	elseif debuffs[name] > 0 then
 		icon.priority = debuffs[name]
 	elseif dispellist[dtype] then
 		icon.priority = dispellPriority[dtype]
@@ -545,7 +559,7 @@ local style = function(self)
 		debuffs:SetSize(oUF_Freebgrid.db.debuffsize, oUF_Freebgrid.db.debuffsize)
 		debuffs:SetPoint("CENTER", hp)
 		debuffs.size = oUF_Freebgrid.db.debuffsize
-		debuffs.num = 20
+		debuffs.num = 10
 		
 		debuffs.PostCreateIcon = PostCreateIcon
 		debuffs.PreSetPosition = PreSetPosition
@@ -559,6 +573,7 @@ local style = function(self)
 	self:RegisterEvent('RAID_ROSTER_UPDATE', FocusTarget)
 	self:RegisterEvent('PLAYER_TARGET_CHANGED', ChangedTarget)
 	self:RegisterEvent('RAID_ROSTER_UPDATE', ChangedTarget)
+	self:RegisterEvent('PLAYER_ENTERING_WORLD', getzone)
 	--self:RegisterEvent('RAID_ROSTER_UPDATE', Framebg)
 	--self:RegisterEvent('PARTY_MEMBERS_CHANGED', Framebg)
 		
