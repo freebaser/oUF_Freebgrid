@@ -50,35 +50,6 @@ local updateRIcon = function(self, event)
 	end
 end
 
--- Raid Background
---[[
-local bg = CreateFrame("Frame", nil, UIParent)
-bg:SetBackdrop({
-	bgFile = "Interface\\ChatFrame\\ChatFrameBackground", tile = true, tileSize = 16,
-	edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", edgeSize = 10,
-	insets = {left = 2, right = 2, top = 2, bottom = 2}
-})
-bg:SetBackdropColor(0, 0, 0, 0.7)
-bg:SetBackdropBorderColor(0.4, 0.4, 0.4, 1)
-bg:SetFrameStrata("BACKGROUND")
-bg:EnableMouse(true)
-	
-local function Framebg(self)
-	if not oUF_Freebgrid.db.framebg then return end
-
-	bg:ClearAllPoints()
-	bg:SetPoint("TOP", "Raid_Freebgrid", "TOP", 0, 8)
-	bg:SetPoint("LEFT", "Raid_Freebgrid", "LEFT", -8 , 0)
-	bg:SetPoint("RIGHT", "Raid_Freebgrid", "RIGHT", 8, 0)
-	bg:SetPoint("BOTTOM", "Raid_Freebgrid", "BOTTOM", 0, -8)
-
-	if GetNumPartyMembers() > 0 or GetNumRaidMembers() > 0 then
-		bg:Show()
-	else
-		bg:Hide()
-	end
-end ]]--
-
 local backdrop = {
 	bgFile = [=[Interface\ChatFrame\ChatFrameBackground]=],
 	insets = {top = 0, left = 0, bottom = 0, right = 0},
@@ -574,8 +545,6 @@ local style = function(self)
 	self:RegisterEvent('PLAYER_TARGET_CHANGED', ChangedTarget)
 	self:RegisterEvent('RAID_ROSTER_UPDATE', ChangedTarget)
 	self:RegisterEvent('PLAYER_ENTERING_WORLD', getzone)
-	--self:RegisterEvent('RAID_ROSTER_UPDATE', Framebg)
-	--self:RegisterEvent('PARTY_MEMBERS_CHANGED', Framebg)
 		
 	-- Unit sizes
 	self:SetAttribute('initial-height', oUF_Freebgrid.db.height)
@@ -585,48 +554,93 @@ end
 local function SAP()
 	if not oUF_Freebgrid then return end
 	
-	local spacingX, spacingY, growth
+	local pos, posRel, spacingX, spacingY, colX, colY, growth, point
 	local db = oUF_Freebgrid.db
 	-- SetPoint of MOTHERFUCKING DOOM!
 	if db.point == "TOP" and db.growth == "LEFT" then
+		pos = "TOPRIGHT"
+		posRel = "TOPLEFT"
 		growth = "RIGHT"
 		spacingX = 0
 		spacingY = -(db.spacing)
+		colX = -(db.spacing)
+		colY = 0
+		point = "TOPRIGHT"
 	elseif db.point == "TOP" and db.growth == "RIGHT" then
+		pos = "TOPLEFT"
+		posRel = "TOPRIGHT"
 		growth = "LEFT"
 		spacingX = 0
 		spacingY = -(db.spacing)
+		colX = db.spacing
+		colY = 0
+		point = "TOPLEFT"
 	elseif db.point == "LEFT" and db.growth == "UP" then
+		pos = "BOTTOMLEFT"
+		posRel = "TOPLEFT"
 		growth = "BOTTOM"
 		spacingX = db.spacing
 		spacingY = 0
+		colX = 0
+		colY = db.spacing
+		point = "BOTTOMLEFT"
 	elseif db.point == "LEFT" and db.growth == "DOWN" then
+		pos = "TOPLEFT"
+		posRel = "BOTTOMLEFT"
 		growth = "TOP"
 		spacingX = db.spacing
 		spacingY = 0
+		colX = 0
+		colY = -(db.spacing)
+		point = "TOPLEFT"
 	elseif db.point == "RIGHT" and db.growth == "UP" then
+		pos = "BOTTOMRIGHT"
+		posRel = "TOPRIGHT"
 		growth = "BOTTOM"
 		spacingX = -(db.spacing)
 		spacingY = 0
+		colX = 0
+		colY = db.spacing
+		point = "BOTTOMRIGHT"
 	elseif db.point == "RIGHT" and db.growth == "DOWN" then
+		pos = "TOPRIGHT"
+		posRel = "BOTTOMRIGHT"
 		growth = "TOP"
 		spacingX = -(db.spacing)
 		spacingY = 0
+		colX = 0
+		colY = -(db.spacing)
+		point = "TOPRIGHT"
 	elseif db.point == "BOTTOM" and db.growth == "LEFT" then
+		pos = "BOTTOMRIGHT"
+		posRel = "BOTTOMLEFT"
 		growth = "RIGHT"
 		spacingX = 0
 		spacingY = (db.spacing)
+		colX = -(db.spacing)
+		colY = 0
+		point = "BOTTOMRIGHT"
 	elseif db.point == "BOTTOM" and db.growth == "RIGHT" then
+		pos = "BOTTOMLEFT"
+		posRel = "BOTTOMRIGHT"
 		growth = "LEFT"
 		spacingX = 0
 		spacingY = (db.spacing)
+		colX = (db.spacing)
+		colY = 0
+		point = "BOTTOMLEFT"
 	else -- You failed to equal any of the above. So I give this...
-		growth = "RIGHT"
+		pos = "TOPLEFT"
+		posRel = "TOPRIGHT"
+		growth = "LEFT"
 		spacingX = 0
 		spacingY = -(db.spacing)
+		colX = db.spacing
+		colY = 0
+		point = "TOPLEFT"
 	end
 	
-	return spacingX, spacingY, growth
+	return pos, posRel, spacingX, spacingY, colX, colY, growth, point
 end
 
 oUF:RegisterStyle("Freebgrid", style)
@@ -645,28 +659,34 @@ oUF:Factory(function(self)
 		visible = 'raid'
 	end
 	
-	local spacingX, spacingY, growth = SAP()
-	local setpoint = oUF_Freebgrid.setpoint.raid.position
-	local raid = self:SpawnHeader('Raid_Freebgrid', nil, visible,
-		'showPlayer', oUF_Freebgrid.db.player,
-		'showSolo', true,
-		'showParty', oUF_Freebgrid.db.partyOn,
-		'showRaid', true,
-		'xoffset', spacingX, 
-		'yOffset', spacingY,
-		'point', oUF_Freebgrid.db.point,
-		'groupFilter', '1,2,3,4,5,6,7,8',
-		'groupingOrder', '1,2,3,4,5,6,7,8',
-		'groupBy', 'GROUP',
-		'maxColumns', oUF_Freebgrid.db.numCol,
-		'unitsPerColumn', oUF_Freebgrid.db.numUnits,
-		'columnSpacing', oUF_Freebgrid.db.spacing,
-		'columnAnchorPoint', growth
-	)
-	raid:SetPoint(setpoint[1], setpoint[2], setpoint[3], setpoint[4], setpoint[5])
-	raid:SetScale(oUF_Freebgrid.db.scale)
+	local pos, posRel, spacingX, spacingY, colX, colY, growth, point = SAP()
+	local raid = {}
+	for i = 1, oUF_Freebgrid.db.numCol do 
+		local group = self:SpawnHeader('Raid_Freebgrid'..i, nil, visible,
+			'showPlayer', oUF_Freebgrid.db.player,
+			'showSolo', true,
+			'showParty', oUF_Freebgrid.db.partyOn,
+			'showRaid', true,
+			'xoffset', spacingX, 
+			'yOffset', spacingY,
+			'point', oUF_Freebgrid.db.point,
+			'groupFilter', tostring(i),
+			'groupingOrder', '1,2,3,4,5,6,7,8',
+			'groupBy', 'GROUP',
+			'maxColumns', oUF_Freebgrid.db.numCol,
+			'unitsPerColumn', oUF_Freebgrid.db.numUnits,
+			'columnSpacing', oUF_Freebgrid.db.spacing,
+			'columnAnchorPoint', growth
+		)
+		if i == 1 then
+			group:SetPoint(point, "oUF_FreebgridRaidFrame", point)
+		else
+			group:SetPoint(pos, raid[i-1], posRel, colX, colY)
+		end
+		group:SetScale(oUF_Freebgrid.db.scale)
+		raid[i] = group
+	end
 	
-	setpoint = oUF_Freebgrid.setpoint.pet.position
 	if oUF_Freebgrid.db.pets then
 		local pets = self:SpawnHeader('Pet_Freebgrid', 'SecureGroupPetHeaderTemplate', visible,
 			'showSolo', true,
@@ -680,20 +700,16 @@ oUF:Factory(function(self)
 			'columnSpacing', oUF_Freebgrid.db.spacing,
 			'columnAnchorPoint', growth
 		)
-		pets:SetPoint(setpoint[1], setpoint[2], setpoint[3], setpoint[4], setpoint[5])
+		pets:SetPoint(point, "oUF_FreebgridPetFrame", point)
 		pets:SetScale(oUF_Freebgrid.db.scale)
 	end
 	
-	setpoint = oUF_Freebgrid.setpoint.mt.position
 	if oUF_Freebgrid.db.MT then
 		local tank = self:SpawnHeader('MT_Freebgrid', nil, visible,
 			"showRaid", true,
 			"yOffset", -oUF_Freebgrid.db.spacing
 		)
-		tank:SetPoint(setpoint[1], setpoint[2], setpoint[3], setpoint[4], setpoint[5])
-		if oUF_Freebgrid.db.MTT then
-			tank:SetAttribute("template", "oUF_FreebMtargets")
-		end
+		tank:SetPoint(point, "oUF_FreebgridMTFrame", point)
 	
 		if oRA3 then
 			tank:SetAttribute("initial-unitWatch", true)

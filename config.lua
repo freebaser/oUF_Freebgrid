@@ -249,9 +249,9 @@ frame:SetScript("OnShow", function(frame)
 	lockpos:SetScript("OnClick", function() OUF_FREEBGRIDMOVABLE() end)
 	lockpos:SetChecked(not oUF_Freebgrid.db.locked)
 	
-	local disableomf = tekcheck.new(frame, nil, "Disable oMF", "LEFT", lockpos, "RIGHT", 50, 0)
-	disableomf:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.disableomf = not oUF_Freebgrid.db.disableomf; end)
-	disableomf:SetChecked(oUF_Freebgrid.db.disableomf)
+--	local disableomf = tekcheck.new(frame, nil, "Disable oMF", "LEFT", lockpos, "RIGHT", 50, 0)
+--	disableomf:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.disableomf = not oUF_Freebgrid.db.disableomf; end)
+--	disableomf:SetChecked(oUF_Freebgrid.db.disableomf)
 
 	local scaleslider, scaleslidertext, scalecontainer = tekslider.new(frame, string.format("Scale: %.2f", oUF_Freebgrid.db.scale or FreebgridDefaults.scale), 0.5, 2, "TOPLEFT", lockpos, "BOTTOMLEFT", 0, -GAP)
 	scaleslider.tiptext = "Set the units scale."
@@ -421,11 +421,11 @@ f:SetScript("OnShow", function(f)
 	MT:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.MT = not oUF_Freebgrid.db.MT; end)
 	MT:SetChecked(oUF_Freebgrid.db.MT)
     
-	local MTT = tekcheck.new(f, nil, "Enable MT taragets.", "TOPLEFT", MT, "BOTTOMLEFT", 0, -GAP)
-	MTT:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.MTT = not oUF_Freebgrid.db.MTT; end)
-	MTT:SetChecked(oUF_Freebgrid.db.MTT)
+--	local MTT = tekcheck.new(f, nil, "Enable MT taragets.", "TOPLEFT", MT, "BOTTOMLEFT", 0, -GAP)
+--	MTT:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.MTT = not oUF_Freebgrid.db.MTT; end)
+--	MTT:SetChecked(oUF_Freebgrid.db.MTT)
 	
-	local showname = tekcheck.new(f, nil, "Always show names.", "TOPLEFT", MTT, "BOTTOMLEFT", 0, -GAP)
+	local showname = tekcheck.new(f, nil, "Always show names.", "TOPLEFT", MT, "BOTTOMLEFT", 0, -GAP)
 	showname:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.showname = not oUF_Freebgrid.db.showname; end)
 	showname:SetChecked(oUF_Freebgrid.db.showname)
     
