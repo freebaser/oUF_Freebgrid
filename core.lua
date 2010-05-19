@@ -336,24 +336,24 @@ local dispellPriority = {
 	Disease = 1,
 }
 
-local instDebuffs = setmetatable({},{__index = function() return 0 end})
-local instances = setmetatable(FreebgridDebuffs.instances,{__index = function() return nil end}) 
+local instDebuffs = {}
+local instances = FreebgridDebuffs.instances
 local getzone = function()
 	local zone = GetInstanceInfo()
 	if instances[zone] then
-		instDebuffs = setmetatable(instances[zone],{__index = function() return 0 end})
+		instDebuffs = instances[zone]
 	else
-		instDebuffs = setmetatable({},{__index = function() return 0 end})
+		instDebuffs = {}
 	end
 end
 
-local debuffs = setmetatable(FreebgridDebuffs.debuffs,{__index = function() return 0 end})
+local debuffs = FreebgridDebuffs.debuffs
 local CustomFilter = function(icons, ...)
 	local _, icon, name, _, _, _, dtype = ...
 	
-	if instDebuffs[name] > 0 then
+	if instDebuffs[name] then
 		icon.priority = instDebuffs[name]
-	elseif debuffs[name] > 0 then
+	elseif debuffs[name] then
 		icon.priority = debuffs[name]
 	elseif dispellist[dtype] then
 		icon.priority = dispellPriority[dtype]

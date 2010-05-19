@@ -30,9 +30,8 @@ FreebgridDebuffs = {
 		--[[
 		["Zone"] = {
 			[Name or GetSpellInfo(#)] = PRIORITY,
-		}
+		},
 		]]--
 		
-		},
 	},
 }
