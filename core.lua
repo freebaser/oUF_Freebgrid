@@ -273,24 +273,6 @@ local addHealcomm = function(self)
 	self.HealCommOthersOnly = oUF_Freebgrid.db.healothersonly
 end
 
-local PostCreateIcon = function(debuffs, button)
-	local count = button.count
-	count:ClearAllPoints()
-	count:SetPoint("LEFT", debuffs, "BOTTOM", 3, 2)
-	
-	button.icon:SetTexCoord(.07, .93, .07, .93)
-	button.cd:SetReverse()
-	
-	debuffs.showDebuffType = true
-	
-	button.overlay:SetTexture("Interface\\AddOns\\oUF_Freebgrid\\media\\border")
-	button.overlay:SetPoint("TOPLEFT", button, "TOPLEFT", -3, 3)
-	button.overlay:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 3, -3)
-	button.overlay:SetTexCoord(0, 1, 0.02, 1)
-	
-	button:EnableMouse(false)
-end
-
 local _, class = UnitClass("player")
 local dispellClass = {
 	PRIEST = { Magic = true, Disease = true, },
@@ -321,7 +303,7 @@ end
 local debuffs = FreebgridDebuffs.debuffs
 local CustomFilter = function(icons, ...)
 	local _, icon, name, _, _, _, dtype = ...
-	
+
 	if instDebuffs[name] then
 		icon.priority = instDebuffs[name]
 	elseif debuffs[name] then
@@ -331,7 +313,6 @@ local CustomFilter = function(icons, ...)
 	else
 		icon.priority = 0
 	end
-	
 	return true
 end
 
@@ -339,19 +320,12 @@ local sort = function(a,b)
 	return a.priority > b.priority
 end
 
-local PreSetPosition = function(icons, max)
+local PreSetPosition = function(icons)
+	if icons.visibleDebuffs < 2 then return end
 	table.sort(icons, sort)
-	
-	if icons.visibleDebuffs and icons.visibleDebuffs > 1 then
-		for i = 2, icons.visibleDebuffs do
-			icons[i]:Hide()
-		end
-	end
-end
 
-local PostUpdateIcon = function(icons, unit, icon, index, offset)
-	if icon.priority == 0 then
-		icon:Hide()
+	for i = 2, icons.visibleDebuffs do
+		icons[i]:Hide()
 	end
 end
 
@@ -532,11 +506,9 @@ local style = function(self)
 		debuffs.size = oUF_Freebgrid.db.debuffsize
 		debuffs.num = 10
 		
-		debuffs.PostCreateIcon = PostCreateIcon
 		debuffs.PreSetPosition = PreSetPosition
 		debuffs.CustomFilter = CustomFilter
-		debuffs.PostUpdateIcon = PostUpdateIcon
-		self.Debuffs = debuffs
+		self.freebDebuffs = debuffs
 	end
 	
 	-- Add events

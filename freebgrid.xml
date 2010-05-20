@@ -9,7 +9,7 @@
 	<Script file='config.lua' />
 
 	<Script file='elements\movable.lua' />
-	<Script file='elements\freebDebuffs.lua' />
+	<Script file='elements\debuffs.lua' />
 	<Script file='elements\oUF_HealComm4.lua' />
 	<Script file='elements\oUF_ReadyCheck.lua' />
 	<Script file='elements\indicators.lua' />

@@ -1,6 +1,9 @@
 local _, ns = ...
 local oUF = ns.oUF or oUF
-
+--[[
+	This is a stripped and modified oUF MovableFrames to fit my needs.
+	-- freebaser
+]]--
 local _DB
 local _LOCK
 
