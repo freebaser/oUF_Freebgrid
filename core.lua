@@ -306,14 +306,16 @@ local CustomFilter = function(icons, ...)
 
 	if instDebuffs[name] then
 		icon.priority = instDebuffs[name]
+		return true
 	elseif debuffs[name] then
 		icon.priority = debuffs[name]
+		return true
 	elseif dispellist[dtype] then
 		icon.priority = dispellPriority[dtype]
+		return true
 	else
 		icon.priority = 0
 	end
-	return true
 end
 
 local sort = function(a,b)
@@ -321,10 +323,10 @@ local sort = function(a,b)
 end
 
 local PreSetPosition = function(icons)
-	if icons.visibleDebuffs < 2 then return end
+	if #icons < 2 then return end
 	table.sort(icons, sort)
 
-	for i = 2, icons.visibleDebuffs do
+	for i = 2, #icons do
 		icons[i]:Hide()
 	end
 end

@@ -1,7 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
 
-	<Include file='elements\mttargets.xml' />
-
 	<Script file='tags.lua' />
 	<Script file='raid_debuffs.lua' />
 	<Script file='core.lua' />

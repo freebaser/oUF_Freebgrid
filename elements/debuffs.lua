@@ -75,13 +75,14 @@ local updateIcon = function(unit, icons, index, filter)
 			icon.debuff = isDebuff
 			
 			icon:SetID(index)
-			if icon.priority == 0 then
-				icon:Hide()
-			else
-				icon:Show()
-			end
+			icon:Show()
 			
 			return VISIBLE
+		else
+			icon:Hide()
+			table.remove(icons, index)
+			
+			return HIDDEN
 		end
 	end
 end
