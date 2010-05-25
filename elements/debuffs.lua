@@ -4,15 +4,13 @@ local oUF = ns.oUF
 	This is a stripped and modified oUF Auras to fit my needs.
 	-- freebaser
 ]]--
-local VISIBLE = 1
-local HIDDEN = 0
 
-local createAuraIcon = function(icons, index)
-	local button = CreateFrame("Button", nil, icons)
+local createAuraIcon = function(debuffs)
+	local button = CreateFrame("Button", nil, debuffs)
 	button:EnableMouse(false)
 	
-	button:SetWidth(icons.size or 16)
-	button:SetHeight(icons.size or 16)
+	button:SetWidth(debuffs.size or 16)
+	button:SetHeight(debuffs.size or 16)
 
 	local cd = CreateFrame("Cooldown", nil, button)
 	cd:SetAllPoints(button)
@@ -33,26 +31,34 @@ local createAuraIcon = function(icons, index)
 	overlay:SetTexCoord(0, 1, 0.02, 1)
 	button.overlay = overlay
 	
-	table.insert(icons, button)
+	button:SetPoint("BOTTOMLEFT", debuffs, "BOTTOMLEFT")
 	
-	button.parent = icons
+	button.parent = debuffs
 	button.icon = icon
 	button.count = count
 	button.cd = cd
+	button:Hide()
 	
-	return button
+	debuffs.button = button
 end
 
-local updateIcon = function(unit, icons, index, filter)
+local prior = 0
+local cur = nil
+local updateIcon = function(unit, debuffs, index, filter)
 	local name, rank, texture, count, dtype, duration, timeLeft, caster, isStealable, shouldConsolidate, spellID = UnitAura(unit, index, filter)
 	if(name) then
-		local icon = icons[index]
-		if(not icon) then
-			icon = createAuraIcon(icons, index)
-		end
-
-		local show = icons.CustomFilter(icons, unit, icon, name, rank, texture, count, dtype, duration, timeLeft, caster, isStealable, shouldConsolidate, spellID)
+		local icon = debuffs.button
+		local show = debuffs.CustomFilter(debuffs, unit, icon, name, rank, texture, count, dtype, duration, timeLeft, caster, isStealable, shouldConsolidate, spellID)
+		
 		if(show) then
+			if (icon.priority <= prior) and cur ~= name then
+				cur = name
+				return true
+			end
+			
+			prior = icon.priority
+			cur = nil
+			
 			local cd = icon.cd
 			if(cd) then
 				if(duration and duration > 0) then
@@ -71,53 +77,13 @@ local updateIcon = function(unit, icons, index, filter)
 			icon.icon:SetTexture(texture)
 			icon.count:SetText((count > 1 and count))
 
-			icon.filter = filter
-			icon.debuff = isDebuff
-			
-			icon:SetID(index)
 			icon:Show()
 			
-			return VISIBLE
+			return true
 		else
-			icon:Hide()
-			table.remove(icons, index)
-			
-			return HIDDEN
+			return false
 		end
 	end
-end
-
-local SetPosition = function(icons, x)
-	if(icons and x > 0) then
-		local anchor = "BOTTOMLEFT"
-		for i = 1, #icons do
-			local button = icons[i]
-			if(button and button:IsShown()) then
-				button:SetPoint(anchor, icons, anchor)
-			elseif(not button) then
-				break
-			end
-		end
-	end
-end
-
-local filterIcons = function(unit, icons, filter, limit, isDebuff)
-	local index = 1
-	local visible = 0
-	while(visible < limit) do
-		local result = updateIcon(unit, icons, index, filter)
-		if(not result) then
-			break
-		elseif(result == VISIBLE) then
-			visible = visible + 1
-		end
-		index = index + 1
-	end
-	for i = visible + 1, #icons do
-		icons[i]:Hide()
-	end
-
-	return visible
 end
 
 local Update = function(self, event, unit)
@@ -125,16 +91,29 @@ local Update = function(self, event, unit)
 
 	local debuffs = self.freebDebuffs
 	if(debuffs) then
-		local numDebuffs = debuffs.num or 40
-		debuffs.visibleDebuffs = filterIcons(unit, debuffs, debuffs.filter or 'HARMFUL', numDebuffs, true)
-
-		debuffs:PreSetPosition()
-		SetPosition(debuffs, numDebuffs)
+		local index = 1
+		local hide = true
+		while true do
+			local result = updateIcon(unit, debuffs, index, 'HARMFUL')
+			
+			if not result then
+				break
+			elseif result then
+				hide = false
+			end
+			index = index + 1
+		end
+		if hide then
+			debuffs.button:Hide()
+			prior = 0
+			cur = nil
+		end
 	end
 end
 
 local Enable = function(self)
 	if(self.freebDebuffs) then
+		createAuraIcon(self.freebDebuffs)
 		self:RegisterEvent("UNIT_AURA", Update)
 
 		return true

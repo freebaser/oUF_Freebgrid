@@ -41,15 +41,6 @@ local menu = function(self)
 	end
 end
 
-local updateRIcon = function(self, event)
-	local index = GetRaidTargetIndex(self.unit)
-	if(index) then
-		self.RIcon:SetText(ICON_LIST[index].."22|t")
-	else
-		self.RIcon:SetText()
-	end
-end
-
 local backdrop = {
 	bgFile = [=[Interface\ChatFrame\ChatFrameBackground]=],
 	insets = {top = 0, left = 0, bottom = 0, right = 0},
@@ -318,19 +309,6 @@ local CustomFilter = function(icons, ...)
 	end
 end
 
-local sort = function(a,b)
-	return a.priority > b.priority
-end
-
-local PreSetPosition = function(icons)
-	if #icons < 2 then return end
-	table.sort(icons, sort)
-
-	for i = 2, #icons do
-		icons[i]:Hide()
-	end
-end
-
 -- Show Mouseover highlight
 local OnEnter = function(self)
 	UnitFrame_OnEnter(self)
@@ -443,12 +421,10 @@ local style = function(self)
 	self.FocusHighlight = fBorder
 
 	-- Raid Icons
-	local ricon = hp:CreateFontString(nil, "OVERLAY")
+	local ricon = hp:CreateTexture(nil, 'OVERLAY')
 	ricon:SetPoint("TOP", self, 0, 5)
-	ricon:SetFont(oUF_Freebgrid.fonts[oUF_Freebgrid.db.font], oUF_Freebgrid.db.iconsize)
-	self.RIcon = ricon
-	self:RegisterEvent("RAID_TARGET_UPDATE", updateRIcon)
-	table.insert(self.__elements, updateRIcon)
+	ricon:SetSize(oUF_Freebgrid.db.iconsize, oUF_Freebgrid.db.iconsize)
+	self.RaidIcon = ricon
 
 	-- Leader Icon
 	self.Leader = hp:CreateTexture(nil, "OVERLAY")
@@ -506,9 +482,7 @@ local style = function(self)
 		debuffs:SetSize(oUF_Freebgrid.db.debuffsize, oUF_Freebgrid.db.debuffsize)
 		debuffs:SetPoint("CENTER", hp)
 		debuffs.size = oUF_Freebgrid.db.debuffsize
-		debuffs.num = 10
 		
-		debuffs.PreSetPosition = PreSetPosition
 		debuffs.CustomFilter = CustomFilter
 		self.freebDebuffs = debuffs
 	end
