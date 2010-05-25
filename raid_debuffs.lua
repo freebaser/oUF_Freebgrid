@@ -6,6 +6,7 @@ FreebgridDebuffs = {
 
 		[GetSpellInfo(57978)] = 9, -- Wound Poison
 		[GetSpellInfo(47486)] = 8, -- Mortal Strike
+		[GetSpellInfo(46911)] = 8, -- Furious Attacks
 		[GetSpellInfo(49050)] = 8, -- Aimed Shot
 
 		[GetSpellInfo(2139)] = 10, -- Counterspell

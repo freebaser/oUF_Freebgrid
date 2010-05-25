@@ -42,47 +42,53 @@ local createAuraIcon = function(debuffs)
 	debuffs.button = button
 end
 
-local prior = 0
-local cur = nil
-local updateIcon = function(unit, debuffs, index, filter)
-	local name, rank, texture, count, dtype, duration, timeLeft, caster, isStealable, shouldConsolidate, spellID = UnitAura(unit, index, filter)
-	if(name) then
+local updateDebuff = function(icon, texture, count, dtype, duration, timeLeft)
+	local cd = icon.cd
+	if(duration and duration > 0) then
+		cd:SetCooldown(timeLeft - duration, duration)
+		cd:Show()
+	else
+		cd:Hide()
+	end
+
+	local color = DebuffTypeColor[dtype] or DebuffTypeColor.none
+
+	icon.overlay:SetVertexColor(color.r, color.g, color.b)
+	icon.overlay:Show()
+
+	icon.icon:SetTexture(texture)
+	icon.count:SetText((count > 1 and count))
+end
+
+local updateIcon = function(unit, debuffs)
+	local cur
+	local hide = true
+	local index = 1
+	while true do
+		local name, rank, texture, count, dtype, duration, timeLeft, caster, isStealable, shouldConsolidate, spellID = UnitAura(unit, index, 'HARMFUL')
+		if not name then break end
+		
 		local icon = debuffs.button
 		local show = debuffs.CustomFilter(debuffs, unit, icon, name, rank, texture, count, dtype, duration, timeLeft, caster, isStealable, shouldConsolidate, spellID)
 		
 		if(show) then
-			if (icon.priority <= prior) and cur ~= name then
-				cur = name
-				return true
-			end
-			
-			prior = icon.priority
-			cur = nil
-			
-			local cd = icon.cd
-			if(cd) then
-				if(duration and duration > 0) then
-					cd:SetCooldown(timeLeft - duration, duration)
-					cd:Show()
-				else
-					cd:Hide()
+			if not cur then
+				cur = icon.priority
+				updateDebuff(icon, texture, count, dtype, duration, timeLeft)
+			else
+				if icon.priority > cur then
+					updateDebuff(icon, texture, count, dtype, duration, timeLeft)
 				end
 			end
-
-			local color = DebuffTypeColor[dtype] or DebuffTypeColor.none
-
-			icon.overlay:SetVertexColor(color.r, color.g, color.b)
-			icon.overlay:Show()
-
-			icon.icon:SetTexture(texture)
-			icon.count:SetText((count > 1 and count))
-
-			icon:Show()
 			
-			return true
-		else
-			return false
+			icon:Show()
+			hide = false
 		end
+		
+		index = index + 1
+	end
+	if hide then
+		debuffs.button:Hide()
 	end
 end
 
@@ -91,23 +97,7 @@ local Update = function(self, event, unit)
 
 	local debuffs = self.freebDebuffs
 	if(debuffs) then
-		local index = 1
-		local hide = true
-		while true do
-			local result = updateIcon(unit, debuffs, index, 'HARMFUL')
-			
-			if not result then
-				break
-			elseif result then
-				hide = false
-			end
-			index = index + 1
-		end
-		if hide then
-			debuffs.button:Hide()
-			prior = 0
-			cur = nil
-		end
+		updateIcon(unit, debuffs)	
 	end
 end
 
