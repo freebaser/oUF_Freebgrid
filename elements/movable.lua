@@ -1,4 +1,4 @@
-local _, ns = ...
+local ADDON_NAME, ns = ...
 local oUF = ns.oUF or oUF
 --[[
 	This is a stripped and modified oUF MovableFrames to fit my needs.
@@ -146,11 +146,10 @@ end
 
 do
 	local frame = CreateFrame"Frame"
-	frame:SetScript("OnEvent", function(self)
-		return self[event](self)
-	end)
-
-	function frame:VARIABLES_LOADED()
+	frame:RegisterEvent"ADDON_LOADED"
+	frame:SetScript("OnEvent", function(self, event, addon)
+		if addon ~= ADDON_NAME then return end
+		
 		-- I honestly don't trust the load order of SVs.
 		_DB = Freebgridomf or {}
 		Freebgridomf = _DB
@@ -161,21 +160,8 @@ do
 			restorePosition(frame)
 		end
 
-		self:UnregisterEvent"VARIABLES_LOADED"
-		self.VARIABLES_LOADED = nil
-	end
-	frame:RegisterEvent"VARIABLES_LOADED"
-
-	function frame:PLAYER_REGEN_DISABLED()
-		if(_LOCK) then
-			print("Anchors hidden due to combat.")
-			for k, frame in next, anchorpool do
-				frame:Hide()
-			end
-			_LOCK = nil
-		end
-	end
-	frame:RegisterEvent"PLAYER_REGEN_DISABLED"
+		self:UnregisterEvent"ADDON_LOADED"
+	end)
 end
 
 OUF_FREEBGRIDMOVABLE = function()
