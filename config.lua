@@ -62,7 +62,7 @@ FreebgridDefaults = {
 	lfdicon = true,
 	
 	frequent = false,
-	
+	multi = false,
 }
 
 oUF_Freebgrid.orientation = {
@@ -428,6 +428,10 @@ f:SetScript("OnShow", function(f)
 	local showname = tekcheck.new(f, nil, "Always show names.", "TOPLEFT", MT, "BOTTOMLEFT", 0, -GAP)
 	showname:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.showname = not oUF_Freebgrid.db.showname; end)
 	showname:SetChecked(oUF_Freebgrid.db.showname)
+	
+	local multi = tekcheck.new(f, nil, "Spawn multiple headers for better sorting.", "TOPLEFT", showname, "BOTTOMLEFT", 0, -GAP)
+	multi:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.multi = not oUF_Freebgrid.db.multi; end)
+	multi:SetChecked(oUF_Freebgrid.db.multi)
     
 	local healgroup = LibStub("tekKonfig-Group").new(f, "HealComm Settings")
 	healgroup:SetHeight(190)

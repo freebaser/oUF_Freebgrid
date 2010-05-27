@@ -152,13 +152,16 @@ local updateHealth = function(health, unit)
 	
 	self.Info:SetTextColor(r, g, b)
 	
-    if oUF_Freebgrid.db.reversecolors then
-        health.bg:SetVertexColor(r*.2, g*.2, b*.2)
-        health:SetStatusBarColor(r, g, b)
-    else
-        health.bg:SetVertexColor(r, g, b)
-        health:SetStatusBarColor(0, 0, 0, .8)
-    end
+	if(b) then
+		local bg = health.bg
+		if oUF_Freebgrid.db.reversecolors then
+			bg:SetVertexColor(r*.2, g*.2, b*.2)
+			health:SetStatusBarColor(r, g, b)
+		else
+			bg:SetVertexColor(r, g, b)
+			health:SetStatusBarColor(0, 0, 0, .8)
+		end
+	end
 end
 
 local updatePower = function(power, unit)
@@ -194,13 +197,16 @@ local updatePower = function(power, unit)
 		r, g, b = t[1], t[2], t[3]
 	end
 	
-	if oUF_Freebgrid.db.reversecolors then
-        power.bg:SetVertexColor(r*.2, g*.2, b*.2)
-        power:SetStatusBarColor(r, g, b)
-    else
-        power.bg:SetVertexColor(r, g, b)
-        power:SetStatusBarColor(0, 0, 0, .8)
-    end
+	if(b) then
+		local bg = power.bg
+		if oUF_Freebgrid.db.reversecolors then
+			bg:SetVertexColor(r*.2, g*.2, b*.2)
+			power:SetStatusBarColor(r, g, b)
+		else
+			bg:SetVertexColor(r, g, b)
+			power:SetStatusBarColor(0, 0, 0, .8)
+		end
+	end
 	
 	local perc = oUF.Tags['perpp'](unit)
 	-- This kinda conflicts with the threat module, but I don't really care
@@ -608,9 +614,36 @@ oUF:Factory(function(self)
 	end
 	
 	local pos, posRel, spacingX, spacingY, colX, colY, growth, point = SAP()
-	local raid = {}
-	for i = 1, oUF_Freebgrid.db.numCol do 
-		local group = self:SpawnHeader('Raid_Freebgrid'..i, nil, visible,
+	
+	if oUF_Freebgrid.db.multi then
+		local raid = {}
+		for i = 1, oUF_Freebgrid.db.numCol do 
+			local group = self:SpawnHeader('Raid_Freebgrid'..i, nil, visible,
+				'showPlayer', oUF_Freebgrid.db.player,
+				'showSolo', true,
+				'showParty', oUF_Freebgrid.db.partyOn,
+				'showRaid', true,
+				'xoffset', spacingX, 
+				'yOffset', spacingY,
+				'point', oUF_Freebgrid.db.point,
+				'groupFilter', tostring(i),
+				'groupingOrder', '1,2,3,4,5,6,7,8',
+				'groupBy', 'GROUP',
+				'maxColumns', oUF_Freebgrid.db.numCol,
+				'unitsPerColumn', oUF_Freebgrid.db.numUnits,
+				'columnSpacing', oUF_Freebgrid.db.spacing,
+				'columnAnchorPoint', growth
+			)
+			if i == 1 then
+				group:SetPoint(point, "oUF_FreebgridRaidFrame", point)
+			else
+				group:SetPoint(pos, raid[i-1], posRel, colX, colY)
+			end
+			group:SetScale(oUF_Freebgrid.db.scale)
+			raid[i] = group
+		end
+	else
+		local raid = self:SpawnHeader('Raid_Freebgrid', nil, visible,
 			'showPlayer', oUF_Freebgrid.db.player,
 			'showSolo', true,
 			'showParty', oUF_Freebgrid.db.partyOn,
@@ -618,7 +651,7 @@ oUF:Factory(function(self)
 			'xoffset', spacingX, 
 			'yOffset', spacingY,
 			'point', oUF_Freebgrid.db.point,
-			'groupFilter', tostring(i),
+			'groupFilter', '1,2,3,4,5,6,7,8',
 			'groupingOrder', '1,2,3,4,5,6,7,8',
 			'groupBy', 'GROUP',
 			'maxColumns', oUF_Freebgrid.db.numCol,
@@ -626,13 +659,8 @@ oUF:Factory(function(self)
 			'columnSpacing', oUF_Freebgrid.db.spacing,
 			'columnAnchorPoint', growth
 		)
-		if i == 1 then
-			group:SetPoint(point, "oUF_FreebgridRaidFrame", point)
-		else
-			group:SetPoint(pos, raid[i-1], posRel, colX, colY)
-		end
-		group:SetScale(oUF_Freebgrid.db.scale)
-		raid[i] = group
+		raid:SetPoint(point, "oUF_FreebgridRaidFrame", point)
+		raid:SetScale(oUF_Freebgrid.db.scale)
 	end
 	
 	if oUF_Freebgrid.db.pets then

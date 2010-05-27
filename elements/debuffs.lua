@@ -1,5 +1,5 @@
-local parent, ns = ...
-local oUF = ns.oUF
+local _, ns = ...
+local oUF = ns.oUF or oUF
 --[[
 	This is a stripped and modified oUF Auras to fit my needs.
 	-- freebaser
