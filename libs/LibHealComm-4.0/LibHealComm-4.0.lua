@@ -1,5 +1,5 @@
 local major = "LibHealComm-4.0"
-local minor = 60
+local minor = 64
 assert(LibStub, string.format("%s requires LibStub.", major))
 
 local HealComm = LibStub:NewLibrary(major, minor)
@@ -20,6 +20,7 @@ HealComm.ALL_HEALS, HealComm.CHANNEL_HEALS, HealComm.DIRECT_HEALS, HealComm.HOT_
 
 local COMM_PREFIX = "LHC40"
 local playerGUID, playerName, playerLevel
+local playerHealModifier = 1
 local IS_BUILD30300 = tonumber((select(4, GetBuildInfo()))) >= 30300
 
 HealComm.callbacks = HealComm.callbacks or LibStub:GetLibrary("CallbackHandler-1.0"):New(HealComm)
@@ -350,6 +351,11 @@ local function clearPendingHeals()
 end
 
 -- APIs
+-- Returns the players current heaing modifier
+function HealComm:GetPlayerHealingMod()
+	return playerHealModifier or 1
+end
+
 -- Returns the current healing modifier for the GUID
 function HealComm:GetHealModifier(guid)
 	return HealComm.currentModifiers[guid] or 1
@@ -505,8 +511,7 @@ end
 
 -- Healing class data
 -- Thanks to Gagorian (DrDamage) for letting me steal his formulas and such
-local playerHealModifier, playerCurrentRelic = 1
-
+local playerCurrentRelic
 local averageHeal, rankNumbers = HealComm.averageHeal, HealComm.rankNumbers
 local guidToUnit, guidToGroup, glyphCache = HealComm.guidToUnit, HealComm.guidToGroup, HealComm.glyphCache
 
@@ -658,6 +663,8 @@ if( playerClass == "DRUID" ) then
 		-- 2 piece, 30% less healing lost on WG
 		itemSetsData["T10 Resto"] = {50106, 50107, 50108, 50109, 50113, 51139, 51138, 51137, 51136, 51135, 51300, 51301, 51302, 51303, 51304}
 		
+		local bloomBombIdols = {[28355] = 87, [33076] = 105, [33841] = 116, [35021] = 131, [42576] = 188, [42577] = 217, [42578] = 246, [42579] = 294, [42580] = 376, [51423] = 448}
+		
 		local hotTotals, hasRegrowth = {}, {}
 		AuraHandler = function(unit, guid)
 			hotTotals[guid] = 0
@@ -764,7 +771,12 @@ if( playerClass == "DRUID" ) then
 			-- Lifebloom
 			elseif( spellName == Lifebloom ) then
 				-- Figure out the bomb heal, apparently Gift of Nature double dips and will heal 10% for the HOT + 10% again for the direct heal
-				local bombSpell = spellPower * (hotData[spellName].dhCoeff * 1.88)
+				local bombSpellPower = spellPower
+				if( playerCurrentRelic and bloomBombIdols[playerCurrentRelic] ) then
+					bombSpellPower = bombSpellPower + bloomBombIdols[playerCurrentRelic]
+				end
+				
+				local bombSpell = bombSpellPower * (hotData[spellName].dhCoeff * 1.88)
 				bombAmount = math.ceil(calculateGeneralAmount(hotData[spellName].levels[rank], hotData[spellName].bomb[rank], bombSpell, spModifier, healModifier + talentData[GiftofNature].current))
 			
 				-- Figure out the hot tick healing
@@ -1256,7 +1268,7 @@ if( playerClass == "SHAMAN" ) then
 		-- Lesser Healing Wave
 		local LesserHealingWave = GetSpellInfo(8004)
 		spellData[LesserHealingWave] = {coeff = 1.5 / 3.5, levels = {20, 28, 36, 44, 52, 60, 66, 72, 77}, increase = {102, 109, 110, 108, 100, 84, 58, 40, 18},
-			averages = {avg(162, 186), avg(247, 281), avg(337, 381), avg(458, 514), avg(631, 05), avg(832, 928), avg(1039, 1185), avg(1382, 1578), avg(1606, 1834)}}
+			averages = {avg(162, 186), avg(247, 281), avg(337, 381), avg(458, 514), avg(631, 705), avg(832, 928), avg(1039, 1185), avg(1382, 1578), avg(1606, 1834)}}
 		
 		-- Talent data
 		local EarthShield = GetSpellInfo(49284)
@@ -1521,6 +1533,8 @@ HealComm.healingModifiers = HealComm.healingModifiers or {
 }
 
 HealComm.healingStackMods = HealComm.healingStackMods or {
+	-- Enervating Band
+	[getName(74502)] = function(name, rank, icon, stacks) return 1 - stacks * 0.02 end,
 	-- Tenacity
 	[getName(58549)] = function(name, rank, icon, stacks) return icon == "Interface\\Icons\\Ability_Warrior_StrengthOfArms" and stacks ^ 1.18 or 1 end,
 	-- Focused Will

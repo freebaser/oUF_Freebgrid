@@ -9,8 +9,7 @@ local createAuraIcon = function(debuffs)
 	local button = CreateFrame("Button", nil, debuffs)
 	button:EnableMouse(false)
 	
-	button:SetWidth(debuffs.size or 16)
-	button:SetHeight(debuffs.size or 16)
+	button:SetSize(debuffs.size, debuffs.size)
 
 	local cd = CreateFrame("Cooldown", nil, button)
 	cd:SetAllPoints(button)

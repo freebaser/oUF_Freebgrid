@@ -2,11 +2,10 @@
 
 	<Script file='tags.lua' />
 	<Script file='raid_debuffs.lua' />
+	<Script file='elements\movable.lua' />
 	<Script file='core.lua' />
 	<Script file='media.lua' />
 	<Script file='config.lua' />
-
-	<Script file='elements\movable.lua' />
 	<Script file='elements\debuffs.lua' />
 	<Script file='elements\oUF_HealComm4.lua' />
 	<Script file='elements\oUF_ReadyCheck.lua' />

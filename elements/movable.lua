@@ -5,7 +5,6 @@ local oUF = ns.oUF or oUF
 	-- freebaser
 ]]--
 local _DB
-local _LOCK
 
 local round = function(n)
 	return math.floor(n * 1e5 + .5) / 1e5
@@ -88,6 +87,7 @@ local setframe
 do
 	local OnDragStart = function(self)
 		self:StartMoving()
+		self:ClearAllPoints()
 	end
 
 	local OnDragStop = function(self)
@@ -146,9 +146,8 @@ end
 
 do
 	local frame = CreateFrame"Frame"
-	frame:RegisterEvent"ADDON_LOADED"
-	frame:SetScript("OnEvent", function(self, event, addon)
-		if addon ~= ADDON_NAME then return end
+	frame:RegisterEvent"VARIABLES_LOADED"
+	frame:SetScript("OnEvent", function(self)
 		
 		-- I honestly don't trust the load order of SVs.
 		_DB = Freebgridomf or {}
@@ -160,7 +159,7 @@ do
 			restorePosition(frame)
 		end
 
-		self:UnregisterEvent"ADDON_LOADED"
+		self:UnregisterEvent"VARIABLES_LOADED"
 	end)
 end
 

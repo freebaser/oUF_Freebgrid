@@ -435,14 +435,12 @@ local style = function(self)
 	-- Leader Icon
 	self.Leader = hp:CreateTexture(nil, "OVERLAY")
 	self.Leader:SetPoint("TOPLEFT", self, 0, 8)
-	self.Leader:SetHeight(oUF_Freebgrid.db.iconsize)
-	self.Leader:SetWidth(oUF_Freebgrid.db.iconsize)
+	self.Leader:SetSize(oUF_Freebgrid.db.iconsize, oUF_Freebgrid.db.iconsize)
 	
 	-- Assistant Icon
 	self.Assistant = hp:CreateTexture(nil, "OVERLAY")
 	self.Assistant:SetPoint("TOPLEFT", self, 0, 8)
-	self.Assistant:SetHeight(oUF_Freebgrid.db.iconsize)
-	self.Assistant:SetWidth(oUF_Freebgrid.db.iconsize)
+	self.Assistant:SetSize(oUF_Freebgrid.db.iconsize, oUF_Freebgrid.db.iconsize)
 	
 	-- LFD Icon
 	if oUF_Freebgrid.db.lfdicon then
@@ -478,8 +476,7 @@ local style = function(self)
 		-- ReadyCheck
 		self.ReadyCheck = hp:CreateTexture(nil, "OVERLAY")
 		self.ReadyCheck:SetPoint("TOP", self)
-		self.ReadyCheck:SetHeight(oUF_Freebgrid.db.iconsize)
-		self.ReadyCheck:SetWidth(oUF_Freebgrid.db.iconsize)
+		self.ReadyCheck:SetSize(oUF_Freebgrid.db.iconsize, oUF_Freebgrid.db.iconsize)
 		self.ReadyCheck.delayTime = 8
 		self.ReadyCheck.fadeTime = 1
 		
