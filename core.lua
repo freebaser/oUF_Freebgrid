@@ -598,6 +598,8 @@ oUF:RegisterStyle("Freebgrid", style)
 	
 oUF:Factory(function(self)
 	self:SetActiveStyle"Freebgrid"
+
+    OUF_FREEBGRIDENABLE()
 	
 	local visible
 	if oUF_Freebgrid.db.solo and oUF_Freebgrid.db.partyOn then

@@ -146,28 +146,26 @@ end
 
 do
 	local frame = CreateFrame"Frame"
-	frame:RegisterEvent"VARIABLES_LOADED"
-	frame:SetScript("OnEvent", function(self)
+	frame:RegisterEvent"ADDON_LOADED"
+	frame:SetScript("OnEvent", function(self, event, addon)
+        if addon ~= ADDON_NAME then return end
 		
-		-- I honestly don't trust the load order of SVs.
 		_DB = Freebgridomf or {}
 		Freebgridomf = _DB
 		
-		anchors()
-		-- Got to catch them all!
-		for _, frame in next, anchorpool do
-			restorePosition(frame)
-		end
-
-		self:UnregisterEvent"VARIABLES_LOADED"
+		self:UnregisterEvent"ADDON_LOADED"
 	end)
 end
 
-OUF_FREEBGRIDMOVABLE = function()
-	if(InCombatLockdown()) then
-		return print"Frames cannot be moved while in combat. Bailing out."
+OUF_FREEBGRIDENABLE = function()
+    anchors()
+
+	for _, frame in next, anchorpool do
+		restorePosition(frame)
 	end
-	
+end
+
+OUF_FREEBGRIDMOVABLE = function()	
 	if(not _LOCK) then
 		for k, frame in next, anchorpool do
 			frame:Show()
