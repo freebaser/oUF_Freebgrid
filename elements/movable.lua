@@ -94,7 +94,6 @@ do
 	setframe = function(frame)
 		frame:SetHeight(oUF_Freebgrid.db.height)
 		frame:SetWidth(oUF_Freebgrid.db.width)
-		frame:SetScale(oUF_Freebgrid.db.scale)
 		frame:SetFrameStrata"TOOLTIP"
 		frame:SetBackdrop({bgFile = "Interface\\Tooltips\\UI-Tooltip-Background";})
 		frame:EnableMouse(true)

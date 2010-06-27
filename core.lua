@@ -226,7 +226,7 @@ end
 local powerbar = function(self)
     local pp = CreateFrame"StatusBar"
     pp:SetStatusBarTexture(oUF_Freebgrid.textures[oUF_Freebgrid.db.texture])
-	fixStatusbar(pp)
+	 fixStatusbar(pp)
     pp:SetOrientation(oUF_Freebgrid.db.orientation)
     pp.frequentUpdates = true
 
@@ -238,7 +238,7 @@ local powerbar = function(self)
     ppbg:SetAllPoints(pp)
     ppbg:SetTexture(oUF_Freebgrid.textures[oUF_Freebgrid.db.texture])
     pp.bg = ppbg
-	pp.PostUpdate = updatePower
+	 pp.PostUpdate = updatePower
 
     self.Power = pp
 end
