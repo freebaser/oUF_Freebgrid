@@ -86,6 +86,32 @@ local updateIcon = function(unit, debuffs)
 		
 		index = index + 1
 	end
+	
+	index = 1
+	while true do
+		local name, rank, texture, count, dtype, duration, timeLeft, caster, isStealable, shouldConsolidate, spellID = UnitAura(unit, index, 'HELPFUL')
+		if not name then break end
+		
+		local icon = debuffs.button
+		local show = debuffs.CustomFilter(debuffs, unit, icon, name, rank, texture, count, dtype, duration, timeLeft, caster, isStealable, shouldConsolidate, spellID)
+		
+		if(show) and icon.buff then
+			if not cur then
+				cur = icon.priority
+				updateDebuff(icon, texture, count, dtype, duration, timeLeft)
+			else
+				if icon.priority > cur then
+					updateDebuff(icon, texture, count, dtype, duration, timeLeft)
+				end
+			end
+			
+			icon:Show()
+			hide = false
+		end
+		
+		index = index + 1
+	end
+	
 	if hide then
 		debuffs.button:Hide()
 	end

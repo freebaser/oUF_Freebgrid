@@ -2,6 +2,29 @@ local ADDON_NAME, ns = ...
 local oUF = ns.oUF or oUF
 if not oUF then return end
 
+local scaleRaid, raid = true
+local updateRaid = CreateFrame"Frame"
+updateRaid:SetScript("OnEvent", function(self, event, ...)
+	return self[event](self, event, ...)
+end)
+
+function updateRaid:RAID_ROSTER_UPDATE()
+	if scaleRaid == false or oUF_Freebgrid.db.multi then return end
+	if(InCombatLockdown()) then
+		self:RegisterEvent('PLAYER_REGEN_ENABLED')
+	else
+		self:UnregisterEvent('PLAYER_REGEN_ENABLED')
+		if GetNumRaidMembers() > 29 then
+			raid:SetScale(0.8)
+		elseif GetNumRaidMembers() > 20 then
+			raid:SetScale(1.1)
+		else
+			raid:SetScale(oUF_Freebgrid.db.scale)
+		end
+	end
+end
+updateRaid:RegisterEvent("RAID_ROSTER_UPDATE")
+
 -- Number formatting
 local numberize = function(val)
 	if (val >= 1e6) then
@@ -226,7 +249,7 @@ end
 local powerbar = function(self)
     local pp = CreateFrame"StatusBar"
     pp:SetStatusBarTexture(oUF_Freebgrid.textures[oUF_Freebgrid.db.texture])
-	 fixStatusbar(pp)
+	fixStatusbar(pp)
     pp:SetOrientation(oUF_Freebgrid.db.orientation)
     pp.frequentUpdates = true
 
@@ -238,7 +261,7 @@ local powerbar = function(self)
     ppbg:SetAllPoints(pp)
     ppbg:SetTexture(oUF_Freebgrid.textures[oUF_Freebgrid.db.texture])
     pp.bg = ppbg
-	 pp.PostUpdate = updatePower
+	pp.PostUpdate = updatePower
 
     self.Power = pp
 end
@@ -298,6 +321,7 @@ local getzone = function()
 end
 
 local debuffs = FreebgridDebuffs.debuffs
+local buffs = FreebgridDebuffs.buffs
 local CustomFilter = function(icons, ...)
 	local _, icon, name, _, _, _, dtype = ...
 
@@ -307,8 +331,13 @@ local CustomFilter = function(icons, ...)
 	elseif debuffs[name] then
 		icon.priority = debuffs[name]
 		return true
+	elseif buffs[name] then
+		icon.priority = buffs[name]
+		icon.buff = true
+		return true
 	elseif dispellist[dtype] then
 		icon.priority = dispellPriority[dtype]
+		icon.buff = false
 		return true
 	else
 		icon.priority = 0
@@ -615,7 +644,7 @@ oUF:Factory(function(self)
 	local pos, posRel, spacingX, spacingY, colX, colY, growth, point = SAP()
 	
 	if oUF_Freebgrid.db.multi then
-		local raid = {}
+		raid = {}
 		for i = 1, oUF_Freebgrid.db.numCol do 
 			local group = self:SpawnHeader('Raid_Freebgrid'..i, nil, visible,
 				'showPlayer', oUF_Freebgrid.db.player,
@@ -642,7 +671,7 @@ oUF:Factory(function(self)
 			raid[i] = group
 		end
 	else
-		local raid = self:SpawnHeader('Raid_Freebgrid', nil, visible,
+		raid = self:SpawnHeader('Raid_Freebgrid', nil, visible,
 			'showPlayer', oUF_Freebgrid.db.player,
 			'showSolo', true,
 			'showParty', oUF_Freebgrid.db.partyOn,

@@ -53,6 +53,7 @@ local L = {
   ['Earth Shield'] = GetSpellInfo(49284),
   ['Riptide'] = GetSpellInfo(61301),
   ['Flash of Light'] = GetSpellInfo(66922),
+  ['Shield Wall'] = GetSpellInfo(871),
 }
 local x = "M"
 
@@ -112,6 +113,8 @@ oUF.Tags['freebgrid:lb'] = function(u)
 	local spellTimer = GetTime()-expirationTime
 	if spellTimer > -2 then
 		return "|cffFF0000"..oUF.lbCount[c].."|r"
+	elseif spellTimer > -4 then
+		return "|cffFF9900"..oUF.lbCount[c].."|r"
 	else
 		return "|cffA7FD0A"..oUF.lbCount[c].."|r"
 	end
@@ -147,6 +150,8 @@ oUF.Tags['freebgrid:vigil'] = function(u)
   if not (fromwho == "player") then return end
   if UnitAura(u, L["Vigilance"]) then return "|cffDEB887"..x.."|r" end end
 oUF.TagEvents['freebgrid:vigil'] = "UNIT_AURA"
+oUF.Tags['freebgrid:SW'] = function(u) if UnitAura(u, L['Shield Wall']) then return "|cff9900FF"..x.."|r" end end
+oUF.TagEvents['freebgrid:SW'] = "UNIT_AURA"
 
 --deathknight
 oUF.Tags['freebgrid:how'] = function(u) if UnitAura(u, L["Horn of Winter"]) then return "|cffffff10"..x.."|r" end end
