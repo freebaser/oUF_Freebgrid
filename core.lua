@@ -3,27 +3,26 @@ local oUF = ns.oUF or oUF
 if not oUF then return end
 
 local scaleRaid, raid = true
-local updateRaid = CreateFrame"Frame"
-updateRaid:SetScript("OnEvent", function(self, event, ...)
-	return self[event](self, event, ...)
-end)
 
-function updateRaid:RAID_ROSTER_UPDATE()
-	if scaleRaid == false or oUF_Freebgrid.db.multi then return end
-	if(InCombatLockdown()) then
-		self:RegisterEvent('PLAYER_REGEN_ENABLED')
-	else
-		self:UnregisterEvent('PLAYER_REGEN_ENABLED')
-		if GetNumRaidMembers() > 29 then
-			raid:SetScale(0.8)
-		elseif GetNumRaidMembers() > 20 then
-			raid:SetScale(1.1)
+do
+	local updateRaid = CreateFrame"Frame"
+	updateRaid:RegisterEvent("RAID_ROSTER_UPDATE")
+	updateRaid:SetScript("OnEvent", function(self)
+		if scaleRaid == false or oUF_Freebgrid.db.multi then return end
+		if(InCombatLockdown()) then
+			self:RegisterEvent('PLAYER_REGEN_ENABLED')
 		else
-			raid:SetScale(oUF_Freebgrid.db.scale)
+			self:UnregisterEvent('PLAYER_REGEN_ENABLED')
+			if GetNumRaidMembers() > 29 then
+				raid:SetScale(oUF_Freebgrid.db.scale-0.4)
+			elseif GetNumRaidMembers() > 20 then
+				raid:SetScale(oUF_Freebgrid.db.scale-0.2)
+			else
+				raid:SetScale(oUF_Freebgrid.db.scale)
+			end
 		end
-	end
+	end)
 end
-updateRaid:RegisterEvent("RAID_ROSTER_UPDATE")
 
 -- Number formatting
 local numberize = function(val)
