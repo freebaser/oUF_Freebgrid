@@ -2,8 +2,7 @@ local ADDON_NAME, ns = ...
 local oUF = ns.oUF or oUF
 if not oUF then return end
 
-local scaleRaid, raid = true
-
+local scaleRaid, raid = false
 do
 	local updateRaid = CreateFrame"Frame"
 	updateRaid:RegisterEvent("RAID_ROSTER_UPDATE")
@@ -469,6 +468,11 @@ local style = function(self)
 	self.Assistant = hp:CreateTexture(nil, "OVERLAY")
 	self.Assistant:SetPoint("TOPLEFT", self, 0, 8)
 	self.Assistant:SetSize(oUF_Freebgrid.db.iconsize, oUF_Freebgrid.db.iconsize)
+	
+	local masterlooter = hp:CreateTexture(nil, 'OVERLAY')
+	masterlooter:SetSize(oUF_Freebgrid.db.iconsize, oUF_Freebgrid.db.iconsize)
+	masterlooter:SetPoint('LEFT', self.Leader, 'RIGHT')
+	self.MasterLooter = masterlooter
 	
 	-- LFD Icon
 	if oUF_Freebgrid.db.lfdicon then
