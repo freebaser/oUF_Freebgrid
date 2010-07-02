@@ -2,8 +2,8 @@ local _, ns = ...
 local oUF = ns.oUF or oUF
 if not oUF then return end
 
-oUF.Tags['freebgrid:name'] = function(u)
-	local name = UnitName(u) or "unknown"
+oUF.Tags['freebgrid:name'] = function(u, r)
+	local name = UnitName(r or u) or "unknown"
 	return name
 end
 oUF.TagEvents['freebgrid:name'] = 'UNIT_NAME_UPDATE'
