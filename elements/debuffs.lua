@@ -5,9 +5,16 @@ local oUF = ns.oUF or oUF
 	-- freebaser
 ]]--
 
+local backdrop = {
+	bgFile = [=[Interface\ChatFrame\ChatFrameBackground]=],
+	insets = {top = -0.5, left = -0.5, bottom = -0.5, right = -0.5},
+}
+
 local createAuraIcon = function(debuffs)
 	local button = CreateFrame("Button", nil, debuffs)
 	button:EnableMouse(false)
+	button:SetBackdrop(backdrop)
+	button:SetBackdropColor(0, 0, 0)
 	
 	button:SetSize(debuffs.size, debuffs.size)
 
@@ -15,20 +22,13 @@ local createAuraIcon = function(debuffs)
 	cd:SetAllPoints(button)
 	cd:SetReverse()
 
-	local icon = button:CreateTexture(nil, "BACKGROUND")
+	local icon = button:CreateTexture(nil, "OVERLAY")
 	icon:SetAllPoints(button)
 	icon:SetTexCoord(.07, .93, .07, .93)
 	
 	local count = button:CreateFontString(nil, "OVERLAY")
 	count:SetFontObject(NumberFontNormal)
 	count:SetPoint("LEFT", button, "BOTTOM", 3, 2)
-
-	local overlay = button:CreateTexture(nil, "OVERLAY")
-	overlay:SetTexture("Interface\\AddOns\\oUF_Freebgrid\\media\\border")
-	overlay:SetPoint("TOPLEFT", button, "TOPLEFT", -3, 3)
-	overlay:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 3, -3)
-	overlay:SetTexCoord(0, 1, 0.02, 1)
-	button.overlay = overlay
 	
 	button:SetPoint("BOTTOMLEFT", debuffs, "BOTTOMLEFT")
 	
@@ -53,8 +53,7 @@ local updateDebuff = function(icon, texture, count, dtype, duration, timeLeft, b
 	local buffcolor =  { r = 0.0, g = 1.0, b = 1.0 }
 	local color = buff and buffcolor or DebuffTypeColor[dtype] or DebuffTypeColor.none
 
-	icon.overlay:SetVertexColor(color.r, color.g, color.b)
-	icon.overlay:Show()
+	icon:SetBackdropColor(color.r, color.g, color.b)
 
 	icon.icon:SetTexture(texture)
 	icon.count:SetText((count > 1 and count))
