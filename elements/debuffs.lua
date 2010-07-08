@@ -41,7 +41,7 @@ local createAuraIcon = function(debuffs)
 	debuffs.button = button
 end
 
-local updateDebuff = function(icon, texture, count, dtype, duration, timeLeft)
+local updateDebuff = function(icon, texture, count, dtype, duration, timeLeft, buff)
 	local cd = icon.cd
 	if(duration and duration > 0) then
 		cd:SetCooldown(timeLeft - duration, duration)
@@ -50,7 +50,8 @@ local updateDebuff = function(icon, texture, count, dtype, duration, timeLeft)
 		cd:Hide()
 	end
 
-	local color = DebuffTypeColor[dtype] or DebuffTypeColor.none
+	local buffcolor =  { r = 0.0, g = 1.0, b = 1.0 }
+	local color = buff and buffcolor or DebuffTypeColor[dtype] or DebuffTypeColor.none
 
 	icon.overlay:SetVertexColor(color.r, color.g, color.b)
 	icon.overlay:Show()
@@ -98,10 +99,10 @@ local updateIcon = function(unit, debuffs)
 		if(show) and icon.buff then
 			if not cur then
 				cur = icon.priority
-				updateDebuff(icon, texture, count, dtype, duration, timeLeft)
+				updateDebuff(icon, texture, count, dtype, duration, timeLeft, true)
 			else
 				if icon.priority > cur then
-					updateDebuff(icon, texture, count, dtype, duration, timeLeft)
+					updateDebuff(icon, texture, count, dtype, duration, timeLeft, true)
 				end
 			end
 			
