@@ -8,7 +8,7 @@ local oUF = ns.oUF or oUF
 local backdrop = {
 	bgFile = [=[Interface\AddOns\oUF_Freebgrid\media\white.tga]=], tile = true, tileSize = 16,
 	edgeFile = [=[Interface\AddOns\oUF_Freebgrid\media\white.tga]=], edgeSize = 1,
-	insets = {top = 1, left = 1, bottom = 1, right = 1},
+	insets = {top = 1.5, left = 1.5, bottom = 1.5, right = 1.5},
 }
 
 local createAuraIcon = function(debuffs)
@@ -25,10 +25,6 @@ local createAuraIcon = function(debuffs)
 	icon:SetAllPoints(button)
 	icon:SetTexCoord(.07, .93, .07, .93)
 	
-	local count = button:CreateFontString(nil, "OVERLAY")
-	count:SetFontObject(NumberFontNormal)
-	count:SetPoint("LEFT", button, "BOTTOM", 3, 2)
-	
 	local overlay = CreateFrame("Frame", nil, button)
 	overlay:SetAllPoints(button)
 	overlay:SetBackdrop(backdrop)
@@ -36,6 +32,10 @@ local createAuraIcon = function(debuffs)
 	overlay:SetBackdropBorderColor(1,1,1,1)
 	overlay:SetFrameLevel(6)
 	button.overlay = overlay
+	
+	local count = overlay:CreateFontString(nil, "OVERLAY")
+	count:SetFont(oUF_Freebgrid.fonts[oUF_Freebgrid.db.font], 11, "THINOUTLINE")
+	count:SetPoint("LEFT", button, "BOTTOM", 3, 2)
 	
 	button:SetPoint("BOTTOMLEFT", debuffs, "BOTTOMLEFT")
 	
