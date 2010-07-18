@@ -138,10 +138,10 @@ local updateHealth = function(health, unit)
 	local per = oUF.Tags['perhp'](unit)
 	local name = oUF.Tags['freebgrid:name'](unit)
 	local self = health:GetParent()
-    local val = 1
-    if oUF_Freebgrid.db.powerbar then
-        val = 8
-    end
+    	local val = 1
+    	if oUF_Freebgrid.db.powerbar then
+        	val = 8
+    	end
 
 	if per > 90 or per == 0 or oUF_Freebgrid.db.showname then
 		if nameCache[name] then 
@@ -245,23 +245,23 @@ local fixStatusbar = function(bar)
 end
 
 local powerbar = function(self)
-    local pp = CreateFrame"StatusBar"
-    pp:SetStatusBarTexture(oUF_Freebgrid.textures[oUF_Freebgrid.db.texture])
+    	local pp = CreateFrame"StatusBar"
+    	pp:SetStatusBarTexture(oUF_Freebgrid.textures[oUF_Freebgrid.db.texture])
 	fixStatusbar(pp)
-    pp:SetOrientation(oUF_Freebgrid.db.orientation)
-    pp.frequentUpdates = true
+    	pp:SetOrientation(oUF_Freebgrid.db.orientation)
+    	pp.frequentUpdates = true
 
-    pp:SetParent(self)
-    pp:SetPoint"BOTTOM"
-    pp:SetPoint"RIGHT"
+    	pp:SetParent(self)
+    	pp:SetPoint"BOTTOM"
+    	pp:SetPoint"RIGHT"
     
-    local ppbg = pp:CreateTexture(nil, "BORDER")
-    ppbg:SetAllPoints(pp)
-    ppbg:SetTexture(oUF_Freebgrid.textures[oUF_Freebgrid.db.texture])
-    pp.bg = ppbg
+    	local ppbg = pp:CreateTexture(nil, "BORDER")
+    	ppbg:SetAllPoints(pp)
+    	ppbg:SetTexture(oUF_Freebgrid.textures[oUF_Freebgrid.db.texture])
+    	pp.bg = ppbg
 	pp.PostUpdate = updatePower
 
-    self.Power = pp
+    	self.Power = pp
 end
 
 -- Add healcomm stuff
@@ -631,7 +631,7 @@ oUF:RegisterStyle("Freebgrid", style)
 oUF:Factory(function(self)
 	self:SetActiveStyle"Freebgrid"
 
-    OUF_FREEBGRIDENABLE()
+    	OUF_FREEBGRIDENABLE()
 	
 	local visible
 	if oUF_Freebgrid.db.solo and oUF_Freebgrid.db.partyOn then

@@ -429,7 +429,7 @@ f:SetScript("OnShow", function(f)
 	showname:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.showname = not oUF_Freebgrid.db.showname; end)
 	showname:SetChecked(oUF_Freebgrid.db.showname)
 	
-	local multi = tekcheck.new(f, nil, "Spawn multiple headers for better sorting.", "TOPLEFT", showname, "BOTTOMLEFT", 0, -GAP)
+	local multi = tekcheck.new(f, nil, "Spawn multiple headers.", "TOPLEFT", showname, "BOTTOMLEFT", 0, -GAP)
 	multi:SetScript("OnClick", function(self) checksound(self); oUF_Freebgrid.db.multi = not oUF_Freebgrid.db.multi; end)
 	multi:SetChecked(oUF_Freebgrid.db.multi)
     

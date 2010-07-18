@@ -7,7 +7,7 @@ local oUF = ns.oUF or oUF
 
 local backdrop = {
 	bgFile = [=[Interface\AddOns\oUF_Freebgrid\media\white.tga]=], tile = true, tileSize = 16,
-	edgeFile = [=[Interface\AddOns\oUF_Freebgrid\media\white.tga]=], edgeSize = 1,
+	edgeFile = [=[Interface\AddOns\oUF_Freebgrid\media\white.tga]=], edgeSize = 1.5,
 	insets = {top = 1.5, left = 1.5, bottom = 1.5, right = 1.5},
 }
 
