@@ -7,19 +7,62 @@ local oUF = ns.oUF or oUF
 
 local backdrop = {
 	bgFile = [=[Interface\AddOns\oUF_Freebgrid\media\white.tga]=], tile = true, tileSize = 16,
-	edgeFile = [=[Interface\AddOns\oUF_Freebgrid\media\white.tga]=], edgeSize = 1.5,
-	insets = {top = 1.5, left = 1.5, bottom = 1.5, right = 1.5},
+	edgeFile = [=[Interface\AddOns\oUF_Freebgrid\media\white.tga]=], edgeSize = 1,
+	insets = {top = 1, left = 1, bottom = 1, right = 1},
 }
+
+local BBackdrop = {
+	bgFile = [=[Interface\AddOns\oUF_Freebgrid\media\white.tga]=], tile = true, tileSize = 16,
+	insets = {top = -1, left = -1, bottom = -1, right = -1},
+}
+
+local FormatTime = function(s)
+	local day, hour, minute = 86400, 3600, 60
+	if s >= day then
+		return format("%dd", floor(s/day + 0.5)), s % day
+	elseif s >= hour then
+		return format("%dh", floor(s/hour + 0.5)), s % hour
+	elseif s >= minute then
+		return format("%dm", floor(s/minute + 0.5)), s % minute
+	end
+	return floor(s + 0.5), (s * 100 - floor(s * 100))/100
+end
+
+local CreateAuraTimer = function(self,elapsed)
+	if self.timeLeft then
+		self.elapsed = (self.elapsed or 0) + elapsed
+		if self.elapsed >= 0.1 then
+			if not self.first then
+				self.timeLeft = self.timeLeft - self.elapsed
+			else
+				self.timeLeft = self.timeLeft - GetTime()
+				self.first = false
+			end
+			if self.timeLeft > 0 then
+				if self.timeLeft < 5 then
+					self.remaining:SetTextColor(1, 0, 0)
+				else
+					self.remaining:SetTextColor(1, 1, 0)
+				end
+				local atime = FormatTime(self.timeLeft)
+				self.remaining:SetText(atime)
+			else
+				self.remaining:Hide()
+				self:SetScript("OnUpdate", nil)
+			end
+			self.elapsed = 0
+		end
+	end
+end
 
 local createAuraIcon = function(debuffs)
 	local button = CreateFrame("Button", nil, debuffs)
 	button:EnableMouse(false)
+	button:SetBackdrop(BBackdrop)
+	button:SetBackdropColor(0,0,0,1)
+	button:SetBackdropBorderColor(0,0,0,0)
 	
 	button:SetSize(debuffs.size, debuffs.size)
-
-	local cd = CreateFrame("Cooldown", nil, button)
-	cd:SetAllPoints(button)
-	cd:SetReverse()
 
 	local icon = button:CreateTexture(nil, "OVERLAY")
 	icon:SetAllPoints(button)
@@ -39,6 +82,12 @@ local createAuraIcon = function(debuffs)
 	
 	button:SetPoint("BOTTOMLEFT", debuffs, "BOTTOMLEFT")
 	
+	local remaining = button:CreateFontString(nil, "OVERLAY")
+	remaining:SetPoint("CENTER")
+	remaining:SetFont(oUF_Freebgrid.fonts[oUF_Freebgrid.db.font], 11, "OUTLINE")
+	remaining:SetTextColor(1, 1, 0)
+	button.remaining = remaining
+	
 	button.parent = debuffs
 	button.icon = icon
 	button.count = count
@@ -49,12 +98,10 @@ local createAuraIcon = function(debuffs)
 end
 
 local updateDebuff = function(icon, texture, count, dtype, duration, timeLeft, buff)
-	local cd = icon.cd
 	if(duration and duration > 0) then
-		cd:SetCooldown(timeLeft - duration, duration)
-		cd:Show()
+		icon.remaining:Show()
 	else
-		cd:Hide()
+		icon.remaining:Hide()
 	end
 
 	local buffcolor =  { r = 0.0, g = 1.0, b = 1.0 }
@@ -64,6 +111,11 @@ local updateDebuff = function(icon, texture, count, dtype, duration, timeLeft, b
 
 	icon.icon:SetTexture(texture)
 	icon.count:SetText((count > 1 and count))
+	
+	icon.duration = duration
+	icon.timeLeft = timeLeft
+	icon.first = true
+	icon:SetScript("OnUpdate", CreateAuraTimer)
 end
 
 local updateIcon = function(unit, debuffs)

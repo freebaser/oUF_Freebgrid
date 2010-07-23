@@ -481,7 +481,7 @@ local style = function(self)
 		self.LFDRole:SetPoint('RIGHT', self, 'LEFT', oUF_Freebgrid.db.iconsize/2, oUF_Freebgrid.db.iconsize/2)
 	end
     
-    -- ResComm
+	-- ResComm
 	if oUF_Freebgrid.db.rescomm then
 		local rescomm = hp:CreateTexture(nil, "OVERLAY")
 		rescomm:SetTexture([=[Interface\Icons\Spell_Holy_Resurrection]=])
