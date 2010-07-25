@@ -4,23 +4,24 @@ if not oUF then return end
 
 local scaleRaid, raid = false
 do
-	local updateRaid = CreateFrame"Frame"
-	updateRaid:RegisterEvent("RAID_ROSTER_UPDATE")
-	updateRaid:SetScript("OnEvent", function(self)
-		if scaleRaid == false or oUF_Freebgrid.db.multi then return end
-		if(InCombatLockdown()) then
-			self:RegisterEvent('PLAYER_REGEN_ENABLED')
-		else
-			self:UnregisterEvent('PLAYER_REGEN_ENABLED')
-			if GetNumRaidMembers() > 29 then
-				raid:SetScale(oUF_Freebgrid.db.scale-0.4)
-			elseif GetNumRaidMembers() > 20 then
-				raid:SetScale(oUF_Freebgrid.db.scale-0.2)
-			else
-				raid:SetScale(oUF_Freebgrid.db.scale)
-			end
-		end
-	end)
+    local updateRaid = CreateFrame"Frame"
+    updateRaid:RegisterEvent("RAID_ROSTER_UPDATE")
+    updateRaid:RegisterEvent("PLAYER_ENTERING_WORLD")
+    updateRaid:SetScript("OnEvent", function(self)
+        if scaleRaid == false or oUF_Freebgrid.db.multi then return end
+        if(InCombatLockdown()) then
+            self:RegisterEvent('PLAYER_REGEN_ENABLED')
+        else
+            self:UnregisterEvent('PLAYER_REGEN_ENABLED')
+            if GetNumRaidMembers() > 29 then
+                raid:SetScale(oUF_Freebgrid.db.scale-0.4)
+            elseif GetNumRaidMembers() > 20 then
+                raid:SetScale(oUF_Freebgrid.db.scale-0.2)
+            else
+                raid:SetScale(oUF_Freebgrid.db.scale)
+            end
+        end
+    end)
 end
 
 -- Number formatting
