@@ -1,0 +1,3 @@
+[submodule "oUF"]
+	path = oUF
+	url = git://github.com/freebaser/oUF.git
