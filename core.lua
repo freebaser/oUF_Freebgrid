@@ -408,7 +408,7 @@ local style = function(self)
 	threat:SetBackdrop(glowBorder)
 	threat:SetBackdropColor(0, 0, 0, 0)
 	threat:SetBackdropBorderColor(0, 0, 0, 1)
-	threat.Update = updateThreat
+	threat.Override = updateThreat
 	self.Threat = threat
 
 	-- Name/Hp
