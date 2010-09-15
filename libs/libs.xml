@@ -1,18 +1,18 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
 
-	<Script file ='LibHealComm-4.0\libs\LibStub\LibStub.lua' />
-	<Include file='LibHealComm-4.0\libs\CallbackHandler-1.0\CallbackHandler-1.0\CallbackHandler-1.0.xml' />
+  <Script file ='LibHealComm-4.0\libs\LibStub\LibStub.lua' />
+  <Include file='LibHealComm-4.0\libs\CallbackHandler-1.0\CallbackHandler-1.0\CallbackHandler-1.0.xml' />
 
-	<Script file='tekKonfigAboutPanel.lua' />
-	<Script file='tekKonfigButton.lua' />
-	<Script file='tekKonfigCheckbox.lua' />
-	<Script file='tekKonfigDropdown.lua' />
-	<Script file='tekKonfigGroup.lua' />
-	<Script file='tekKonfigHeading.lua' />
-	<Script file='tekKonfigSlider.lua' />
+  <Script file='tekKonfigAboutPanel.lua' />
+  <Script file='tekKonfigButton.lua' />
+  <Script file='tekKonfigCheckbox.lua' />
+  <Script file='tekKonfigDropdown.lua' />
+  <Script file='tekKonfigGroup.lua' />
+  <Script file='tekKonfigHeading.lua' />
+  <Script file='tekKonfigSlider.lua' />
 
-	<Include file='LibHealComm-4.0\LibHealComm-4.0.xml' />
-    
-	<Script file='LibResComm-1.0\LibResComm-1.0.lua' />
+  <Include file='LibHealComm-4.0\LibHealComm-4.0.xml' />
+  
+  <Script file='LibResComm-1.0\LibResComm-1.0.lua' />
 
 </Ui>
