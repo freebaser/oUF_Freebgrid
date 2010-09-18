@@ -1,6 +1,7 @@
 local _, ns = ...
 local oUF =  ns.oUF or oUF
-if not oUF then return end
+assert(oUF, "oUF_Freebgrid was unable to locate oUF install.")
+
 local _, class = UnitClass("player")
 local mediapath = "Interface\\AddOns\\oUF_Freebgrid\\media\\"
 local indicator = mediapath.."squares.ttf"
@@ -11,38 +12,36 @@ local Enable = function(self)
 		     self.AuraStatusTL = self.Health:CreateFontString(nil, "OVERLAY")
 		     self.AuraStatusTL:ClearAllPoints()
 		     self.AuraStatusTL:SetPoint("TOPLEFT", 0, 0)
-		     self.AuraStatusTL:SetFont(indicator, oUF_Freebgrid.db.indicatorsize, "THINOUTLINE")
-		     self:Tag(self.AuraStatusTL, oUF.classIndicators[class]["TL"])
+		     self.AuraStatusTL:SetFont(indicator, ns.db.indicatorsize, "THINOUTLINE")
+		     self:Tag(self.AuraStatusTL, ns.classIndicators[class]["TL"])
 		     
 		     self.AuraStatusTR = self.Health:CreateFontString(nil, "OVERLAY")
 		     self.AuraStatusTR:ClearAllPoints()
 		     self.AuraStatusTR:SetPoint("TOPRIGHT", 2, 0)
-		     self.AuraStatusTR:SetFont(indicator, oUF_Freebgrid.db.indicatorsize, "THINOUTLINE")
-		     self:Tag(self.AuraStatusTR, oUF.classIndicators[class]["TR"])
+		     self.AuraStatusTR:SetFont(indicator, ns.db.indicatorsize, "THINOUTLINE")
+		     self:Tag(self.AuraStatusTR, ns.classIndicators[class]["TR"])
 
 		     self.AuraStatusBL = self.Health:CreateFontString(nil, "OVERLAY")
 		     self.AuraStatusBL:ClearAllPoints()
 		     self.AuraStatusBL:SetPoint("BOTTOMLEFT", 0, 0)
-		     self.AuraStatusBL:SetFont(indicator, oUF_Freebgrid.db.indicatorsize, "THINOUTLINE")
-		     self:Tag(self.AuraStatusBL, oUF.classIndicators[class]["BL"])	
+		     self.AuraStatusBL:SetFont(indicator, ns.db.indicatorsize, "THINOUTLINE")
+		     self:Tag(self.AuraStatusBL, ns.classIndicators[class]["BL"])	
 
 		     self.AuraStatusBR = self.Health:CreateFontString(nil, "OVERLAY")
 		     self.AuraStatusBR:ClearAllPoints()
 		     self.AuraStatusBR:SetPoint("BOTTOMRIGHT", 6, -2)
-		     self.AuraStatusBR:SetFont(symbols, oUF_Freebgrid.db.symbolsize, "THINOUTLINE")
-		     self.AuraStatusBR.frequentUpdates = oUF_Freebgrid.db.frequent
-		     self:Tag(self.AuraStatusBR, oUF.classIndicators[class]["BR"])
+		     self.AuraStatusBR:SetFont(symbols, ns.db.symbolsize, "THINOUTLINE")
+		     self.AuraStatusBR.frequentUpdates = true
+		     self:Tag(self.AuraStatusBR, ns.classIndicators[class]["BR"])
 
 		     self.AuraStatusCen = self.Health:CreateFontString(nil, "OVERLAY")
 		     self.AuraStatusCen:ClearAllPoints()
 		     self.AuraStatusCen:SetPoint("TOP")
 		     self.AuraStatusCen:SetJustifyH("CENTER")
-		     self.AuraStatusCen:SetFont(oUF_Freebgrid.fonts[oUF_Freebgrid.db.font], oUF_Freebgrid.db.fontsize-2)
+		     self.AuraStatusCen:SetFont(ns.fonts[ns.db.font], ns.db.fontsize-2)
 		     self.AuraStatusCen:SetShadowOffset(1.25, -1.25)
-		     self.AuraStatusCen.frequentUpdates = oUF_Freebgrid.db.frequent
-		     self:Tag(self.AuraStatusCen, oUF.classIndicators[class]["Cen"])
-
-		     return true
+		     self.AuraStatusCen.frequentUpdates = true
+		     self:Tag(self.AuraStatusCen, ns.classIndicators[class]["Cen"])
 		  end
 	       end
 

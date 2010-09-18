@@ -1,9 +1,6 @@
 local _, ns = ...
 local oUF = ns.oUF or oUF
---[[
-This is a stripped and modified oUF Auras to fit my needs.
--- freebaser
-]]--
+assert(oUF, "oUF_Freebgrid was unable to locate oUF install.")
 
 local backdrop = {
    bgFile = [=[Interface\AddOns\oUF_Freebgrid\media\white.tga]=], tile = true, tileSize = 16,
@@ -55,14 +52,14 @@ local CreateAuraTimer = function(self,elapsed)
 			   end
 			end
 
-local createAuraIcon = function(debuffs)
-			  local button = CreateFrame("Button", nil, debuffs)
+local createAuraIcon = function(auras)
+			  local button = CreateFrame("Button", nil, auras)
 			  button:EnableMouse(false)
 			  button:SetBackdrop(BBackdrop)
 			  button:SetBackdropColor(0,0,0,1)
 			  button:SetBackdropBorderColor(0,0,0,0)
 			  
-			  button:SetSize(debuffs.size, debuffs.size)
+			  button:SetSize(auras.size, auras.size)
 
 			  local icon = button:CreateTexture(nil, "OVERLAY")
 			  icon:SetAllPoints(button)
@@ -77,24 +74,24 @@ local createAuraIcon = function(debuffs)
 			  button.overlay = overlay
 			  
 			  local count = overlay:CreateFontString(nil, "OVERLAY")
-			  count:SetFont(oUF_Freebgrid.fonts[oUF_Freebgrid.db.font], 11, "THINOUTLINE")
+			  count:SetFont(ns.fonts[ns.db.font], 11, "THINOUTLINE")
 			  count:SetPoint("LEFT", button, "BOTTOM", 3, 2)
 			  
-			  button:SetPoint("BOTTOMLEFT", debuffs, "BOTTOMLEFT")
+			  button:SetPoint("BOTTOMLEFT", auras, "BOTTOMLEFT")
 			  
 			  local remaining = button:CreateFontString(nil, "OVERLAY")
 			  remaining:SetPoint("CENTER")
-			  remaining:SetFont(oUF_Freebgrid.fonts[oUF_Freebgrid.db.font], 11, "OUTLINE")
+			  remaining:SetFont(ns.fonts[ns.db.font], 11, "OUTLINE")
 			  remaining:SetTextColor(1, 1, 0)
 			  button.remaining = remaining
 			  
-			  button.parent = debuffs
+			  button.parent = auras
 			  button.icon = icon
 			  button.count = count
 			  button.cd = cd
 			  button:Hide()
 			  
-			  debuffs.button = button
+			  auras.button = button
 		       end
 
 local updateDebuff = function(icon, texture, count, dtype, duration, timeLeft, buff)
@@ -118,7 +115,7 @@ local updateDebuff = function(icon, texture, count, dtype, duration, timeLeft, b
 			icon:SetScript("OnUpdate", CreateAuraTimer)
 		     end
 
-local updateIcon = function(unit, debuffs)
+local updateIcon = function(unit, auras)
 		      local cur
 		      local hide = true
 		      local index = 1
@@ -126,8 +123,8 @@ local updateIcon = function(unit, debuffs)
 			 local name, rank, texture, count, dtype, duration, timeLeft, caster, isStealable, shouldConsolidate, spellID = UnitAura(unit, index, 'HARMFUL')
 			 if not name then break end
 			 
-			 local icon = debuffs.button
-			 local show = debuffs.CustomFilter(debuffs, unit, icon, name, rank, texture, count, dtype, duration, timeLeft, caster, isStealable, shouldConsolidate, spellID)
+			 local icon = auras.button
+			 local show = auras.CustomFilter(auras, unit, icon, name, rank, texture, count, dtype, duration, timeLeft, caster, isStealable, shouldConsolidate, spellID)
 			 
 			 if(show) then
 			    if not cur then
@@ -151,8 +148,8 @@ local updateIcon = function(unit, debuffs)
 			 local name, rank, texture, count, dtype, duration, timeLeft, caster, isStealable, shouldConsolidate, spellID = UnitAura(unit, index, 'HELPFUL')
 			 if not name then break end
 			 
-			 local icon = debuffs.button
-			 local show = debuffs.CustomFilter(debuffs, unit, icon, name, rank, texture, count, dtype, duration, timeLeft, caster, isStealable, shouldConsolidate, spellID)
+			 local icon = auras.button
+			 local show = auras.CustomFilter(auras, unit, icon, name, rank, texture, count, dtype, duration, timeLeft, caster, isStealable, shouldConsolidate, spellID)
 			 
 			 if(show) and icon.buff then
 			    if not cur then
@@ -172,22 +169,21 @@ local updateIcon = function(unit, debuffs)
 		      end
 		      
 		      if hide then
-			 debuffs.button:Hide()
+			 auras.button:Hide()
 		      end
 		   end
 
 local Update = function(self, event, unit)
 		  if(self.unit ~= unit) then return end
 
-		  local debuffs = self.freebDebuffs
-		  if(debuffs) then
-		     updateIcon(unit, debuffs)	
+		  if(self.freebAuras) then
+		     updateIcon(unit, self.freebAuras)	
 		  end
 	       end
 
 local Enable = function(self)
-		  if(self.freebDebuffs) then
-		     createAuraIcon(self.freebDebuffs)
+		  if(self.freebAuras) then
+		     createAuraIcon(self.freebAuras)
 		     self:RegisterEvent("UNIT_AURA", Update)
 
 		     return true
@@ -195,7 +191,7 @@ local Enable = function(self)
 	       end
 
 local Disable = function(self)
-		   if(self.freebDebuffs) then
+		   if(self.freebAuras) then
 		      self:UnregisterEvent("UNIT_AURA", Update)
 		   end
 		end

@@ -1,9 +1,10 @@
 local ADDON_NAME, ns = ...
 local oUF = ns.oUF or oUF
---[[
-This is a stripped and modified oUF MovableFrames to fit my needs.
+assert(oUF, "oUF_Freebgrid was unable to locate oUF install.")
+
+-- This is a stripped and modified oUF MovableFrames to fit my needs.
 -- freebaser
-]]--
+
 local _DB
 
 local round = function(n)
@@ -92,8 +93,8 @@ do
 		      end
    
    setframe = function(frame)
-		 frame:SetHeight(oUF_Freebgrid.db.height)
-		 frame:SetWidth(oUF_Freebgrid.db.width)
+		 frame:SetHeight(ns.db.height)
+		 frame:SetWidth(ns.db.width)
 		 frame:SetFrameStrata"TOOLTIP"
 		 frame:SetBackdrop({bgFile = "Interface\\Tooltips\\UI-Tooltip-Background";})
 		 frame:EnableMouse(true)
@@ -205,7 +206,7 @@ do
    local opt = CreateFrame("Frame", nil, InterfaceOptionsFramePanelContainer)
    opt:Hide()
 
-   opt.parent = "oUF_Freebgrid"
+   opt.parent = ADDON_NAME
    opt.name = "oUF: MovableFrames"
    opt:SetScript("OnShow", function(self)
 			      local title = self:CreateFontString(nil, 'ARTWORK', 'GameFontNormalLarge')
@@ -465,29 +466,29 @@ do
    InterfaceOptions_AddCategory(opt)
 end
 
-OUF_FREEBGRIDENABLE = function()
-			 anchors()
+function ns:Enable()
+   anchors()
 
-			 for _, frame in next, anchorpool do
-			    restorePosition(frame)
-			 end
-		      end
+   for _, frame in next, anchorpool do
+      restorePosition(frame)
+   end
+end
 
 local _LOCK
-OUF_FREEBGRIDMOVABLE = function()
-			  if(InCombatLockdown()) then
-			     return print"Frames cannot be moved while in combat. Bailing out."
-			  end
-			  
-			  if(not _LOCK) then
-			     for k, frame in next, anchorpool do
-				frame:Show()
-			     end
-			     _LOCK = true
-			  else
-			     for k, frame in next, anchorpool do
-				frame:Hide()
-			     end
-			     _LOCK = nil
-			  end
-		       end
+function ns:Movable()
+   if(InCombatLockdown()) then
+      return print"Frames cannot be moved while in combat. Bailing out."
+   end
+   
+   if(not _LOCK) then
+      for k, frame in next, anchorpool do
+	 frame:Show()
+      end
+      _LOCK = true
+   else
+      for k, frame in next, anchorpool do
+	 frame:Hide()
+      end
+      _LOCK = nil
+   end
+end

@@ -1,6 +1,6 @@
 local _, ns = ...
 local oUF = ns.oUF or oUF
-if not oUF then return end
+assert(oUF, "oUF_Freebgrid was unable to locate oUF install.")
 
 oUF.Tags['freebgrid:name'] = function(u, r)
 				local name = UnitName(r or u) or "unknown"
@@ -9,17 +9,13 @@ oUF.Tags['freebgrid:name'] = function(u, r)
 oUF.TagEvents['freebgrid:name'] = 'UNIT_NAME_UPDATE'
 
 oUF.Tags['freebgrid:ddg'] = function(u)
-			       local x
 			       if UnitIsDead(u) then
-				  x = "Dead"
+				  return "|cffCFCFCFDead|r"
 			       elseif UnitIsGhost(u) then
-				  x = "Ghost"
+				  return "|cffCFCFCFGhost|r"
 			       elseif not UnitIsConnected(u) then
-				  x = "D/C"
-			       else
-				  x = " "
+				  return "|cffCFCFCFD/C|r"
 			       end
-			       return "|cffCFCFCF"..x.."|r"
 			    end
 oUF.TagEvents['freebgrid:ddg'] = 'UNIT_HEALTH'
 
@@ -71,8 +67,8 @@ oUF.Tags['freebgrid:aggro'] = function(u)
 oUF.TagEvents['freebgrid:aggro'] = "UNIT_THREAT_SITUATION_UPDATE"
 
 --priest
-oUF.pomCount = {"i","h","g","f","Z","Y"}
-oUF.Tags['freebgrid:pom'] = function(u) local c = select(4, UnitAura(u, L["Prayer of Mending"])) if c then return "|cffFFCF7F"..oUF.pomCount[c].."|r" end end
+local pomCount = {"i","h","g","f","Z","Y"}
+oUF.Tags['freebgrid:pom'] = function(u) local c = select(4, UnitAura(u, L["Prayer of Mending"])) if c then return "|cffFFCF7F"..pomCount[c].."|r" end end
 oUF.TagEvents['freebgrid:pom'] = "UNIT_AURA"
 oUF.Tags['freebgrid:gotn'] = function(u) if UnitAura(u, L["Gift of the Naaru"]) then return "|cff33FF33"..x.."|r" end end
 oUF.TagEvents['freebgrid:gotn'] = "UNIT_AURA"
@@ -106,17 +102,17 @@ oUF.Tags['freebgrid:wsTime'] = function(u)
 oUF.TagEvents['freebgrid:wsTime'] = "UNIT_AURA"
 
 --druid
-oUF.lbCount = { 4, 2, 3 }
+local lbCount = { 4, 2, 3 }
 oUF.Tags['freebgrid:lb'] = function(u) 
 			      local name, _,_, c,_,_, expirationTime, fromwho,_ = UnitAura(u, L["Lifebloom"])
 			      if not (fromwho == "player") then return end
 			      local spellTimer = GetTime()-expirationTime
 			      if spellTimer > -2 then
-				 return "|cffFF0000"..oUF.lbCount[c].."|r"
+				 return "|cffFF0000"..lbCount[c].."|r"
 			      elseif spellTimer > -4 then
-				 return "|cffFF9900"..oUF.lbCount[c].."|r"
+				 return "|cffFF9900"..lbCount[c].."|r"
 			      else
-				 return "|cffA7FD0A"..oUF.lbCount[c].."|r"
+				 return "|cffA7FD0A"..lbCount[c].."|r"
 			      end
 			   end
 oUF.TagEvents['freebgrid:lb'] = "UNIT_AURA"
@@ -200,11 +196,11 @@ oUF.Tags['freebgrid:ripTime'] = function(u)
 				end
 oUF.TagEvents['freebgrid:ripTime'] = 'UNIT_AURA'
 
-oUF.earthCount = {'i','h','g','f','p','q','Z','Y'}
-oUF.Tags['freebgrid:earth'] = function(u) local c = select(4, UnitAura(u, L['Earth Shield'])) if c then return '|cffFFCF7F'..oUF.earthCount[c]..'|r' end end
+local earthCount = {'i','h','g','f','p','q','Z','Y'}
+oUF.Tags['freebgrid:earth'] = function(u) local c = select(4, UnitAura(u, L['Earth Shield'])) if c then return '|cffFFCF7F'..earthCount[c]..'|r' end end
 oUF.TagEvents['freebgrid:earth'] = 'UNIT_AURA'
 
-oUF.classIndicators={
+ns.classIndicators={
    ["DRUID"] = {
       ["TL"] = "[freebgrid:tree]",
       ["TR"] = "[freebgrid:gotw]",
@@ -225,7 +221,6 @@ oUF.classIndicators={
       ["BL"] = "",
       ["BR"] = "",
       ["Cen"] = "[freebgrid:beaconTime]",
-      
    },
    ["WARLOCK"] = {
       ["TL"] = "",

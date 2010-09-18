@@ -1,6 +1,6 @@
 local ADDON_NAME, ns = ...
 local oUF = ns.oUF or oUF
-if not oUF then return end
+assert(oUF, "oUF_Freebgrid was unable to locate oUF install.")
 
 local scaleRaid, raid = false
 do
@@ -140,11 +140,11 @@ local updateHealth = function(health, unit)
 			local name = oUF.Tags['freebgrid:name'](unit)
 			local self = health:GetParent()
 			local val = 1
-			if oUF_Freebgrid.db.powerbar then
+			if ns.db.powerbar then
 			   val = 8
 			end
 
-			if per > 90 or per == 0 or oUF_Freebgrid.db.showname then
+			if per > 90 or per == 0 or ns.db.showname then
 			   if nameCache[name] then 
 			      self.Info:SetText(nameCache[name]) 
 			   else 
@@ -152,7 +152,7 @@ local updateHealth = function(health, unit)
 			      for length=#name, 1, -1 do 
 				 substring = utf8sub(name, 1, length) 
 				 self.Info:SetText(substring) 
-				 if self.Info:GetStringWidth() <= oUF_Freebgrid.db.width - val then break end 
+				 if self.Info:GetStringWidth() <= ns.db.width - val then break end 
 			      end
 			      nameCache[name] = substring
 			   end
@@ -176,7 +176,7 @@ local updateHealth = function(health, unit)
 			
 			if(b) then
 			   local bg = health.bg
-			   if oUF_Freebgrid.db.reversecolors then
+			   if ns.db.reversecolors then
 			      bg:SetVertexColor(r*.2, g*.2, b*.2)
 			      health:SetStatusBarColor(r, g, b)
 			   else
@@ -191,24 +191,24 @@ local updatePower = function(power, unit)
 		       local self = power:GetParent()
 
 		       if ptype == 'MANA' then
-			  if(oUF_Freebgrid.db.orientation == "VERTICAL")then
+			  if(ns.db.orientation == "VERTICAL")then
 			     power:SetPoint"TOP"
-			     power:SetWidth(oUF_Freebgrid.db.width*oUF_Freebgrid.db.powerbarsize)
-			     self.Health:SetWidth((0.98 - oUF_Freebgrid.db.powerbarsize)*oUF_Freebgrid.db.width)
+			     power:SetWidth(ns.db.width*ns.db.powerbarsize)
+			     self.Health:SetWidth((0.98 - ns.db.powerbarsize)*ns.db.width)
 			  else
 			     power:SetPoint"LEFT"
-			     power:SetHeight(oUF_Freebgrid.db.height*oUF_Freebgrid.db.powerbarsize)
-			     self.Health:SetHeight((0.98 - oUF_Freebgrid.db.powerbarsize)*oUF_Freebgrid.db.height)
+			     power:SetHeight(ns.db.height*ns.db.powerbarsize)
+			     self.Health:SetHeight((0.98 - ns.db.powerbarsize)*ns.db.height)
 			  end
 		       else
-			  if(oUF_Freebgrid.db.orientation == "VERTICAL")then
+			  if(ns.db.orientation == "VERTICAL")then
 			     power:SetPoint"TOP"
 			     power:SetWidth(0.0000001) -- in this case absolute zero is something, rather than nothing
-			     self.Health:SetWidth(oUF_Freebgrid.db.width)
+			     self.Health:SetWidth(ns.db.width)
 			  else
 			     power:SetPoint"LEFT"
 			     power:SetHeight(0.0000001) -- ^ ditto
-			     self.Health:SetHeight(oUF_Freebgrid.db.height)
+			     self.Health:SetHeight(ns.db.height)
 			  end
 		       end
 		       
@@ -221,7 +221,7 @@ local updatePower = function(power, unit)
 		       
 		       if(b) then
 			  local bg = power.bg
-			  if oUF_Freebgrid.db.reversecolors then
+			  if ns.db.reversecolors then
 			     bg:SetVertexColor(r*.2, g*.2, b*.2)
 			     power:SetStatusBarColor(r, g, b)
 			  else
@@ -247,9 +247,9 @@ local fixStatusbar = function(bar)
 
 local powerbar = function(self)
 		    local pp = CreateFrame"StatusBar"
-		    pp:SetStatusBarTexture(oUF_Freebgrid.textures[oUF_Freebgrid.db.texture])
+		    pp:SetStatusBarTexture(ns.textures[ns.db.texture])
 		    fixStatusbar(pp)
-		    pp:SetOrientation(oUF_Freebgrid.db.orientation)
+		    pp:SetOrientation(ns.db.orientation)
 		    pp.frequentUpdates = true
 
 		    pp:SetParent(self)
@@ -258,7 +258,7 @@ local powerbar = function(self)
 		    
 		    local ppbg = pp:CreateTexture(nil, "BORDER")
 		    ppbg:SetAllPoints(pp)
-		    ppbg:SetTexture(oUF_Freebgrid.textures[oUF_Freebgrid.db.texture])
+		    ppbg:SetTexture(ns.textures[ns.db.texture])
 		    pp.bg = ppbg
 		    pp.PostUpdate = updatePower
 
@@ -270,26 +270,26 @@ local addHealcomm = function(self)
 		       local heal = self.Health:CreateFontString(nil, "OVERLAY")
 		       heal:SetPoint("BOTTOM")
 		       heal:SetJustifyH("CENTER")
-		       heal:SetFont(oUF_Freebgrid.fonts[oUF_Freebgrid.db.font], oUF_Freebgrid.db.fontsize-2)
+		       heal:SetFont(ns.fonts[ns.db.font], ns.db.fontsize-2)
 		       heal:SetShadowOffset(1.25, -1.25)
 		       heal:SetTextColor(0,1,0,1)
 
-		       self.HealCommText = oUF_Freebgrid.db.healcommtext and heal or nil
+		       self.HealCommText = ns.db.healcommtext and heal or nil
 		       self.HealCommTextFormat = numberize
 
 		       local healbar = CreateFrame('StatusBar', nil, self.Health)
-		       healbar:SetStatusBarTexture(oUF_Freebgrid.textures[oUF_Freebgrid.db.texture])
+		       healbar:SetStatusBarTexture(ns.textures[ns.db.texture])
 		       fixStatusbar(healbar)
-		       healbar:SetStatusBarColor(0, 1, 0, oUF_Freebgrid.db.healalpha)
-		       if oUF_Freebgrid.db.orientation == "VERTICAL" then
+		       healbar:SetStatusBarColor(0, 1, 0, ns.db.healalpha)
+		       if ns.db.orientation == "VERTICAL" then
 			  healbar:SetPoint('BOTTOM', self.Health, 'BOTTOM')
 		       else
 			  healbar:SetPoint('LEFT', self.Health, 'LEFT')
 		       end
 
-		       self.HealCommBar = oUF_Freebgrid.db.healcommbar and healbar or nil
-		       self.allowHealCommOverflow = oUF_Freebgrid.db.healcommoverflow
-		       self.HealCommOthersOnly = oUF_Freebgrid.db.healothersonly
+		       self.HealCommBar = ns.db.healcommbar and healbar or nil
+		       self.allowHealCommOverflow = ns.db.healcommoverflow
+		       self.HealCommOthersOnly = ns.db.healothersonly
 		    end
 
 local _, class = UnitClass("player")
@@ -309,28 +309,25 @@ local dispellPriority = {
 }
 
 local instDebuffs = {}
-local instances = FreebgridDebuffs.instances
 local getzone = function()
 		   local zone = GetInstanceInfo()
-		   if instances[zone] then
+		   if ns.auras.instances[zone] then
 		      instDebuffs = instances[zone]
 		   else
 		      instDebuffs = {}
 		   end
 		end
 
-local debuffs = FreebgridDebuffs.debuffs
-local buffs = FreebgridDebuffs.buffs
 local CustomFilter = function(icons, ...)
 			local _, icon, name, _, _, _, dtype = ...
 
 			if instDebuffs[name] then
 			   icon.priority = instDebuffs[name]
 			   return true
-			elseif debuffs[name] then
+			elseif ns.auras.debuffs[name] then
 			   icon.priority = debuffs[name]
 			   return true
-			elseif buffs[name] then
+			elseif ns.auras.buffs[name] then
 			   icon.priority = buffs[name]
 			   icon.buff = true
 			   return true
@@ -374,13 +371,13 @@ local style = function(self)
 
 		 -- Health bar
 		 local hp = CreateFrame"StatusBar"
-		 hp:SetStatusBarTexture(oUF_Freebgrid.textures[oUF_Freebgrid.db.texture])
+		 hp:SetStatusBarTexture(ns.textures[ns.db.texture])
 		 fixStatusbar(hp)
-		 hp:SetOrientation(oUF_Freebgrid.db.orientation)
+		 hp:SetOrientation(ns.db.orientation)
 		 hp:SetParent(self)
 		 hp:SetPoint"TOP"
 		 hp:SetPoint"LEFT"
-		 if oUF_Freebgrid.db.orientation == "VERTICAL" then
+		 if ns.db.orientation == "VERTICAL" then
 		    hp:SetPoint"BOTTOM"
 		 else
 		    hp:SetPoint"RIGHT"
@@ -389,14 +386,14 @@ local style = function(self)
 		 
 		 -- HP background
 		 local hpbg = hp:CreateTexture(nil, "BORDER")
-		 hpbg:SetTexture(oUF_Freebgrid.textures[oUF_Freebgrid.db.texture])
+		 hpbg:SetTexture(ns.textures[ns.db.texture])
 		 hpbg:SetAllPoints(hp)
 
 		 hp.bg = hpbg
 		 hp.PostUpdate = updateHealth
 		 self.Health = hp
 		 
-		 if oUF_Freebgrid.db.powerbar then
+		 if ns.db.powerbar then
 		    powerbar(self)
 		 end
 
@@ -415,7 +412,7 @@ local style = function(self)
 		 local info = hp:CreateFontString(nil, "OVERLAY")
 		 info:SetPoint("CENTER")
 		 info:SetJustifyH("CENTER")
-		 info:SetFont(oUF_Freebgrid.fonts[oUF_Freebgrid.db.font], oUF_Freebgrid.db.fontsize)
+		 info:SetFont(ns.fonts[ns.db.font], ns.db.fontsize)
 		 info:SetShadowOffset(1.25, -1.25)
 		 self.Info = info
 
@@ -423,7 +420,7 @@ local style = function(self)
 		 local DDG = hp:CreateFontString(nil, "OVERLAY")
 		 DDG:SetPoint("BOTTOM")
 		 DDG:SetJustifyH("CENTER")
-		 DDG:SetFont(oUF_Freebgrid.fonts[oUF_Freebgrid.db.font], oUF_Freebgrid.db.fontsize-2)
+		 DDG:SetFont(ns.fonts[ns.db.font], ns.db.fontsize-2)
 		 DDG:SetShadowOffset(1.25, -1.25)
 		 self:Tag(DDG, '[freebgrid:ddg]')
 
@@ -457,38 +454,38 @@ local style = function(self)
 		 -- Raid Icons
 		 local ricon = hp:CreateTexture(nil, 'OVERLAY')
 		 ricon:SetPoint("TOP", self, 0, 5)
-		 ricon:SetSize(oUF_Freebgrid.db.iconsize, oUF_Freebgrid.db.iconsize)
+		 ricon:SetSize(ns.db.iconsize, ns.db.iconsize)
 		 self.RaidIcon = ricon
 
 		 -- Leader Icon
 		 self.Leader = hp:CreateTexture(nil, "OVERLAY")
 		 self.Leader:SetPoint("TOPLEFT", self, 0, 8)
-		 self.Leader:SetSize(oUF_Freebgrid.db.iconsize, oUF_Freebgrid.db.iconsize)
+		 self.Leader:SetSize(ns.db.iconsize, ns.db.iconsize)
 		 
 		 -- Assistant Icon
 		 self.Assistant = hp:CreateTexture(nil, "OVERLAY")
 		 self.Assistant:SetPoint("TOPLEFT", self, 0, 8)
-		 self.Assistant:SetSize(oUF_Freebgrid.db.iconsize, oUF_Freebgrid.db.iconsize)
+		 self.Assistant:SetSize(ns.db.iconsize, ns.db.iconsize)
 		 
 		 local masterlooter = hp:CreateTexture(nil, 'OVERLAY')
-		 masterlooter:SetSize(oUF_Freebgrid.db.iconsize, oUF_Freebgrid.db.iconsize)
+		 masterlooter:SetSize(ns.db.iconsize, ns.db.iconsize)
 		 masterlooter:SetPoint('LEFT', self.Leader, 'RIGHT')
 		 self.MasterLooter = masterlooter
 		 
 		 -- LFD Icon
-		 if oUF_Freebgrid.db.lfdicon then
+		 if ns.db.lfdicon then
 		    self.LFDRole = hp:CreateTexture(nil, 'OVERLAY')
-		    self.LFDRole:SetSize(oUF_Freebgrid.db.iconsize, oUF_Freebgrid.db.iconsize)
-		    self.LFDRole:SetPoint('RIGHT', self, 'LEFT', oUF_Freebgrid.db.iconsize/2, oUF_Freebgrid.db.iconsize/2)
+		    self.LFDRole:SetSize(ns.db.iconsize, ns.db.iconsize)
+		    self.LFDRole:SetPoint('RIGHT', self, 'LEFT', ns.db.iconsize/2, ns.db.iconsize/2)
 		 end
 		 
 		 -- ResComm
-		 if oUF_Freebgrid.db.rescomm then
+		 if ns.db.rescomm then
 		    local rescomm = hp:CreateTexture(nil, "OVERLAY")
 		    rescomm:SetTexture([=[Interface\Icons\Spell_Holy_Resurrection]=])
 		    rescomm:SetTexCoord(0.07, 0.93, 0.07, 0.93)
 		    rescomm:SetAllPoints(hp)
-		    rescomm:SetAlpha(oUF_Freebgrid.db.rescommalpha)
+		    rescomm:SetAlpha(ns.db.rescommalpha)
 		    self.ResComm = rescomm
 		 end
 		 
@@ -499,8 +496,8 @@ local style = function(self)
 		    
 		    -- Range
 		    self.Range = {
-		       insideAlpha = oUF_Freebgrid.db.inRange,
-		       outsideAlpha = oUF_Freebgrid.db.outsideRange,
+		       insideAlpha = ns.db.inRange,
+		       outsideAlpha = ns.db.outsideRange,
 		    }
 		    
 		    -- Healcomm
@@ -509,18 +506,18 @@ local style = function(self)
 		    -- ReadyCheck
 		    self.ReadyCheck = hp:CreateTexture(nil, "OVERLAY")
 		    self.ReadyCheck:SetPoint("TOP", self)
-		    self.ReadyCheck:SetSize(oUF_Freebgrid.db.iconsize, oUF_Freebgrid.db.iconsize)
+		    self.ReadyCheck:SetSize(ns.db.iconsize, ns.db.iconsize)
 		    self.ReadyCheck.delayTime = 8
 		    self.ReadyCheck.fadeTime = 1
 		    
 		    -- Debuffs
-		    local debuffs = CreateFrame("Frame", nil, self)
-		    debuffs:SetSize(oUF_Freebgrid.db.debuffsize, oUF_Freebgrid.db.debuffsize)
-		    debuffs:SetPoint("CENTER", hp)
-		    debuffs.size = oUF_Freebgrid.db.debuffsize
+		    local auras = CreateFrame("Frame", nil, self)
+		    auras:SetSize(ns.db.debuffsize, ns.db.debuffsize)
+		    auras:SetPoint("CENTER", hp)
+		    auras.size = ns.db.debuffsize
 		    
-		    debuffs.CustomFilter = CustomFilter
-		    self.freebDebuffs = debuffs
+		    auras.CustomFilter = CustomFilter
+		    self.freebAuras = auras
 		 end
 		 
 		 -- Add events
@@ -531,15 +528,15 @@ local style = function(self)
 		 self:RegisterEvent('PLAYER_ENTERING_WORLD', getzone)
 		 
 		 -- Unit sizes
-		 self:SetAttribute('initial-height', oUF_Freebgrid.db.height)
-		 self:SetAttribute('initial-width', oUF_Freebgrid.db.width)
+		 self:SetAttribute('initial-height', ns.db.height)
+		 self:SetAttribute('initial-width', ns.db.width)
 	      end
 
 local function SAP()
-   if not oUF_Freebgrid then return end
+   if not ns then return end
    
    local pos, posRel, spacingX, spacingY, colX, colY, growth, point
-   local db = oUF_Freebgrid.db
+   local db = ns.db
    -- SetPoint of MOTHERFUCKING DOOM!
    if db.point == "TOP" and db.growth == "LEFT" then
       pos = "TOPRIGHT"
@@ -632,14 +629,14 @@ oUF:RegisterStyle("Freebgrid", style)
 oUF:Factory(function(self)
 	       self:SetActiveStyle"Freebgrid"
 
-	       OUF_FREEBGRIDENABLE()
+	       ns.Enable()
 	       
 	       local visible
-	       if oUF_Freebgrid.db.solo and oUF_Freebgrid.db.partyOn then
+	       if ns.db.solo and ns.db.partyOn then
 		  visible = 'raid,party,solo'
-	       elseif oUF_Freebgrid.db.solo and not oUF_Freebgrid.db.partyOn then
+	       elseif ns.db.solo and not ns.db.partyOn then
 		  visible = 'raid,solo'
-	       elseif oUF_Freebgrid.db.partyOn and not oUF_Freebgrid.db.solo then
+	       elseif ns.db.partyOn and not ns.db.solo then
 		  visible = 'raid,party'
 	       else
 		  visible = 'raid'
@@ -647,23 +644,23 @@ oUF:Factory(function(self)
 	       
 	       local pos, posRel, spacingX, spacingY, colX, colY, growth, point = SAP()
 	       
-	       if oUF_Freebgrid.db.multi then
+	       if ns.db.multi then
 		  raid = {}
-		  for i = 1, oUF_Freebgrid.db.numCol do 
+		  for i = 1, ns.db.numCol do 
 		     local group = self:SpawnHeader('Raid_Freebgrid'..i, nil, visible,
-						    'showPlayer', oUF_Freebgrid.db.player,
+						    'showPlayer', ns.db.player,
 						    'showSolo', true,
-						    'showParty', oUF_Freebgrid.db.partyOn,
+						    'showParty', ns.db.partyOn,
 						    'showRaid', true,
 						    'xoffset', spacingX, 
 						    'yOffset', spacingY,
-						    'point', oUF_Freebgrid.db.point,
+						    'point', ns.db.point,
 						    'groupFilter', tostring(i),
 						    'groupingOrder', '1,2,3,4,5,6,7,8',
 						    'groupBy', 'GROUP',
-						    'maxColumns', oUF_Freebgrid.db.numCol,
-						    'unitsPerColumn', oUF_Freebgrid.db.numUnits,
-						    'columnSpacing', oUF_Freebgrid.db.spacing,
+						    'maxColumns', ns.db.numCol,
+						    'unitsPerColumn', ns.db.numUnits,
+						    'columnSpacing', ns.db.spacing,
 						    'columnAnchorPoint', growth
 						 )
 		     if i == 1 then
@@ -671,51 +668,51 @@ oUF:Factory(function(self)
 		     else
 			group:SetPoint(pos, raid[i-1], posRel, colX, colY)
 		     end
-		     group:SetScale(oUF_Freebgrid.db.scale)
+		     group:SetScale(ns.db.scale)
 		     raid[i] = group
 		  end
 	       else
 		  raid = self:SpawnHeader('Raid_Freebgrid', nil, visible,
-					  'showPlayer', oUF_Freebgrid.db.player,
+					  'showPlayer', ns.db.player,
 					  'showSolo', true,
-					  'showParty', oUF_Freebgrid.db.partyOn,
+					  'showParty', ns.db.partyOn,
 					  'showRaid', true,
 					  'xoffset', spacingX, 
 					  'yOffset', spacingY,
-					  'point', oUF_Freebgrid.db.point,
+					  'point', ns.db.point,
 					  'groupFilter', '1,2,3,4,5,6,7,8',
 					  'groupingOrder', '1,2,3,4,5,6,7,8',
 					  'groupBy', 'GROUP',
-					  'maxColumns', oUF_Freebgrid.db.numCol,
-					  'unitsPerColumn', oUF_Freebgrid.db.numUnits,
-					  'columnSpacing', oUF_Freebgrid.db.spacing,
+					  'maxColumns', ns.db.numCol,
+					  'unitsPerColumn', ns.db.numUnits,
+					  'columnSpacing', ns.db.spacing,
 					  'columnAnchorPoint', growth
 				       )
-		  raid:SetPoint(point, "oUF_FreebgridRaidFrame", point)
-		  raid:SetScale(oUF_Freebgrid.db.scale)
+		  raid:SetPoint(point, "nsRaidFrame", point)
+		  raid:SetScale(ns.db.scale)
 	       end
 	       
-	       if oUF_Freebgrid.db.pets then
+	       if ns.db.pets then
 		  local pets = self:SpawnHeader('Pet_Freebgrid', 'SecureGroupPetHeaderTemplate', visible,
 						'showSolo', true,
-						'showParty', oUF_Freebgrid.db.partyOn,
+						'showParty', ns.db.partyOn,
 						'showRaid', true,
 						'xoffset', spacingX,
 						'yOffset', spacingY,
-						'point', oUF_Freebgrid.db.point,
-						'maxColumns', oUF_Freebgrid.db.numCol,
-						'unitsPerColumn', oUF_Freebgrid.db.numUnits,
-						'columnSpacing', oUF_Freebgrid.db.spacing,
+						'point', ns.db.point,
+						'maxColumns', ns.db.numCol,
+						'unitsPerColumn', ns.db.numUnits,
+						'columnSpacing', ns.db.spacing,
 						'columnAnchorPoint', growth
 					     )
 		  pets:SetPoint(point, "oUF_FreebgridPetFrame", point)
-		  pets:SetScale(oUF_Freebgrid.db.scale)
+		  pets:SetScale(ns.db.scale)
 	       end
 	       
-	       if oUF_Freebgrid.db.MT then
+	       if ns.db.MT then
 		  local tank = self:SpawnHeader('MT_Freebgrid', nil, visible,
 						"showRaid", true,
-						"yOffset", -oUF_Freebgrid.db.spacing
+						"yOffset", -ns.db.spacing
 					     )
 		  tank:SetPoint(point, "oUF_FreebgridMTFrame", point)
 		  
@@ -732,26 +729,26 @@ oUF:Factory(function(self)
 		  else
 		     tank:SetAttribute('groupFilter', 'MAINTANK')
 		  end
-		  tank:SetScale(oUF_Freebgrid.db.scale)
+		  tank:SetScale(ns.db.scale)
 	       end
 	    end)
 
-oUF_Freebgrid = {}
-local oUF_Freebgrid, f = oUF_Freebgrid, CreateFrame("Frame")
+
+local f = CreateFrame("Frame")
 f:RegisterEvent("ADDON_LOADED")
 f:SetScript("OnEvent", function(self, event, addon)
 			  if addon ~= ADDON_NAME then return end
 			  
 			  FreebgridDB = FreebgridDB or {}
-			  oUF_Freebgrid.db = FreebgridDB
+			  ns.db = FreebgridDB
 			  
-			  for k, v in pairs(FreebgridDefaults) do
+			  for k, v in pairs(ns.defaults) do
 			     if(type(FreebgridDB[k]) == 'nil') then
 				FreebgridDB[k] = v
 			     end
 			  end
 			  
-			  LibStub("tekKonfig-AboutPanel").new("oUF_Freebgrid", "oUF_Freebgrid")
+			  LibStub("tekKonfig-AboutPanel").new(ADDON_NAME, ADDON_NAME)
 			  
 			  self:UnregisterEvent("ADDON_LOADED")
 		       end)
@@ -759,8 +756,8 @@ f:SetScript("OnEvent", function(self, event, addon)
 SLASH_OUF_FREEBGRIDOMF1 = '/freeb'
 SlashCmdList['OUF_FREEBGRIDOMF'] = function(inp)
 				      if(inp:match("%S+")) then
-					 InterfaceOptionsFrame_OpenToCategory'oUF_Freebgrid'
+					 InterfaceOptionsFrame_OpenToCategory(ADDON_NAME)
 				      else
-					 OUF_FREEBGRIDMOVABLE()
+					 ns.Movable()
 				      end
 				   end

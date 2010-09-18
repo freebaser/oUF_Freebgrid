@@ -1,15 +1,15 @@
-if not oUF_Freebgrid then return end
+local _, ns = ...
 
 local mediapath = "Interface\\AddOns\\oUF_Freebgrid\\media\\"
 
-oUF_Freebgrid.textures = {
+ns.textures = {
    ["gradient"] = mediapath.."gradient",
    ["Minimalist"] = mediapath.."Minimalist",
    ["Smooth"] = mediapath.."Smoothv2",
    ["Blizzard"] = "Interface\\TargetingFrame\\UI-StatusBar",
 }
 
-oUF_Freebgrid.fonts = {
+ns.fonts = {
    ["calibri"] = mediapath.."calibri.ttf",
    ["ABF"] = mediapath.."ABF.ttf",
    ["Accidental Presidency"] = mediapath.."Accidental Presidency.ttf",

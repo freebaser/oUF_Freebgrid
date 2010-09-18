@@ -1,5 +1,6 @@
+local _, ns = ...
 
-FreebgridDebuffs = {
+ns.auras = {
    debuffs = {
       -- Any Zone
       [GetSpellInfo(47486)] = 8, -- Mortal Strike
@@ -10,6 +11,7 @@ FreebgridDebuffs = {
    },
 
    instances = {
+      -- Raid Debuffs
       --["Zone"] = {
       --	[Name or GetSpellInfo(#)] = PRIORITY,
       --},
