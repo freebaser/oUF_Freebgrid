@@ -309,25 +309,27 @@ local dispellPriority = {
 }
 
 local instDebuffs = {}
+local instances = ns.auras.instances
 local getzone = function()
 		   local zone = GetInstanceInfo()
-		   if ns.auras.instances[zone] then
+		   if instances[zone] then
 		      instDebuffs = instances[zone]
 		   else
 		      instDebuffs = {}
 		   end
 		end
 
+local debuffs, buffs = ns.auras.debuffs, ns.auras.buffs 
 local CustomFilter = function(icons, ...)
 			local _, icon, name, _, _, _, dtype = ...
 
 			if instDebuffs[name] then
 			   icon.priority = instDebuffs[name]
 			   return true
-			elseif ns.auras.debuffs[name] then
+			elseif debuffs[name] then
 			   icon.priority = debuffs[name]
 			   return true
-			elseif ns.auras.buffs[name] then
+			elseif buffs[name] then
 			   icon.priority = buffs[name]
 			   icon.buff = true
 			   return true
