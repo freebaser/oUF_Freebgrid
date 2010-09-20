@@ -497,7 +497,7 @@ local style = function(self)
 		    self.Indicators = true
 		    
 		    -- Range
-		    self.Range = {
+		    self.freebRange = {
 		       insideAlpha = ns.db.inRange,
 		       outsideAlpha = ns.db.outsideRange,
 		    }

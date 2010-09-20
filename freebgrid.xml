@@ -11,5 +11,6 @@
   <Script file='elements\oUF_ReadyCheck.lua' />
   <Script file='elements\indicators.lua' />
   <Script file='elements\oUF_ResComm.lua' />
+  <Script file='elements\range.lua' />
 
 </Ui>
