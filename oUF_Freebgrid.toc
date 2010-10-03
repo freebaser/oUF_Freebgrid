@@ -1,10 +1,9 @@
-## Interface: 30300
+## Interface: 40000
 ## Title: oUF_Freebgrid
 ## Author: Freebaser
 ## Version: 4.1
 ## Notes: Raid Frames using the oUF framework.
 ## SavedVariables: FreebgridDB, Freebgridomf2
-## OptionalDeps: LibHealComm-4.0, LibResComm-1.0
 ## X-oUF: Freebgrid
 ## X-Website: http://www.wowinterface.com/downloads/info12264-oUF_Freebgrid.html
 
