@@ -198,7 +198,7 @@ local updatePower = function(power, unit)
     end
 
     local r, g, b, t
-    t = colors.power[ptype]
+    t = oUF.colors.power[ptype]
     r, g, b = 1, 1, 1
     if(t) then
         r, g, b = t[1], t[2], t[3]
@@ -325,7 +325,7 @@ local style = function(self)
     -- Mouseover script
     self:SetScript("OnEnter", OnEnter)
     self:SetScript("OnLeave", OnLeave)
-    self:RegisterForClicks"anyup"
+    self:RegisterForClicks"AnyDown"
     self:SetAttribute("*type2", "menu")
 
     -- Health bar
@@ -438,16 +438,6 @@ local style = function(self)
         self.LFDRole:SetPoint('RIGHT', self, 'LEFT', ns.db.iconsize/2, ns.db.iconsize/2)
     end
 
-    -- ResComm
-    if ns.db.rescomm then
-        --local rescomm = hp:CreateTexture(nil, "OVERLAY")
-        --rescomm:SetTexture([=[Interface\Icons\Spell_Holy_Resurrection]=])
-        --rescomm:SetTexCoord(0.07, 0.93, 0.07, 0.93)
-        --rescomm:SetAllPoints(hp)
-        --rescomm:SetAlpha(ns.db.rescommalpha)
-        --self.ResComm = rescomm
-    end
-
     if (self:GetAttribute('unitsuffix') == 'target') then
     else
         -- Enable Indicators
@@ -517,10 +507,6 @@ local style = function(self)
     self:RegisterEvent('PLAYER_TARGET_CHANGED', ChangedTarget)
     self:RegisterEvent('RAID_ROSTER_UPDATE', ChangedTarget)
     self:RegisterEvent('PLAYER_ENTERING_WORLD', getzone)
-
-    -- Unit sizes
-    self:SetAttribute('initial-height', ns.db.height)
-    self:SetAttribute('initial-width', ns.db.width)
 end
 
 local function SAP()
@@ -639,6 +625,10 @@ oUF:Factory(function(self)
         raid = {}
         for i = 1, ns.db.numCol do 
             local group = self:SpawnHeader('Raid_Freebgrid'..i, nil, visible,
+            'oUF-initialConfigFunction', ([[
+                self:SetWidth(%d)
+                self:SetHeight(%d)
+                ]]):format(ns.db.width, ns.db.height),
             'showPlayer', ns.db.player,
             'showSolo', true,
             'showParty', ns.db.partyOn,
@@ -664,6 +654,10 @@ oUF:Factory(function(self)
         end
     else
         raid = self:SpawnHeader('Raid_Freebgrid', nil, visible,
+        'oUF-initialConfigFunction', ([[
+            self:SetWidth(%d)
+            self:SetHeight(%d)
+            ]]):format(ns.db.width, ns.db.height),
         'showPlayer', ns.db.player,
         'showSolo', true,
         'showParty', ns.db.partyOn,
@@ -685,6 +679,10 @@ oUF:Factory(function(self)
 
     if ns.db.pets then
         local pets = self:SpawnHeader('Pet_Freebgrid', 'SecureGroupPetHeaderTemplate', visible,
+        'oUF-initialConfigFunction', ([[
+            self:SetWidth(%d)
+            self:SetHeight(%d)
+            ]]):format(ns.db.width, ns.db.height),
         'showSolo', true,
         'showParty', ns.db.partyOn,
         'showRaid', true,
@@ -702,6 +700,10 @@ oUF:Factory(function(self)
 
     if ns.db.MT then
         local tank = self:SpawnHeader('MT_Freebgrid', nil, visible,
+        'oUF-initialConfigFunction', ([[
+            self:SetWidth(%d)
+            self:SetHeight(%d)
+            ]]):format(ns.db.width, ns.db.height),
         "showRaid", true,
         "yOffset", -ns.db.spacing
         )

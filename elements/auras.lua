@@ -122,7 +122,7 @@ local updateIcon = function(unit, auras)
     while true do
         local name, rank, texture, count, dtype, duration, timeLeft, caster, isStealable, shouldConsolidate, spellID = UnitAura(unit, index, 'HARMFUL')
         if not name then break end
-
+        --print(name..", "..spellID)
         local icon = auras.button
         local show = auras.CustomFilter(auras, unit, icon, name, rank, texture, count, dtype, duration, timeLeft, caster, isStealable, shouldConsolidate, spellID)
 
@@ -147,7 +147,7 @@ local updateIcon = function(unit, auras)
     while true do
         local name, rank, texture, count, dtype, duration, timeLeft, caster, isStealable, shouldConsolidate, spellID = UnitAura(unit, index, 'HELPFUL')
         if not name then break end
-
+        --print(name..", "..spellID)
         local icon = auras.button
         local show = auras.CustomFilter(auras, unit, icon, name, rank, texture, count, dtype, duration, timeLeft, caster, isStealable, shouldConsolidate, spellID)
 
