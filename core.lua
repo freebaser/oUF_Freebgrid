@@ -383,7 +383,7 @@ local style = function(self)
     DDG:SetShadowOffset(1.25, -1.25)
     self:Tag(DDG, '[freebgrid:ddg]')
 
-    -- Highliget tex
+    -- Highlight tex
     local hl = hp:CreateTexture(nil, "OVERLAY")
     hl:SetAllPoints(self)
     hl:SetTexture([=[Interface\AddOns\oUF_Freebgrid\media\white.tga]=])
@@ -449,12 +449,12 @@ local style = function(self)
             outsideAlpha = ns.db.outsideRange,
         }
 
-        -- ReadyCheck
+        --[[ ReadyCheck
         self.ReadyCheck = hp:CreateTexture(nil, "OVERLAY")
         self.ReadyCheck:SetPoint("TOP", self)
         self.ReadyCheck:SetSize(ns.db.iconsize, ns.db.iconsize)
         self.ReadyCheck.delayTime = 8
-        self.ReadyCheck.fadeTime = 1
+        self.ReadyCheck.fadeTime = 1]]
 
         -- Auras
         local auras = CreateFrame("Frame", nil, self)
