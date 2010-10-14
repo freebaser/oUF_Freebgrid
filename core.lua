@@ -24,6 +24,11 @@ do
     end)
 end
 
+--CompactRaidFrameManager:UnregisterAllEvents()
+--CompactRaidFrameManager:Hide()
+--CompactRaidFrameContainer:UnregisterAllEvents()
+--CompactRaidFrameContainer:Hide()
+
 -- Number formatting
 local numberize = ns.numberize
 
@@ -451,12 +456,10 @@ local style = function(self)
             outsideAlpha = ns.db.outsideRange,
         }
 
-        --[[ ReadyCheck
+        -- ReadyCheck
         self.ReadyCheck = hp:CreateTexture(nil, "OVERLAY")
         self.ReadyCheck:SetPoint("TOP", self)
         self.ReadyCheck:SetSize(ns.db.iconsize, ns.db.iconsize)
-        self.ReadyCheck.delayTime = 8
-        self.ReadyCheck.fadeTime = 1]]
 
         -- Auras
         local auras = CreateFrame("Frame", nil, self)
