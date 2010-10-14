@@ -29,14 +29,6 @@ oUF.Tags['freebgrid:ddg'] = function(u)
 end
 oUF.TagEvents['freebgrid:ddg'] = 'UNIT_HEALTH'
 
-oUF.Tags['freebgrid:heal'] = function(u)
-    local incheal = UnitGetIncomingHeals(u, 'player') or 0
-    if incheal > 0 then
-        return numberize(incheal)
-    end
-end
-oUF.TagEvents['freebgrid:heal'] = 'UNIT_HEAL_PREDICTION'
-
 local x = "M"
 
 local getTime = function(expirationTime)

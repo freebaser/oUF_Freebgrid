@@ -443,6 +443,8 @@ local style = function(self)
         -- Enable Indicators
         self.Indicators = true
 
+        self.Heals = true 
+
         -- Range
         self.freebRange = {
             insideAlpha = ns.db.inRange,
@@ -463,42 +465,6 @@ local style = function(self)
         auras.size = ns.db.debuffsize
         auras.CustomFilter = CustomFilter
         self.freebAuras = auras
-
-        local heal = self.Health:CreateFontString(nil, "OVERLAY")
-        heal:SetPoint("BOTTOM")
-        heal:SetJustifyH("CENTER")
-        heal:SetFont(ns.fonts[ns.db.font], ns.db.fontsize-2)
-        heal:SetShadowOffset(1.25, -1.25)
-        heal:SetTextColor(0,1,0,1)
-        self.Tag(heal, '[freebgrid:heal]')
-
-        local mhealbar = CreateFrame('StatusBar', nil, self.Health)
-        mhealbar:SetStatusBarTexture(ns.db.texture)
-        mhealbar:SetStatusBarColor(0, .7, .4, .4)
-        if ns.db.orientation == "VERTICAL" then
-            mhealbar:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT") 
-            mhealbar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT")
-        else 
-            mhealbar:SetPoint("TOPRIGHT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT") 
-            mhealbar:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "BOTTOMLEFT")
-        end
-
-        local ohealbar = CreateFrame('StatusBar', nil, self.Health)
-        ohealbar:SetStatusBarTexture(ns.db.texture)
-        ohealbar:SetStatusBarColor(0, .9, 0, .4)
-        if ns.db.orientation == "VERTICAL" then
-            ohealbar:SetPoint("TOPLEFT", mhealbar:GetStatusBarTexture(), "TOPRIGHT") 
-            ohealbar:SetPoint("BOTTOMLEFT", mhealbar:GetStatusBarTexture(), "BOTTOMRIGHT")
-        else
-            ohealbar:SetPoint("TOPRIGHT", mhealbar:GetStatusBarTexture(), "BOTTOMRIGHT") 
-            ohealbar:SetPoint("TOPLEFT", mhealbar:GetStatusBarTexture(), "BOTTOMLEFT")
-        end
-
-        self.HealPrediction = {
-            myBar = ns.db.healcommbar and mhealbar,
-            otherBar = ns.db.healothersonly and ohealbar,
-            maxOverflow = 1,
-        }
     end
 
     -- Add events

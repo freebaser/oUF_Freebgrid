@@ -433,7 +433,7 @@ f:SetScript("OnShow", function(f)
     multi:SetScript("OnClick", function(self) checksound(self); ns.db.multi = not ns.db.multi; end)
     multi:SetChecked(ns.db.multi)
 
-    local healgroup = LibStub("tekKonfig-Group").new(f, "HealComm Settings")
+    local healgroup = LibStub("tekKonfig-Group").new(f, "HealPrediction Settings")
     healgroup:SetHeight(190)
     healgroup:SetWidth(180)
     healgroup:SetPoint("TOPRIGHT", f, "TOPRIGHT", -10, -15)
