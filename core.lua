@@ -29,9 +29,6 @@ end
 --CompactRaidFrameContainer:UnregisterAllEvents()
 --CompactRaidFrameContainer:Hide()
 
--- Number formatting
-local numberize = ns.numberize
-
 oUF.colors.power['MANA'] = {.31,.45,.63}
 oUF.colors.power['RAGE'] = {.69,.31,.31}
 
@@ -104,52 +101,8 @@ local updateThreat = function(self, event, unit)
     threat:Show()
 end
 
-local function utf8sub(str, start, numChars) 
-    local currentIndex = start 
-    while numChars > 0 and currentIndex <= #str do 
-        local char = string.byte(str, currentIndex) 
-        if char >= 240 then 
-            currentIndex = currentIndex + 4 
-        elseif char >= 225 then 
-            currentIndex = currentIndex + 3 
-        elseif char >= 192 then 
-            currentIndex = currentIndex + 2 
-        else 
-            currentIndex = currentIndex + 1 
-        end 
-        numChars = numChars - 1 
-    end 
-    return str:sub(start, currentIndex - 1) 
-end 
-local nameCache = {}
-
 -- Upate Health, Name, and coloring
 local updateHealth = function(health, unit)
-    local def = oUF.Tags['missinghp'](unit)
-    local per = oUF.Tags['perhp'](unit)
-    local name = oUF.Tags['freebgrid:name'](unit)
-    local self = health.__owner
-    local val = 1
-    if ns.db.powerbar then
-        val = 8
-    end
-
-    if per > 90 or per == 0 or ns.db.showname then
-        if nameCache[name] then 
-            self.Info:SetText(nameCache[name]) 
-        else 
-            local substring 
-            for length=#name, 1, -1 do 
-                substring = utf8sub(name, 1, length) 
-                self.Info:SetText(substring) 
-                if self.Info:GetStringWidth() <= ns.db.width - val then break end 
-            end
-            nameCache[name] = substring
-        end
-    else
-        self.Info:SetText('-'..numberize(def))
-    end
-
     local r, g, b, t
     if(UnitIsPlayer(unit)) then
         local _, class = UnitClass(unit)
@@ -163,8 +116,6 @@ local updateHealth = function(health, unit)
     end
 
     if(b) then
-        self.Info:SetTextColor(r, g, b)
-
         local bg = health.bg
         if ns.db.reversecolors then
             bg:SetVertexColor(r*.2, g*.2, b*.2)
@@ -370,23 +321,7 @@ local style = function(self)
     threat:SetBackdropColor(0, 0, 0, 0)
     threat:SetBackdropBorderColor(0, 0, 0, 1)
     threat.Override = updateThreat
-    self.Threat = threat
-
-    -- Name/Hp
-    local info = hp:CreateFontString(nil, "OVERLAY")
-    info:SetPoint("CENTER")
-    info:SetJustifyH("CENTER")
-    info:SetFont(ns.fonts[ns.db.font], ns.db.fontsize)
-    info:SetShadowOffset(1.25, -1.25)
-    self.Info = info
-
-    -- Dead/DC/Ghost text
-    local DDG = hp:CreateFontString(nil, "OVERLAY")
-    DDG:SetPoint("BOTTOM")
-    DDG:SetJustifyH("CENTER")
-    DDG:SetFont(ns.fonts[ns.db.font], ns.db.fontsize-2)
-    DDG:SetShadowOffset(1.25, -1.25)
-    self:Tag(DDG, '[freebgrid:ddg]')
+    self.Threat = threat 
 
     -- Highlight tex
     local hl = hp:CreateTexture(nil, "OVERLAY")
@@ -443,32 +378,31 @@ local style = function(self)
         self.LFDRole:SetPoint('RIGHT', self, 'LEFT', ns.db.iconsize/2, ns.db.iconsize/2)
     end
 
-    if (self:GetAttribute('unitsuffix') == 'target') then
-    else
-        -- Enable Indicators
-        self.Indicators = true
+    self.Info = true
 
-        self.Heals = true 
+    -- Enable Indicators
+    self.Indicators = true
 
-        -- Range
-        self.freebRange = {
-            insideAlpha = ns.db.inRange,
-            outsideAlpha = ns.db.outsideRange,
-        }
+    self.Heals = true 
 
-        -- ReadyCheck
-        self.ReadyCheck = hp:CreateTexture(nil, "OVERLAY")
-        self.ReadyCheck:SetPoint("TOP", self)
-        self.ReadyCheck:SetSize(ns.db.iconsize, ns.db.iconsize)
+    -- Range
+    self.freebRange = {
+        insideAlpha = ns.db.inRange,
+        outsideAlpha = ns.db.outsideRange,
+    }
 
-        -- Auras
-        local auras = CreateFrame("Frame", nil, self)
-        auras:SetSize(ns.db.debuffsize, ns.db.debuffsize)
-        auras:SetPoint("CENTER", hp)
-        auras.size = ns.db.debuffsize
-        auras.CustomFilter = CustomFilter
-        self.freebAuras = auras
-    end
+    -- ReadyCheck
+    self.ReadyCheck = hp:CreateTexture(nil, "OVERLAY")
+    self.ReadyCheck:SetPoint("TOP", self)
+    self.ReadyCheck:SetSize(ns.db.iconsize, ns.db.iconsize)
+
+    -- Auras
+    local auras = CreateFrame("Frame", nil, self)
+    auras:SetSize(ns.db.debuffsize, ns.db.debuffsize)
+    auras:SetPoint("CENTER", hp)
+    auras.size = ns.db.debuffsize
+    auras.CustomFilter = CustomFilter
+    self.freebAuras = auras
 
     -- Add events
     self:RegisterEvent('PLAYER_FOCUS_CHANGED', FocusTarget)
@@ -595,9 +529,9 @@ oUF:Factory(function(self)
         for i = 1, ns.db.numCol do 
             local group = self:SpawnHeader('Raid_Freebgrid'..i, nil, visible,
             'oUF-initialConfigFunction', ([[
-                self:SetWidth(%d)
-                self:SetHeight(%d)
-                ]]):format(ns.db.width, ns.db.height),
+            self:SetWidth(%d)
+            self:SetHeight(%d)
+            ]]):format(ns.db.width, ns.db.height),
             'showPlayer', ns.db.player,
             'showSolo', true,
             'showParty', ns.db.partyOn,
@@ -624,9 +558,9 @@ oUF:Factory(function(self)
     else
         raid = self:SpawnHeader('Raid_Freebgrid', nil, visible,
         'oUF-initialConfigFunction', ([[
-            self:SetWidth(%d)
-            self:SetHeight(%d)
-            ]]):format(ns.db.width, ns.db.height),
+        self:SetWidth(%d)
+        self:SetHeight(%d)
+        ]]):format(ns.db.width, ns.db.height),
         'showPlayer', ns.db.player,
         'showSolo', true,
         'showParty', ns.db.partyOn,
@@ -649,9 +583,9 @@ oUF:Factory(function(self)
     if ns.db.pets then
         local pets = self:SpawnHeader('Pet_Freebgrid', 'SecureGroupPetHeaderTemplate', visible,
         'oUF-initialConfigFunction', ([[
-            self:SetWidth(%d)
-            self:SetHeight(%d)
-            ]]):format(ns.db.width, ns.db.height),
+        self:SetWidth(%d)
+        self:SetHeight(%d)
+        ]]):format(ns.db.width, ns.db.height),
         'showSolo', true,
         'showParty', ns.db.partyOn,
         'showRaid', true,
@@ -670,9 +604,9 @@ oUF:Factory(function(self)
     if ns.db.MT then
         local tank = self:SpawnHeader('MT_Freebgrid', nil, visible,
         'oUF-initialConfigFunction', ([[
-            self:SetWidth(%d)
-            self:SetHeight(%d)
-            ]]):format(ns.db.width, ns.db.height),
+        self:SetWidth(%d)
+        self:SetHeight(%d)
+        ]]):format(ns.db.width, ns.db.height),
         "showRaid", true,
         "yOffset", -ns.db.spacing
         )

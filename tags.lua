@@ -13,22 +13,6 @@ local numberize = function(val)
 end
 ns.numberize = numberize
 
-oUF.Tags['freebgrid:name'] = function(u, r)
-    return UnitName(r or u) or "unknown"
-end
-oUF.TagEvents['freebgrid:name'] = 'UNIT_NAME_UPDATE'
-
-oUF.Tags['freebgrid:ddg'] = function(u)
-    if UnitIsDead(u) then
-        return "|cffCFCFCFDead|r"
-    elseif UnitIsGhost(u) then
-        return "|cffCFCFCFGhost|r"
-    elseif not UnitIsConnected(u) then
-        return "|cffCFCFCFD/C|r"
-    end
-end
-oUF.TagEvents['freebgrid:ddg'] = 'UNIT_HEALTH'
-
 local x = "M"
 
 local getTime = function(expirationTime)

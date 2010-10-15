@@ -9,6 +9,7 @@
     <Script file='elements\auras.lua' />
     <Script file='elements\indicators.lua' />
     <Script file='elements\heals.lua' />
+    <Script file='elements\info.lua' />
     <Script file='elements\range.lua' />
 
 </Ui>
