@@ -2,6 +2,8 @@ local _, ns = ...
 local oUF =  ns.oUF or oUF
 assert(oUF, "oUF_Freebgrid was unable to locate oUF install.")
 
+local namelength = 4
+
 local function hex(r, g, b)
     if(type(r) == 'table') then
         if(r.r) then r, g, b = r.r, r.g, r.b else r, g, b = unpack(r) end
@@ -45,7 +47,7 @@ oUF.Tags['freebgrid:info'] = function(u, r)
             else
                 color = "|cffFFFFFF"
             end
-            local str = color..utf8sub(name, 1, 4).."|r"
+            local str = color..utf8sub(name, 1, namelength).."|r"
 
             nameCache[name] = str
             return str
@@ -76,6 +78,7 @@ local Enable = function(self)
         name:SetJustifyH("CENTER")
         name:SetFont(ns.fonts[ns.db.font], ns.db.fontsize, ns.db.outline)
         name:SetShadowOffset(1.25, -1.25)
+        name.overrideUnit = true
         self:Tag(name, '[freebgrid:info]')
 
         -- Dead/DC/Ghost text
