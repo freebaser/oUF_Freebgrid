@@ -101,7 +101,6 @@ local updateThreat = function(self, event, unit)
     threat:Show()
 end
 
--- Upate Health, Name, and coloring
 local updateHealth = function(health, unit)
     local r, g, b, t
     if(UnitIsPlayer(unit)) then
@@ -117,13 +116,8 @@ local updateHealth = function(health, unit)
 
     if(b) then
         local bg = health.bg
-        if ns.db.reversecolors then
-            bg:SetVertexColor(r*.2, g*.2, b*.2)
-            health:SetStatusBarColor(r, g, b)
-        else
-            bg:SetVertexColor(r, g, b)
-            health:SetStatusBarColor(0, 0, 0, .8)
-        end
+        bg:SetVertexColor(r, g, b)
+        health:SetStatusBarColor(0, 0, 0, .8)
     end
 end
 
@@ -304,8 +298,15 @@ local style = function(self)
     hpbg:SetTexture(ns.textures[ns.db.texture])
     hpbg:SetAllPoints(hp)
 
-    hp.bg = hpbg
-    hp.PostUpdate = updateHealth
+    if ns.db.reversecolors then
+        hp.colorClass =  true
+        hp.colorReaction = true
+        hpbg.multiplier = .3
+    else
+        hp.PostUpdate = updateHealth
+    end
+
+    hp.bg = hpbg 
     self.Health = hp
 
     if ns.db.powerbar then
