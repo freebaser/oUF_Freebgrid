@@ -29,7 +29,7 @@ local Enable = function(self)
         self.heals = self.Health:CreateFontString(nil, "OVERLAY")
         self.heals:SetPoint("BOTTOM")
         self.heals:SetShadowOffset(1.25, -1.25)
-        self.heals:SetFont(ns.fonts[ns.db.font], ns.db.fontsize-2)
+        self.heals:SetFont(ns.fonts[ns.db.font], ns.db.fontsize, ns.db.outline)
 
         if ns.db.healcommtext then
             if ns.db.healothersonly then

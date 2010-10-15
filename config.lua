@@ -22,6 +22,7 @@ ns.defaults = {
 
     texture = "gradient",
     font = "calibri",
+    outline = "",
 
     showBlizzParty = false,
     solo = false,
@@ -84,6 +85,14 @@ ns.growth = {
     ["LEFT"] = "LEFT",
 }
 
+ns.outline = {
+    ["None"] = "",
+    ["OUTLINE"] = "OUTLINE",
+    ["THINOUTLINE"] = "THINOUTLINE",
+    ["MONOCHROME"] = "MONOCHROME",
+    ["OUTLINEMONO"] = "THINOUTLINEMONOCHROME",
+}
+
 function ns:SetTex(v)
     if v then self.db.texture = v end
 end
@@ -102,6 +111,10 @@ end
 
 function ns:SetGrowth(v)
     if v then self.db.growth = v end
+end
+
+function ns:SetOutline(v)
+    if v then self.db.outline = v end
 end
 
 ----------------------
@@ -160,8 +173,31 @@ local function fontfunc(frame)
     end)
 end
 
+local function outlinefunc(frame)
+    local outlinedropdown, outlinedropdowntext, outlinedropdowncontainer = tekdropdown.new(frame, "Outline", "TOPRIGHT", frame, 0, -100)
+    outlinedropdowntext:SetText(ns.db.outline or ns.defaults.outline)
+    outlinedropdown.tiptext = "Change the font outline."
+
+    local function OutlineOnClick(self)
+        UIDropDownMenu_SetSelectedValue(outlinedropdown, self.value)
+        outlinedropdowntext:SetText(self.value)
+        ns:SetOutline(self.value)
+    end
+    UIDropDownMenu_Initialize(outlinedropdown, function()
+        local selected, info = UIDropDownMenu_GetSelectedValue(outlinedropdown) or ns.db.outline, UIDropDownMenu_CreateInfo()
+
+        for name in pairs(ns.outline) do
+            info.text = name
+            info.value = name
+            info.func = OutlineOnClick
+            info.checked = name == selected
+            UIDropDownMenu_AddButton(info)
+        end
+    end)
+end
+
 local function orientationfunc(frame)
-    local orientationdropdown, orientationdropdowntext, orientationdropdowncontainer = tekdropdown.new(frame, "Statusbar Orientation", "TOPRIGHT", frame, 0, -100)
+    local orientationdropdown, orientationdropdowntext, orientationdropdowncontainer = tekdropdown.new(frame, "Statusbar Orientation", "TOPRIGHT", frame, 0, -150)
     orientationdropdowntext:SetText(ns.db.orientation or ns.defaults.orientation)
     orientationdropdown.tiptext = "Change the orientation of the statusbars."
 
@@ -185,7 +221,7 @@ local function orientationfunc(frame)
 end
 
 local function pointfunc(frame)
-    local pointdropdown, pointdropdowntext, pointdropdowncontainer = tekdropdown.new(frame, "Point Direction", "TOPRIGHT", frame, 0, -150)
+    local pointdropdown, pointdropdowntext, pointdropdowncontainer = tekdropdown.new(frame, "Point Direction", "TOPRIGHT", frame, 0, -200)
     pointdropdowntext:SetText(ns.db.point or ns.defaults.point)
     pointdropdown.tiptext = "Set the point to have additional units added."
 
@@ -209,7 +245,7 @@ local function pointfunc(frame)
 end
 
 local function growthfunc(frame)
-    local growthdropdown, growthdropdowntext, growthdropdowncontainer = tekdropdown.new(frame, "Growth Direction", "TOPRIGHT", frame, 0, -200)
+    local growthdropdown, growthdropdowntext, growthdropdowncontainer = tekdropdown.new(frame, "Growth Direction", "TOPRIGHT", frame, 0, -250)
     growthdropdowntext:SetText(ns.db.growth or ns.defaults.growth)
     growthdropdown.tiptext = "Set the growth direction for additional groups."
 
@@ -240,8 +276,7 @@ local frame = CreateFrame("Frame", nil, InterfaceOptionsFramePanelContainer)
 frame.name = ADDON_NAME
 frame:Hide()
 frame:SetScript("OnShow", function(frame)
-    local ns = ns
-    local title, subtitle = LibStub("tekKonfig-Heading").new(frame, "ns", "General settings for the ns.")
+    local title, subtitle = LibStub("tekKonfig-Heading").new(frame, "oUF_Freebgrid", "General settings for the oUF_Freebgrid.")
 
     local lockpos = tekcheck.new(frame, nil, "Unlock", "TOPLEFT", subtitle, "BOTTOMLEFT", -2, 0)
     lockpos.tiptext = "Unlocks headers to be moved."
@@ -323,18 +358,9 @@ frame:SetScript("OnShow", function(frame)
     debuffsizeslider:SetScript("OnValueChanged", function(self)
         ns.db.debuffsize = self:GetValue()
         debuffsizeslidertext:SetText(string.format("Debuff Size: %d", ns.db.debuffsize or ns.defaults.debuffsize))
-    end)
+    end) 
 
-    local spacingslider, spacingslidertext, spacingcontainer = tekslider.new(frame, string.format("Spacing: %d", ns.db.spacing or ns.defaults.spacing), 0, 30, "TOPRIGHT", frame, -40, -265)
-    spacingslider.tiptext = "Set the amount of space between units."
-    spacingslider:SetValue(ns.db.spacing or ns.defaults.spacing)
-    spacingslider:SetValueStep(1)
-    spacingslider:SetScript("OnValueChanged", function(self)
-        ns.db.spacing = self:GetValue()
-        spacingslidertext:SetText(string.format("Spacing: %d", ns.db.spacing or ns.defaults.spacing))
-    end)
-
-    local numColslider, numColslidertext, numColcontainer = tekslider.new(frame, string.format("Number of groups: %d", ns.db.numCol or ns.defaults.numCol), 1, 8, "TOPLEFT", spacingslider, "BOTTOMLEFT", 0, -GAP)
+    local numColslider, numColslidertext, numColcontainer = tekslider.new(frame, string.format("Number of groups: %d", ns.db.numCol or ns.defaults.numCol), 1, 8, "BOTTOMRIGHT", frame, "BOTTOMRIGHT", -30, 40)
     numColslider.tiptext = "Set the number of groups."
     numColslider:SetValue(ns.db.numCol or ns.defaults.numCol)
     numColslider:SetValueStep(1)
@@ -343,7 +369,7 @@ frame:SetScript("OnShow", function(frame)
         numColslidertext:SetText(string.format("Number of groups: %d", ns.db.numCol or ns.defaults.numCol))
     end)
 
-    local numUnitsslider, numUnitsslidertext, numUnitscontainer = tekslider.new(frame, string.format("Units per group: %d", ns.db.numUnits or ns.defaults.numUnits), 1, 40, "TOPLEFT", numColslider, "BOTTOMLEFT", 0, -GAP)
+    local numUnitsslider, numUnitsslidertext, numUnitscontainer = tekslider.new(frame, string.format("Units per group: %d", ns.db.numUnits or ns.defaults.numUnits), 1, 40, "BOTTOMLEFT", numColslider, "TOPLEFT", 0, GAP)
     numUnitsslider.tiptext = "Set the number of units per group."
     numUnitsslider:SetValue(ns.db.numUnits or ns.defaults.numUnits)
     numUnitsslider:SetValueStep(1)
@@ -354,6 +380,7 @@ frame:SetScript("OnShow", function(frame)
 
     texfunc(frame)
     fontfunc(frame)
+    outlinefunc(frame)
     orientationfunc(frame)
     pointfunc(frame)
     growthfunc(frame)
@@ -510,6 +537,15 @@ f:SetScript("OnShow", function(f)
     indicatorsizeslider:SetScript("OnValueChanged", function(self)
         ns.db.indicatorsize = self:GetValue()
         indicatorsizeslidertext:SetText(string.format("Indicator size: %d", ns.db.indicatorsize or ns.defaults.indicatorsize))
+    end)
+
+    local spacingslider, spacingslidertext, spacingcontainer = tekslider.new(f, string.format("Spacing: %d", ns.db.spacing or ns.defaults.spacing), 0, 30, "BOTTOMLEFT", indicatorsizeslider, "TOPLEFT", 0, GAP)
+    spacingslider.tiptext = "Set the amount of space between units."
+    spacingslider:SetValue(ns.db.spacing or ns.defaults.spacing)
+    spacingslider:SetValueStep(1)
+    spacingslider:SetScript("OnValueChanged", function(self)
+        ns.db.spacing = self:GetValue()
+        spacingslidertext:SetText(string.format("Spacing: %d", ns.db.spacing or ns.defaults.spacing))
     end)
 
     local reload = tekbutton.new_small(f)

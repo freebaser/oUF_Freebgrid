@@ -36,11 +36,6 @@ local CreateAuraTimer = function(self,elapsed)
                 self.first = false
             end
             if self.timeLeft > 0 then
-                if self.timeLeft < 5 then
-                    self.remaining:SetTextColor(1, 0, 0)
-                else
-                    self.remaining:SetTextColor(1, 1, 0)
-                end
                 local atime = FormatTime(self.timeLeft)
                 self.remaining:SetText(atime)
             else
@@ -81,7 +76,8 @@ local createAuraIcon = function(auras)
 
     local remaining = button:CreateFontString(nil, "OVERLAY")
     remaining:SetPoint("CENTER")
-    remaining:SetFont(ns.fonts[ns.db.font], 11, "OUTLINE")
+    local font, fontsize = GameFontNormal:GetFont()
+    remaining:SetFont(font, fontsize, "THINOUTLINE")
     remaining:SetTextColor(1, 1, 0)
     button.remaining = remaining
 

@@ -8,7 +8,7 @@ local GameTooltip = GameTooltip
 local function HideTooltip() GameTooltip:Hide() end
 local function ShowTooltip(self)
 	if self.frame.tiptext then
-		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT")
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 		GameTooltip:SetText(self.frame.tiptext, nil, nil, nil, nil, true)
 	end
 end

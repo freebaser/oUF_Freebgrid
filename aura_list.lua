@@ -3,7 +3,7 @@ local _, ns = ...
 ns.auras = {
     debuffs = {
         -- Any Zone
-        --[GetSpellInfo(47486)] = 8, -- Mortal Strike
+        --["Weakened Soul"] = 8,
     },
 
     buffs = {
