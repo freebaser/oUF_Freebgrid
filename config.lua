@@ -64,6 +64,8 @@ ns.defaults = {
 
     frequent = false,
     multi = false,
+
+    frequpdate = 0.5,
 }
 
 ns.orientation = {
@@ -519,6 +521,15 @@ f:SetScript("OnShow", function(f)
     powerbarsizeslider:SetScript("OnValueChanged", function(self)
         ns.db.powerbarsize = self:GetValue()
         powerbarsizeslidertext:SetText(string.format("Powerbar size: %.2f", ns.db.powerbarsize or ns.defaults.powerbarsize))
+    end)
+
+    local frequpdateslider, frequpdateslidertext, frequpdatecontainer = tekslider.new(f, string.format("Tag frequency: %.2f", ns.db.frequpdate or ns.defaults.frequpdate), 0.1, 1, "TOPLEFT", powerbarsizeslider, "BOTTOMLEFT", 0, -GAP-8)
+    frequpdateslider.tiptext = "Set the update frequency of Tag Indicators."
+    frequpdateslider:SetValue(ns.db.frequpdate or ns.defaults.frequpdate)
+    frequpdateslider:SetValueStep(.1)
+    frequpdateslider:SetScript("OnValueChanged", function(self)
+        ns.db.frequpdate = self:GetValue()
+        frequpdateslidertext:SetText(string.format("Tag frequency: %.2f", ns.db.frequpdate or ns.defaults.frequpdate))
     end)
 
     local symbolsizeslider, symbolsizeslidertext, symbolsizecontainer = tekslider.new(f, string.format("Symbol size: %d", ns.db.symbolsize or ns.defaults.symbolsize), 8, 20, "BOTTOMLEFT", f, "BOTTOMLEFT", 15, GAP)

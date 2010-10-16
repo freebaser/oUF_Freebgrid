@@ -21,7 +21,7 @@ ns.auras = {
         --["Zone"] = {
         --	[Name or GetSpellInfo(#)] = PRIORITY,
         --},
---[[
+
         ["The Ruby Sanctum"] = {
             [GetSpellInfo(74562)] = 6, -- Fiery Combustion
             [GetSpellInfo(75883)] = 5, -- Combustion
@@ -30,9 +30,9 @@ ns.auras = {
         },
         ["Icecrown Citadel"] = {
             --The Lower Spire
-            [GetSpellInfo(70980)] = 6, -- Web Wrap
+            [GetSpellInfo(38028)] = 6, -- Web Wrap
             [GetSpellInfo(69483)] = 6, -- Dark Reckoning
-            [GetSpellInfo(69969)] = 5, -- Curse of Doom
+            [GetSpellInfo(71124)] = 5, -- Curse of Doom
             --The Plagueworks
             [GetSpellInfo(71089)] = 5, -- Bubbling Pus
             [GetSpellInfo(71127)] = 7, -- Mortal Wound
@@ -107,11 +107,11 @@ ns.auras = {
             [GetSpellInfo(71941)] = 1, -- Twisted Nightmares
             --Sindragosa
             [GetSpellInfo(69762)] = 5, -- Unchained Magic
-            [GetSpellInfo(70106)] = 6, -- Chlled to the Bone
+            --[GetSpellInfo(70106)] = 6, -- Chlled to the Bone
             [GetSpellInfo(69766)] = 6, -- Instability
             [GetSpellInfo(70126)] = 9, -- Frost Beacon
             [GetSpellInfo(70157)] = 8, -- Ice Tomb
-            [GetSpellInfo(70127)] = 7, -- Mystic Buffet
+            --[GetSpellInfo(70127)] = 7, -- Mystic Buffet
             --The Lich King
             [GetSpellInfo(70337)] = 8, -- Necrotic plague
             [GetSpellInfo(72149)] = 5, -- Shockwave
@@ -119,7 +119,7 @@ ns.auras = {
             [GetSpellInfo(69242)] = 5, -- Soul Shriek
             [GetSpellInfo(69409)] = 9, -- Soul Reaper
             [GetSpellInfo(72762)] = 5, -- Defile
-            [GetSpellInfo(68980)] = 8, --Harvest Soul
-        },]]
+            [GetSpellInfo(68980)] = 8, -- Harvest Soul
+        },
     },
 }

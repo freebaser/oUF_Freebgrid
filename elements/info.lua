@@ -31,31 +31,35 @@ local function utf8sub(str, start, numChars)
     return str:sub(start, currentIndex - 1) 
 end 
 local nameCache = {}
+local colorCache = {}
 
 oUF.Tags['freebgrid:info'] = function(u, r)
     local name = UnitName(r or u) or "unknown"
     local def = oUF.Tags['missinghp'](u)
     local per = oUF.Tags['perhp'](u)
+    local _, class = UnitClass(u)
+    local color
+    if class then
+        if colorCache[class] then
+            color = colorCache[class]
+        else
+            color = hex(oUF.colors.class[class])
+        end
+    else
+        color = "|cffFFFFFF"
+    end
 
     if r or per > 90 or per == 0 or ns.db.showname then
         if nameCache[name] then
             return nameCache[name]
-        else
-            local _, class = UnitClass(u)
-            if class then
-                color = hex(oUF.colors.class[class])
-            else
-                color = "|cffFFFFFF"
-            end
+        else 
             local str = color..utf8sub(name, 1, namelength).."|r"
-
             nameCache[name] = str
+            
             return str
         end
-    elseif per > 50 then
-        return ("|cffFF9900%s|r"):format("-"..numberize(def))
     else
-        return ("|cffFF0000%s|r"):format("-"..numberize(def))
+        return (color.."-"..numberize(def).."|r")
     end
 end
 oUF.TagEvents['info'] = 'UNIT_NAME_UPDATE'
