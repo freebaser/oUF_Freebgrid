@@ -76,7 +76,7 @@ local createAuraIcon = function(auras)
 
     local remaining = button:CreateFontString(nil, "OVERLAY")
     remaining:SetPoint("CENTER")
-    local font, fontsize = GameFontNormal:GetFont()
+    local font, fontsize = GameFontNormalSmall:GetFont()
     remaining:SetFont(font, fontsize, "THINOUTLINE")
     remaining:SetTextColor(1, 1, 0)
     button.remaining = remaining

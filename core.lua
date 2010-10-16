@@ -352,7 +352,7 @@ local style = function(self)
     self.FocusHighlight = fBorder
 
     -- Raid Icons
-    local ricon = hp:CreateTexture(nil, 'HIGHLIGHT')
+    local ricon = hp:CreateTexture(nil, 'OVERLAY')
     ricon:SetPoint("TOP", self, 0, 5)
     ricon:SetSize(ns.db.iconsize, ns.db.iconsize)
     self.RaidIcon = ricon

@@ -2,6 +2,11 @@ local _, ns = ...
 local oUF = ns.oUF or oUF
 assert(oUF, "oUF_Freebgrid was unable to locate oUF install.")
 
+local spellcache = setmetatable({}, {__index=function(t,v) local a = {GetSpellInfo(v)} if GetSpellInfo(v) then t[v] = a end return a end})
+local function GetSpellInfo(a)
+    return unpack(spellcache[a])
+end
+
 local numberize = function(val)
     if (val >= 1e6) then
         return ("%.1fm"):format(val / 1e6)
@@ -25,7 +30,8 @@ end
 
 -- Priest
 local pomCount = {"i","h","g","f","Z","Y"}
-oUF.Tags['freebgrid:pom'] = function(u) local c = select(4, UnitAura(u, GetSpellInfo(41635))) if c then return "|cffFFCF7F"..pomCount[c].."|r" end end
+oUF.Tags['freebgrid:pom'] = function(u) 
+    local c = select(4, UnitAura(u, GetSpellInfo(41635))) if c then return "|cffFFCF7F"..pomCount[c].."|r" end end
 oUF.TagEvents['freebgrid:pom'] = "UNIT_AURA"
 
 oUF.Tags['freebgrid:rnw'] = function(u)
@@ -64,13 +70,60 @@ oUF.TagEvents['freebgrid:sp'] = "UNIT_AURA"
 oUF.Tags['freebgrid:fort'] = function(u) if not UnitAura(u, GetSpellInfo(79105)) then return "|cff00A1DE"..x.."|r" end end
 oUF.TagEvents['freebgrid:fort'] = "UNIT_AURA"
 
+-- Druid
+local lbCount = { 4, 2, 3}
+oUF.Tags['freebgrid:lb'] = function(u) 
+    local name, _,_, c,_,_, expirationTime, fromwho = UnitAura(u, GetSpellInfo(94447))
+    if(fromwho == "player") then
+        local spellTimer = GetTime()-expirationTime
+        if spellTimer > -2 then
+            return "|cffFF0000"..lbCount[c].."|r"
+        elseif spellTimer > -4 then
+            return "|cffFF9900"..lbCount[c].."|r"
+        else
+            return "|cffA7FD0A"..lbCount[c].."|r"
+        end
+    end
+end
+oUF.TagEvents['freebgrid:lb'] = "UNIT_AURA"
+
+oUF.Tags['freebgrid:rejuv'] = function(u)
+    local name, _,_,_,_,_, expirationTime, fromwho = UnitAura(u, GetSpellInfo(774))
+    if(fromwho == "player") then
+        local spellTimer = GetTime()-expirationTime
+        if spellTimer > -2 then
+            return "|cffFF0000"..x.."|r"
+        elseif spellTimer > -4 then
+            return "|cffFF9900"..x.."|r"
+        else
+            return "|cff33FF33"..x.."|r"
+        end
+    end
+end
+oUF.TagEvents['freebgrid:rejuv'] = "UNIT_AURA"
+
+oUF.Tags['freebgrid:rejuvTime'] = function(u)
+    local name, _,_,_,_,_, expirationTime, fromwho = UnitAura(u, GetSpellInfo(774))
+    if(fromwho == "player") then return getTime(expirationTime) end 
+end
+oUF.TagEvents['freebgrid:rejuvTime'] = "UNIT_AURA"
+
+oUF.Tags['freebgrid:regrow'] = function(u) if UnitAura(u, GetSpellInfo(8936)) then return "|cff00FF10"..x.."|r" end end
+oUF.TagEvents['freebgrid:regrow'] = "UNIT_AURA"
+
+oUF.Tags['freebgrid:wg'] = function(u) if UnitAura(u, GetSpellInfo(48438)) then return "|cff33FF33"..x.."|r" end end
+oUF.TagEvents['freebgrid:wg'] = "UNIT_AURA"
+
+oUF.Tags['freebgrid:motw'] = function(u) if not UnitAura(u, GetSpellInfo(1126)) then return "|cffFF00FF"..x.."|r" end end
+oUF.TagEvents['freebgrid:motw'] = "UNIT_AURA"
+
 ns.classIndicators={
     ["DRUID"] = {
         ["TL"] = "",
-        ["TR"] = "",
-        ["BL"] = "",
-        ["BR"] = "",
-        ["Cen"] = "",
+        ["TR"] = "[freebgrid:motw]",
+        ["BL"] = "[freebgrid:regrow][freebgrid:wg]",
+        ["BR"] = "[freebgrid:lb]",
+        ["Cen"] = "[freebgrid:rejuvTime]",
     },
     ["PRIEST"] = {
         ["TL"] = "[freebgrid:pws][freebgrid:ws]",
