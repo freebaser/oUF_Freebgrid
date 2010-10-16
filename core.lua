@@ -384,7 +384,7 @@ local style = function(self)
     -- Enable Indicators
     self.Indicators = true
 
-    self.Heals = true 
+    self.freebHeals = true 
 
     -- Range
     self.freebRange = {
