@@ -490,7 +490,7 @@ f:SetScript("OnShow", function(f)
         healalphaslidertext:SetText(string.format("Heal bar alpha: %.2f", ns.db.healalpha or ns.defaults.healalpha))
     end)
 
-    local resgroup = LibStub("tekKonfig-Group").new(f, "ResComm Settings")
+    --[[local resgroup = LibStub("tekKonfig-Group").new(f, "ResComm Settings")
     resgroup:SetHeight(85)
     resgroup:SetWidth(180)
     resgroup:SetPoint("TOPRIGHT", healgroup, "BOTTOMRIGHT", 0, -GAP-2)
@@ -506,9 +506,9 @@ f:SetScript("OnShow", function(f)
     rescommalphaslider:SetScript("OnValueChanged", function(self)
         ns.db.rescommalpha = self:GetValue()
         rescommalphaslidertext:SetText(string.format("Rescomm alpha: %.2f", ns.db.rescommalpha or ns.defaults.rescommalpha))
-    end)
+    end)]]
 
-    local powerbar = tekcheck.new(f, nil, "Enable Powerbars.", "TOPLEFT", resgroup, "BOTTOMLEFT", 15, -GAP)
+    local powerbar = tekcheck.new(f, nil, "Enable Powerbars.", "TOPLEFT", healgroup, "BOTTOMLEFT", 15, -GAP)
     powerbar:SetScript("OnClick", function(self) checksound(self); ns.db.powerbar = not ns.db.powerbar; end)
     powerbar:SetChecked(ns.db.powerbar)
 

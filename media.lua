@@ -16,4 +16,5 @@ ns.fonts = {
     ["Tw_Cen_MT_Bold"] = mediapath.."Tw_Cen_MT_Bold.ttf",
     ["FRIZQT__"] = "Fonts\\FRIZQT__.ttf",
     ["visitor"] = mediapath.."visitor1.ttf",
+    ["Expressway"] = mediapath.."expressway.ttf",
 }
