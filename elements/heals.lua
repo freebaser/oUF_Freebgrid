@@ -76,8 +76,8 @@ local Enable = function(self)
 
             self.otherHealPredictionBar = CreateFrame('StatusBar', nil, self.Health)
             if ns.db.orientation == "VERTICAL" then
-                self.otherHealPredictionBar:SetPoint("TOPLEFT", self.myHealPredictionBar:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
-                self.otherHealPredictionBar:SetPoint("BOTTOMLEFT", self.myHealPredictionBar:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0)
+                self.otherHealPredictionBar:SetPoint("BOTTOMLEFT", self.myHealPredictionBar:GetStatusBarTexture(), "TOPLEFT", 0, 0)
+                self.otherHealPredictionBar:SetPoint("BOTTOMRIGHT", self.myHealPredictionBar:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
                 self.otherHealPredictionBar:SetHeight(ns.db.height)
                 self.otherHealPredictionBar:SetOrientation"VERTICAL"
             else
