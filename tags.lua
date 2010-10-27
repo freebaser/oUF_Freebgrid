@@ -67,7 +67,7 @@ oUF.TagEvents['freebgrid:fw'] = "UNIT_AURA"
 oUF.Tags['freebgrid:sp'] = function(u) if not UnitAura(u, GetSpellInfo(79107)) then return "|cff9900FF"..x.."|r" end end
 oUF.TagEvents['freebgrid:sp'] = "UNIT_AURA"
 
-oUF.Tags['freebgrid:fort'] = function(u) if not UnitAura(u, GetSpellInfo(79105)) then return "|cff00A1DE"..x.."|r" end end
+oUF.Tags['freebgrid:fort'] = function(u) if not UnitAura(u, GetSpellInfo(79105) or GetSpellInfo(6307) or GetSpellInfo(469)) then return "|cff00A1DE"..x.."|r" end end
 oUF.TagEvents['freebgrid:fort'] = "UNIT_AURA"
 
 -- Druid
@@ -117,6 +117,11 @@ oUF.TagEvents['freebgrid:wg'] = "UNIT_AURA"
 oUF.Tags['freebgrid:motw'] = function(u) if not UnitAura(u, GetSpellInfo(1126)) then return "|cffFF00FF"..x.."|r" end end
 oUF.TagEvents['freebgrid:motw'] = "UNIT_AURA"
 
+
+-- Warrior
+oUF.Tags['freebgrid:stragi'] = function(u) if not UnitAura(u, GetSpellInfo(6673) or GetSpellInfo(57330) or GetSpellInfo(8075)) then return "|cffFF0000"..x.."|r" end end
+oUF.TagEvents['freebgrid:stragi'] = "UNIT_AURA"
+
 ns.classIndicators={
     ["DRUID"] = {
         ["TL"] = "",
@@ -148,7 +153,7 @@ ns.classIndicators={
     },
     ["WARRIOR"] = {
         ["TL"] = "",
-        ["TR"] = "",
+        ["TR"] = "[freebgrid:stragi]",
         ["BL"] = "",
         ["BR"] = "",
         ["Cen"] = "",

@@ -68,15 +68,15 @@ local createAuraIcon = function(auras)
     overlay:SetFrameLevel(6)
     button.overlay = overlay
 
+    local font, fontsize = GameFontNormalSmall:GetFont()
     local count = overlay:CreateFontString(nil, "OVERLAY")
-    count:SetFont(ns.fonts[ns.db.font], 11, "THINOUTLINE")
+    count:SetFont(font, fontsize, "THINOUTLINE")
     count:SetPoint("LEFT", button, "BOTTOM", 3, 2)
 
     button:SetPoint("BOTTOMLEFT", auras, "BOTTOMLEFT")
 
     local remaining = button:CreateFontString(nil, "OVERLAY")
-    remaining:SetPoint("CENTER")
-    local font, fontsize = GameFontNormalSmall:GetFont()
+    remaining:SetPoint("CENTER") 
     remaining:SetFont(font, fontsize, "THINOUTLINE")
     remaining:SetTextColor(1, 1, 0)
     button.remaining = remaining

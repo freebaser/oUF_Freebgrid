@@ -86,7 +86,7 @@ local Enable = function(self)
                 self.otherHealPredictionBar:SetWidth(ns.db.width)
             end
             self.otherHealPredictionBar:SetStatusBarTexture("", "BORDER", -1)
-            self.otherHealPredictionBar:GetStatusBarTexture():SetTexture(0, .7, .4, ns.db.healalpha)
+            self.otherHealPredictionBar:GetStatusBarTexture():SetTexture(0, .9, .6, ns.db.healalpha)
             self.otherHealPredictionBar:Hide() 
 
             self:RegisterEvent('UNIT_HEAL_PREDICTION', Update)

@@ -24,10 +24,12 @@ do
     end)
 end
 
---CompactRaidFrameManager:UnregisterAllEvents()
---CompactRaidFrameManager:Hide()
---CompactRaidFrameContainer:UnregisterAllEvents()
---CompactRaidFrameContainer:Hide()
+if true then
+    CompactRaidFrameManager:UnregisterAllEvents()
+    CompactRaidFrameManager:Hide()
+    CompactRaidFrameContainer:UnregisterAllEvents()
+    CompactRaidFrameContainer:Hide()
+end
 
 oUF.colors.power['MANA'] = {.31,.45,.63}
 oUF.colors.power['RAGE'] = {.69,.31,.31}
