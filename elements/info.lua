@@ -76,7 +76,7 @@ end
 oUF.TagEvents['freebgrid:ddg'] = 'UNIT_HEALTH'
 
 local Enable = function(self)
-    if(self.Info) then
+    if(self.freebInfo) then
         local name = self.Health:CreateFontString(nil, "OVERLAY")
         name:SetPoint("CENTER")
         name:SetJustifyH("CENTER")

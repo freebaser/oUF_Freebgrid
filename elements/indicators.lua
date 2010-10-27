@@ -8,7 +8,7 @@ local indicator = mediapath.."squares.ttf"
 local symbols = mediapath.."PIZZADUDEBULLETS.ttf"
 
 local Enable = function(self)
-    if(self.Indicators) then
+    if(self.freebIndicators) then
         self.AuraStatusTL = self.Health:CreateFontString(nil, "OVERLAY")
         self.AuraStatusTL:ClearAllPoints()
         self.AuraStatusTL:SetPoint("TOPLEFT", 0, -1)

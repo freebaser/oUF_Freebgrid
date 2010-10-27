@@ -381,10 +381,10 @@ local style = function(self)
         self.LFDRole:SetPoint('RIGHT', self, 'LEFT', ns.db.iconsize/2, ns.db.iconsize/2)
     end
 
-    self.Info = true
+    self.freebInfo = true
 
     -- Enable Indicators
-    self.Indicators = true
+    self.freebIndicators = true
 
     self.freebHeals = true 
 
