@@ -6,7 +6,7 @@ ns.textures = {
     ["gradient"] = mediapath.."gradient",
     ["Minimalist"] = mediapath.."Minimalist",
     ["Smooth"] = mediapath.."Smoothv2",
-    ["Blizzard"] = "Interface\\TargetingFrame\\UI-StatusBar",
+    ["Blizzard"] = "Interface\\RAIDFRAME\\Raid-Bar-Hp-Fill",
 }
 
 ns.fonts = {

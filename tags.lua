@@ -119,7 +119,7 @@ oUF.TagEvents['freebgrid:motw'] = "UNIT_AURA"
 
 
 -- Warrior
-oUF.Tags['freebgrid:stragi'] = function(u) if not UnitAura(u, GetSpellInfo(6673) or GetSpellInfo(57330) or GetSpellInfo(8075)) then return "|cffFF0000"..x.."|r" end end
+oUF.Tags['freebgrid:stragi'] = function(u) if not UnitAura(u, GetSpellInfo(6673) or "Horn of Winter" or "Strength of Earth") then return "|cffFF0000"..x.."|r" end end
 oUF.TagEvents['freebgrid:stragi'] = "UNIT_AURA"
 
 ns.classIndicators={
