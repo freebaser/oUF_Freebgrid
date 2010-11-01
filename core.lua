@@ -24,7 +24,7 @@ do
     end)
 end
 
-if true then
+if false then
     CompactRaidFrameManager:UnregisterAllEvents()
     CompactRaidFrameManager:Hide()
     CompactRaidFrameContainer:UnregisterAllEvents()
@@ -33,6 +33,13 @@ end
 
 oUF.colors.power['MANA'] = {.31,.45,.63}
 oUF.colors.power['RAGE'] = {.69,.31,.31}
+
+local function multicheck(check, ...)
+    for i=1, select('#', ...) do
+        if check == select(i, ...) then return true end
+    end
+    return false
+end
 
 -- Unit Menu
 local menu = function(self)
@@ -203,13 +210,43 @@ local powerbar = function(self)
 end
 
 local _, class = UnitClass("player")
+local candispellmagic = false
+
+local checkTalents = CreateFrame"Frame"
+checkTalents:RegisterEvent"PLAYER_ENTERING_WORLD"
+checkTalents:RegisterEvent"ACTIVE_TALENT_GROUP_CHANGED"
+checkTalents:RegisterEvent"CHARACTER_POINTS_CHANGED"
+checkTalents:SetScript("OnEvent", function()
+    if multicheck(class, "SHAMAN", "PALADIN", "DRUID") then
+        local tab, index
+
+        if class == "SHAMAN" then
+            tab, index = 3, 12
+        elseif class == "PALADIN" then
+            tab, index = 1, 14
+        elseif class == "DRUID" then
+            tab, index = 3, 17
+        end
+
+        local _,_,_,_,rank = GetTalentInfo(tab, index)
+
+        if rank == 1 then
+            candispellmagic = true
+        else
+            candispellmagic = false
+        end
+    end
+end)
+
+
 local dispellClass = {
     PRIEST = { Magic = true, Disease = true, },
-    SHAMAN = { Poison = true, Disease = true, Curse = true, },
-    PALADIN = { Magic = true, Poison = true, Disease = true, },
+    SHAMAN = { Curse = true, Magic = candispellmagic, },
+    PALADIN = { Poison = true, Disease = true, Magic = candispellmagic, },
     MAGE = { Curse = true, },
-    DRUID = { Curse = true, Poison = true, },
+    DRUID = { Curse = true, Poison = true, Magic = candispellmagic, },
 }
+
 local dispellist = dispellClass[class] or {}
 local dispellPriority = {
     Magic = 4,
