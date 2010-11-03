@@ -1,7 +1,7 @@
 ## Interface: 40000
 ## Title: oUF_Freebgrid
 ## Author: Freebaser
-## Version: 5.1
+## Version: 5.2
 ## Notes: Raid Frames using the oUF framework.
 ## SavedVariables: FreebgridDB, Freebgridomf2
 ## X-oUF: Freebgrid
