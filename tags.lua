@@ -31,7 +31,8 @@ end
 -- Priest
 local pomCount = {"i","h","g","f","Z","Y"}
 oUF.Tags['freebgrid:pom'] = function(u) 
-    local c = select(4, UnitAura(u, GetSpellInfo(41635))) if c then return "|cffFFCF7F"..pomCount[c].."|r" end end
+    local c = select(4, UnitAura(u, GetSpellInfo(41635))) if c then return "|cffFFCF7F"..pomCount[c].."|r" end 
+end
 oUF.TagEvents['freebgrid:pom'] = "UNIT_AURA"
 
 oUF.Tags['freebgrid:rnw'] = function(u)
@@ -67,7 +68,7 @@ oUF.TagEvents['freebgrid:fw'] = "UNIT_AURA"
 oUF.Tags['freebgrid:sp'] = function(u) if not UnitAura(u, GetSpellInfo(79107)) then return "|cff9900FF"..x.."|r" end end
 oUF.TagEvents['freebgrid:sp'] = "UNIT_AURA"
 
-oUF.Tags['freebgrid:fort'] = function(u) if not UnitAura(u, GetSpellInfo(79105) or GetSpellInfo(6307) or GetSpellInfo(469)) then return "|cff00A1DE"..x.."|r" end end
+oUF.Tags['freebgrid:fort'] = function(u) if not(UnitAura(u, GetSpellInfo(79105)) or UnitAura(u, GetSpellInfo(6307)) or UnitAura(u, GetSpellInfo(469))) then return "|cff00A1DE"..x.."|r" end end
 oUF.TagEvents['freebgrid:fort'] = "UNIT_AURA"
 
 -- Druid
@@ -114,13 +115,31 @@ oUF.TagEvents['freebgrid:regrow'] = "UNIT_AURA"
 oUF.Tags['freebgrid:wg'] = function(u) if UnitAura(u, GetSpellInfo(48438)) then return "|cff33FF33"..x.."|r" end end
 oUF.TagEvents['freebgrid:wg'] = "UNIT_AURA"
 
-oUF.Tags['freebgrid:motw'] = function(u) if not UnitAura(u, GetSpellInfo(1126)) then return "|cffFF00FF"..x.."|r" end end
+oUF.Tags['freebgrid:motw'] = function(u) if not(UnitAura(u, GetSpellInfo(1126)) or UnitAura(u,GetSpellInfo(20217))) then return "|cffFF00FF"..x.."|r" end end
 oUF.TagEvents['freebgrid:motw'] = "UNIT_AURA"
 
-
 -- Warrior
-oUF.Tags['freebgrid:stragi'] = function(u) if not UnitAura(u, GetSpellInfo(6673) or "Horn of Winter" or "Strength of Earth") then return "|cffFF0000"..x.."|r" end end
+oUF.Tags['freebgrid:stragi'] = function(u) if not(UnitAura(u, GetSpellInfo(6673)) or UnitAura(u, GetSpellInfo(57330)) or UnitAura(u, GetSpellInfo(8075))) then return "|cffFF0000"..x.."|r" end end
 oUF.TagEvents['freebgrid:stragi'] = "UNIT_AURA"
+
+-- Shaman
+oUF.Tags['freebgrid:rip'] = function(u) 
+    local name, _,_,_,_,_,_, fromwho = UnitAura(u, GetSpellInfo(61295))
+    if(fromwho == 'player') then return "|cff00FEBF"..x.."|r" end
+end
+oUF.TagEvents['freebgrid:rip'] = 'UNIT_AURA'
+
+oUF.Tags['freebgrid:ripTime'] = function(u)
+    local name, _,_,_,_,_, expirationTime, fromwho = UnitAura(u, GetSpellInfo(61295))
+    if(fromwho == "player") then return getTime(expirationTime) end 
+end
+oUF.TagEvents['freebgrid:ripTime'] = 'UNIT_AURA'
+
+local earthCount = {'i','h','g','f','p','q','Z','Z','Y'}
+oUF.Tags['freebgrid:earth'] = function(u) 
+    local c = select(4, UnitAura(u, GetSpellInfo(974))) if c then return '|cffFFCF7F'..earthCount[c]..'|r' end 
+end
+oUF.TagEvents['freebgrid:earth'] = 'UNIT_AURA'
 
 ns.classIndicators={
     ["DRUID"] = {
@@ -153,7 +172,7 @@ ns.classIndicators={
     },
     ["WARRIOR"] = {
         ["TL"] = "",
-        ["TR"] = "[freebgrid:stragi]",
+        ["TR"] = "[freebgrid:stragi][freebgrid:fort]",
         ["BL"] = "",
         ["BR"] = "",
         ["Cen"] = "",
@@ -166,11 +185,11 @@ ns.classIndicators={
         ["Cen"] = "",
     },
     ["SHAMAN"] = {
-        ["TL"] = "",
+        ["TL"] = "[freebgrid:rip]",
         ["TR"] = "",
         ["BL"] = "",
-        ["BR"] = "",
-        ["Cen"] = "",
+        ["BR"] = "[freebgrid:earth]",
+        ["Cen"] = "[freebgrid:ripTime]",
     },
     ["HUNTER"] = {
         ["TL"] = "",
