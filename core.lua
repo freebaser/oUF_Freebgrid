@@ -135,22 +135,18 @@ local updatePower = function(power, unit)
     local self = power.__owner
 
     if ptype == 'MANA' then
-        if(ns.db.orientation == "VERTICAL")then
-            power:SetPoint"TOP"
+        if(ns.db.porientation == "VERTICAL")then
             power:SetWidth(ns.db.width*ns.db.powerbarsize)
             self.Health:SetWidth((0.98 - ns.db.powerbarsize)*ns.db.width)
         else
-            power:SetPoint"LEFT"
             power:SetHeight(ns.db.height*ns.db.powerbarsize)
             self.Health:SetHeight((0.98 - ns.db.powerbarsize)*ns.db.height)
         end
     else
-        if(ns.db.orientation == "VERTICAL")then
-            power:SetPoint"TOP"
+        if(ns.db.porientation == "VERTICAL")then
             power:SetWidth(0.0000001) -- in this case absolute zero is something, rather than nothing
             self.Health:SetWidth(ns.db.width)
         else
-            power:SetPoint"LEFT"
             power:SetHeight(0.0000001) -- ^ ditto
             self.Health:SetHeight(ns.db.height)
         end
@@ -193,12 +189,21 @@ local powerbar = function(self)
     local pp = CreateFrame"StatusBar"
     pp:SetStatusBarTexture(ns.textures[ns.db.texture])
     fixStatusbar(pp)
-    pp:SetOrientation(ns.db.orientation)
+    pp:SetOrientation(ns.db.porientation)
     pp.frequentUpdates = true
 
     pp:SetParent(self)
     pp:SetPoint"BOTTOM"
-    pp:SetPoint"RIGHT"
+    if ns.db.orientation == "HORIZONTAL" and ns.db.porientation == "VERTICAL" then
+        pp:SetPoint"LEFT"
+        pp:SetPoint"TOP"
+    elseif ns.db.porientation == "VERTICAL" then
+        pp:SetPoint"TOP"
+        pp:SetPoint"RIGHT"
+    else
+        pp:SetPoint"LEFT"
+        pp:SetPoint"RIGHT"
+    end
 
     local ppbg = pp:CreateTexture(nil, "BORDER")
     ppbg:SetAllPoints(pp)
@@ -324,10 +329,14 @@ local style = function(self)
     hp:SetOrientation(ns.db.orientation)
     hp:SetParent(self)
     hp:SetPoint"TOP"
-    hp:SetPoint"LEFT"
-    if ns.db.orientation == "VERTICAL" then
+    if ns.db.orientation == "VERTICAL" and ns.db.porientation == "VERTICAL" then
+        hp:SetPoint"LEFT"
+        hp:SetPoint"BOTTOM"
+    elseif ns.db.orientation == "HORIZONTAL" and ns.db.porientation == "VERTICAL" then
+        hp:SetPoint"RIGHT"
         hp:SetPoint"BOTTOM"
     else
+        hp:SetPoint"LEFT"
         hp:SetPoint"RIGHT"
     end
     hp.frequentUpdates = true

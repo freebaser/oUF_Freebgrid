@@ -10,6 +10,7 @@ ns.defaults = {
 
     powerbar = false,
     powerbarsize = 0.08,
+    porientation = "VERTICAL",
 
     reversecolors = false,
 
@@ -105,6 +106,10 @@ end
 
 function ns:SetOrientation(v)
     if v then self.db.orientation = v end
+end
+
+function ns:SetpOrientation(v)
+    if v then self.db.porientation = v end
 end
 
 function ns:SetPoint(v)
@@ -211,6 +216,30 @@ local function orientationfunc(frame)
 
     UIDropDownMenu_Initialize(orientationdropdown, function()
         local selected, info = UIDropDownMenu_GetSelectedValue(orientationdropdown) or ns.db.orientation, UIDropDownMenu_CreateInfo()
+
+        for name in pairs(ns.orientation) do
+            info.text = name
+            info.value = name
+            info.func = OrientationOnClick
+            info.checked = name == selected
+            UIDropDownMenu_AddButton(info)
+        end
+    end)
+end
+
+local function porientationfunc(frame)
+    local porientationdropdown, porientationdropdowntext, porientationdropdowncontainer = tekdropdown.new(frame, "Powerbar Orientation", "TOPRIGHT", frame, -10, -235)
+    porientationdropdowntext:SetText(ns.db.porientation or ns.defaults.porientation)
+    porientationdropdown.tiptext = "Change the orientation of the powerbars."
+
+    local function OrientationOnClick(self)
+        UIDropDownMenu_SetSelectedValue(porientationdropdown, self.value)
+        porientationdropdowntext:SetText(self.value)
+        ns:SetpOrientation(self.value)
+    end
+
+    UIDropDownMenu_Initialize(porientationdropdown, function()
+        local selected, info = UIDropDownMenu_GetSelectedValue(porientationdropdown) or ns.db.porientation, UIDropDownMenu_CreateInfo()
 
         for name in pairs(ns.orientation) do
             info.text = name
@@ -514,7 +543,7 @@ f:SetScript("OnShow", function(f)
     powerbar:SetScript("OnClick", function(self) checksound(self); ns.db.powerbar = not ns.db.powerbar; end)
     powerbar:SetChecked(ns.db.powerbar)
 
-    local powerbarsizeslider, powerbarsizeslidertext, powerbarsizecontainer = tekslider.new(f, string.format("Powerbar size: %.2f", ns.db.powerbarsize or ns.defaults.powerbarsize), .02, .30, "TOPLEFT", powerbar, "BOTTOMLEFT", 0, -GAP)
+    local powerbarsizeslider, powerbarsizeslidertext, powerbarsizecontainer = tekslider.new(f, string.format("Powerbar size: %.2f", ns.db.powerbarsize or ns.defaults.powerbarsize), .02, .30, "TOPLEFT", powerbar, "BOTTOMLEFT", 0, -65)
     powerbarsizeslider.tiptext = "Set the size of the powerbars."
     powerbarsizeslider:SetValue(ns.db.powerbarsize or ns.defaults.powerbarsize)
     powerbarsizeslider:SetValueStep(.02)
@@ -558,6 +587,8 @@ f:SetScript("OnShow", function(f)
         ns.db.spacing = self:GetValue()
         spacingslidertext:SetText(string.format("Spacing: %d", ns.db.spacing or ns.defaults.spacing))
     end)
+
+    porientationfunc(f)
 
     local reload = tekbutton.new_small(f)
     reload:SetPoint("BOTTOMRIGHT", -16, 16)
