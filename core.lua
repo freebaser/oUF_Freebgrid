@@ -241,7 +241,7 @@ checkTalents:SetScript("OnEvent", function()
 
         local _,_,_,_,rank = GetTalentInfo(tab, index)
 
-        dispelClass[class].Magic = rank
+        dispelClass[class].Magic = rank == 1 and true
     end
 end)
 
