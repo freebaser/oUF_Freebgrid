@@ -115,7 +115,7 @@ oUF.TagEvents['freebgrid:regrow'] = "UNIT_AURA"
 oUF.Tags['freebgrid:wg'] = function(u) if UnitAura(u, GetSpellInfo(48438)) then return "|cff33FF33"..x.."|r" end end
 oUF.TagEvents['freebgrid:wg'] = "UNIT_AURA"
 
-oUF.Tags['freebgrid:motw'] = function(u) if not(UnitAura(u, GetSpellInfo(1126)) or UnitAura(u,GetSpellInfo(20217))) then return "|cffFF00FF"..x.."|r" end end
+oUF.Tags['freebgrid:motw'] = function(u) if not(UnitAura(u, GetSpellInfo(79060)) or UnitAura(u,GetSpellInfo(79063))) then return "|cff00A1DE"..x.."|r" end end
 oUF.TagEvents['freebgrid:motw'] = "UNIT_AURA"
 
 -- Warrior
@@ -141,6 +141,26 @@ oUF.Tags['freebgrid:earth'] = function(u)
 end
 oUF.TagEvents['freebgrid:earth'] = 'UNIT_AURA'
 
+-- Paladin
+oUF.Tags['freebgrid:might'] = function(u) if not(UnitAura(u, GetSpellInfo(53138)) or UnitAura(u, GetSpellInfo(79102))) then return "|cffFF0000"..x.."|r" end end
+oUF.TagEvents['freebgrid:might'] = "UNIT_AURA"
+
+oUF.Tags['freebgrid:beacon'] = function(u)
+    local name, _,_,_,_,_, expirationTime, fromwho = UnitAura(u, GetSpellInfo(53563))
+    if not name then return end
+    if(fromwho == "player") then
+        local spellTimer = GetTime()-expirationTime
+        if spellTimer > -30 then
+            return "|cffFF00004|r"
+        else
+            return "|cffFFCC003|r"
+        end
+    else
+        return "|cff996600Y|r" -- other pally's beacon
+    end
+end
+oUF.TagEvents['freebgrid:beacon'] = "UNIT_AURA"
+
 ns.classIndicators={
     ["DRUID"] = {
         ["TL"] = "",
@@ -158,9 +178,9 @@ ns.classIndicators={
     },
     ["PALADIN"] = {
         ["TL"] = "",
-        ["TR"] = "",
+        ["TR"] = "[freebgrid:might][freebgrid:motw]",
         ["BL"] = "",
-        ["BR"] = "",
+        ["BR"] = "[freebgrid:beacon]",
         ["Cen"] = "",
     },
     ["WARLOCK"] = {
