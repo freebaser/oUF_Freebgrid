@@ -214,9 +214,15 @@ local powerbar = function(self)
     self.Power = pp
 end
 
-local _, class = UnitClass("player")
-local candispellmagic = false
+local dispelClass = {
+    PRIEST = { Magic = true, Disease = true, },
+    SHAMAN = { Curse = true, },
+    PALADIN = { Poison = true, Disease = true, },
+    MAGE = { Curse = true, },
+    DRUID = { Curse = true, Poison = true, },
+}
 
+local _, class = UnitClass("player")
 local checkTalents = CreateFrame"Frame"
 checkTalents:RegisterEvent"PLAYER_ENTERING_WORLD"
 checkTalents:RegisterEvent"ACTIVE_TALENT_GROUP_CHANGED"
@@ -235,25 +241,12 @@ checkTalents:SetScript("OnEvent", function()
 
         local _,_,_,_,rank = GetTalentInfo(tab, index)
 
-        if rank == 1 then
-            candispellmagic = true
-        else
-            candispellmagic = false
-        end
+        dispelClass[class].Magic = rank
     end
 end)
 
-
-local dispellClass = {
-    PRIEST = { Magic = true, Disease = true, },
-    SHAMAN = { Curse = true, Magic = candispellmagic, },
-    PALADIN = { Poison = true, Disease = true, Magic = candispellmagic, },
-    MAGE = { Curse = true, },
-    DRUID = { Curse = true, Poison = true, Magic = candispellmagic, },
-}
-
-local dispellist = dispellClass[class] or {}
-local dispellPriority = {
+local dispellist = dispelClass[class] or {}
+local dispelPriority = {
     Magic = 4,
     Poison = 3,
     Curse = 2,
@@ -286,7 +279,7 @@ local CustomFilter = function(icons, ...)
         icon.buff = true
         return true
     elseif dispellist[dtype] then
-        icon.priority = dispellPriority[dtype]
+        icon.priority = dispelPriority[dtype]
         icon.buff = false
         return true
     else

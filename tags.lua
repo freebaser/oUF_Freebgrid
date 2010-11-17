@@ -119,7 +119,7 @@ oUF.Tags['freebgrid:motw'] = function(u) if not(UnitAura(u, GetSpellInfo(1126)) 
 oUF.TagEvents['freebgrid:motw'] = "UNIT_AURA"
 
 -- Warrior
-oUF.Tags['freebgrid:stragi'] = function(u) if not(UnitAura(u, GetSpellInfo(6673)) or UnitAura(u, GetSpellInfo(57330)) or UnitAura(u, GetSpellInfo(8075))) then return "|cffFF0000"..x.."|r" end end
+oUF.Tags['freebgrid:stragi'] = function(u) if not(UnitAura(u, GetSpellInfo(6673)) or UnitAura(u, GetSpellInfo(57330)) or UnitAura(u, GetSpellInfo(8076))) then return "|cffFF0000"..x.."|r" end end
 oUF.TagEvents['freebgrid:stragi'] = "UNIT_AURA"
 
 -- Shaman
