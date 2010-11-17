@@ -62,7 +62,7 @@ oUF.Tags['freebgrid:info'] = function(u, r)
         return (color.."-"..numberize(def).."|r")
     end
 end
-oUF.TagEvents['info'] = 'UNIT_NAME_UPDATE'
+--oUF.TagEvents['info'] = 'UNIT_NAME_UPDATE UNIT_HEALTH UNIT_MAXHEALTH'
 
 oUF.Tags['freebgrid:ddg'] = function(u)
     if UnitIsDead(u) then
@@ -83,6 +83,7 @@ local Enable = function(self)
         name:SetFont(ns.fonts[ns.db.font], ns.db.fontsize, ns.db.outline)
         name:SetShadowOffset(1.25, -1.25)
         name.overrideUnit = true
+        name.frequentUpdates = 0.2
         self:Tag(name, '[freebgrid:info]')
 
         -- Dead/DC/Ghost text
