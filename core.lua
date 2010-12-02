@@ -110,7 +110,85 @@ local updateThreat = function(self, event, unit)
     threat:Show()
 end
 
+local function hex(r, g, b)
+    if(type(r) == 'table') then
+        if(r.r) then r, g, b = r.r, r.g, r.b else r, g, b = unpack(r) end
+    end
+    return ('|cff%02x%02x%02x'):format(r * 255, g * 255, b * 255)
+end
+
+local function utf8sub(str, start, numChars) 
+    local currentIndex = start 
+    while numChars > 0 and currentIndex <= #str do 
+        local char = string.byte(str, currentIndex) 
+        if char >= 240 then 
+            currentIndex = currentIndex + 4 
+        elseif char >= 225 then 
+            currentIndex = currentIndex + 3 
+        elseif char >= 192 then 
+            currentIndex = currentIndex + 2 
+        else 
+            currentIndex = currentIndex + 1 
+        end 
+        numChars = numChars - 1 
+    end 
+    return str:sub(start, currentIndex - 1) 
+end 
+
+oUF.Tags['freebgrid:ddg'] = function(u)
+    if UnitIsDead(u) then
+        return "|cffCFCFCFDead|r"
+    elseif UnitIsGhost(u) then
+        return "|cffCFCFCFGhost|r"
+    elseif not UnitIsConnected(u) then
+        return "|cffCFCFCFD/C|r"
+    end
+end
+oUF.TagEvents['freebgrid:ddg'] = 'UNIT_HEALTH UNIT_CONNECTION'
+
+local nameCache = {}
+local colorCache = {}
+local numberize = ns.numberize
+
+oUF.Tags['freebgrid:info'] = function(u, r)
+    local per = oUF.Tags['perhp'](u)
+
+    if r or per > 90 or per == 0 or ns.db.showname then
+        local name = (u == 'vehicle' and UnitName(r or u)) or UnitName(u)
+
+        if nameCache[name] then
+            return nameCache[name]
+        end
+    else
+        local _, class = UnitClass(u)
+        local def = oUF.Tags['missinghp'](u)
+        local color = colorCache[class]
+
+        return ((color or "").."-"..numberize(def))
+    end
+end
+oUF.TagEvents['freebgrid:info'] = 'UNIT_NAME_UPDATE UNIT_HEALTH UNIT_MAXHEALTH'
+
+local updateName = function(self, name, class)
+    local substring
+    for length=#name, 1, -1 do
+        substring = utf8sub(name, 1, length)
+        self.Dummy:SetText(substring)
+        if self.Dummy:GetStringWidth() <= ns.db.width - 6 then break end
+    end
+
+    nameCache[name] = colorCache[class]..substring
+end
+
 local updateHealth = function(health, unit)
+    local self = health.__owner
+    local _, class = UnitClass(unit)
+    local name = UnitName(unit)
+
+    if not nameCache[name] and class then
+        updateName(self, name, class)
+    end
+
     local r, g, b, t
     if(UnitIsPlayer(unit)) then
         local _, class = UnitClass(unit)
@@ -127,6 +205,16 @@ local updateHealth = function(health, unit)
         local bg = health.bg
         bg:SetVertexColor(r, g, b)
         health:SetStatusBarColor(0, 0, 0, .8)
+    end
+end
+
+local updateInfo = function(health, unit)
+    local self = health.__owner
+    local _, class = UnitClass(unit)
+    local name = UnitName(unit)
+
+    if not nameCache[name] and class then
+        updateName(self, name, class)
     end
 end
 
@@ -343,6 +431,8 @@ local style = function(self)
         hp.colorClass =  true
         hp.colorReaction = true
         hpbg.multiplier = .3
+
+        hp.PostUpdate = updateInfo
     else
         hp.PostUpdate = updateHealth
     end
@@ -364,6 +454,31 @@ local style = function(self)
     threat:SetBackdropBorderColor(0, 0, 0, 1)
     threat.Override = updateThreat
     self.Threat = threat 
+
+    local name = self.Health:CreateFontString(nil, "OVERLAY")
+    name:SetPoint("CENTER")
+    name:SetJustifyH("CENTER")
+    name:SetFont(ns.fonts[ns.db.font], ns.db.fontsize, ns.db.outline)
+    name:SetShadowOffset(1.25, -1.25)
+    name.overrideUnit = true
+    self:Tag(name, '[freebgrid:info]')
+    self.Name = name
+
+    local dummy = self.Health:CreateFontString(nil, "OVERLAY")
+    dummy:SetPoint("CENTER")
+    dummy:SetJustifyH("CENTER")
+    dummy:SetFont(ns.fonts[ns.db.font], ns.db.fontsize, ns.db.outline)
+    dummy:SetShadowOffset(1.25, -1.25)
+    dummy:Hide()
+    self.Dummy = dummy
+
+    -- Dead/DC/Ghost text
+    local DDG = self.Health:CreateFontString(nil, "OVERLAY")
+    DDG:SetPoint("BOTTOM")
+    DDG:SetJustifyH("CENTER")
+    DDG:SetFont(ns.fonts[ns.db.font], ns.db.fontsize, ns.db.outline)
+    DDG:SetShadowOffset(1.25, -1.25)
+    self:Tag(DDG, '[freebgrid:ddg]')
 
     -- Highlight tex
     local hl = hp:CreateTexture(nil, "OVERLAY")
@@ -419,8 +534,6 @@ local style = function(self)
         self.LFDRole:SetSize(ns.db.iconsize, ns.db.iconsize)
         self.LFDRole:SetPoint('RIGHT', self, 'LEFT', ns.db.iconsize/2, ns.db.iconsize/2)
     end
-
-    self.freebInfo = true
 
     -- Enable Indicators
     self.freebIndicators = true
@@ -553,6 +666,10 @@ oUF:Factory(function(self)
 
     ns.Enable()
 
+    for class, color in next, oUF.colors.class do
+        colorCache[class] = hex(color) 
+    end
+
     local visible
     if ns.db.solo and ns.db.partyOn then
         visible = 'raid,party,solo'
@@ -627,6 +744,7 @@ oUF:Factory(function(self)
         'oUF-initialConfigFunction', ([[
         self:SetWidth(%d)
         self:SetHeight(%d)
+        self:SetAttribute('unitsuffix', 'pet')
         ]]):format(ns.db.width, ns.db.height),
         'showSolo', true,
         'showParty', ns.db.partyOn,
@@ -637,7 +755,8 @@ oUF:Factory(function(self)
         'maxColumns', ns.db.numCol,
         'unitsPerColumn', ns.db.numUnits,
         'columnSpacing', ns.db.spacing,
-        'columnAnchorPoint', growth
+        'columnAnchorPoint', growth,
+        'useOwnerUnit', true
         )
         pets:SetPoint(point, "oUF_FreebgridPetFrame", point)
         pets:SetScale(ns.db.scale)

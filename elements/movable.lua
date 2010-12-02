@@ -476,9 +476,6 @@ end
 
 local _LOCK
 function ns:Movable()
-    if(InCombatLockdown()) then
-        return print"Frames cannot be moved while in combat. Bailing out."
-    end
 
     if(not _LOCK) then
         for k, frame in next, anchorpool do

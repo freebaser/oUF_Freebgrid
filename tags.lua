@@ -74,7 +74,7 @@ oUF.TagEvents['freebgrid:fort'] = "UNIT_AURA"
 -- Druid
 local lbCount = { 4, 2, 3}
 oUF.Tags['freebgrid:lb'] = function(u) 
-    local name, _,_, c,_,_, expirationTime, fromwho = UnitAura(u, GetSpellInfo(94447))
+    local name, _,_, c,_,_, expirationTime, fromwho = UnitAura(u, GetSpellInfo(33763))
     if(fromwho == "player") then
         local spellTimer = GetTime()-expirationTime
         if spellTimer > -2 then
