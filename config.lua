@@ -517,7 +517,7 @@ frame:SetScript("OnShow", function(frame)
         numUnitsslidertext:SetText(string.format("Units per group: %d", ns.db.numUnits or ns.defaults.numUnits))
     end)
 
-    frame.CreateScrollingDropdown = LibStub("PhanxConfig-ScrollingDropdown").CreateScrollingDropdown
+    frame.CreateScrollingDropdown = LibStub("freeb-ScrollingDropdown").CreateScrollingDropdown
 
     tex2func(frame)
     font2func(frame)

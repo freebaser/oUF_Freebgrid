@@ -1,20 +1,15 @@
 --[[--------------------------------------------------------------------
-	PhanxConfig-ScrollingDropdown
-	Simple scrolling dropdown widget generator. Requires LibStub.
+	Requires LibStub.
 	Based on tekKonfig-Dropdown by Tekkub and OmniCC_Options by Tuller.
-	Requires PhanxConfig-Dropdown.
-
-	This library is not intended for use by other authors. Absolutely no
-	support of any kind will be provided for other authors using it, and
-	its internals may change at any time without notice.
+	Requires Dropdown.
 ----------------------------------------------------------------------]]
 
-local PhanxConfigDropdown = LibStub:GetLibrary("PhanxConfig-Dropdown", true)
-assert(PhanxConfigDropdown, "PhanxConfig-ScrollingDropdown requires PhanxConfig-Dropdown")
+local PhanxConfigDropdown = LibStub:GetLibrary("freeb-Dropdown", true)
+assert(PhanxConfigDropdown, "freeb-ScrollingDropdown requires freeb-Dropdown")
 
 local MINOR_VERSION = tonumber(("$Revision: 28 $"):match("%d+"))
 
-local lib, oldminor = LibStub:NewLibrary("PhanxConfig-ScrollingDropdown", MINOR_VERSION)
+local lib, oldminor = LibStub:NewLibrary("freeb-ScrollingDropdown", MINOR_VERSION)
 if not lib then return end
 
 local MAX_LIST_SIZE = 15
