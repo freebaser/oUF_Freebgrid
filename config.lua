@@ -1,4 +1,5 @@
 local ADDON_NAME, ns = ...
+local mediapath = "Interface\\AddOns\\oUF_Freebgrid\\media\\"
 
 -- These are just the defaults that are created as a base.
 ns.defaults = {
@@ -22,7 +23,11 @@ ns.defaults = {
     outsideRange = 0.4,
 
     texture = "gradient",
+    textureSM = mediapath.."gradient",
+
     font = "calibri",
+    fontSM = mediapath.."calibri.ttf",
+
     outline = "",
 
     showBlizzParty = false,
@@ -96,6 +101,17 @@ ns.outline = {
     ["OUTLINEMONO"] = "THINOUTLINEMONOCHROME",
 }
 
+ns.textures = {
+    ["gradient"] = mediapath.."gradient",
+    ["Cabaret"] = mediapath.."Cabaret",
+}
+
+ns.fonts = {
+    ["calibri"] = mediapath.."calibri.ttf",
+    ["Accidental Presidency"] = mediapath.."Accidental Presidency.ttf",
+    ["Expressway"] = mediapath.."expressway.ttf",
+}
+
 function ns:SetTex(v)
     if v then self.db.texture = v end
 end
@@ -133,6 +149,7 @@ local tekbutton = LibStub("tekKonfig-Button")
 local tekslider = LibStub("tekKonfig-Slider")
 local tekdropdown = LibStub("tekKonfig-Dropdown")
 local GAP = 7
+local SM
 
 local function texfunc(frame)
     local texturedropdown, texturedropdowntext, texturedropdowncontainer = tekdropdown.new(frame, "Texture", "TOPRIGHT", frame, 0, 0)
@@ -157,6 +174,39 @@ local function texfunc(frame)
     end)
 end
 
+local function tex2func(frame)
+    local texdropdown = frame:CreateScrollingDropdown("Texture", ns.textures)
+    texdropdown.desc = "Change the unit's texture."
+    texdropdown:SetPoint("TOPRIGHT", frame, -10, -10)
+    texdropdown:SetValue(ns.db.texture or ns.defaults.texture)
+    do
+        function texdropdown:OnValueChanged(value)
+            texdropdown:SetValue(value)
+            ns.db.textureSM = ns.textures[value]
+            ns.db.texture = value
+        end
+
+        local button_OnClick = texdropdown.button:GetScript("OnClick")
+        texdropdown.button:SetScript("OnClick", function(self)
+            button_OnClick(self)
+            texdropdown.dropdown.list:Hide()
+
+            local OnShow = texdropdown.dropdown.list:GetScript("OnShow")
+			texdropdown.dropdown.list:SetScript("OnShow", function(self)
+				OnShow(self)
+			end)
+
+			local OnVerticalScroll = texdropdown.dropdown.list.scrollFrame:GetScript("OnVerticalScroll")
+			texdropdown.dropdown.list.scrollFrame:SetScript("OnVerticalScroll", function(self, delta)
+				OnVerticalScroll(self, delta)
+			end)
+
+			button_OnClick(self)
+			self:SetScript("OnClick", button_OnClick)
+        end)
+    end
+end
+
 local function fontfunc(frame)
     local fontdropdown, fontdropdowntext, fontdropdowncontainer = tekdropdown.new(frame, "Font", "TOPRIGHT", frame, 0, -50)
     fontdropdowntext:SetText(ns.db.font or ns.defaults.font)
@@ -178,6 +228,39 @@ local function fontfunc(frame)
             UIDropDownMenu_AddButton(info)
         end
     end)
+end
+
+local function font2func(frame)
+    local fontdropdown = frame:CreateScrollingDropdown("Font", ns.fonts)
+    fontdropdown.desc = "CChange the unit's font."
+    fontdropdown:SetPoint("TOPRIGHT", frame, -10, -60)
+    fontdropdown:SetValue(ns.db.font or ns.defaults.font)
+    do
+        function fontdropdown:OnValueChanged(value)
+            fontdropdown:SetValue(value)
+            ns.db.fontSM = ns.fonts[value]
+            ns.db.font = value
+        end
+
+        local button_OnClick = fontdropdown.button:GetScript("OnClick")
+        fontdropdown.button:SetScript("OnClick", function(self)
+            button_OnClick(self)
+            fontdropdown.dropdown.list:Hide()
+
+            local OnShow = fontdropdown.dropdown.list:GetScript("OnShow")
+			fontdropdown.dropdown.list:SetScript("OnShow", function(self)
+				OnShow(self)
+			end)
+
+			local OnVerticalScroll = fontdropdown.dropdown.list.scrollFrame:GetScript("OnVerticalScroll")
+			fontdropdown.dropdown.list.scrollFrame:SetScript("OnVerticalScroll", function(self, delta)
+				OnVerticalScroll(self, delta)
+			end)
+
+			button_OnClick(self)
+			self:SetScript("OnClick", button_OnClick)
+        end)
+    end
 end
 
 local function outlinefunc(frame)
@@ -307,6 +390,31 @@ local frame = CreateFrame("Frame", nil, InterfaceOptionsFramePanelContainer)
 frame.name = ADDON_NAME
 frame:Hide()
 frame:SetScript("OnShow", function(frame)
+    SM = LibStub("LibSharedMedia-3.0", true)
+    if SM then
+        for font, path in pairs(ns.fonts) do
+            SM:Register("font", font, path)
+        end
+
+        for tex, path in pairs(ns.textures) do
+            SM:Register("statusbar", tex, path)
+        end
+
+        ns.fonts = {}
+        for i, v in pairs(SM:List("font")) do
+            table.insert(ns.fonts, v)
+            ns.fonts[v] = SM:Fetch("font", v)
+        end
+        table.sort(ns.fonts)
+
+        ns.textures = {}
+        for i, v in pairs(SM:List("statusbar")) do
+            table.insert(ns.textures, v)
+            ns.textures[v] = SM:Fetch("statusbar", v)
+        end
+        table.sort(ns.textures)
+    end
+
     local title, subtitle = LibStub("tekKonfig-Heading").new(frame, "oUF_Freebgrid", "General settings for the oUF_Freebgrid.")
 
     local lockpos = tekcheck.new(frame, nil, "Unlock", "TOPLEFT", subtitle, "BOTTOMLEFT", -2, 0)
@@ -409,8 +517,10 @@ frame:SetScript("OnShow", function(frame)
         numUnitsslidertext:SetText(string.format("Units per group: %d", ns.db.numUnits or ns.defaults.numUnits))
     end)
 
-    texfunc(frame)
-    fontfunc(frame)
+    frame.CreateScrollingDropdown = LibStub("PhanxConfig-ScrollingDropdown").CreateScrollingDropdown
+
+    tex2func(frame)
+    font2func(frame)
     outlinefunc(frame)
     orientationfunc(frame)
     pointfunc(frame)

@@ -5,80 +5,7 @@ local function GetSpellInfo(a)
     return unpack(spellcache[a])
 end
 
-local L = {}
-if(GetLocale() == 'enUS') then
-    L["Icecrown Citadel"] = "Icecrown Citadel"
-    L["The Ruby Sanctum"] = "The Ruby Sanctum"
-    L["Bastion of Twilight"] = "Bastion of Twilight"
-    L["Firelands"] = "Firelands"
-    L["War of the Ancients"] = "War of the Ancients"
-    L["Blackwing Descent"] = "Blackwing Descent"
-    L["Throne of the Four Winds"] = "Throne of the Four Winds"
-elseif(GetLocale() == 'deDE') then
-    L["Icecrown Citadel"] = "Eiskronenzitadelle"
-    L["The Ruby Sanctum"] = "Das Rubinsanktum"
-    L["Bastion of Twilight"] = ""
-    L["Firelands"] = ""
-    L["War of the Ancients"] = ""
-    L["Blackwing Descent"] = ""
-    L["Throne of the Four Winds"] = ""
-elseif(GetLocale() == 'frFR') then
-    L["Icecrown Citadel"] = "Citadelle de la Couronne de glace"
-    L["The Ruby Sanctum"] = "Le sanctum Rubis"
-    L["Bastion of Twilight"] = ""
-    L["Firelands"] = ""
-    L["War of the Ancients"] = ""
-    L["Blackwing Descent"] = ""
-    L["Throne of the Four Winds"] = ""
-elseif(GetLocale() == 'koKR') then
-    L["Icecrown Citadel"] = "얼음왕관 성채"
-    L["The Ruby Sanctum"] = "루비 성소"
-    L["Bastion of Twilight"] = ""
-    L["Firelands"] = ""
-    L["War of the Ancients"] = ""
-    L["Blackwing Descent"] = ""
-    L["Throne of the Four Winds"] = ""
-elseif(GetLocale() == 'esES') then
-    L["Icecrown Citadel"] = "Ciudadela de la Corona de Hielo"
-    L["The Ruby Sanctum"] = "El Sagrario Rubí"
-    L["Bastion of Twilight"] = ""
-    L["Firelands"] = ""
-    L["War of the Ancients"] = ""
-    L["Blackwing Descent"] = ""
-    L["Throne of the Four Winds"] = ""
-elseif(GetLocale() == 'ruRU') then
-    L["Icecrown Citadel"] = "Цитадель Ледяной Короны"
-    L["The Ruby Sanctum"] = "Рубиновое святилище"
-    L["Bastion of Twilight"] = ""
-    L["Firelands"] = ""
-    L["War of the Ancients"] = ""
-    L["Blackwing Descent"] = ""
-    L["Throne of the Four Winds"] = ""
-elseif(GetLocale() == 'zhCN') then
-    L["Icecrown Citadel"] = "冰冠堡垒"
-    L["The Ruby Sanctum"] = "红玉圣殿"
-    L["Bastion of Twilight"] = ""
-    L["Firelands"] = ""
-    L["War of the Ancients"] = ""
-    L["Blackwing Descent"] = ""
-    L["Throne of the Four Winds"] = ""
-elseif(GetLocale() == 'zhTW') then
-    L["Icecrown Citadel"] = "冰冠城塞"
-    L["The Ruby Sanctum"] = "晶紅聖所"
-    L["Bastion of Twilight"] = ""
-    L["Firelands"] = ""
-    L["War of the Ancients"] = ""
-    L["Blackwing Descent"] = ""
-    L["Throne of the Four Winds"] = ""
-else
-    L["Icecrown Citadel"] = ""
-    L["The Ruby Sanctum"] = ""
-    L["Bastion of Twilight"] = ""
-    L["Firelands"] = ""
-    L["War of the Ancients"] = ""
-    L["Blackwing Descent"] = ""
-    L["Throne of the Four Winds"] = ""
-end
+local L = LibStub("LibBabble-Zone-3.0"):GetLookupTable()
 
 ns.auras = {
     debuffs = {
@@ -96,6 +23,25 @@ ns.auras = {
         --["Zone"] = {
         --	[Name or GetSpellInfo(#)] = PRIORITY,
         --},
+
+        [L["Baradin Hold"]] = {
+            [GetSpellInfo(88954)] = 6, -- Consuming Darkness
+        },
+        
+        [L["Blackwing Descent"]] = {
+            
+            
+        },
+
+        [L["The Bastion of Twilight"]] = {
+            
+            
+        },
+
+        [L["Throne of the Four Winds"]] = {
+            
+            
+        },
 
         [L["The Ruby Sanctum"]] = {
             [GetSpellInfo(74562)] = 6, -- Fiery Combustion

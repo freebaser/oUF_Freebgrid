@@ -275,7 +275,7 @@ end
 
 local powerbar = function(self)
     local pp = CreateFrame"StatusBar"
-    pp:SetStatusBarTexture(ns.textures[ns.db.texture])
+    pp:SetStatusBarTexture(ns.db.textureSM)
     fixStatusbar(pp)
     pp:SetOrientation(ns.db.porientation)
     pp.frequentUpdates = true
@@ -295,7 +295,7 @@ local powerbar = function(self)
 
     local ppbg = pp:CreateTexture(nil, "BORDER")
     ppbg:SetAllPoints(pp)
-    ppbg:SetTexture(ns.textures[ns.db.texture])
+    ppbg:SetTexture(ns.db.textureSM)
     pp.bg = ppbg
     pp.PostUpdate = updatePower
 
@@ -344,7 +344,13 @@ local dispelPriority = {
 local instDebuffs = {}
 local instances = ns.auras.instances
 local getzone = function()
+
+    for k,v in pairs(instances) do
+        print(k)
+    end
+
     local zone = GetInstanceInfo()
+
     if instances[zone] then
         instDebuffs = instances[zone]
     else
@@ -405,7 +411,7 @@ local style = function(self)
 
     -- Health bar
     local hp = CreateFrame"StatusBar"
-    hp:SetStatusBarTexture(ns.textures[ns.db.texture])
+    hp:SetStatusBarTexture(ns.db.textureSM)
     fixStatusbar(hp)
     hp:SetOrientation(ns.db.orientation)
     hp:SetParent(self)
@@ -424,7 +430,7 @@ local style = function(self)
 
     -- HP background
     local hpbg = hp:CreateTexture(nil, "BORDER")
-    hpbg:SetTexture(ns.textures[ns.db.texture])
+    hpbg:SetTexture(ns.db.textureSM)
     hpbg:SetAllPoints(hp)
 
     if ns.db.reversecolors then
@@ -458,7 +464,7 @@ local style = function(self)
     local name = self.Health:CreateFontString(nil, "OVERLAY")
     name:SetPoint("CENTER")
     name:SetJustifyH("CENTER")
-    name:SetFont(ns.fonts[ns.db.font], ns.db.fontsize, ns.db.outline)
+    name:SetFont(ns.db.fontSM, ns.db.fontsize, ns.db.outline)
     name:SetShadowOffset(1.25, -1.25)
     name.overrideUnit = true
     self:Tag(name, '[freebgrid:info]')
@@ -467,7 +473,7 @@ local style = function(self)
     local dummy = self.Health:CreateFontString(nil, "OVERLAY")
     dummy:SetPoint("CENTER")
     dummy:SetJustifyH("CENTER")
-    dummy:SetFont(ns.fonts[ns.db.font], ns.db.fontsize, ns.db.outline)
+    dummy:SetFont(ns.db.fontSM, ns.db.fontsize, ns.db.outline)
     dummy:SetShadowOffset(1.25, -1.25)
     dummy:Hide()
     self.Dummy = dummy
@@ -476,12 +482,12 @@ local style = function(self)
     local DDG = self.Health:CreateFontString(nil, "OVERLAY")
     DDG:SetPoint("BOTTOM")
     DDG:SetJustifyH("CENTER")
-    DDG:SetFont(ns.fonts[ns.db.font], ns.db.fontsize, ns.db.outline)
+    DDG:SetFont(ns.db.fontSM, ns.db.fontsize, ns.db.outline)
     DDG:SetShadowOffset(1.25, -1.25)
     self:Tag(DDG, '[freebgrid:ddg]')
 
     -- Highlight tex
-    local hl = hp:CreateTexture(nil, "OVERLAY")
+    local hl = hp:CreateTexture(nil, "HIGHLIGHT")
     hl:SetAllPoints(self)
     hl:SetTexture([=[Interface\AddOns\oUF_Freebgrid\media\white.tga]=])
     hl:SetVertexColor(1,1,1,.1)
@@ -564,7 +570,8 @@ local style = function(self)
     self:RegisterEvent('RAID_ROSTER_UPDATE', FocusTarget)
     self:RegisterEvent('PLAYER_TARGET_CHANGED', ChangedTarget)
     self:RegisterEvent('RAID_ROSTER_UPDATE', ChangedTarget)
-    self:RegisterEvent('PLAYER_ENTERING_WORLD', getzone)
+    --self:RegisterEvent('PLAYER_ENTERING_WORLD', getzone)
+    self:RegisterEvent('ZONE_CHANGED_NEW_AREA', getzone)
 end
 
 local function SAP()

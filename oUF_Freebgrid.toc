@@ -7,6 +7,8 @@
 ## X-oUF: Freebgrid
 ## X-Website: http://www.wowinterface.com/downloads/info12264-oUF_Freebgrid.html
 
+## OptionalDeps: LibBabble-Zone-3.0, LibSharedMedia-3.0
+
 libs\libs.xml
 oUF\oUF.xml
 freebgrid.xml

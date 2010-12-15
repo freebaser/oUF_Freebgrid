@@ -1,6 +1,11 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
 
     <Script file='LibStub.lua' />
+    <Script file='CallbackHandler-1.0.lua' />
+
+    <Script file='PhanxConfig-Dropdown.lua' />
+    <Script file='PhanxConfig-ScrollingDropdown.lua' />
+
     <Script file='tekKonfigAboutPanel.lua' />
     <Script file='tekKonfigButton.lua' />
     <Script file='tekKonfigCheckbox.lua' />
@@ -8,5 +13,8 @@
     <Script file='tekKonfigGroup.lua' />
     <Script file='tekKonfigHeading.lua' />
     <Script file='tekKonfigSlider.lua' />
+
+    <Include file='LibSharedMedia-3.0\lib.xml' />
+    <Include file='LibBabble-Zone-3.0\lib.xml' />
 
 </Ui>

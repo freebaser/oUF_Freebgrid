@@ -41,7 +41,7 @@ local Enable = function(self)
         self.AuraStatusCen:ClearAllPoints()
         self.AuraStatusCen:SetPoint("TOP")
         self.AuraStatusCen:SetJustifyH("CENTER")
-        self.AuraStatusCen:SetFont(ns.fonts[ns.db.font], ns.db.fontsize, ns.db.outline)
+        self.AuraStatusCen:SetFont(ns.db.fontSM, ns.db.fontsize, ns.db.outline)
         self.AuraStatusCen:SetShadowOffset(1.25, -1.25)
         self.AuraStatusCen.frequentUpdates = ns.db.frequpdate
         self:Tag(self.AuraStatusCen, ns.classIndicators[class]["Cen"])

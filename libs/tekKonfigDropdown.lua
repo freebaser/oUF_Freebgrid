@@ -48,7 +48,7 @@ function lib.new(parent, label, ...)
 
 	local rtex = f:CreateTexture(nil, "ARTWORK")
 	rtex:SetWidth(25) rtex:SetHeight(64)
-	rtex:SetPoint("RIGHT")
+	rtex:SetPoint("RIGHT", 0, 1)
 	rtex:SetTexture("Interface\\Glues\\CharacterCreate\\CharacterCreate-LabelFrame")
 	rtex:SetTexCoord(0.8046875, 1, 0, 1)
 
