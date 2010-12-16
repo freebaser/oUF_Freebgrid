@@ -29,13 +29,15 @@ ns.auras = {
         },
         
         [L["Blackwing Descent"]] = {
-            
-            
+            --Magmaw
+            [GetSpellInfo(78941)] = 6, -- Parasitic Infection
+            --Omnitron Defense System
+            [GetSpellInfo(79888)] = 6, -- Lightning Conductor
         },
 
         [L["The Bastion of Twilight"]] = {
-            
-            
+            --Valiona & Theralion
+            [GetSpellInfo(86788)] = 6, -- Blackout
         },
 
         [L["Throne of the Four Winds"]] = {

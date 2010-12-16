@@ -343,12 +343,11 @@ local dispelPriority = {
 
 local instDebuffs = {}
 local instances = ns.auras.instances
-local getzone = function()
 
-    for k,v in pairs(instances) do
-        print(k)
-    end
-
+local getZone = CreateFrame"Frame"
+getZone:RegisterEvent"PLAYER_ENTERING_WORLD"
+getZone:RegisterEvent"ZONE_CHANGED_NEW_AREA"
+getZone:SetScript("OnEvent", function(self, event)
     local zone = GetInstanceInfo()
 
     if instances[zone] then
@@ -356,7 +355,11 @@ local getzone = function()
     else
         instDebuffs = {}
     end
-end
+
+    if event == "PLAYER_ENTERING_WORLD" then
+        self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+    end
+end)
 
 local debuffs, buffs = ns.auras.debuffs, ns.auras.buffs 
 local CustomFilter = function(icons, ...)
@@ -570,8 +573,6 @@ local style = function(self)
     self:RegisterEvent('RAID_ROSTER_UPDATE', FocusTarget)
     self:RegisterEvent('PLAYER_TARGET_CHANGED', ChangedTarget)
     self:RegisterEvent('RAID_ROSTER_UPDATE', ChangedTarget)
-    --self:RegisterEvent('PLAYER_ENTERING_WORLD', getzone)
-    self:RegisterEvent('ZONE_CHANGED_NEW_AREA', getzone)
 end
 
 local function SAP()
