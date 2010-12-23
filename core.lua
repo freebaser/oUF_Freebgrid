@@ -490,7 +490,7 @@ local style = function(self)
     self:Tag(DDG, '[freebgrid:ddg]')
 
     -- Highlight tex
-    local hl = hp:CreateTexture(nil, "HIGHLIGHT")
+    local hl = hp:CreateTexture(nil, "OVERLAY")
     hl:SetAllPoints(self)
     hl:SetTexture([=[Interface\AddOns\oUF_Freebgrid\media\white.tga]=])
     hl:SetVertexColor(1,1,1,.1)

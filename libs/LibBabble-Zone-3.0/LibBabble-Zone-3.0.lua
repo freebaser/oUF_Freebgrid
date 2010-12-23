@@ -1,6 +1,6 @@
 --[[
 Name: LibBabble-Zone-3.0
-Revision: $Rev: 306 $
+Revision: $Rev: 307 $
 Maintainers: ckknight, nevcairiel, Ackis
 Website: http://www.wowace.com/projects/libbabble-zone-3-0/
 Dependencies: None
@@ -8,7 +8,7 @@ License: MIT
 ]]
 
 local MAJOR_VERSION = "LibBabble-Zone-3.0"
-local MINOR_VERSION = 90000 + tonumber(("$Rev: 306 $"):match("%d+"))
+local MINOR_VERSION = 90000 + tonumber(("$Rev: 307 $"):match("%d+"))
 
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub.") end
 local lib = LibStub("LibBabble-3.0"):New(MAJOR_VERSION, MINOR_VERSION)
@@ -757,7 +757,7 @@ elseif GAME_LOCALE == "frFR" then
 	["Rivendark's Perch"] = "Perchoir de Clivenuit",
 	["Ruins of Ahn'Qiraj"] = "Ruines d'Ahn'Qiraj",
 	["Ruins of Gilneas"] = "Ruines de Gilnéas",
-	-- ["Ruins of Gilneas City"] = "",
+	["Ruins of Gilneas City"] = "Ruines de Gilnéas",
 	["Ruins of Lordaeron"] = "Ruines de Lordaeron",
 	["Scalebeard's Cave"] = "Caverne de Barbe-d'écailles",
 	["Scarlet Monastery"] = "Monastère écarlate",
@@ -1046,7 +1046,7 @@ elseif GAME_LOCALE == "koKR" then
 	["Rivendark's Perch"] = "리븐다크의 둥지",
 	["Ruins of Ahn'Qiraj"] = "안퀴라즈 폐허",
 	["Ruins of Gilneas"] = "길니아스 폐허",
-	-- ["Ruins of Gilneas City"] = "",
+	["Ruins of Gilneas City"] = "길니아스 시 폐허",
 	["Ruins of Lordaeron"] = "로데론의 폐허",
 	["Scalebeard's Cave"] = "비늘수염 동굴",
 	["Scarlet Monastery"] = "붉은십자군 수도원",
@@ -1335,7 +1335,7 @@ elseif GAME_LOCALE == "esES" then
 	["Rivendark's Perch"] = "Nido de Desgarro Oscuro",
 	["Ruins of Ahn'Qiraj"] = "Ruinas de Ahn'Qiraj",
 	["Ruins of Gilneas"] = "Ruinas de Gilneas",
-	-- ["Ruins of Gilneas City"] = "",
+	["Ruins of Gilneas City"] = "Ruinas de la Ciudad de Gilneas",
 	["Ruins of Lordaeron"] = "Ruinas de Lordaeron",
 	["Scalebeard's Cave"] = "Cueva de Barbascamas",
 	["Scarlet Monastery"] = "Monasterio Escarlata",
@@ -1427,7 +1427,7 @@ elseif GAME_LOCALE == "esES" then
 	["The Vortex Pinnacle"] = "Pinaculo del Vortice",
 	["Theramore Isle"] = "Isla Theramore",
 	["Thousand Needles"] = "Las Mil Agujas",
-	["Throne of the Four Winds"] = "Trono de las Cuatro Alas",
+	["Throne of the Four Winds"] = "Trono de los Cuatro Vientos",
 	["Throne of the Tides"] = "Trono de las Mareas",
 	["Thunder Bluff"] = "Cima del Trueno",
 	Tirisfal = "Tirisfal",
@@ -1466,9 +1466,9 @@ elseif GAME_LOCALE == "esES" then
 }
 elseif GAME_LOCALE == "esMX" then
 	lib:SetCurrentTranslations {
-	-- ["Abyssal Depths"] = "",
+	["Abyssal Depths"] = "Abyssal Depths", -- Needs review
 	["Ahn'Qiraj"] = "Ahn'Qiraj",
-	-- ["Ahn'Qiraj: The Fallen Kingdom"] = "",
+	["Ahn'Qiraj: The Fallen Kingdom"] = "Ahn'Qiraj: The Fallen Kingdom", -- Needs review
 	["Ahn'kahet: The Old Kingdom"] = "Ahn'kahet: El Antiguo Reino",
 	["Alliance Base"] = "Base de la Alianza",
 	["Alterac Mountains"] = "Montañas de Alterac",
@@ -1486,16 +1486,16 @@ elseif GAME_LOCALE == "esMX" then
 	Azshara = "Azshara",
 	["Azuremyst Isle"] = "Isla Bruma Azur",
 	Badlands = "Tierras Inhóspitas",
-	-- ["Baradin Hold"] = "",
+	["Baradin Hold"] = "Baradin Hold", -- Needs review
 	["Bash'ir Landing"] = "Zona de aterrizaje Bash'ir",
 	["Black Temple"] = "El Templo Oscuro",
 	["Blackfathom Deeps"] = "Cavernas de Brazanegra",
-	-- ["Blackrock Caverns"] = "",
+	["Blackrock Caverns"] = "Blackrock Caverns", -- Needs review
 	["Blackrock Depths"] = "Profundidades de Roca Negra",
 	["Blackrock Mountain"] = "Montaña Roca Negra",
 	["Blackrock Spire"] = "Cumbre de Roca Negra",
 	["Blackwind Lake"] = "Lago Vientonegro",
-	-- ["Blackwing Descent"] = "",
+	["Blackwing Descent"] = "Blackwing Descent", -- Needs review
 	["Blackwing Lair"] = "Guarida Alanegra",
 	["Blade's Edge Arena"] = "Arena Filospada",
 	["Blade's Edge Mountains"] = "Montañas Filospada",
@@ -1519,7 +1519,7 @@ elseif GAME_LOCALE == "esMX" then
 	Darkshore = "Costa Oscura",
 	Darnassus = "Darnassus",
 	["Deadwind Pass"] = "Paso de la Muerte",
-	-- Deepholm = "",
+	Deepholm = "Deepholm", -- Needs review
 	["Deeprun Tram"] = "Tranvía Subterráneo",
 	Desolace = "Desolace",
 	["Dire Maul"] = "La Masacre",
@@ -1547,11 +1547,11 @@ elseif GAME_LOCALE == "esMX" then
 	Gadgetzan = "Gadgetzan",
 	["Gates of Ahn'Qiraj"] = "Puertas de Ahn'Qiraj",
 	Ghostlands = "Tierras Fantasma",
-	-- Gilneas = "",
-	-- ["Gilneas City"] = "",
+	Gilneas = "Gilneas", -- Needs review
+	["Gilneas City"] = "Gilneas City", -- Needs review
 	Gnomeregan = "Gnomeregan",
 	Graveyard = "Cementerio",
-	-- ["Grim Batol"] = "",
+	["Grim Batol"] = "Grim Batol", -- Needs review
 	["Grizzly Hills"] = "Colinas Pardas",
 	["Grom'gol Base Camp"] = "Campamento Grom'gol",
 	["Gruul's Lair"] = "Guarida de Gruul",
@@ -1559,7 +1559,7 @@ elseif GAME_LOCALE == "esMX" then
 	["Hall of Champions"] = "Sala de los Campeones",
 	["Hall of Legends"] = "Sala de las Leyendas",
 	["Halls of Lightning"] = "Cámaras de Relámpagos",
-	-- ["Halls of Origination"] = "",
+	["Halls of Origination"] = "Halls of Origination", -- Needs review
 	["Halls of Reflection"] = "Camáras de Reflexión",
 	["Halls of Stone"] = "Cámaras de Piedra",
 	["Hellfire Citadel"] = "Ciudadela del Fuego Infernal",
@@ -1579,12 +1579,12 @@ elseif GAME_LOCALE == "esMX" then
 	["Isle of Quel'Danas"] = "Isla de Quel'Danas",
 	Kalimdor = "Kalimdor",
 	Karazhan = "Karazhan",
-	-- ["Kelp'thar Forest"] = "",
-	-- Kezan = "",
+	["Kelp'thar Forest"] = "Kelp'thar Forest", -- Needs review
+	Kezan = "Kezan", -- Needs review
 	["Krasus' Landing"] = "Krasus' Landing",
 	Library = "Biblioteca",
 	["Loch Modan"] = "Loch Modan",
-	-- ["Lost City of the Tol'vir"] = "",
+	["Lost City of the Tol'vir"] = "Lost City of the Tol'vir", -- Needs review
 	["Lower Blackrock Spire"] = "Cumbre inferior de Roca Negra",
 	["Magisters' Terrace"] = "Bancal Del Magister",
 	["Magtheridon's Lair"] = "Guarida de Magtheridon",
@@ -1594,15 +1594,15 @@ elseif GAME_LOCALE == "esMX" then
 	["Menethil Harbor"] = "Puerto de Menethil",
 	["Molten Core"] = "Núcleo de Magma",
 	Moonglade = "Claro de la Luna",
-	-- ["Mount Hyjal"] = "",
+	["Mount Hyjal"] = "Mount Hyjal", -- Needs review
 	Mulgore = "Mulgore",
 	Nagrand = "Nagrand",
 	["Nagrand Arena"] = "Arena de Nagrand",
 	Naxxramas = "Naxxramas",
 	Netherstorm = "Tormenta Abisal",
 	["Night Elf Village"] = "Poblado Elfo de la Noche",
-	-- ["Northern Barrens"] = "",
-	-- ["Northern Stranglethorn"] = "",
+	["Northern Barrens"] = "Northern Barrens", -- Needs review
+	["Northern Stranglethorn"] = "Northern Stranglethorn", -- Needs review
 	Northrend = "Rasganorte",
 	["Obsidia's Perch"] = "Nido de Obsidia",
 	["Ogri'la"] = "Ogri'la",
@@ -1623,8 +1623,8 @@ elseif GAME_LOCALE == "esMX" then
 	["Ring of Observance"] = "Círculo de la Observancia",
 	["Rivendark's Perch"] = "Nido de Desgarro Oscuro",
 	["Ruins of Ahn'Qiraj"] = "Ruinas de Ahn'Qiraj",
-	-- ["Ruins of Gilneas"] = "",
-	-- ["Ruins of Gilneas City"] = "",
+	["Ruins of Gilneas"] = "Ruins of Gilneas", -- Needs review
+	["Ruins of Gilneas City"] = "Ruins of Gilneas City", -- Needs review
 	["Ruins of Lordaeron"] = "Ruinas de Lordaeron",
 	["Scalebeard's Cave"] = "Cueva de Barbaescamas",
 	["Scarlet Monastery"] = "Monasterio Escarlata",
@@ -1639,14 +1639,14 @@ elseif GAME_LOCALE == "esMX" then
 	["Shartuul's Transporter"] = "Transportador de Shartuul",
 	Shattrath = "Shattrath",
 	["Shattrath City"] = "Ciudad de Shattrath",
-	-- ["Shimmering Expanse"] = "",
+	["Shimmering Expanse"] = "Shimmering Expanse", -- Needs review
 	["Sholazar Basin"] = "Cuenca de Sholazar",
 	Silithus = "Silithus",
 	["Silvermoon City"] = "Ciudad de Lunargenta",
 	["Silverpine Forest"] = "Bosque de Argénteos",
 	["Skyguard Outpost"] = "Puesto de la guardia de cielo",
 	["Skysong Lake"] = "Lago Son Celeste",
-	-- ["Southern Barrens"] = "",
+	["Southern Barrens"] = "Southern Barrens", -- Needs review
 	["Sporewind Lake"] = "Lago Espora Volante",
 	Stonard = "Rocal",
 	["Stonetalon Mountains"] = "Sierra Espolón",
@@ -1668,12 +1668,12 @@ elseif GAME_LOCALE == "esMX" then
 	["The Arcatraz"] = "El Alcatraz",
 	["The Argent Coliseum"] = "El Coliseo Argenta",
 	["The Barrens"] = "Los Baldíos",
-	-- ["The Bastion of Twilight"] = "",
+	["The Bastion of Twilight"] = "The Bastion of Twilight", -- Needs review
 	["The Black Morass"] = "La Ciénaga Negra",
 	["The Blood Furnace"] = "El Horno de Sangre",
 	["The Bone Wastes"] = "El Vertedero de Huesos",
 	["The Botanica"] = "El Invernáculo",
-	-- ["The Cape of Stranglethorn"] = "",
+	["The Cape of Stranglethorn"] = "The Cape of Stranglethorn", -- Needs review
 	["The Construct Quarter"] = "Ala de Abominación",
 	["The Culling of Stratholme"] = "La Matanza de Stratholme",
 	["The Dark Portal"] = "El Portal Oscuro",
@@ -1689,8 +1689,8 @@ elseif GAME_LOCALE == "esMX" then
 	["The Great Sea"] = "Mare Magnum",
 	["The Halls of Winter"] = "Las Cámaras del Invierno",
 	["The Hinterlands"] = "Tierras del Interior",
-	-- ["The Lost Isles"] = "",
-	-- ["The Maelstrom"] = "",
+	["The Lost Isles"] = "The Lost Isles", -- Needs review
+	["The Maelstrom"] = "The Maelstrom", -- Needs review
 	["The Mechanar"] = "El Mechanar",
 	["The Military Quarter"] = "Ala Militar",
 	["The Nexus"] = "El Nexo",
@@ -1700,43 +1700,43 @@ elseif GAME_LOCALE == "esMX" then
 	["The Plague Quarter"] = "Ala de la Plaga",
 	["The Prison of Yogg-Saron"] = "La Prisión de Yogg-Saron",
 	["The Ring of Valor"] = "El Anillo del Valor",
-	-- ["The Ruby Sanctum"] = "",
+	["The Ruby Sanctum"] = "The Ruby Sanctum", -- Needs review
 	["The Scarlet Enclave"] = "El Enclave Escarlata",
 	["The Shattered Halls"] = "Las Salas Arrasadas",
 	["The Slave Pens"] = "Recinto de los Esclavos",
 	["The Spark of Imagination"] = "Cámaras de la Invención",
 	["The Steamvault"] = "La Cámara de Vapor",
 	["The Stockade"] = "Las Mazmorras",
-	-- ["The Stonecore"] = "",
+	["The Stonecore"] = "The Stonecore", -- Needs review
 	["The Storm Peaks"] = "Las Cumbres Tormentosas",
 	["The Temple of Atal'Hakkar"] = "El Templo de Atal'Hakkar",
 	["The Underbog"] = "La Sotiénaga",
 	["The Veiled Sea"] = "Mar de la Bruma",
 	["The Violet Hold"] = "El Bastión Violeta",
-	-- ["The Vortex Pinnacle"] = "",
+	["The Vortex Pinnacle"] = "The Vortex Pinnacle", -- Needs review
 	["Theramore Isle"] = "Isla Theramore",
 	["Thousand Needles"] = "Las Mil Agujas",
-	-- ["Throne of the Four Winds"] = "",
-	-- ["Throne of the Tides"] = "",
+	["Throne of the Four Winds"] = "Throne of the Four Winds", -- Needs review
+	["Throne of the Tides"] = "Throne of the Tides", -- Needs review
 	["Thunder Bluff"] = "Cima del Trueno",
 	Tirisfal = "Tirisfal",
 	["Tirisfal Glades"] = "Claros de Tirisfal",
-	-- ["Tol Barad"] = "",
-	-- ["Tol Barad Peninsula"] = "",
+	["Tol Barad"] = "Tol Barad", -- Needs review
+	["Tol Barad Peninsula"] = "Tol Barad Peninsula", -- Needs review
 	["Trial of the Champion"] = "Pueba del Campeon",
 	["Trial of the Crusader"] = "Prueba del Cruzado",
-	-- ["Twilight Highlands"] = "",
-	-- ["Twin Peaks"] = "",
+	["Twilight Highlands"] = "Twilight Highlands", -- Needs review
+	["Twin Peaks"] = "Twin Peaks", -- Needs review
 	["Twisting Nether"] = "El Vacío Abisal",
 	Uldaman = "Uldaman",
 	Ulduar = "Ulduar",
-	-- Uldum = "",
+	Uldum = "Uldum", -- Needs review
 	["Un'Goro Crater"] = "Cráter de Un'Goro",
 	Undercity = "Entrañas",
 	["Upper Blackrock Spire"] = "Cumbre de Roca Negra",
 	["Utgarde Keep"] = "Fortaleza de Utgarde",
 	["Utgarde Pinnacle"] = "Pináculo de Utgarde",
-	-- ["Vashj'ir"] = "",
+	["Vashj'ir"] = "Vashj'ir", -- Needs review
 	["Vault of Archavon"] = "La Cámara de Archavon",
 	["Vortex Pinnacle"] = "Pináculo del Vórtice",
 	["Wailing Caverns"] = "Cuevas de los Lamentos",
@@ -2172,7 +2172,7 @@ elseif GAME_LOCALE == "zhCN" then
 	["Menethil Harbor"] = "米奈希尔港",
 	["Molten Core"] = "熔火之心",
 	Moonglade = "月光林地",
-	["Mount Hyjal"] = "Mount Hyjal", -- Needs review
+	["Mount Hyjal"] = "海加尔山",
 	Mulgore = "莫高雷",
 	Nagrand = "纳格兰",
 	["Nagrand Arena"] = "纳格兰竞技场",
@@ -2202,7 +2202,7 @@ elseif GAME_LOCALE == "zhCN" then
 	["Rivendark's Perch"] = "雷文达克栖木",
 	["Ruins of Ahn'Qiraj"] = "安其拉废墟",
 	["Ruins of Gilneas"] = "Ruins of Gilneas", -- Needs review
-	-- ["Ruins of Gilneas City"] = "",
+	["Ruins of Gilneas City"] = "Ruins of Gilneas City", -- Needs review
 	["Ruins of Lordaeron"] = "洛丹伦废墟",
 	["Scalebeard's Cave"] = "鳞须海龟洞穴",
 	["Scarlet Monastery"] = "血色修道院",
@@ -2244,7 +2244,7 @@ elseif GAME_LOCALE == "zhCN" then
 	["Terokkar Forest"] = "泰罗卡森林",
 	["The Arachnid Quarter"] = "蜘蛛区",
 	["The Arcatraz"] = "禁魔监狱",
-	["The Argent Coliseum"] = "银色试炼场", -- Needs review
+	["The Argent Coliseum"] = "银色试炼场",
 	["The Barrens"] = "贫瘠之地",
 	["The Bastion of Twilight"] = "The Bastion of Twilight", -- Needs review
 	["The Black Morass"] = "黑色沼泽",
@@ -2267,8 +2267,8 @@ elseif GAME_LOCALE == "zhCN" then
 	["The Great Sea"] = "无尽之海",
 	["The Halls of Winter"] = "寒冬之厅",
 	["The Hinterlands"] = "辛特兰",
-	-- ["The Lost Isles"] = "",
-	-- ["The Maelstrom"] = "",
+	["The Lost Isles"] = "The Lost Isles", -- Needs review
+	["The Maelstrom"] = "The Maelstrom", -- Needs review
 	["The Mechanar"] = "能源舰",
 	["The Military Quarter"] = "军事区",
 	["The Nexus"] = "魔枢",
@@ -2299,12 +2299,12 @@ elseif GAME_LOCALE == "zhCN" then
 	["Thunder Bluff"] = "雷霆崖",
 	Tirisfal = "提里斯法林地",
 	["Tirisfal Glades"] = "提瑞斯法林地",
-	-- ["Tol Barad"] = "",
-	-- ["Tol Barad Peninsula"] = "",
+	["Tol Barad"] = "Tol Barad", -- Needs review
+	["Tol Barad Peninsula"] = "Tol Barad Peninsula", -- Needs review
 	["Trial of the Champion"] = "冠军的试炼",
 	["Trial of the Crusader"] = "十字军的试炼",
 	["Twilight Highlands"] = "Twilight Highlands", -- Needs review
-	-- ["Twin Peaks"] = "",
+	["Twin Peaks"] = "Twin Peaks", -- Needs review
 	["Twisting Nether"] = "扭曲虚空",
 	Uldaman = "奥达曼",
 	Ulduar = "奥杜尔",
@@ -2316,7 +2316,7 @@ elseif GAME_LOCALE == "zhCN" then
 	["Utgarde Pinnacle"] = "乌特加德之巅",
 	["Vashj'ir"] = "Vashj'ir", -- Needs review
 	["Vault of Archavon"] = "阿尔卡冯的宝库",
-	["Vortex Pinnacle"] = "漩涡峰", -- Needs review
+	["Vortex Pinnacle"] = "漩涡峰",
 	["Wailing Caverns"] = "哀嚎洞穴",
 	["Warsong Gulch"] = "战歌峡谷",
 	["Western Plaguelands"] = "西瘟疫之地",

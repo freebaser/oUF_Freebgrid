@@ -98,9 +98,9 @@ local function UpdateList(self)
 	end
 
 	if self.scrollFrame:IsShown() then
-		self:SetWidth(self.width + 20)
+		self:SetWidth(self.width + 50)
 	else
-		self:SetWidth(self.width)
+		self:SetWidth(self.width + 30)
 	end
 	self:SetHeight((listSize * UIDROPDOWNMENU_BUTTON_HEIGHT) + (UIDROPDOWNMENU_BORDER_HEIGHT * 2))
 end

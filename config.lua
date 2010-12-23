@@ -192,17 +192,17 @@ local function tex2func(frame)
             texdropdown.dropdown.list:Hide()
 
             local OnShow = texdropdown.dropdown.list:GetScript("OnShow")
-			texdropdown.dropdown.list:SetScript("OnShow", function(self)
-				OnShow(self)
-			end)
+            texdropdown.dropdown.list:SetScript("OnShow", function(self)
+                OnShow(self)
+            end)
 
-			local OnVerticalScroll = texdropdown.dropdown.list.scrollFrame:GetScript("OnVerticalScroll")
-			texdropdown.dropdown.list.scrollFrame:SetScript("OnVerticalScroll", function(self, delta)
-				OnVerticalScroll(self, delta)
-			end)
+            local OnVerticalScroll = texdropdown.dropdown.list.scrollFrame:GetScript("OnVerticalScroll")
+            texdropdown.dropdown.list.scrollFrame:SetScript("OnVerticalScroll", function(self, delta)
+                OnVerticalScroll(self, delta)
+            end)
 
-			button_OnClick(self)
-			self:SetScript("OnClick", button_OnClick)
+            button_OnClick(self)
+            self:SetScript("OnClick", button_OnClick)
         end)
     end
 end
@@ -248,17 +248,17 @@ local function font2func(frame)
             fontdropdown.dropdown.list:Hide()
 
             local OnShow = fontdropdown.dropdown.list:GetScript("OnShow")
-			fontdropdown.dropdown.list:SetScript("OnShow", function(self)
-				OnShow(self)
-			end)
+            fontdropdown.dropdown.list:SetScript("OnShow", function(self)
+                OnShow(self)
+            end)
 
-			local OnVerticalScroll = fontdropdown.dropdown.list.scrollFrame:GetScript("OnVerticalScroll")
-			fontdropdown.dropdown.list.scrollFrame:SetScript("OnVerticalScroll", function(self, delta)
-				OnVerticalScroll(self, delta)
-			end)
+            local OnVerticalScroll = fontdropdown.dropdown.list.scrollFrame:GetScript("OnVerticalScroll")
+            fontdropdown.dropdown.list.scrollFrame:SetScript("OnVerticalScroll", function(self, delta)
+                OnVerticalScroll(self, delta)
+            end)
 
-			button_OnClick(self)
-			self:SetScript("OnClick", button_OnClick)
+            button_OnClick(self)
+            self:SetScript("OnClick", button_OnClick)
         end)
     end
 end
@@ -382,6 +382,41 @@ local function growthfunc(frame)
     end)
 end
 
+do
+    local frame = CreateFrame"Frame"
+    frame:RegisterEvent"ADDON_LOADED"
+    frame:SetScript("OnEvent", function(self, event, addon)
+        if addon ~= ADDON_NAME then return end
+
+        SM = LibStub("LibSharedMedia-3.0", true)
+        if SM then
+            for font, path in pairs(ns.fonts) do
+                SM:Register("font", font, path)
+            end
+
+            for tex, path in pairs(ns.textures) do
+                SM:Register("statusbar", tex, path)
+            end
+
+            ns.fonts = {}
+            for i, v in pairs(SM:List("font")) do
+                table.insert(ns.fonts, v)
+                ns.fonts[v] = SM:Fetch("font", v)
+            end
+            table.sort(ns.fonts)
+
+            ns.textures = {}
+            for i, v in pairs(SM:List("statusbar")) do
+                table.insert(ns.textures, v)
+                ns.textures[v] = SM:Fetch("statusbar", v)
+            end
+            table.sort(ns.textures)
+        end
+
+        self:UnregisterEvent"ADDON_LOADED"
+    end)
+end
+
 -----------------------
 --      Panel 1      --
 -----------------------
@@ -390,30 +425,6 @@ local frame = CreateFrame("Frame", nil, InterfaceOptionsFramePanelContainer)
 frame.name = ADDON_NAME
 frame:Hide()
 frame:SetScript("OnShow", function(frame)
-    SM = LibStub("LibSharedMedia-3.0", true)
-    if SM then
-        for font, path in pairs(ns.fonts) do
-            SM:Register("font", font, path)
-        end
-
-        for tex, path in pairs(ns.textures) do
-            SM:Register("statusbar", tex, path)
-        end
-
-        ns.fonts = {}
-        for i, v in pairs(SM:List("font")) do
-            table.insert(ns.fonts, v)
-            ns.fonts[v] = SM:Fetch("font", v)
-        end
-        table.sort(ns.fonts)
-
-        ns.textures = {}
-        for i, v in pairs(SM:List("statusbar")) do
-            table.insert(ns.textures, v)
-            ns.textures[v] = SM:Fetch("statusbar", v)
-        end
-        table.sort(ns.textures)
-    end
 
     local title, subtitle = LibStub("tekKonfig-Heading").new(frame, "oUF_Freebgrid", "General settings for the oUF_Freebgrid.")
 
@@ -645,8 +656,8 @@ f:SetScript("OnShow", function(f)
     rescommalphaslider:SetValue(ns.db.rescommalpha or ns.defaults.rescommalpha)
     rescommalphaslider:SetValueStep(.05)
     rescommalphaslider:SetScript("OnValueChanged", function(self)
-        ns.db.rescommalpha = self:GetValue()
-        rescommalphaslidertext:SetText(string.format("Rescomm alpha: %.2f", ns.db.rescommalpha or ns.defaults.rescommalpha))
+    ns.db.rescommalpha = self:GetValue()
+    rescommalphaslidertext:SetText(string.format("Rescomm alpha: %.2f", ns.db.rescommalpha or ns.defaults.rescommalpha))
     end)]]
 
     local powerbar = tekcheck.new(f, nil, "Enable Powerbars.", "TOPLEFT", healgroup, "BOTTOMLEFT", 15, -GAP)
