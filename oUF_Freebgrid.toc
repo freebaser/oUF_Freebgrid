@@ -4,6 +4,7 @@
 ## Version: 5.5
 ## Notes: Raid Frames using the oUF framework.
 ## SavedVariables: FreebgridDB, Freebgridomf2
+## SavedVariablesPerCharacter: Freebgridomf2Char
 ## X-oUF: Freebgrid
 ## X-Website: http://www.wowinterface.com/downloads/info12264-oUF_Freebgrid.html
 

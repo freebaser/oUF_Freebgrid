@@ -195,8 +195,13 @@ do
     frame:SetScript("OnEvent", function(self, event, addon)
         if addon ~= ADDON_NAME then return end
 
-        _DB = Freebgridomf2 or {}
-        Freebgridomf2 = _DB
+        if ns.db.omfChar then
+            _DB = Freebgridomf2Char or {}
+            Freebgridomf2Char = _DB
+        else
+            _DB = Freebgridomf2 or {}
+            Freebgridomf2 = _DB
+        end
 
         self:UnregisterEvent"ADDON_LOADED"
     end)
@@ -220,9 +225,7 @@ do
         subtitle:SetNonSpaceWrap(true)
         subtitle:SetWordWrap(true)
         subtitle:SetJustifyH'LEFT'
-        subtitle:SetText('Note that the initial frame position set by layouts are currently'
-        .. ' not saved. This means that a reload of the UI is required to correctly reset'
-        .. ' the position after deleting an element.')
+        subtitle:SetText('Type /freeb to toggle frame anchors.')
 
         local scroll = CreateFrame("ScrollFrame", nil, self)
         scroll:SetPoint('TOPLEFT', subtitle, 'BOTTOMLEFT', 0, -8)

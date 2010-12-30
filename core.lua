@@ -2,28 +2,6 @@ local ADDON_NAME, ns = ...
 local oUF = ns.oUF or oUF
 assert(oUF, "oUF_Freebgrid was unable to locate oUF install.")
 
-local scaleRaid, raid = false
-do
-    local updateRaid = CreateFrame"Frame"
-    updateRaid:RegisterEvent("RAID_ROSTER_UPDATE")
-    updateRaid:RegisterEvent("PLAYER_ENTERING_WORLD")
-    updateRaid:SetScript("OnEvent", function(self)
-        if scaleRaid == false or oUF_Freebgrid.db.multi then return end
-        if(InCombatLockdown()) then
-            self:RegisterEvent('PLAYER_REGEN_ENABLED')
-        else
-            self:UnregisterEvent('PLAYER_REGEN_ENABLED')
-            if GetNumRaidMembers() > 29 then
-                raid:SetScale(oUF_Freebgrid.db.scale-0.4)
-            elseif GetNumRaidMembers() > 20 then
-                raid:SetScale(oUF_Freebgrid.db.scale-0.2)
-            else
-                raid:SetScale(oUF_Freebgrid.db.scale)
-            end
-        end
-    end)
-end
-
 if false then
     CompactRaidFrameManager:UnregisterAllEvents()
     CompactRaidFrameManager:Hide()
@@ -691,7 +669,11 @@ oUF:Factory(function(self)
     ns.Enable()
 
     for class, color in next, oUF.colors.class do
-        ns.colorCache[class] = hex(color)
+        if ns.db.reversecolors then
+            ns.colorCache[class] = "|cffFFFFFF"
+        else
+            ns.colorCache[class] = hex(color)
+        end
     end
     colorCache = ns.colorCache
     

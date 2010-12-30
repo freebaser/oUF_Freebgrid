@@ -612,6 +612,10 @@ f:SetScript("OnShow", function(f)
     multi:SetScript("OnClick", function(self) checksound(self); ns.db.multi = not ns.db.multi; end)
     multi:SetChecked(ns.db.multi)
 
+    local omfChar = tekcheck.new(f, nil, "Save position per character.", "TOPLEFT", multi, "BOTTOMLEFT", 0, -GAP)
+    omfChar:SetScript("OnClick", function(self) checksound(self); ns.db.omfChar = not ns.db.omfChar; end)
+    omfChar:SetChecked(ns.db.omfChar)
+
     local healgroup = LibStub("tekKonfig-Group").new(f, "HealPrediction Settings")
     healgroup:SetHeight(190)
     healgroup:SetWidth(180)
