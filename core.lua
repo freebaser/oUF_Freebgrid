@@ -42,22 +42,48 @@ local function multicheck(check, ...)
 end
 
 -- Unit Menu
-local menu = function(self)
-    local unit = self.unit:sub(1, -2)
-    local cunit = self.unit:gsub("^%l", string.upper)
+local dropdown = CreateFrame('Frame', ADDON_NAME .. 'DropDown', UIParent, 'UIDropDownMenuTemplate')
 
-    if(cunit == 'Vehicle') then
-        cunit = 'Pet'
-    end
-
-    if(unit == "party" or unit == "partypet") then
-        ToggleDropDownMenu(1, nil, _G["PartyMemberFrame"..self.id.."DropDown"], "cursor", 0, 0)
-    elseif(_G[cunit.."FrameDropDown"]) then
-        ToggleDropDownMenu(1, nil, _G[cunit.."FrameDropDown"], "cursor", 0, 0)
-    else
-        ToggleDropDownMenu(1, nil, TargetFrameDropDown, "cursor")
-    end
+local function menu(self)
+	dropdown:SetParent(self)
+	return ToggleDropDownMenu(1, nil, dropdown, 'cursor', 0, 0)
 end
+
+local init = function(self)
+	local unit = self:GetParent().unit
+	local menu, name, id
+
+	if(not unit) then
+		return
+	end
+
+	if(UnitIsUnit(unit, "player")) then
+		menu = "SELF"
+    elseif(UnitIsUnit(unit, "vehicle")) then
+		menu = "VEHICLE"
+	elseif(UnitIsUnit(unit, "pet")) then
+		menu = "PET"
+	elseif(UnitIsPlayer(unit)) then
+		id = UnitInRaid(unit)
+		if(id) then
+			menu = "RAID_PLAYER"
+			name = GetRaidRosterInfo(id)
+		elseif(UnitInParty(unit)) then
+			menu = "PARTY"
+		else
+			menu = "PLAYER"
+		end
+	else
+		menu = "TARGET"
+		name = RAID_TARGET_ICON
+	end
+
+	if(menu) then
+		UnitPopup_ShowMenu(self, menu, unit, name, id)
+	end
+end
+
+UIDropDownMenu_Initialize(dropdown, init, 'MENU')
 
 local backdrop = {
     bgFile = [=[Interface\ChatFrame\ChatFrameBackground]=],
@@ -147,27 +173,18 @@ end
 oUF.TagEvents['freebgrid:ddg'] = 'UNIT_HEALTH UNIT_CONNECTION'
 
 local nameCache = {}
-local colorCache = {}
+ns.colorCache = {}
+local colorCache
 local numberize = ns.numberize
 
 oUF.Tags['freebgrid:info'] = function(u, r)
-    local per = oUF.Tags['perhp'](u)
-
-    if r or per > 90 or per == 0 or ns.db.showname then
         local name = (u == 'vehicle' and UnitName(r or u)) or UnitName(u)
 
         if nameCache[name] then
             return nameCache[name]
         end
-    else
-        local _, class = UnitClass(u)
-        local def = oUF.Tags['missinghp'](u)
-        local color = colorCache[class]
-
-        return ((color or "").."-"..numberize(def))
-    end
 end
-oUF.TagEvents['freebgrid:info'] = 'UNIT_NAME_UPDATE UNIT_HEALTH UNIT_MAXHEALTH'
+oUF.TagEvents['freebgrid:info'] = 'UNIT_NAME_UPDATE'
 
 local updateName = function(self, name, class)
     local substring
@@ -336,8 +353,8 @@ end)
 local dispellist = dispelClass[class] or {}
 local dispelPriority = {
     Magic = 4,
-    Poison = 3,
-    Curse = 2,
+    Curse = 3,
+    Poison = 2,
     Disease = 1,
 }
 
@@ -409,8 +426,7 @@ local style = function(self)
     -- Mouseover script
     self:SetScript("OnEnter", OnEnter)
     self:SetScript("OnLeave", OnLeave)
-    self:RegisterForClicks"AnyDown"
-    self:SetAttribute("*type2", "menu")
+    self:RegisterForClicks"AnyUp"
 
     -- Health bar
     local hp = CreateFrame"StatusBar"
@@ -675,9 +691,10 @@ oUF:Factory(function(self)
     ns.Enable()
 
     for class, color in next, oUF.colors.class do
-        colorCache[class] = hex(color) 
+        ns.colorCache[class] = hex(color)
     end
-
+    colorCache = ns.colorCache
+    
     local visible
     if ns.db.solo and ns.db.partyOn then
         visible = 'raid,party,solo'

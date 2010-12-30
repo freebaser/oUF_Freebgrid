@@ -3,11 +3,32 @@ local oUF =  ns.oUF or oUF
 assert(oUF, "oUF_Freebgrid was unable to locate oUF install.")
 
 local numberize = ns.numberize
+local colorCache = ns.colorCache
+
+oUF.Tags['freebgrid:def'] = function(u)
+    if UnitIsDeadOrGhost(u) or not UnitIsConnected(u) then return end
+    local max = UnitHealthMax(u)
+    if max ~= 0 then
+        local cur = UnitHealth(u)
+        local per = cur/max
+        if per < 0.9 then
+            local _, class = UnitClass(u)
+            local color = colorCache[class]
+            if color then
+                return color.."-"..numberize(max-cur).."|r"
+            end
+        end
+    end
+end
+oUF.TagEvents['freebgrid:def'] = oUF.TagEvents['missinghp']
 
 oUF.Tags['freebgrid:heals'] = function(u)
     local incheal = UnitGetIncomingHeals(u) or 0
     if incheal > 0 then
         return "|cff00FF00"..numberize(incheal).."|r"
+    else
+        local def = oUF.Tags['freebgrid:def'](u)
+        return def
     end
 end
 oUF.TagEvents['freebgrid:heals'] = 'UNIT_HEAL_PREDICTION UNIT_MAXHEALTH UNIT_HEALTH'
@@ -20,6 +41,9 @@ oUF.Tags['freebgrid:othersheals'] = function(u)
 
     if incheal > 0 then
         return "|cff00FF00"..numberize(incheal).."|r"
+    else
+        local def = oUF.Tags['freebgrid:def'](u)
+        return def
     end
 end
 oUF.TagEvents['freebgrid:othersheals'] = oUF.TagEvents['freebgrid:heals']
@@ -93,18 +117,19 @@ local Enable = function(self)
             self:RegisterEvent('UNIT_HEALTH', Update)
         end
 
+        local healtext = self.Health:CreateFontString(nil, "OVERLAY")
+        healtext:SetPoint("BOTTOM")
+        healtext:SetShadowOffset(1.25, -1.25)
+        healtext:SetFont(ns.db.fontSM, ns.db.fontsize, ns.db.outline)
+
         if ns.db.healcommtext then
-            local healtext = self.Health:CreateFontString(nil, "OVERLAY")
-            healtext:SetPoint("BOTTOM")
-            healtext:SetShadowOffset(1.25, -1.25)
-            healtext:SetFont(ns.db.fontSM, ns.db.fontsize, ns.db.outline)
-
-
             if ns.db.healothersonly then
                 self:Tag(healtext, "[freebgrid:othersheals]")
             else
                 self:Tag(healtext, "[freebgrid:heals]")
             end
+        else
+            self:Tag(healtext, "[freebgrid:def]")
         end
     end
 end

@@ -604,11 +604,11 @@ f:SetScript("OnShow", function(f)
     --	MTT:SetScript("OnClick", function(self) checksound(self); ns.db.MTT = not ns.db.MTT; end)
     --	MTT:SetChecked(ns.db.MTT)
 
-    local showname = tekcheck.new(f, nil, "Always show names.", "TOPLEFT", MT, "BOTTOMLEFT", 0, -GAP)
-    showname:SetScript("OnClick", function(self) checksound(self); ns.db.showname = not ns.db.showname; end)
-    showname:SetChecked(ns.db.showname)
+    --local showname = tekcheck.new(f, nil, "Always show names.", "TOPLEFT", MT, "BOTTOMLEFT", 0, -GAP)
+    --showname:SetScript("OnClick", function(self) checksound(self); ns.db.showname = not ns.db.showname; end)
+    --showname:SetChecked(ns.db.showname)
 
-    local multi = tekcheck.new(f, nil, "Spawn multiple headers.", "TOPLEFT", showname, "BOTTOMLEFT", 0, -GAP)
+    local multi = tekcheck.new(f, nil, "Spawn multiple headers.", "TOPLEFT", MT, "BOTTOMLEFT", 0, -GAP)
     multi:SetScript("OnClick", function(self) checksound(self); ns.db.multi = not ns.db.multi; end)
     multi:SetChecked(ns.db.multi)
 
