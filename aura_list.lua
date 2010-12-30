@@ -43,7 +43,7 @@ ns.auras = {
             --Maloriak
             [GetSpellInfo(92973)] = 8, -- Consuming Flames
             [GetSpellInfo(92978)] = 8, -- Flash Freeze
-            [GetSpellInfo(92976)] = 7, -- Biting Chill
+            --[GetSpellInfo(92976)] = 7, -- Biting Chill
             [GetSpellInfo(91829)] = 7, -- Fixate
             --Atramedes
             [GetSpellInfo(78092)] = 7, -- Tracking
@@ -52,7 +52,7 @@ ns.auras = {
             --Chimaeron
             [GetSpellInfo(89084)] = 8, -- Low Health
             [GetSpellInfo(82881)] = 7, -- Break
-            [GetSpellInfo(82934)] = 9, -- Mortality
+            [GetSpellInfo(82890)] = 9, -- Mortality
             --Nefarian
             [GetSpellInfo(94128)] = 7, -- Tail Lash
             [GetSpellInfo(94075)] = 8, -- Magma
