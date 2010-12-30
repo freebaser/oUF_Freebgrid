@@ -201,6 +201,10 @@ local updateHealth = function(health, unit)
         bg:SetVertexColor(r, g, b)
         health:SetStatusBarColor(0, 0, 0, .8)
     end
+
+    -- Define your own hp and hpbg colors
+    --health.bg:SetVertexColor(.3, .3, .3)
+    --health:SetStatusBarColor(.1, .1, .1)
 end
 
 local updateInfo = function(health, unit)
