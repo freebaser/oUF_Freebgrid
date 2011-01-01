@@ -9,5 +9,6 @@
     <Script file='elements\indicators.lua' />
     <Script file='elements\heals.lua' />
     <Script file='elements\range.lua' />
+    <Script file='elements\afk.lua' />
 
 </Ui>

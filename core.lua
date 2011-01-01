@@ -158,11 +158,14 @@ local numberize = ns.numberize
 oUF.Tags['freebgrid:info'] = function(u, r)
         local name = (u == 'vehicle' and UnitName(r or u)) or UnitName(u)
 
-        if nameCache[name] then
+        if(UnitIsAFK(u)) then
+            local _, class = UnitClass(u)
+            return colorCache[class]..CHAT_FLAG_AFK
+        elseif nameCache[name] then
             return nameCache[name]
         end
 end
-oUF.TagEvents['freebgrid:info'] = 'UNIT_NAME_UPDATE'
+oUF.TagEvents['freebgrid:info'] = 'UNIT_NAME_UPDATE PLAYER_FLAGS_CHANGED UNIT_CONNECTION'
 
 local updateName = function(self, name, class)
     local substring
