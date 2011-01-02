@@ -4,7 +4,7 @@ assert(oUF, "oUF_Freebgrid was unable to locate oUF install.")
 
 local timer = {}
 
-local FormatTime = function(s)
+local AfkTime = function(s)
     local minute = 60
     local min = floor(s/minute)
     local sec = floor(s-(min*minute))
@@ -24,7 +24,7 @@ oUF.Tags['freebgrid:afk'] = function(u)
         local time = (GetTime()-timer[name])
 
         local _, class = UnitClass(u)
-        return colorCache[class]..FormatTime(time)
+        return colorCache[class]..AfkTime(time)
     elseif timer[name] then
         timer[name] = nil
     end
