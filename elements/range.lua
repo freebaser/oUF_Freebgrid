@@ -62,14 +62,14 @@ local function ColorTexture(texture, angle)
     texture:SetVertexColor(r,g,b)
 end
 
-local function RotateTexture(texture, angle)
+local function RotateTexture(parent, texture, angle)
     local cell = floor(angle / twopi * 108 + 0.5) % 108
     local column = cell % 9
     local row = floor(cell / 9)
 
     local key = column .. ":" .. row
     texture:SetTexCoord(unpack(texcoords[key]))
-    texture:Show()
+    parent:Show()
 
     ColorTexture(texture, angle)
 end
@@ -87,7 +87,7 @@ local timer = 0
 local OnRangeUpdate = function(self, elapsed)
     timer = timer + elapsed
 
-    if(timer >= .20) then
+    if(timer >= .10) then
         for _, object in next, _FRAMES do
             if(object:IsShown()) then
                 local range = object.freebRange
@@ -101,12 +101,14 @@ local OnRangeUpdate = function(self, elapsed)
                         return
                     end
 
-                    RotateTexture(object.freebarrow, bearing)
+                    RotateTexture(object.freebarrow, object.freebarrow.Tex, bearing)
 
                 elseif(object:GetAlpha() ~= range.insideAlpha) then
                     object:SetAlpha(range.insideAlpha)
                     object.freebarrow:Hide()
                 end
+            else
+                object.freebarrow:Hide()
             end
         end
 
@@ -125,14 +127,17 @@ local Enable = function(self)
         end
         OnRangeFrame:Show()
 
-        local frame = CreateFrame"Frame"
-        frame:SetAllPoints(self)
-        frame:SetFrameLevel(6)
-        self.freebarrow = frame:CreateTexture(nil, "OVERLAY")
-        self.freebarrow:SetTexture"Interface\\Addons\\oUF_Freebgrid\\Media\\Arrow"
-        self.freebarrow:SetPoint("TOPRIGHT", frame, "TOPRIGHT")
-        self.freebarrow:SetSize(16, 16)
-        self.freebarrow:Hide()       
+        local arrow = CreateFrame"Frame"
+        arrow:SetAllPoints(self)
+        arrow:SetFrameLevel(6)
+        arrow.Tex = arrow:CreateTexture(nil, "OVERLAY")
+        arrow.Tex:SetTexture"Interface\\Addons\\oUF_Freebgrid\\Media\\Arrow"
+        arrow.Tex:SetPoint("TOPRIGHT", arrow, "TOPRIGHT")
+        arrow.Tex:SetSize(18, 18)
+        
+        self.freebarrow = arrow
+        self.freebarrow:Hide()
+        
     end
 end
 
