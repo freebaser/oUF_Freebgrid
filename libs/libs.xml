@@ -16,5 +16,6 @@
 
     <Include file='LibSharedMedia-3.0\lib.xml' />
     <Include file='LibBabble-Zone-3.0\lib.xml' />
+    <Include file='Astrolabe\Load.xml' />
 
 </Ui>

@@ -7,7 +7,9 @@ local _FRAMES = {}
 local OnRangeFrame
 
 local UnitInRange, UnitIsConnected = UnitInRange, UnitIsConnected
-local GetPlayerMapPosition, GetPlayerFacing = GetPlayerMapPosition, GetPlayerFacing
+local GetPlayerFacing = GetPlayerFacing
+
+local Astrolabe = DongleStub("Astrolabe-1.0")
 
 local twopi = math.pi * 2
 local atan2 = math.atan2
@@ -36,51 +38,52 @@ local function ColorGradient(perc, ...)
     end
 end
 
-local function getCoords(column, row)
-    local xstart = (column * 56) / 512
-    local ystart = (row * 42) / 512
-    local xend = ((column + 1) * 56) / 512
-    local yend = ((row + 1) * 42) / 512
-    return xstart, xend, ystart, yend
-end
-
-local texcoords = setmetatable({}, {__index = function(t, k)
-    local col,row = k:match("(%d+):(%d+)")
-    col,row = tonumber(col), tonumber(row)
-    local obj = {getCoords(col, row)}
-    rawset(t, k, obj)
-    return obj
-end})
-
 local function ColorTexture(texture, angle)
     local perc = math.abs((math.pi - math.abs(angle)) / math.pi)
 
     local gr,gg,gb = 0, 1, 0
     local mr,mg,mb = 1, 1, 0
     local br,bg,bb = 1, 0, 0
-    local r,g,b = ColorGradient(perc, br, bg, bb, mr, mg, mb, gr, gg, gb)		
+    local r,g,b = ColorGradient(perc, br, bg, bb, mr, mg, mb, gr, gg, gb)
+
     texture:SetVertexColor(r,g,b)
 end
 
 local function RotateTexture(parent, texture, angle)
+    local player = GetPlayerFacing()
+    angle = angle - player
+
+    ColorTexture(texture, angle)
+
     local cell = floor(angle / twopi * 108 + 0.5) % 108
     local column = cell % 9
     local row = floor(cell / 9)
 
-    local key = column .. ":" .. row
-    texture:SetTexCoord(unpack(texcoords[key]))
-    parent:Show()
+    local xstart = (column * 56) / 512
+    local ystart = (row * 42) / 512
+    local xend = ((column + 1) * 56) / 512
+    local yend = ((row + 1) * 42) / 512
+    texture:SetTexCoord(xstart,xend,ystart,yend)
 
-    ColorTexture(texture, angle)
+    parent:Show()
 end
 
 local function GetBearing(unit)
-    local tx, ty = GetPlayerMapPosition(unit)
-    if tx == 0 and ty == 0 then
-        return 999
+    local tc, tz, tx, ty = Astrolabe:GetUnitPosition(unit, true)
+    if tc == -1 then
+        return false
     end
-    local px, py = GetPlayerMapPosition("player")
-    return -GetPlayerFacing() - atan2(tx - px, py - ty)
+
+    local pc, pz, px, py = Astrolabe:GetCurrentPlayerPosition()
+    local dist, xDelta, yDelta = Astrolabe:ComputeDistance(pc, pz, px, py, tc, tz, tx, ty)
+
+    if not dist then return false end
+    local dir = atan2(xDelta, -(yDelta))
+    if dir > 0 then
+        return twopi - dir
+    else
+        return -dir
+    end
 end
 
 local timer = 0
@@ -95,14 +98,13 @@ local OnRangeUpdate = function(self, elapsed)
                     if(object:GetAlpha() == range.insideAlpha) then
                         object:SetAlpha(range.outsideAlpha)
                     end
+
                     local bearing = GetBearing(object.unit)
-                    if bearing == 999 then
+                    if not bearing then
                         object.freebarrow:Hide()
-                        return
+                    else
+                        RotateTexture(object.freebarrow, object.freebarrow.Tex, bearing)
                     end
-
-                    RotateTexture(object.freebarrow, object.freebarrow.Tex, bearing)
-
                 elseif(object:GetAlpha() ~= range.insideAlpha) then
                     object:SetAlpha(range.insideAlpha)
                     object.freebarrow:Hide()
@@ -133,11 +135,11 @@ local Enable = function(self)
         arrow.Tex = arrow:CreateTexture(nil, "OVERLAY")
         arrow.Tex:SetTexture"Interface\\Addons\\oUF_Freebgrid\\Media\\Arrow"
         arrow.Tex:SetPoint("TOPRIGHT", arrow, "TOPRIGHT")
-        arrow.Tex:SetSize(18, 18)
-        
+        arrow.Tex:SetSize(18, 16)
+
         self.freebarrow = arrow
         self.freebarrow:Hide()
-        
+
     end
 end
 
