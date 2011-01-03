@@ -69,7 +69,11 @@ local function RotateTexture(parent, texture, angle)
 end
 
 local function GetBearing(unit)
-    local tc, tz, tx, ty = Astrolabe:GetUnitPosition(unit, true)
+    if WorldMapFrame:IsVisible() then
+        return false
+    end
+
+    local tc, tz, tx, ty = Astrolabe:GetUnitPosition(unit, false)
     if tc == -1 then
         return false
     end
@@ -135,7 +139,7 @@ local Enable = function(self)
         arrow.Tex = arrow:CreateTexture(nil, "OVERLAY")
         arrow.Tex:SetTexture"Interface\\Addons\\oUF_Freebgrid\\Media\\Arrow"
         arrow.Tex:SetPoint("TOPRIGHT", arrow, "TOPRIGHT")
-        arrow.Tex:SetSize(18, 16)
+        arrow.Tex:SetSize(16, 18)
 
         self.freebarrow = arrow
         self.freebarrow:Hide()
