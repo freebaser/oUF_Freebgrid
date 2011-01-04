@@ -547,7 +547,7 @@ local style = function(self)
 
     -- Enable Indicators
     self.freebIndicators = true
-
+    self.freebAfk = true
     self.freebHeals = true 
 
     -- Range
@@ -698,7 +698,7 @@ oUF:Factory(function(self)
     local pos, posRel, spacingX, spacingY, colX, colY, growth, point = SAP()
 
     if ns.db.multi then
-        raid = {}
+        local raid = {}
         for i = 1, ns.db.numCol do 
             local group = self:SpawnHeader('Raid_Freebgrid'..i, nil, visible,
             'oUF-initialConfigFunction', ([[
@@ -729,7 +729,7 @@ oUF:Factory(function(self)
             raid[i] = group
         end
     else
-        raid = self:SpawnHeader('Raid_Freebgrid', nil, visible,
+        local raid = self:SpawnHeader('Raid_Freebgrid', nil, visible,
         'oUF-initialConfigFunction', ([[
         self:SetWidth(%d)
         self:SetHeight(%d)

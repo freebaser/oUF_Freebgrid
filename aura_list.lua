@@ -72,9 +72,14 @@ ns.auras = {
             [GetSpellInfo(82762)] = 7, -- Waterlogged
             [GetSpellInfo(83099)] = 7, -- Lightning Rod
             [GetSpellInfo(82285)] = 7, -- Elemental Stasis
+            [GetSpellInfo(92488)] = 8, -- Gravity Well
             --Cho'gall
             [GetSpellInfo(93189)] = 7, -- Corrupted Blood
             [GetSpellInfo(93133)] = 7, -- Debilitating Beam
+            [GetSpellInfo(81836)] = 8, -- Corruption: Accelerated
+            [GetSpellInfo(81831)] = 8, -- Corruption: Sickness
+            [GetSpellInfo(82125)] = 8, -- Corruption: Malformation
+            [GetSpellInfo(82170)] = 8, -- Corruption: Absolute
         },
 
         [L["Throne of the Four Winds"]] = {

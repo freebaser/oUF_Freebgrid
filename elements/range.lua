@@ -5,14 +5,20 @@ local oUF = ns.oUF or oUF
 
 local _FRAMES = {}
 local OnRangeFrame
+local update = .15
 
 local UnitInRange, UnitIsConnected = UnitInRange, UnitIsConnected
-local GetPlayerFacing = GetPlayerFacing
+local GetPlayerFacing, WorldMapFrame = GetPlayerFacing, WorldMapFrame
 
 local Astrolabe = DongleStub("Astrolabe-1.0")
 
-local twopi = math.pi * 2
+local select, next = select, next
+local pi = math.pi
+local twopi = pi * 2
 local atan2 = math.atan2
+local modf = math.modf
+local abs = math.abs
+local floor = floor
 
 local function ColorGradient(perc, ...)
     local num = select("#", ...)
@@ -24,7 +30,7 @@ local function ColorGradient(perc, ...)
 
     num = num / 3
 
-    local segment, relperc = math.modf(perc*(num-1))
+    local segment, relperc = modf(perc*(num-1))
     local r1, g1, b1, r2, g2, b2
     r1, g1, b1 = select((segment*3)+1, ...), select((segment*3)+2, ...), select((segment*3)+3, ...)
     r2, g2, b2 = select((segment*3)+4, ...), select((segment*3)+5, ...), select((segment*3)+6, ...)
@@ -39,7 +45,7 @@ local function ColorGradient(perc, ...)
 end
 
 local function ColorTexture(texture, angle)
-    local perc = math.abs((math.pi - math.abs(angle)) / math.pi)
+    local perc = abs((pi - abs(angle)) / pi)
 
     local gr,gg,gb = 0, 1, 0
     local mr,mg,mb = 1, 1, 0
@@ -50,8 +56,7 @@ local function ColorTexture(texture, angle)
 end
 
 local function RotateTexture(parent, texture, angle)
-    local player = GetPlayerFacing()
-    angle = angle - player
+    angle = angle - GetPlayerFacing()
 
     ColorTexture(texture, angle)
 
@@ -68,25 +73,23 @@ local function RotateTexture(parent, texture, angle)
     parent:Show()
 end
 
-local function GetBearing(unit)
-    if WorldMapFrame:IsVisible() then
-        return false
-    end
+local function SetDistance(text, dist)
+    text:SetText(dist)
+end
 
+local function GetBearing(unit)
     local tc, tz, tx, ty = Astrolabe:GetUnitPosition(unit, false)
-    if tc == -1 then
-        return false
-    end
+    if tc == -1 then return end
 
     local pc, pz, px, py = Astrolabe:GetCurrentPlayerPosition()
     local dist, xDelta, yDelta = Astrolabe:ComputeDistance(pc, pz, px, py, tc, tz, tx, ty)
 
-    if not dist then return false end
+    if not dist then return end
     local dir = atan2(xDelta, -(yDelta))
     if dir > 0 then
-        return twopi - dir
+        return twopi - dir, dist
     else
-        return -dir
+        return -dir, dist
     end
 end
 
@@ -94,20 +97,21 @@ local timer = 0
 local OnRangeUpdate = function(self, elapsed)
     timer = timer + elapsed
 
-    if(timer >= .10) then
+    if(timer >= update) then
         for _, object in next, _FRAMES do
-            if(object:IsShown()) then
+            if(object:IsShown() and not object.unit == "player") then
                 local range = object.freebRange
                 if(UnitIsConnected(object.unit) and not UnitInRange(object.unit)) then
                     if(object:GetAlpha() == range.insideAlpha) then
                         object:SetAlpha(range.outsideAlpha)
                     end
 
-                    local bearing = GetBearing(object.unit)
-                    if not bearing then
+                    local bearing, dist = GetBearing(object.unit)
+                    if WorldMapFrame:IsVisible() or not bearing then
                         object.freebarrow:Hide()
                     else
-                        RotateTexture(object.freebarrow, object.freebarrow.Tex, bearing)
+                        RotateTexture(object.freebarrow, object.freebarrow.arrow, bearing)
+                        SetDistance(object.freebarrow.text, dist)
                     end
                 elseif(object:GetAlpha() ~= range.insideAlpha) then
                     object:SetAlpha(range.insideAlpha)
@@ -133,15 +137,22 @@ local Enable = function(self)
         end
         OnRangeFrame:Show()
 
-        local arrow = CreateFrame"Frame"
-        arrow:SetAllPoints(self)
-        arrow:SetFrameLevel(6)
-        arrow.Tex = arrow:CreateTexture(nil, "OVERLAY")
-        arrow.Tex:SetTexture"Interface\\Addons\\oUF_Freebgrid\\Media\\Arrow"
-        arrow.Tex:SetPoint("TOPRIGHT", arrow, "TOPRIGHT")
-        arrow.Tex:SetSize(16, 18)
+        local frame = CreateFrame"Frame"
+        frame:SetAllPoints(self)
+        frame:SetFrameLevel(6)
 
-        self.freebarrow = arrow
+        frame.arrow = frame:CreateTexture(nil, "OVERLAY")
+        frame.arrow:SetTexture"Interface\\Addons\\oUF_Freebgrid\\Media\\Arrow"
+        frame.arrow:SetPoint("TOPRIGHT", frame, "TOPRIGHT")
+        frame.arrow:SetSize(16, 18)
+
+        frame.text = frame:CreateFontString(nil, "OVERLAY")
+        frame.text:SetPoint("TOPLEFT", frame, "TOPLEFT", 2, 0)
+        frame.text:SetShadowOffset(1.25, -1.25)
+        frame.text:SetFont(ns.db.fontSM, 9, ns.db.outline)
+        frame.text:SetTextColor(1,1,0)
+
+        self.freebarrow = frame
         self.freebarrow:Hide()
 
     end

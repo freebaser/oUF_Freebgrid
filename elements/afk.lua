@@ -32,6 +32,8 @@ end
 oUF.TagEvents['freebgrid:afk'] = 'PLAYER_FLAGS_CHANGED'
 
 local Enable = function(self)
+    if not self.freebAfk then return end
+
     local afktext = self.Health:CreateFontString(nil, "OVERLAY")
     afktext:SetPoint("TOP")
     afktext:SetShadowOffset(1.25, -1.25)
