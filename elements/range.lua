@@ -5,7 +5,7 @@ local oUF = ns.oUF or oUF
 
 local _FRAMES = {}
 local OnRangeFrame
-local update = .15
+local update = .20
 
 local UnitInRange, UnitIsConnected = UnitInRange, UnitIsConnected
 local GetPlayerFacing, WorldMapFrame = GetPlayerFacing, WorldMapFrame
@@ -70,7 +70,9 @@ local function RotateTexture(parent, texture, angle)
     local yend = ((row + 1) * 42) / 512
     texture:SetTexCoord(xstart,xend,ystart,yend)
 
-    parent:Show()
+    if not parent:IsShown() then
+        parent:Show()
+    end
 end
 
 local function SetDistance(text, dist)
@@ -78,6 +80,8 @@ local function SetDistance(text, dist)
 end
 
 local function GetBearing(unit)
+    if unit == "player" then return end
+
     local tc, tz, tx, ty = Astrolabe:GetUnitPosition(unit, false)
     if tc == -1 then return end
 
@@ -99,7 +103,7 @@ local OnRangeUpdate = function(self, elapsed)
 
     if(timer >= update) then
         for _, object in next, _FRAMES do
-            if(object:IsShown() and not object.unit == "player") then
+            if(object:IsShown()) then
                 local range = object.freebRange
                 if(UnitIsConnected(object.unit) and not UnitInRange(object.unit)) then
                     if(object:GetAlpha() == range.insideAlpha) then
@@ -108,17 +112,23 @@ local OnRangeUpdate = function(self, elapsed)
 
                     local bearing, dist = GetBearing(object.unit)
                     if WorldMapFrame:IsVisible() or not bearing then
-                        object.freebarrow:Hide()
+                        if object.freebarrow:IsShown() then
+                            object.freebarrow:Hide()
+                        end
                     else
                         RotateTexture(object.freebarrow, object.freebarrow.arrow, bearing)
-                        SetDistance(object.freebarrow.text, dist)
+                        --SetDistance(object.freebarrow.text, dist)
                     end
                 elseif(object:GetAlpha() ~= range.insideAlpha) then
                     object:SetAlpha(range.insideAlpha)
-                    object.freebarrow:Hide()
+                    if object.freebarrow:IsShown() then
+                        object.freebarrow:Hide()
+                    end
                 end
             else
-                object.freebarrow:Hide()
+                if object.freebarrow:IsShown() then
+                    object.freebarrow:Hide()
+                end
             end
         end
 

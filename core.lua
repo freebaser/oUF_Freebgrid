@@ -280,7 +280,6 @@ local powerbar = function(self)
     pp:SetStatusBarTexture(ns.db.textureSM)
     fixStatusbar(pp)
     pp:SetOrientation(ns.db.porientation)
-    pp.frequentUpdates = true
 
     pp:SetParent(self)
     pp:SetPoint"BOTTOM"
@@ -551,10 +550,13 @@ local style = function(self)
     self.freebHeals = true 
 
     -- Range
-    self.freebRange = {
+    local range = {
         insideAlpha = ns.db.inRange,
         outsideAlpha = ns.db.outsideRange,
     }
+
+    self.freebRange = ns.db.arrow and range
+    self.Range = ns.db.arrow == false and range
 
     -- ReadyCheck
     self.ReadyCheck = hp:CreateTexture(nil, "OVERLAY")

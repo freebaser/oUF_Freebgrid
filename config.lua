@@ -72,6 +72,7 @@ ns.defaults = {
     multi = false,
 
     frequpdate = 0.5,
+    arrow = true,
 }
 
 ns.orientation = {
@@ -474,25 +475,16 @@ frame:SetScript("OnShow", function(frame)
         fontslidertext:SetText(string.format("Font Size: %d", ns.db.fontsize or ns.defaults.fontsize))
     end)
 
-    local inRangeslider, inRangeslidertext, inRangecontainer = tekslider.new(frame, string.format("In Range Alpha: %.2f", ns.db.inRange or ns.defaults.inRange), 0, 1, "TOPLEFT", fontslider, "BOTTOMLEFT", 0, -GAP)
+    --[[local inRangeslider, inRangeslidertext, inRangecontainer = tekslider.new(frame, string.format("In Range Alpha: %.2f", ns.db.inRange or ns.defaults.inRange), 0, 1, "TOPLEFT", fontslider, "BOTTOMLEFT", 0, -GAP)
     inRangeslider.tiptext = "Set the alpha of units in range."
     inRangeslider:SetValue(ns.db.inRange or ns.defaults.inRange)
     inRangeslider:SetValueStep(.05)
     inRangeslider:SetScript("OnValueChanged", function(self)
         ns.db.inRange = self:GetValue()
         inRangeslidertext:SetText(string.format("In Range Alpha: %.2f", ns.db.inRange or ns.defaults.inRange))
-    end)
+    end)]]
 
-    local ooRangeslider, ooRangeslidertext, ooRangecontainer = tekslider.new(frame, string.format("Out of Range Alpha: %.2f", ns.db.outsideRange or ns.defaults.outsideRange), 0, 1, "TOPLEFT", inRangeslider, "BOTTOMLEFT", 0, -GAP)
-    ooRangeslider.tiptext = "Set the alpha of units out of range."
-    ooRangeslider:SetValue(ns.db.outsideRange or ns.defaults.outsideRange)
-    ooRangeslider:SetValueStep(.05)
-    ooRangeslider:SetScript("OnValueChanged", function(self)
-        ns.db.outsideRange = self:GetValue()
-        ooRangeslidertext:SetText(string.format("Out of Range Alpha: %.2f", ns.db.outsideRange or ns.defaults.outsideRange))
-    end)
-
-    local iconsizeslider, iconsizeslidertext, iconsizecontainer = tekslider.new(frame, string.format("Icon Size: %d", ns.db.iconsize or ns.defaults.iconsize), 8, 20, "TOPLEFT", ooRangeslider, "BOTTOMLEFT", 0, -GAP)
+    local iconsizeslider, iconsizeslidertext, iconsizecontainer = tekslider.new(frame, string.format("Icon Size: %d", ns.db.iconsize or ns.defaults.iconsize), 8, 20, "TOPLEFT", fontslider, "BOTTOMLEFT", 0, -GAP)
     iconsizeslider.tiptext = "Set the size of various icons. Raid symbols, Party leader, etc."
     iconsizeslider:SetValue(ns.db.iconsize or ns.defaults.iconsize)
     iconsizeslider:SetValueStep(1)
@@ -509,6 +501,19 @@ frame:SetScript("OnShow", function(frame)
         ns.db.debuffsize = self:GetValue()
         debuffsizeslidertext:SetText(string.format("Debuff Size: %d", ns.db.debuffsize or ns.defaults.debuffsize))
     end) 
+
+    local ooRangeslider, ooRangeslidertext, ooRangecontainer = tekslider.new(frame, string.format("Out of Range Alpha: %.2f", ns.db.outsideRange or ns.defaults.outsideRange), 0, 1, "TOPLEFT", debuffsizeslider, "BOTTOMLEFT", 0, -GAP)
+    ooRangeslider.tiptext = "Set the alpha of units out of range."
+    ooRangeslider:SetValue(ns.db.outsideRange or ns.defaults.outsideRange)
+    ooRangeslider:SetValueStep(.05)
+    ooRangeslider:SetScript("OnValueChanged", function(self)
+        ns.db.outsideRange = self:GetValue()
+        ooRangeslidertext:SetText(string.format("Out of Range Alpha: %.2f", ns.db.outsideRange or ns.defaults.outsideRange))
+    end)
+
+    local arrow = tekcheck.new(frame, nil, "Enable range arrows.", "TOPLEFT", ooRangeslider, "BOTTOMLEFT", 0, -15)
+    arrow:SetScript("OnClick", function(self) checksound(self); ns.db.arrow = not ns.db.arrow; end)
+    arrow:SetChecked(ns.db.arrow)
 
     local numColslider, numColslidertext, numColcontainer = tekslider.new(frame, string.format("Number of groups: %d", ns.db.numCol or ns.defaults.numCol), 1, 8, "BOTTOMRIGHT", frame, "BOTTOMRIGHT", -30, 40)
     numColslider.tiptext = "Set the number of groups."
