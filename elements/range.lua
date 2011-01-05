@@ -80,7 +80,7 @@ local function SetDistance(text, dist)
 end
 
 local function GetBearing(unit)
-    if unit == "player" then return end
+    if unit == "player" or WorldMapFrame:IsVisible() then return end
 
     local tc, tz, tx, ty = Astrolabe:GetUnitPosition(unit, false)
     if tc == -1 then return end
@@ -111,7 +111,7 @@ local OnRangeUpdate = function(self, elapsed)
                     end
 
                     local bearing, dist = GetBearing(object.unit)
-                    if WorldMapFrame:IsVisible() or not bearing then
+                    if not bearing then
                         if object.freebarrow:IsShown() then
                             object.freebarrow:Hide()
                         end
