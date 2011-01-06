@@ -73,6 +73,7 @@ ns.defaults = {
 
     frequpdate = 0.5,
     arrow = true,
+    mouseover = true,
 }
 
 ns.orientation = {
@@ -514,6 +515,10 @@ frame:SetScript("OnShow", function(frame)
     local arrow = tekcheck.new(frame, nil, "Enable range arrows.", "TOPLEFT", ooRangeslider, "BOTTOMLEFT", 0, -15)
     arrow:SetScript("OnClick", function(self) checksound(self); ns.db.arrow = not ns.db.arrow; end)
     arrow:SetChecked(ns.db.arrow)
+
+    local mouseover = tekcheck.new(frame, nil, "Show arrows on mouseover.", "TOPLEFT", arrow, "BOTTOMLEFT", 0, -5)
+    mouseover:SetScript("OnClick", function(self) checksound(self); ns.db.mouseover = not ns.db.mouseover; end)
+    mouseover:SetChecked(ns.db.mouseover)
 
     local numColslider, numColslidertext, numColcontainer = tekslider.new(frame, string.format("Number of groups: %d", ns.db.numCol or ns.defaults.numCol), 1, 8, "BOTTOMRIGHT", frame, "BOTTOMRIGHT", -30, 40)
     numColslider.tiptext = "Set the number of groups."

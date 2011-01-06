@@ -8,9 +8,8 @@ local OnRangeFrame
 local update = .20
 
 local UnitInRange, UnitIsConnected = UnitInRange, UnitIsConnected
-local GetPlayerFacing, WorldMapFrame = GetPlayerFacing, WorldMapFrame
-
-local Astrolabe = DongleStub("Astrolabe-1.0")
+local SetMapToCurrentZone, WorldMapFrame = SetMapToCurrentZone, WorldMapFrame
+local GetPlayerMapPosition, GetPlayerFacing = GetPlayerMapPosition, GetPlayerFacing
 
 local select, next = select, next
 local pi = math.pi
@@ -55,45 +54,50 @@ local function ColorTexture(texture, angle)
     texture:SetVertexColor(r,g,b)
 end
 
-local function RotateTexture(parent, texture, angle)
+local function RotateTexture(arrow, texture, angle)
+    if not arrow:IsShown() then
+        arrow:Show()
+    end
     angle = angle - GetPlayerFacing()
 
-    ColorTexture(texture, angle)
-
     local cell = floor(angle / twopi * 108 + 0.5) % 108
+    if cell == arrow.cell then return end
+    arrow.cell = cell
+
     local column = cell % 9
     local row = floor(cell / 9)
 
+    ColorTexture(texture, angle)
     local xstart = (column * 56) / 512
     local ystart = (row * 42) / 512
     local xend = ((column + 1) * 56) / 512
     local yend = ((row + 1) * 42) / 512
     texture:SetTexCoord(xstart,xend,ystart,yend)
-
-    if not parent:IsShown() then
-        parent:Show()
-    end
 end
 
-local function SetDistance(text, dist)
-    text:SetFormattedText("%d",dist)
-end
-
+local px, py, tx, ty
 local function GetBearing(unit)
     if unit == "player" or WorldMapFrame:IsVisible() then return end
 
-    local tc, tz, tx, ty = Astrolabe:GetUnitPosition(unit, false)
-    if tc == -1 then return end
+    px, py = GetPlayerMapPosition("player")
+    if((px or 0)+(py or 0) <= 0) then
+        SetMapToCurrentZone()
+        px, py = GetPlayerMapPosition("player")
+        if((px or 0)+(py or 0) <= 0) then return end
+    end
 
-    local pc, pz, px, py = Astrolabe:GetCurrentPlayerPosition()
-    local dist, xDelta, yDelta = Astrolabe:ComputeDistance(pc, pz, px, py, tc, tz, tx, ty)
+    tx, ty = GetPlayerMapPosition(unit)
+    if((tx or 0)+(ty or 0) <= 0) then return end
 
-    if not dist then return end
-    local dir = atan2(xDelta, -(yDelta))
-    if dir > 0 then
-        return twopi - dir, dist
-    else
-        return -dir, dist
+    return pi - atan2(px-tx,ty-py)
+end
+
+function ns:arrow(object, unit)
+    if not object.OoR then return end 
+    local bearing = GetBearing(unit)
+
+    if bearing then
+        RotateTexture(object.freebarrow, object.freebarrow.arrow, bearing)
     end
 end
 
@@ -110,20 +114,22 @@ local OnRangeUpdate = function(self, elapsed)
                         object:SetAlpha(range.outsideAlpha)
                     end
 
-                    local bearing, dist = GetBearing(object.unit)
-                    if not bearing then
-                        if object.freebarrow:IsShown() then
+                    object.OoR = true
+                    if not ns.db.mouseover then
+                        local bearing = GetBearing(object.unit)
+                        if bearing then
+                            RotateTexture(object.freebarrow, object.freebarrow.arrow, bearing)
+                        elseif object.freebarrow:IsShown() then
                             object.freebarrow:Hide()
                         end
-                    else
-                        RotateTexture(object.freebarrow, object.freebarrow.arrow, bearing)
-                        SetDistance(object.freebarrow.text, dist)
                     end
                 elseif(object:GetAlpha() ~= range.insideAlpha) then
                     object:SetAlpha(range.insideAlpha)
                     if object.freebarrow:IsShown() then
                         object.freebarrow:Hide()
                     end
+                else
+                    object.OoR = false
                 end
             else
                 if object.freebarrow:IsShown() then
@@ -147,23 +153,19 @@ local Enable = function(self)
         end
         OnRangeFrame:Show()
 
-        local frame = CreateFrame"Frame"
+        local frame = CreateFrame("Frame", nil, UIParent)
         frame:SetAllPoints(self)
         frame:SetFrameLevel(6)
 
         frame.arrow = frame:CreateTexture(nil, "OVERLAY")
         frame.arrow:SetTexture"Interface\\Addons\\oUF_Freebgrid\\Media\\Arrow"
         frame.arrow:SetPoint("TOPRIGHT", frame, "TOPRIGHT")
-        frame.arrow:SetSize(16, 18)
-
-        frame.text = frame:CreateFontString(nil, "OVERLAY")
-        frame.text:SetPoint("TOPLEFT", frame, "TOPLEFT", 3, -1)
-        frame.text:SetFont(ns.db.fontSM, 8, "THINOUTLINE")
-        frame.text:SetTextColor(1,1,0)
+        frame.arrow:SetSize(22, 24)
 
         self.freebarrow = frame
         self.freebarrow:Hide()
 
+        if not ns.db.mouseover then update = .10 end
     end
 end
 

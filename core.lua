@@ -389,12 +389,20 @@ end
 -- Show Mouseover highlight
 local OnEnter = function(self)
     UnitFrame_OnEnter(self)
-    self.Highlight:Show()	
+    self.Highlight:Show()
+
+    if ns.db.mouseover then
+        ns:arrow(self, self.unit)
+    end
 end
 
 local OnLeave = function(self)
     UnitFrame_OnLeave(self)
-    self.Highlight:Hide()	
+    self.Highlight:Hide()
+
+    if ns.db.mouseover then
+        self.freebarrow:Hide()
+    end
 end
 
 local style = function(self)
