@@ -76,7 +76,7 @@ local function RotateTexture(parent, texture, angle)
 end
 
 local function SetDistance(text, dist)
-    text:SetText(dist)
+    text:SetFormattedText("%d",dist)
 end
 
 local function GetBearing(unit)
@@ -117,7 +117,7 @@ local OnRangeUpdate = function(self, elapsed)
                         end
                     else
                         RotateTexture(object.freebarrow, object.freebarrow.arrow, bearing)
-                        --SetDistance(object.freebarrow.text, dist)
+                        SetDistance(object.freebarrow.text, dist)
                     end
                 elseif(object:GetAlpha() ~= range.insideAlpha) then
                     object:SetAlpha(range.insideAlpha)
@@ -157,9 +157,8 @@ local Enable = function(self)
         frame.arrow:SetSize(16, 18)
 
         frame.text = frame:CreateFontString(nil, "OVERLAY")
-        frame.text:SetPoint("TOPLEFT", frame, "TOPLEFT", 2, 0)
-        frame.text:SetShadowOffset(1.25, -1.25)
-        frame.text:SetFont(ns.db.fontSM, 9, ns.db.outline)
+        frame.text:SetPoint("TOPLEFT", frame, "TOPLEFT", 3, -1)
+        frame.text:SetFont(ns.db.fontSM, 8, "THINOUTLINE")
         frame.text:SetTextColor(1,1,0)
 
         self.freebarrow = frame

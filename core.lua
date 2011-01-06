@@ -157,7 +157,7 @@ local numberize = ns.numberize
 
 oUF.Tags['freebgrid:info'] = function(u, r)
         local name = (u == 'vehicle' and UnitName(r or u)) or UnitName(u)
-
+        
         if(UnitIsAFK(u)) then
             local _, class = UnitClass(u)
             return colorCache[class]..CHAT_FLAG_AFK
@@ -176,6 +176,7 @@ local updateName = function(self, name, class)
     end
 
     nameCache[name] = colorCache[class]..substring
+    self.Name:UpdateTag()
 end
 
 local updateHealth = function(health, unit)

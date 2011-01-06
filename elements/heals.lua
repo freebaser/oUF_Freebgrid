@@ -129,7 +129,7 @@ local Enable = function(self)
                 self:Tag(healtext, "[freebgrid:heals]")
             end
         else
-            self:Tag(healtext, "[freebgrid:def]")
+            --self:Tag(healtext, "[freebgrid:def]")
         end
     end
 end
