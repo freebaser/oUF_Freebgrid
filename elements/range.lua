@@ -160,7 +160,7 @@ local Enable = function(self)
         frame.arrow = frame:CreateTexture(nil, "OVERLAY")
         frame.arrow:SetTexture"Interface\\Addons\\oUF_Freebgrid\\Media\\Arrow"
         frame.arrow:SetPoint("TOPRIGHT", frame, "TOPRIGHT")
-        frame.arrow:SetSize(22, 24)
+        frame.arrow:SetSize(18, 24)
 
         self.freebarrow = frame
         self.freebarrow:Hide()

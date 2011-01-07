@@ -1,7 +1,10 @@
 local ADDON_NAME, ns = ...
+local oUF = ns.oUF or oUF
+assert(oUF, "oUF_Freebgrid was unable to locate oUF install.")
+
 local mediapath = "Interface\\AddOns\\oUF_Freebgrid\\media\\"
 
--- These are just the defaults that are created as a base.
+-- These are just the defaults that are created at first login.
 ns.defaults = {
     locked = true,
 
@@ -65,6 +68,7 @@ ns.defaults = {
     showname = false,
 
     disableomf = false,
+    omfChar = false,
 
     lfdicon = true,
 
@@ -114,283 +118,13 @@ ns.fonts = {
     ["Expressway"] = mediapath.."expressway.ttf",
 }
 
-function ns:SetTex(v)
-    if v then self.db.texture = v end
-end
-
-function ns:SetFont(v)
-    if v then self.db.font = v end
-end
-
-function ns:SetOrientation(v)
-    if v then self.db.orientation = v end
-end
-
-function ns:SetpOrientation(v)
-    if v then self.db.porientation = v end
-end
-
-function ns:SetPoint(v)
-    if v then self.db.point = v end
-end
-
-function ns:SetGrowth(v)
-    if v then self.db.growth = v end
-end
-
-function ns:SetOutline(v)
-    if v then self.db.outline = v end
-end
-
-----------------------
---      Locals      --
-----------------------
-
-local tekcheck = LibStub("tekKonfig-Checkbox")
-local tekbutton = LibStub("tekKonfig-Button")
-local tekslider = LibStub("tekKonfig-Slider")
-local tekdropdown = LibStub("tekKonfig-Dropdown")
-local GAP = 7
-local SM
-
-local function texfunc(frame)
-    local texturedropdown, texturedropdowntext, texturedropdowncontainer = tekdropdown.new(frame, "Texture", "TOPRIGHT", frame, 0, 0)
-    texturedropdowntext:SetText(ns.db.texture or ns.defaults.texture)
-    texturedropdown.tiptext = "Change the unit's texture."
-
-    local function OnClick(self)
-        UIDropDownMenu_SetSelectedValue(texturedropdown, self.value)
-        texturedropdowntext:SetText(self.value)
-        ns:SetTex(self.value)
-    end
-    UIDropDownMenu_Initialize(texturedropdown, function()
-        local selected, info = UIDropDownMenu_GetSelectedValue(texturedropdown) or ns.db.texture, UIDropDownMenu_CreateInfo()
-
-        for name in pairs(ns.textures) do
-            info.text = name
-            info.value = name
-            info.func = OnClick
-            info.checked = name == selected
-            UIDropDownMenu_AddButton(info)
-        end
-    end)
-end
-
-local function tex2func(frame)
-    local texdropdown = frame:CreateScrollingDropdown("Texture", ns.textures)
-    texdropdown.desc = "Change the unit's texture."
-    texdropdown:SetPoint("TOPRIGHT", frame, -10, -10)
-    texdropdown:SetValue(ns.db.texture or ns.defaults.texture)
-    do
-        function texdropdown:OnValueChanged(value)
-            texdropdown:SetValue(value)
-            ns.db.textureSM = ns.textures[value]
-            ns.db.texture = value
-        end
-
-        local button_OnClick = texdropdown.button:GetScript("OnClick")
-        texdropdown.button:SetScript("OnClick", function(self)
-            button_OnClick(self)
-            texdropdown.dropdown.list:Hide()
-
-            local OnShow = texdropdown.dropdown.list:GetScript("OnShow")
-            texdropdown.dropdown.list:SetScript("OnShow", function(self)
-                OnShow(self)
-            end)
-
-            local OnVerticalScroll = texdropdown.dropdown.list.scrollFrame:GetScript("OnVerticalScroll")
-            texdropdown.dropdown.list.scrollFrame:SetScript("OnVerticalScroll", function(self, delta)
-                OnVerticalScroll(self, delta)
-            end)
-
-            button_OnClick(self)
-            self:SetScript("OnClick", button_OnClick)
-        end)
-    end
-end
-
-local function fontfunc(frame)
-    local fontdropdown, fontdropdowntext, fontdropdowncontainer = tekdropdown.new(frame, "Font", "TOPRIGHT", frame, 0, -50)
-    fontdropdowntext:SetText(ns.db.font or ns.defaults.font)
-    fontdropdown.tiptext = "Change the unit's font."
-
-    local function FontOnClick(self)
-        UIDropDownMenu_SetSelectedValue(fontdropdown, self.value)
-        fontdropdowntext:SetText(self.value)
-        ns:SetFont(self.value)
-    end
-    UIDropDownMenu_Initialize(fontdropdown, function()
-        local selected, info = UIDropDownMenu_GetSelectedValue(fontdropdown) or ns.db.font, UIDropDownMenu_CreateInfo()
-
-        for name in pairs(ns.fonts) do
-            info.text = name
-            info.value = name
-            info.func = FontOnClick
-            info.checked = name == selected
-            UIDropDownMenu_AddButton(info)
-        end
-    end)
-end
-
-local function font2func(frame)
-    local fontdropdown = frame:CreateScrollingDropdown("Font", ns.fonts)
-    fontdropdown.desc = "CChange the unit's font."
-    fontdropdown:SetPoint("TOPRIGHT", frame, -10, -60)
-    fontdropdown:SetValue(ns.db.font or ns.defaults.font)
-    do
-        function fontdropdown:OnValueChanged(value)
-            fontdropdown:SetValue(value)
-            ns.db.fontSM = ns.fonts[value]
-            ns.db.font = value
-        end
-
-        local button_OnClick = fontdropdown.button:GetScript("OnClick")
-        fontdropdown.button:SetScript("OnClick", function(self)
-            button_OnClick(self)
-            fontdropdown.dropdown.list:Hide()
-
-            local OnShow = fontdropdown.dropdown.list:GetScript("OnShow")
-            fontdropdown.dropdown.list:SetScript("OnShow", function(self)
-                OnShow(self)
-            end)
-
-            local OnVerticalScroll = fontdropdown.dropdown.list.scrollFrame:GetScript("OnVerticalScroll")
-            fontdropdown.dropdown.list.scrollFrame:SetScript("OnVerticalScroll", function(self, delta)
-                OnVerticalScroll(self, delta)
-            end)
-
-            button_OnClick(self)
-            self:SetScript("OnClick", button_OnClick)
-        end)
-    end
-end
-
-local function outlinefunc(frame)
-    local outlinedropdown, outlinedropdowntext, outlinedropdowncontainer = tekdropdown.new(frame, "Outline", "TOPRIGHT", frame, 0, -100)
-    outlinedropdowntext:SetText(ns.db.outline or ns.defaults.outline)
-    outlinedropdown.tiptext = "Change the font outline."
-
-    local function OutlineOnClick(self)
-        UIDropDownMenu_SetSelectedValue(outlinedropdown, self.value)
-        outlinedropdowntext:SetText(self.value)
-        ns:SetOutline(self.value)
-    end
-    UIDropDownMenu_Initialize(outlinedropdown, function()
-        local selected, info = UIDropDownMenu_GetSelectedValue(outlinedropdown) or ns.db.outline, UIDropDownMenu_CreateInfo()
-
-        for name in pairs(ns.outline) do
-            info.text = name
-            info.value = name
-            info.func = OutlineOnClick
-            info.checked = name == selected
-            UIDropDownMenu_AddButton(info)
-        end
-    end)
-end
-
-local function orientationfunc(frame)
-    local orientationdropdown, orientationdropdowntext, orientationdropdowncontainer = tekdropdown.new(frame, "Statusbar Orientation", "TOPRIGHT", frame, 0, -150)
-    orientationdropdowntext:SetText(ns.db.orientation or ns.defaults.orientation)
-    orientationdropdown.tiptext = "Change the orientation of the statusbars."
-
-    local function OrientationOnClick(self)
-        UIDropDownMenu_SetSelectedValue(orientationdropdown, self.value)
-        orientationdropdowntext:SetText(self.value)
-        ns:SetOrientation(self.value)
-    end
-
-    UIDropDownMenu_Initialize(orientationdropdown, function()
-        local selected, info = UIDropDownMenu_GetSelectedValue(orientationdropdown) or ns.db.orientation, UIDropDownMenu_CreateInfo()
-
-        for name in pairs(ns.orientation) do
-            info.text = name
-            info.value = name
-            info.func = OrientationOnClick
-            info.checked = name == selected
-            UIDropDownMenu_AddButton(info)
-        end
-    end)
-end
-
-local function porientationfunc(frame)
-    local porientationdropdown, porientationdropdowntext, porientationdropdowncontainer = tekdropdown.new(frame, "Powerbar Orientation", "TOPRIGHT", frame, -10, -235)
-    porientationdropdowntext:SetText(ns.db.porientation or ns.defaults.porientation)
-    porientationdropdown.tiptext = "Change the orientation of the powerbars."
-
-    local function OrientationOnClick(self)
-        UIDropDownMenu_SetSelectedValue(porientationdropdown, self.value)
-        porientationdropdowntext:SetText(self.value)
-        ns:SetpOrientation(self.value)
-    end
-
-    UIDropDownMenu_Initialize(porientationdropdown, function()
-        local selected, info = UIDropDownMenu_GetSelectedValue(porientationdropdown) or ns.db.porientation, UIDropDownMenu_CreateInfo()
-
-        for name in pairs(ns.orientation) do
-            info.text = name
-            info.value = name
-            info.func = OrientationOnClick
-            info.checked = name == selected
-            UIDropDownMenu_AddButton(info)
-        end
-    end)
-end
-
-local function pointfunc(frame)
-    local pointdropdown, pointdropdowntext, pointdropdowncontainer = tekdropdown.new(frame, "Point Direction", "TOPRIGHT", frame, 0, -200)
-    pointdropdowntext:SetText(ns.db.point or ns.defaults.point)
-    pointdropdown.tiptext = "Set the point to have additional units added."
-
-    local function PointClick(self)
-        UIDropDownMenu_SetSelectedValue(pointdropdown, self.value)
-        pointdropdowntext:SetText(self.value)
-        ns:SetPoint(self.value)
-    end
-
-    UIDropDownMenu_Initialize(pointdropdown, function()
-        local selected, info = UIDropDownMenu_GetSelectedValue(pointdropdown) or ns.db.point, UIDropDownMenu_CreateInfo()
-
-        for name in pairs(ns.point) do
-            info.text = name
-            info.value = name
-            info.func = PointClick
-            info.checked = name == selected
-            UIDropDownMenu_AddButton(info)
-        end
-    end)
-end
-
-local function growthfunc(frame)
-    local growthdropdown, growthdropdowntext, growthdropdowncontainer = tekdropdown.new(frame, "Growth Direction", "TOPRIGHT", frame, 0, -250)
-    growthdropdowntext:SetText(ns.db.growth or ns.defaults.growth)
-    growthdropdown.tiptext = "Set the growth direction for additional groups."
-
-    local function GrowthOnClick(self)
-        UIDropDownMenu_SetSelectedValue(growthdropdown, self.value)
-        growthdropdowntext:SetText(self.value)
-        ns:SetGrowth(self.value)
-    end
-
-    UIDropDownMenu_Initialize(growthdropdown, function()
-        local selected, info = UIDropDownMenu_GetSelectedValue(growthdropdown) or ns.db.growth, UIDropDownMenu_CreateInfo()
-
-        for name in pairs(ns.growth) do
-            info.text = name
-            info.value = name
-            info.func = GrowthOnClick
-            info.checked = name == selected
-            UIDropDownMenu_AddButton(info)
-        end
-    end)
-end
-
+local SM = LibStub("LibSharedMedia-3.0", true)
 do
     local frame = CreateFrame"Frame"
     frame:RegisterEvent"ADDON_LOADED"
     frame:SetScript("OnEvent", function(self, event, addon)
         if addon ~= ADDON_NAME then return end
 
-        SM = LibStub("LibSharedMedia-3.0", true)
         if SM then
             for font, path in pairs(ns.fonts) do
                 SM:Register("font", font, path)
@@ -400,338 +134,407 @@ do
                 SM:Register("statusbar", tex, path)
             end
 
-            ns.fonts = {}
+            wipe(ns.fonts)
             for i, v in pairs(SM:List("font")) do
                 table.insert(ns.fonts, v)
                 ns.fonts[v] = SM:Fetch("font", v)
             end
-            table.sort(ns.fonts)
 
-            ns.textures = {}
+            wipe(ns.textures)
             for i, v in pairs(SM:List("statusbar")) do
                 table.insert(ns.textures, v)
                 ns.textures[v] = SM:Fetch("statusbar", v)
             end
-            table.sort(ns.textures)
         end
 
         self:UnregisterEvent"ADDON_LOADED"
     end)
 end
 
------------------------
---      Panel 1      --
------------------------
+local generalopts = {
+    type = "group", name = "General", order = 1,
+    args = {
+        scale = {
+            name = "Scale",
+            type = "range",
+            order = 1,
+            min = 0.5,
+            max = 2.0,
+            step = .05,
+            get = function(info) return ns.db.scale end,
+            set = function(info,val) ns.db.scale = val end,
+        },
+        width = {
+            name = "Width",
+            type = "range",
+            order = 2,
+            min = 20,
+            max = 150,
+            step = 1,
+            get = function(info) return ns.db.width end,
+            set = function(info,val) ns.db.width = val end,
+        },
+        height = {
+            name = "Height",
+            type = "range",
+            order = 3,
+            min = 20,
+            max = 150,
+            step = 1,
+            get = function(info) return ns.db.height end,
+            set = function(info,val) ns.db.height = val end,
+        },
+        statusbar = {
+            name = "Statusbar",
+            type = "select",
+            order = 4,
+            dialogControl = "LSM30_Statusbar",
+            values = SM:HashTable("statusbar"),
+            get = function(info) return ns.db.texture end,
+            set = function(info, val) ns.db.texture = val; ns.db.textureSM = SM:Fetch("statusbar",val) end,
+        },
+        orientation = {
+            name = "Statusbar Orientation",
+            type = "select",
+            order = 5,
+            values = ns.orientation,
+            get = function(info) return ns.db.orientation end,
+            set = function(info,val) ns.db.orientation = val end,
+        },
+        point = {
+            name = "Point Direction",
+            type = "select",
+            order = 6,
+            values = ns.point,
+            get = function(info) return ns.db.point end,
+            set = function(info,val) ns.db.point = val end,
+        },
+        growth ={
+            name = "Growth Direction",
+            type = "select",
+            order = 7,
+            values = ns.growth,
+            get = function(info) return ns.db.growth end,
+            set = function(info,val) ns.db.growth = val end,
+        },
+        units = {
+            name = "Units per group",
+            type = "range",
+            order = 11,
+            min = 1,
+            max = 40,
+            step = 1,
+            disabled = function(info) if ns.db.multi then return true end end,
+            get = function(info) return ns.db.numUnits end,
+            set = function(info,val) ns.db.numUnits = val end,
+        },
+        groups = {
+            name = "Number of groups",
+            type = "range",
+            order = 9,
+            min = 1,
+            max = 8,
+            step = 1,
+            get = function(info) return ns.db.numCol end,
+            set = function(info,val) ns.db.numCol = val end,
+        },
+        spacing = {
+            name = "Space between units",
+            type = "range",
+            order = 8,
+            min = 0,
+            max = 30,
+            step = 1,
+            get = function(info) return ns.db.spacing end,
+            set = function(info,val) ns.db.spacing = val end,
+        },
+        multi = {
+            name = "Multiple headers",
+            type = "toggle",
+            desc = "Use multiple headers for better sorting. Note: This disables units per group and sets it to 5.",
+            order = 10,
+            get = function(info) return ns.db.multi end,
+            set = function(info,val) ns.db.multi = val end,
+        },
+        power = {
+            name = "Enable PowerBars",
+            type = "toggle",
+            order = 12,
+            get = function(info) return ns.db.powerbar end,
+            set = function(info,val) ns.db.powerbar = val end,
+        },
+        porientation = {
+            name = "PowerBar Orientation",
+            type = "select",
+            order = 13,
+            values = ns.orientation,
+            get = function(info) return ns.db.porientation end,
+            set = function(info,val) ns.db.porientation = val end,
+        },
+        psize = {
+            name = "PowerBar size",
+            type = "range",
+            order = 14,
+            min = .02,
+            max = .30,
+            step = .02,
+            get = function(info) return ns.db.powerbarsize end,
+            set = function(info,val) ns.db.powerbarsize = val end,
+        },
+    },
+}
 
-local frame = CreateFrame("Frame", nil, InterfaceOptionsFramePanelContainer)
-frame.name = ADDON_NAME
-frame:Hide()
-frame:SetScript("OnShow", function(frame)
+local fontopts = {
+    type = "group", name = "Font", order = 2,
+    args = {
+        font = {
+            name = "Font",
+            type = "select",
+            order = 1,
+            dialogControl = "LSM30_Font",
+            values = SM:HashTable("font"),
+            get = function(info) return ns.db.font end,
+            set = function(info, val) ns.db.font = val; ns.db.fontSM = SM:Fetch("font",val) end,
+        },
+        outline = {
+            name = "Font Flag",
+            type = "select",
+            order = 2,
+            values = ns.outline,
+            get = function(info) return ns.db.outline end,
+            set = function(info,val) ns.db.outline = val end,
+        },
+        fontsize = {
+            name = "Font Size",
+            type = "range",
+            order = 3,
+            min = 8,
+            max = 32,
+            step = 1,
+            get = function(info) return ns.db.fontsize end,
+            set = function(info,val) ns.db.fontsize = val end,
+        },
+    },
+}
 
-    local title, subtitle = LibStub("tekKonfig-Heading").new(frame, "oUF_Freebgrid", "General settings for the oUF_Freebgrid.")
+local rangeopts = {
+    type = "group", name = "Range", order = 3,
+    args = {
+        oor = {
+            name = "Out of range alpha",
+            type = "range",
+            order = 1,
+            min = 0,
+            max = 1,
+            step = .1,
+            get = function(info) return ns.db.outsideRange end,
+            set = function(info,val) ns.db.outsideRange = val end,
+        },
+        arrow = {
+            name = "Enable range arrow",
+            type = "toggle",
+            order = 2,
+            get = function(info) return ns.db.arrow end,
+            set = function(info,val) ns.db.arrow = val end,
+        },
+        mouseover = {
+            name = "Only show on mouseover",
+            type = "toggle",
+            order = 3,
+            get = function(info) return ns.db.mouseover end,
+            set = function(info,val) ns.db.mouseover = val end,
+        },
+    },
+}
 
-    local lockpos = tekcheck.new(frame, nil, "Unlock", "TOPLEFT", subtitle, "BOTTOMLEFT", -2, 0)
-    lockpos.tiptext = "Unlocks headers to be moved."
-    local checksound = lockpos:GetScript("OnClick")
-    lockpos:SetScript("OnClick", function() ns:Movable() end)
-    lockpos:SetChecked(not ns.db.locked)
+local healopts = {
+    type = "group", name = "HealPrediction", order = 4,
+    args = {
+        text = {
+            name = "Text",
+            type = "toggle",
+            order = 1,
+            get = function(info) return ns.db.healcommtext end,
+            set = function(info,val) ns.db.healcommtext= val end,
+        },
+        bar = {
+            name = "Bar",
+            type = "toggle",
+            order = 2,
+            get = function(info) return ns.db.healcommbar end,
+            set = function(info,val) ns.db.healcommbar = val end,
+        },
+        overflow = {
+            name = "Overflow",
+            type = "toggle",
+            order = 4,
+            get = function(info) return ns.db.healcommoverflow end,
+            set = function(info,val) ns.db.healcommoverflow = val end,
+        },
+        others = {
+            name = "Others' heals only",
+            type = "toggle",
+            order = 5,
+            get = function(info) return ns.db.healothersonly end,
+            set = function(info,val) ns.db.healothersonly = val end,
+        },
+        alpha = {
+            name = "Bar alpha",
+            type = "range",
+            order = 3,
+            min = 0,
+            max = 1,
+            step = .1,
+            get = function(info) return ns.db.healalpha end,
+            set = function(info,val) ns.db.healalpha = val end,
+        },
+    },
+}
 
-    --	local disableomf = tekcheck.new(frame, nil, "Disable oMF", "LEFT", lockpos, "RIGHT", 50, 0)
-    --	disableomf:SetScript("OnClick", function(self) checksound(self); ns.db.disableomf = not ns.db.disableomf; end)
-    --	disableomf:SetChecked(ns.db.disableomf)
+local miscopts = {
+    type = "group", name = "Miscellaneous", order = 5,
+    args = {
+        party = {
+            name = "Show in party",
+            type = "toggle",
+            order = 1,
+            get = function(info) return ns.db.partyOn end,
+            set = function(info,val) ns.db.partyOn = val end,
+        },
+        solo = {
+            name = "Show player when solo",
+            type = "toggle",
+            order = 2,
+            get = function(info) return ns.db.solo end,
+            set = function(info,val) ns.db.solo = val end,
+        },
+        player = {
+            name = "Show self in group",
+            type = "toggle",
+            order = 3,
+            get = function(info) return ns.db.player end,
+            set = function(info,val) ns.db.player = val end,
+        },
+        lfd = {
+            name = "Show role icon",
+            type = "toggle",
+            order = 4,
+            get = function(info) return ns.db.lfdicon end,
+            set = function(info,val) ns.db.lfdicon = val end,
+        },
+        pets = {
+            name = "Show party/raid pets",
+            type = "toggle",
+            order = 5,
+            get = function(info) return ns.db.pets end,
+            set = function(info,val) ns.db.pets = val end,
+        },
+        MT = {
+            name = "Show MainTanks",
+            type = "toggle",
+            order = 6,
+            get = function(info) return ns.db.MT end,
+            set = function(info,val) ns.db.MT = val end,
+        },
+        omfChar = {
+            name = "Save position per character",
+            type = "toggle",
+            order = 7,
+            get = function(info) return ns.db.omfChar end,
+            set = function(info,val) ns.db.omfChar = val end,
+        },
+        indicator = {
+            name = "Indicator size",
+            type = "range",
+            order = 8,
+            min = 4,
+            max = 20,
+            step = 1,
+            get = function(info) return ns.db.indicatorsize end,
+            set = function(info,val) ns.db.indicatorsize = val end,
+        },
+        symbol = {
+            name = "Symbol size",
+            type = "range",
+            order = 9,
+            min = 8,
+            max = 20,
+            step = 1,
+            get = function(info) return ns.db.symbolsize end,
+            set = function(info,val) ns.db.symbolsize = val end,
+        },
+        icon = {
+            name = "Icon size",
+            type = "range",
+            order = 10,
+            min = 8,
+            max = 20,
+            step = 1,
+            get = function(info) return ns.db.iconsize end,
+            set = function(info,val) ns.db.iconsize = val end,
+        },
+        aura = {
+            name = "Aura size",
+            type = "range",
+            order = 11,
+            min = 8,
+            max = 30,
+            step = 1,
+            get = function(info) return ns.db.debuffsize end,
+            set = function(info,val) ns.db.debuffsize = val end,
+        },
+        tagupdate = {
+            name = "Tag update frequency",
+            type = "range",
+            order = 12,
+            min = .1,
+            max = 1,
+            step = .05,
+            get = function(info) return ns.db.frequpdate end,
+            set = function(info,val) ns.db.frequpdate = val end,
+        },
+    },
+}
 
-    local scaleslider, scaleslidertext, scalecontainer = tekslider.new(frame, string.format("Scale: %.2f", ns.db.scale or ns.defaults.scale), 0.5, 2, "TOPLEFT", lockpos, "BOTTOMLEFT", 0, -GAP)
-    scaleslider.tiptext = "Set the units scale."
-    scaleslider:SetValue(ns.db.scale or ns.defaults.scale)
-    scaleslider:SetValueStep(.05)
-    scaleslider:SetScript("OnValueChanged", function(self)
-        ns.db.scale = self:GetValue()
-        scaleslidertext:SetText(string.format("Scale: %.2f", ns.db.scale or ns.defaults.scale))
-    end)
+local coloropts = {
+    type = "group", name = "Colors", order = 6,
+    args = {
+        reverse = {
+            name = "Reverse health colors",
+            type = "toggle",
+            order = 1,
+            get = function(info) return ns.db.reversecolors end,
+            set = function(info,val) ns.db.reversecolors = val end,
+        },
+    },
+}
 
-    local widthslider, widthslidertext, widthcontainer = tekslider.new(frame, string.format("Width: %d", ns.db.width or ns.defaults.width), 20, 100, "TOPLEFT", scaleslider, "BOTTOMLEFT", 0, -GAP)
-    widthslider.tiptext = "Set the width of units."
-    widthslider:SetValue(ns.db.width or ns.defaults.width)
-    widthslider:SetValueStep(1)
-    widthslider:SetScript("OnValueChanged", function(self)
-        ns.db.width = self:GetValue()
-        widthslidertext:SetText(string.format("Width: %d", ns.db.width or ns.defaults.width))
-    end)
+local options = {
+    type = "group", name = "Freebgrid",
+    args = {
+        unlock = {
+            name = "Toggle anchors",
+            type = "execute",
+            func = function() ns:Movable(); end,
+            order = 1,
+        },
+        reload = {
+            name = "Reload UI",
+            type = "execute",
+            func = function() ReloadUI(); end,
+            order = 2,
+        },
+        general = generalopts,
+        font = fontopts,
+        range = rangeopts,
+        heal = healopts,
+        misc = miscopts,
+        color = coloropts,
+    },
+}
 
-    local heightslider, heightslidertext, heightcontainer = tekslider.new(frame, string.format("Height: %d", ns.db.height or ns.defaults.height), 20, 100, "TOPLEFT", widthslider, "BOTTOMLEFT", 0, -GAP)
-    heightslider.tiptext = "Set the height of units."
-    heightslider:SetValue(ns.db.height or ns.defaults.height)
-    heightslider:SetValueStep(1)
-    heightslider:SetScript("OnValueChanged", function(self)
-        ns.db.height = self:GetValue()
-        heightslidertext:SetText(string.format("Height: %d", ns.db.height or ns.defaults.height))
-    end)
+local AceConfig = LibStub("AceConfig-3.0")
+AceConfig:RegisterOptionsTable(ADDON_NAME, options)
 
-    local fontslider, fontslidertext, fontcontainer = tekslider.new(frame, string.format("Font Size: %d", ns.db.fontsize or ns.defaults.fontsize), 10, 30, "TOPLEFT", heightslider, "BOTTOMLEFT", 0, -GAP)
-    fontslider.tiptext = "Set the font size."
-    fontslider:SetValue(ns.db.fontsize or ns.defaults.fontsize)
-    fontslider:SetValueStep(1)
-    fontslider:SetScript("OnValueChanged", function(self)
-        ns.db.fontsize = self:GetValue()
-        fontslidertext:SetText(string.format("Font Size: %d", ns.db.fontsize or ns.defaults.fontsize))
-    end)
-
-    --[[local inRangeslider, inRangeslidertext, inRangecontainer = tekslider.new(frame, string.format("In Range Alpha: %.2f", ns.db.inRange or ns.defaults.inRange), 0, 1, "TOPLEFT", fontslider, "BOTTOMLEFT", 0, -GAP)
-    inRangeslider.tiptext = "Set the alpha of units in range."
-    inRangeslider:SetValue(ns.db.inRange or ns.defaults.inRange)
-    inRangeslider:SetValueStep(.05)
-    inRangeslider:SetScript("OnValueChanged", function(self)
-        ns.db.inRange = self:GetValue()
-        inRangeslidertext:SetText(string.format("In Range Alpha: %.2f", ns.db.inRange or ns.defaults.inRange))
-    end)]]
-
-    local iconsizeslider, iconsizeslidertext, iconsizecontainer = tekslider.new(frame, string.format("Icon Size: %d", ns.db.iconsize or ns.defaults.iconsize), 8, 20, "TOPLEFT", fontslider, "BOTTOMLEFT", 0, -GAP)
-    iconsizeslider.tiptext = "Set the size of various icons. Raid symbols, Party leader, etc."
-    iconsizeslider:SetValue(ns.db.iconsize or ns.defaults.iconsize)
-    iconsizeslider:SetValueStep(1)
-    iconsizeslider:SetScript("OnValueChanged", function(self)
-        ns.db.iconsize = self:GetValue()
-        iconsizeslidertext:SetText(string.format("Icon Size: %d", ns.db.iconsize or ns.defaults.iconsize))
-    end)
-
-    local debuffsizeslider, debuffsizeslidertext, debuffsizecontainer = tekslider.new(frame, string.format("Aura Size: %d", ns.db.debuffsize or ns.defaults.debuffsize), 8, 30, "TOPLEFT", iconsizeslider, "BOTTOMLEFT", 0, -GAP)
-    debuffsizeslider.tiptext = "Set the size of auras."
-    debuffsizeslider:SetValue(ns.db.debuffsize or ns.defaults.debuffsize)
-    debuffsizeslider:SetValueStep(1)
-    debuffsizeslider:SetScript("OnValueChanged", function(self)
-        ns.db.debuffsize = self:GetValue()
-        debuffsizeslidertext:SetText(string.format("Debuff Size: %d", ns.db.debuffsize or ns.defaults.debuffsize))
-    end) 
-
-    local ooRangeslider, ooRangeslidertext, ooRangecontainer = tekslider.new(frame, string.format("Out of Range Alpha: %.2f", ns.db.outsideRange or ns.defaults.outsideRange), 0, 1, "TOPLEFT", debuffsizeslider, "BOTTOMLEFT", 0, -GAP)
-    ooRangeslider.tiptext = "Set the alpha of units out of range."
-    ooRangeslider:SetValue(ns.db.outsideRange or ns.defaults.outsideRange)
-    ooRangeslider:SetValueStep(.05)
-    ooRangeslider:SetScript("OnValueChanged", function(self)
-        ns.db.outsideRange = self:GetValue()
-        ooRangeslidertext:SetText(string.format("Out of Range Alpha: %.2f", ns.db.outsideRange or ns.defaults.outsideRange))
-    end)
-
-    local arrow = tekcheck.new(frame, nil, "Enable range arrows.", "TOPLEFT", ooRangeslider, "BOTTOMLEFT", 0, -15)
-    arrow:SetScript("OnClick", function(self) checksound(self); ns.db.arrow = not ns.db.arrow; end)
-    arrow:SetChecked(ns.db.arrow)
-
-    local mouseover = tekcheck.new(frame, nil, "Show arrows on mouseover.", "TOPLEFT", arrow, "BOTTOMLEFT", 0, -5)
-    mouseover:SetScript("OnClick", function(self) checksound(self); ns.db.mouseover = not ns.db.mouseover; end)
-    mouseover:SetChecked(ns.db.mouseover)
-
-    local numColslider, numColslidertext, numColcontainer = tekslider.new(frame, string.format("Number of groups: %d", ns.db.numCol or ns.defaults.numCol), 1, 8, "BOTTOMRIGHT", frame, "BOTTOMRIGHT", -30, 40)
-    numColslider.tiptext = "Set the number of groups."
-    numColslider:SetValue(ns.db.numCol or ns.defaults.numCol)
-    numColslider:SetValueStep(1)
-    numColslider:SetScript("OnValueChanged", function(self)
-        ns.db.numCol = self:GetValue()
-        numColslidertext:SetText(string.format("Number of groups: %d", ns.db.numCol or ns.defaults.numCol))
-    end)
-
-    local numUnitsslider, numUnitsslidertext, numUnitscontainer = tekslider.new(frame, string.format("Units per group: %d", ns.db.numUnits or ns.defaults.numUnits), 1, 40, "BOTTOMLEFT", numColslider, "TOPLEFT", 0, GAP)
-    numUnitsslider.tiptext = "Set the number of units per group."
-    numUnitsslider:SetValue(ns.db.numUnits or ns.defaults.numUnits)
-    numUnitsslider:SetValueStep(1)
-    numUnitsslider:SetScript("OnValueChanged", function(self)
-        ns.db.numUnits = self:GetValue()
-        numUnitsslidertext:SetText(string.format("Units per group: %d", ns.db.numUnits or ns.defaults.numUnits))
-    end)
-
-    frame.CreateScrollingDropdown = LibStub("freeb-ScrollingDropdown").CreateScrollingDropdown
-
-    tex2func(frame)
-    font2func(frame)
-    outlinefunc(frame)
-    orientationfunc(frame)
-    pointfunc(frame)
-    growthfunc(frame)
-
-    local reload = tekbutton.new_small(frame)
-    reload:SetPoint("BOTTOMRIGHT", -16, 16)
-    reload:SetText("Reload")
-    reload.tiptext = "Reload UI to apply settings"
-    reload:SetScript("OnClick", function() ReloadUI() end)
-
-    frame:SetScript("OnShow", nil)
-end)
-
-InterfaceOptions_AddCategory(frame)
-
-----------------------
---      Panel 2     --
-----------------------
-
-local f = CreateFrame("Frame", nil, InterfaceOptionsFramePanelContainer)
-f.name = "More setting..."
-f.parent = ADDON_NAME
-f:Hide()
-f:SetScript("OnShow", function(f)
-    local ns = ns
-
-    local solo = tekcheck.new(f, nil, "Show player when solo.", "BOTTOMLEFT", f, "TOPLEFT", 10, -40)
-    local checksound = solo:GetScript("OnClick")
-    solo:SetScript("OnClick", function(self) checksound(self); ns.db.solo = not ns.db.solo; end)
-    solo:SetChecked(ns.db.solo)
-
-    local party = tekcheck.new(f, nil, "Show party.", "TOPLEFT", solo, "BOTTOMLEFT", 0, -GAP)
-    party:SetScript("OnClick", function(self) checksound(self); ns.db.partyOn = not ns.db.partyOn; end)
-    party:SetChecked(ns.db.partyOn)
-
-    local player = tekcheck.new(f, nil, "Show self in group.", "TOPLEFT", party, "BOTTOMLEFT", 0, -GAP)
-    player:SetScript("OnClick", function(self) checksound(self); ns.db.player = not ns.db.player; end)
-    player:SetChecked(ns.db.player)
-
-    --	local framebg = tekcheck.new(f, nil, "Show the frame background.", "TOPLEFT", player, "BOTTOMLEFT", 0, -GAP)
-    --	framebg:SetScript("OnClick", function(self) checksound(self); ns.db.framebg = not ns.db.framebg; end)
-    --	framebg:SetChecked(ns.db.framebg)
-
-    --	local blizzparty = tekcheck.new(f, nil, "Show the Blizzard party frames.", "TOPLEFT", player, "BOTTOMLEFT", 0, -GAP)
-    --	blizzparty:SetScript("OnClick", function(self) checksound(self); ns.db.showBlizzParty = not ns.db.showBlizzParty; end)
-    --	blizzparty:SetChecked(ns.db.showBlizzParty)
-
-    local lfdicon = tekcheck.new(f, nil, "Show the LFD role icon.", "TOPLEFT", player, "BOTTOMLEFT", 0, -GAP)
-    lfdicon:SetScript("OnClick", function(self) checksound(self); ns.db.lfdicon = not ns.db.lfdicon; end)
-    lfdicon:SetChecked(ns.db.lfdicon)
-
-    --local frequent = tekcheck.new(f, nil, "Enable frequent tag updates.", "TOPLEFT", lfdicon, "BOTTOMLEFT", 0, -GAP)
-    --frequent:SetScript("OnClick", function(self) checksound(self); ns.db.frequent = not ns.db.frequent; end)
-    --frequent:SetChecked(ns.db.frequent)
-
-    local reversecolors = tekcheck.new(f, nil, "Reverse colors.", "TOPLEFT", lfdicon, "BOTTOMLEFT", 0, -GAP)
-    reversecolors:SetScript("OnClick", function(self) checksound(self); ns.db.reversecolors = not ns.db.reversecolors; end)
-    reversecolors:SetChecked(ns.db.reversecolors)
-
-    local pets = tekcheck.new(f, nil, "Enable Party/Raid pets.", "TOPLEFT", reversecolors, "BOTTOMLEFT", 0, -GAP)
-    pets:SetScript("OnClick", function(self) checksound(self); ns.db.pets = not ns.db.pets; end)
-    pets:SetChecked(ns.db.pets)
-
-    local MT = tekcheck.new(f, nil, "Enable MainTanks.", "TOPLEFT", pets, "BOTTOMLEFT", 0, -GAP)
-    MT:SetScript("OnClick", function(self) checksound(self); ns.db.MT = not ns.db.MT; end)
-    MT:SetChecked(ns.db.MT)
-
-    --	local MTT = tekcheck.new(f, nil, "Enable MT taragets.", "TOPLEFT", MT, "BOTTOMLEFT", 0, -GAP)
-    --	MTT:SetScript("OnClick", function(self) checksound(self); ns.db.MTT = not ns.db.MTT; end)
-    --	MTT:SetChecked(ns.db.MTT)
-
-    --local showname = tekcheck.new(f, nil, "Always show names.", "TOPLEFT", MT, "BOTTOMLEFT", 0, -GAP)
-    --showname:SetScript("OnClick", function(self) checksound(self); ns.db.showname = not ns.db.showname; end)
-    --showname:SetChecked(ns.db.showname)
-
-    local multi = tekcheck.new(f, nil, "Spawn multiple headers.", "TOPLEFT", MT, "BOTTOMLEFT", 0, -GAP)
-    multi:SetScript("OnClick", function(self) checksound(self); ns.db.multi = not ns.db.multi; end)
-    multi:SetChecked(ns.db.multi)
-
-    local omfChar = tekcheck.new(f, nil, "Save position per character.", "TOPLEFT", multi, "BOTTOMLEFT", 0, -GAP)
-    omfChar:SetScript("OnClick", function(self) checksound(self); ns.db.omfChar = not ns.db.omfChar; end)
-    omfChar:SetChecked(ns.db.omfChar)
-
-    local healgroup = LibStub("tekKonfig-Group").new(f, "HealPrediction Settings")
-    healgroup:SetHeight(190)
-    healgroup:SetWidth(180)
-    healgroup:SetPoint("TOPRIGHT", f, "TOPRIGHT", -10, -15)
-
-    local healcommtext = tekcheck.new(f, nil, "Enable heal text.", "TOPLEFT", healgroup, "TOPLEFT", 15, -GAP)
-    healcommtext:SetScript("OnClick", function(self) checksound(self); ns.db.healcommtext = not ns.db.healcommtext; end)
-    healcommtext:SetChecked(ns.db.healcommtext)
-
-    local healcommbar = tekcheck.new(f, nil, "Enable heal bar.", "TOPLEFT", healcommtext, "BOTTOMLEFT", 0, -GAP)
-    healcommbar:SetScript("OnClick", function(self) checksound(self); ns.db.healcommbar = not ns.db.healcommbar; end)
-    healcommbar:SetChecked(ns.db.healcommbar)
-
-    local healcommoverflow = tekcheck.new(f, nil, "Enable overflow.", "TOPLEFT", healcommbar, "BOTTOMLEFT", 0, -GAP)
-    healcommoverflow:SetScript("OnClick", function(self) checksound(self); ns.db.healcommoverflow = not ns.db.healcommoverflow; end)
-    healcommoverflow:SetChecked(ns.db.healcommoverflow)
-
-    local healothersonly = tekcheck.new(f, nil, "Others' heals only.", "TOPLEFT", healcommoverflow, "BOTTOMLEFT", 0, -GAP)
-    healothersonly:SetScript("OnClick", function(self) checksound(self); ns.db.healothersonly = not ns.db.healothersonly; end)
-    healothersonly:SetChecked(ns.db.healothersonly)
-
-    local healalphaslider, healalphaslidertext, healalphacontainer = tekslider.new(f, string.format("Heal bar alpha: %.2f", ns.db.healalpha or ns.defaults.healalpha), 0, 1, "TOPLEFT", healothersonly, "BOTTOMLEFT", 0, -GAP)
-    healalphaslider.tiptext = "Set the alpha of the heal bar."
-    healalphaslider:SetValue(ns.db.healalpha or ns.defaults.healalpha)
-    healalphaslider:SetValueStep(.05)
-    healalphaslider:SetScript("OnValueChanged", function(self)
-        ns.db.healalpha = self:GetValue()
-        healalphaslidertext:SetText(string.format("Heal bar alpha: %.2f", ns.db.healalpha or ns.defaults.healalpha))
-    end)
-
-    --[[local resgroup = LibStub("tekKonfig-Group").new(f, "ResComm Settings")
-    resgroup:SetHeight(85)
-    resgroup:SetWidth(180)
-    resgroup:SetPoint("TOPRIGHT", healgroup, "BOTTOMRIGHT", 0, -GAP-2)
-
-    local rescomm = tekcheck.new(f, nil, "Enable ResComm.", "TOPLEFT", resgroup, "TOPLEFT", 15, -GAP)
-    rescomm:SetScript("OnClick", function(self) checksound(self); ns.db.rescomm = not ns.db.rescomm; end)
-    rescomm:SetChecked(ns.db.rescomm)
-
-    local rescommalphaslider, rescommalphaslidertext, rescommalphacontainer = tekslider.new(f, string.format("ResComm alpha: %.2f", ns.db.rescommalpha or ns.defaults.rescommalpha), 0, 1, "TOPLEFT", rescomm, "BOTTOMLEFT", 0, -GAP)
-    rescommalphaslider.tiptext = "Set the alpha of the Rescomm statusbar."
-    rescommalphaslider:SetValue(ns.db.rescommalpha or ns.defaults.rescommalpha)
-    rescommalphaslider:SetValueStep(.05)
-    rescommalphaslider:SetScript("OnValueChanged", function(self)
-    ns.db.rescommalpha = self:GetValue()
-    rescommalphaslidertext:SetText(string.format("Rescomm alpha: %.2f", ns.db.rescommalpha or ns.defaults.rescommalpha))
-    end)]]
-
-    local powerbar = tekcheck.new(f, nil, "Enable Powerbars.", "TOPLEFT", healgroup, "BOTTOMLEFT", 15, -GAP)
-    powerbar:SetScript("OnClick", function(self) checksound(self); ns.db.powerbar = not ns.db.powerbar; end)
-    powerbar:SetChecked(ns.db.powerbar)
-
-    local powerbarsizeslider, powerbarsizeslidertext, powerbarsizecontainer = tekslider.new(f, string.format("Powerbar size: %.2f", ns.db.powerbarsize or ns.defaults.powerbarsize), .02, .30, "TOPLEFT", powerbar, "BOTTOMLEFT", 0, -65)
-    powerbarsizeslider.tiptext = "Set the size of the powerbars."
-    powerbarsizeslider:SetValue(ns.db.powerbarsize or ns.defaults.powerbarsize)
-    powerbarsizeslider:SetValueStep(.02)
-    powerbarsizeslider:SetScript("OnValueChanged", function(self)
-        ns.db.powerbarsize = self:GetValue()
-        powerbarsizeslidertext:SetText(string.format("Powerbar size: %.2f", ns.db.powerbarsize or ns.defaults.powerbarsize))
-    end)
-
-    local frequpdateslider, frequpdateslidertext, frequpdatecontainer = tekslider.new(f, string.format("Tag frequency: %.2f", ns.db.frequpdate or ns.defaults.frequpdate), 0.1, 1, "TOPLEFT", powerbarsizeslider, "BOTTOMLEFT", 0, -GAP-8)
-    frequpdateslider.tiptext = "Set the update frequency of Tag Indicators."
-    frequpdateslider:SetValue(ns.db.frequpdate or ns.defaults.frequpdate)
-    frequpdateslider:SetValueStep(.1)
-    frequpdateslider:SetScript("OnValueChanged", function(self)
-        ns.db.frequpdate = self:GetValue()
-        frequpdateslidertext:SetText(string.format("Tag frequency: %.2f", ns.db.frequpdate or ns.defaults.frequpdate))
-    end)
-
-    local symbolsizeslider, symbolsizeslidertext, symbolsizecontainer = tekslider.new(f, string.format("Symbol size: %d", ns.db.symbolsize or ns.defaults.symbolsize), 8, 20, "BOTTOMLEFT", f, "BOTTOMLEFT", 15, GAP)
-    symbolsizeslider.tiptext = "Size of the bottom right indicator."
-    symbolsizeslider:SetValue(ns.db.symbolsize or ns.defaults.symbolsize)
-    symbolsizeslider:SetValueStep(1)
-    symbolsizeslider:SetScript("OnValueChanged", function(self)
-        ns.db.symbolsize = self:GetValue()
-        symbolsizeslidertext:SetText(string.format("Symbol size: %d", ns.db.symbolsize or ns.defaults.symbolsize))
-    end)
-
-    local indicatorsizeslider, indicatorsizeslidertext, indicatorsizecontainer = tekslider.new(f, string.format("Indicator size: %d", ns.db.indicatorsize or ns.defaults.indicatorsize), 4, 20, "BOTTOMLEFT", symbolsizeslider, "TOPLEFT", 0, GAP)
-    indicatorsizeslider.tiptext = "Size of the corner indicators."
-    indicatorsizeslider:SetValue(ns.db.indicatorsize or ns.defaults.indicatorsize)
-    indicatorsizeslider:SetValueStep(1)
-    indicatorsizeslider:SetScript("OnValueChanged", function(self)
-        ns.db.indicatorsize = self:GetValue()
-        indicatorsizeslidertext:SetText(string.format("Indicator size: %d", ns.db.indicatorsize or ns.defaults.indicatorsize))
-    end)
-
-    local spacingslider, spacingslidertext, spacingcontainer = tekslider.new(f, string.format("Spacing: %d", ns.db.spacing or ns.defaults.spacing), 0, 30, "BOTTOMLEFT", indicatorsizeslider, "TOPLEFT", 0, GAP)
-    spacingslider.tiptext = "Set the amount of space between units."
-    spacingslider:SetValue(ns.db.spacing or ns.defaults.spacing)
-    spacingslider:SetValueStep(1)
-    spacingslider:SetScript("OnValueChanged", function(self)
-        ns.db.spacing = self:GetValue()
-        spacingslidertext:SetText(string.format("Spacing: %d", ns.db.spacing or ns.defaults.spacing))
-    end)
-
-    porientationfunc(f)
-
-    local reload = tekbutton.new_small(f)
-    reload:SetPoint("BOTTOMRIGHT", -16, 16)
-    reload:SetText("Reload")
-    reload.tiptext = "Reload UI to apply settings"
-    reload:SetScript("OnClick", function() ReloadUI() end)
-
-    f:SetScript("OnShow", nil)
-end)
-
-InterfaceOptions_AddCategory(f)
+local ACD = LibStub('AceConfigDialog-3.0')
+ACD:AddToBlizOptions(ADDON_NAME, ADDON_NAME)

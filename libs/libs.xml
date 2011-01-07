@@ -3,18 +3,10 @@
     <Script file='LibStub.lua' />
     <Script file='CallbackHandler-1.0.lua' />
 
-    <Script file='Dropdown.lua' />
-    <Script file='ScrollingDropdown.lua' />
-
-    <Script file='tekKonfigAboutPanel.lua' />
-    <Script file='tekKonfigButton.lua' />
-    <Script file='tekKonfigCheckbox.lua' />
-    <Script file='tekKonfigDropdown.lua' />
-    <Script file='tekKonfigGroup.lua' />
-    <Script file='tekKonfigHeading.lua' />
-    <Script file='tekKonfigSlider.lua' />
-
     <Include file='LibSharedMedia-3.0\lib.xml' />
     <Include file='LibBabble-Zone-3.0\lib.xml' />
-
+    <Include file='AceGUI-3.0\AceGUI-3.0.xml' />
+    <Include file='AceConfig-3.0\AceConfig-3.0.xml' />
+    <Include file='AceGUI-3.0-SharedMediaWidgets\widget.xml' />
+    
 </Ui>
