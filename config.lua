@@ -87,16 +87,19 @@ ns.orientation = {
 
 ns.point = {
     ["TOP"] = "TOP",
-    ["RIGHT"] = "RIGHT",
     ["BOTTOM"] = "BOTTOM",
+    ["RIGHT"] = "RIGHT",
     ["LEFT"] = "LEFT",
 }
 
-ns.growth = {
-    ["UP"] = "UP",
+ns.growthLEFT = {
     ["RIGHT"] = "RIGHT",
-    ["DOWN"] = "DOWN",
     ["LEFT"] = "LEFT",
+}
+
+ns.growthUP = {
+    ["UP"] = "UP",
+    ["DOWN"] = "DOWN",
 }
 
 ns.outline = {
@@ -118,6 +121,114 @@ ns.fonts = {
     ["Expressway"] = mediapath.."expressway.ttf",
 }
 
+local _FRAMES = {}
+local _HEADERS = {}
+local forceupdate
+
+local Enable = function(self)
+    local isFreeb = self.freebObject
+    if isFreeb then
+        table.insert(_FRAMES, self)
+
+        if forceupdate then
+            self.Health:ForceUpdate()
+            self.Power:ForceUpdate()
+        end
+
+        local name = self:GetName():gsub('UnitButton%d','')
+        if not _HEADERS[name] then
+            _HEADERS[name] = _G[name]
+        end
+    end
+end
+
+local Disable = function(self)
+    local isFreeb = self.freebObject
+    if isFreeb then
+        for k, frame in next, _FRAMES do
+            if(frame == self) then
+                table.remove(_FRAMES, k)
+                break
+            end
+        end
+    end
+end
+
+oUF:AddElement("freebobjects", nil, Enable, Disable)
+
+local function SetManyAttributes(self, ...)
+    for i=1,select("#", ...),2 do
+        local att,val = select(i, ...)
+        if not att then return end
+        self:SetAttribute(att,val)
+    end
+end
+
+local pos, posRel, spacingX, spacingY, colX, colY, growth, point, num
+local function objectsUpdate(force)
+    forceupdate = force
+
+    for _, frame in next, _FRAMES do
+        frame:SetWidth(ns.db.width)
+        frame:SetHeight(ns.db.height)
+        frame:SetScale(ns.db.scale)
+
+        frame.Health:SetStatusBarTexture(ns.db.textureSM)
+        frame.Health.bg:SetTexture(ns.db.textureSM)
+        if ns.db.reversecolors then
+            frame.Health.colorClass = true
+            frame.Health.colorReaction = true
+            frame.Health.bg.multiplier = .3
+        else
+            frame.Health.colorClass = false
+            frame.Health.colorReaction = false
+            frame.Health.bg.multiplier = nil
+        end
+
+        if frame.Power then
+            frame.Power:SetStatusBarTexture(ns.db.textureSM)
+            frame.Power.bg:SetTexture(ns.db.textureSM)
+
+            if(ns.db.porientation == "VERTICAL")then
+                frame.Power:SetWidth(ns.db.width*ns.db.powerbarsize)
+                frame.Health:SetWidth((0.98 - ns.db.powerbarsize)*ns.db.width)
+            else
+                frame.Power:SetHeight(ns.db.height*ns.db.powerbarsize)
+                frame.Health:SetHeight((0.98 - ns.db.powerbarsize)*ns.db.height)
+            end
+        end
+
+        frame.Name:SetFont(ns.db.fontSM, ns.db.fontsize, ns.db.outline)
+        frame.Dummy:SetFont(ns.db.fontSM, ns.db.fontsize, ns.db.outline)
+        frame.DDG:SetFont(ns.db.fontSM, ns.db.fontsize, ns.db.outline)
+        frame.AFKtext:SetFont(ns.db.fontSM, ns.db.fontsize, ns.db.outline)
+        frame.Healtext:SetFont(ns.db.fontSM, ns.db.fontsize, ns.db.outline)
+        --frame.DDG:SetFont(ns.db.fontSM, ns.db.fontsize, ns.db.outline)
+
+        frame:UpdateAllElements()
+    end
+
+    _G["oUF_FreebgridRaidFrame"]:SetWidth(ns.db.width)
+    _G["oUF_FreebgridRaidFrame"]:SetHeight(ns.db.height)
+
+    _G["oUF_FreebgridPetFrame"]:SetWidth(ns.db.width)
+    _G["oUF_FreebgridPetFrame"]:SetHeight(ns.db.height)
+
+    _G["oUF_FreebgridMTFrame"]:SetWidth(ns.db.width)
+    _G["oUF_FreebgridMTFrame"]:SetHeight(ns.db.height)
+
+    pos, posRel, spacingX, spacingY, colX, colY, growth, point = ns:SAP()
+
+    for name, header in next, _HEADERS do
+        SetManyAttributes(header,'showPlayer',ns.db.player,
+        'showSolo',ns.db.solo,
+        'showParty',ns.db.partyOn,
+        'xOffset',spacingX, 
+        'yOffset',spacingY,
+        'columnSpacing',ns.db.spacing)
+    end
+end
+
 local SM = LibStub("LibSharedMedia-3.0", true)
 do
     local frame = CreateFrame"Frame"
@@ -132,18 +243,6 @@ do
 
             for tex, path in pairs(ns.textures) do
                 SM:Register("statusbar", tex, path)
-            end
-
-            wipe(ns.fonts)
-            for i, v in pairs(SM:List("font")) do
-                table.insert(ns.fonts, v)
-                ns.fonts[v] = SM:Fetch("font", v)
-            end
-
-            wipe(ns.textures)
-            for i, v in pairs(SM:List("statusbar")) do
-                table.insert(ns.textures, v)
-                ns.textures[v] = SM:Fetch("statusbar", v)
             end
         end
 
@@ -162,7 +261,7 @@ local generalopts = {
             max = 2.0,
             step = .05,
             get = function(info) return ns.db.scale end,
-            set = function(info,val) ns.db.scale = val end,
+            set = function(info,val) ns.db.scale = val; objectsUpdate() end,
         },
         width = {
             name = "Width",
@@ -172,7 +271,7 @@ local generalopts = {
             max = 150,
             step = 1,
             get = function(info) return ns.db.width end,
-            set = function(info,val) ns.db.width = val end,
+            set = function(info,val) ns.db.width = val; ns:clearName(); objectsUpdate() end,
         },
         height = {
             name = "Height",
@@ -182,7 +281,7 @@ local generalopts = {
             max = 150,
             step = 1,
             get = function(info) return ns.db.height end,
-            set = function(info,val) ns.db.height = val end,
+            set = function(info,val) ns.db.height = val; objectsUpdate() end,
         },
         statusbar = {
             name = "Statusbar",
@@ -191,7 +290,7 @@ local generalopts = {
             dialogControl = "LSM30_Statusbar",
             values = SM:HashTable("statusbar"),
             get = function(info) return ns.db.texture end,
-            set = function(info, val) ns.db.texture = val; ns.db.textureSM = SM:Fetch("statusbar",val) end,
+            set = function(info, val) ns.db.texture = val; ns.db.textureSM = SM:Fetch("statusbar",val); objectsUpdate() end,
         },
         orientation = {
             name = "Statusbar Orientation",
@@ -207,15 +306,23 @@ local generalopts = {
             order = 6,
             values = ns.point,
             get = function(info) return ns.db.point end,
-            set = function(info,val) ns.db.point = val end,
+            set = function(info,val) ns.db.point = val; end,
         },
         growth ={
             name = "Growth Direction",
             type = "select",
             order = 7,
-            values = ns.growth,
+            values = function(info,val) 
+                if ns.db.point == "TOP" or ns.db.point == "BOTTOM" then
+                    info = ns.db.growth
+                    return { ["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT" }
+                else
+                    info = ns.db.growth
+                    return { ["UP"] = "UP", ["DOWN"] = "DOWN" }
+                end
+            end,
             get = function(info) return ns.db.growth end,
-            set = function(info,val) ns.db.growth = val end,
+            set = function(info,val) ns.db.growth = val; end,
         },
         units = {
             name = "Units per group",
@@ -226,7 +333,7 @@ local generalopts = {
             step = 1,
             disabled = function(info) if ns.db.multi then return true end end,
             get = function(info) return ns.db.numUnits end,
-            set = function(info,val) ns.db.numUnits = val end,
+            set = function(info,val) ns.db.numUnits = val; objectsUpdate() end,
         },
         groups = {
             name = "Number of groups",
@@ -236,7 +343,7 @@ local generalopts = {
             max = 8,
             step = 1,
             get = function(info) return ns.db.numCol end,
-            set = function(info,val) ns.db.numCol = val end,
+            set = function(info,val) ns.db.numCol = val; objectsUpdate() end,
         },
         spacing = {
             name = "Space between units",
@@ -246,7 +353,7 @@ local generalopts = {
             max = 30,
             step = 1,
             get = function(info) return ns.db.spacing end,
-            set = function(info,val) ns.db.spacing = val end,
+            set = function(info,val) ns.db.spacing = val; objectsUpdate() end,
         },
         multi = {
             name = "Multiple headers",
@@ -261,7 +368,7 @@ local generalopts = {
             type = "toggle",
             order = 12,
             get = function(info) return ns.db.powerbar end,
-            set = function(info,val) ns.db.powerbar = val end,
+            set = function(info,val) ns.db.powerbar = val; objectsUpdate() end,
         },
         porientation = {
             name = "PowerBar Orientation",
@@ -269,7 +376,7 @@ local generalopts = {
             order = 13,
             values = ns.orientation,
             get = function(info) return ns.db.porientation end,
-            set = function(info,val) ns.db.porientation = val end,
+            set = function(info,val) ns.db.porientation = val; objectsUpdate() end,
         },
         psize = {
             name = "PowerBar size",
@@ -279,7 +386,7 @@ local generalopts = {
             max = .30,
             step = .02,
             get = function(info) return ns.db.powerbarsize end,
-            set = function(info,val) ns.db.powerbarsize = val end,
+            set = function(info,val) ns.db.powerbarsize = val; objectsUpdate() end,
         },
     },
 }
@@ -294,7 +401,7 @@ local fontopts = {
             dialogControl = "LSM30_Font",
             values = SM:HashTable("font"),
             get = function(info) return ns.db.font end,
-            set = function(info, val) ns.db.font = val; ns.db.fontSM = SM:Fetch("font",val) end,
+            set = function(info, val) ns.db.font = val; ns:clearName(); ns.db.fontSM = SM:Fetch("font",val); objectsUpdate() end,
         },
         outline = {
             name = "Font Flag",
@@ -302,7 +409,7 @@ local fontopts = {
             order = 2,
             values = ns.outline,
             get = function(info) return ns.db.outline end,
-            set = function(info,val) ns.db.outline = val end,
+            set = function(info,val) ns.db.outline = val; ns:clearName(); objectsUpdate() end,
         },
         fontsize = {
             name = "Font Size",
@@ -312,7 +419,7 @@ local fontopts = {
             max = 32,
             step = 1,
             get = function(info) return ns.db.fontsize end,
-            set = function(info,val) ns.db.fontsize = val end,
+            set = function(info,val) ns.db.fontsize = val; ns:clearName(); objectsUpdate() end,
         },
     },
 }
@@ -395,7 +502,7 @@ local miscopts = {
     type = "group", name = "Miscellaneous", order = 5,
     args = {
         party = {
-            name = "Show in party",
+            name = "Show when in a party",
             type = "toggle",
             order = 1,
             get = function(info) return ns.db.partyOn end,
@@ -406,7 +513,7 @@ local miscopts = {
             type = "toggle",
             order = 2,
             get = function(info) return ns.db.solo end,
-            set = function(info,val) ns.db.solo = val end,
+            set = function(info,val) ns.db.solo = val; objectsUpdate(); end,
         },
         player = {
             name = "Show self in group",
@@ -504,7 +611,17 @@ local coloropts = {
             type = "toggle",
             order = 1,
             get = function(info) return ns.db.reversecolors end,
-            set = function(info,val) ns.db.reversecolors = val end,
+            set = function(info,val) ns.db.reversecolors = val;
+                ns:clearName();
+                for class, color in next, oUF.colors.class do
+                    if ns.db.reversecolors then
+                        ns.colorCache[class] = "|cffFFFFFF"
+                    else
+                        ns.colorCache[class] = ns:hex(color)
+                    end
+                end
+                objectsUpdate();
+            end,
         },
     },
 }
@@ -521,6 +638,7 @@ local options = {
         reload = {
             name = "Reload UI",
             type = "execute",
+            desc = "Most options require a ReloadUI() to take effect.",
             func = function() ReloadUI(); end,
             order = 2,
         },

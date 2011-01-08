@@ -41,6 +41,7 @@ local Enable = function(self)
     afktext:SetWidth(ns.db.width)
     afktext.frequentUpdates = 1
     self:Tag(afktext, "[freebgrid:afk]")
+    self.AFKtext = afktext
 end
 
 oUF:AddElement('freebAfk', nil, Enable, nil)

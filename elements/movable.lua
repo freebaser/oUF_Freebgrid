@@ -138,7 +138,7 @@ local anchors = function()
     setframe(mtframe)
     mtframe.ident = "MT"
     mtframe.name:SetText("MT")
-    mtframe:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 8, -25)
+    mtframe:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 8, -60)
     anchorpool["oUF_FreebgridMTFrame"] = mtframe
 end
 

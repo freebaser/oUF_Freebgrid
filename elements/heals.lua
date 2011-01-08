@@ -121,6 +121,7 @@ local Enable = function(self)
         healtext:SetPoint("BOTTOM")
         healtext:SetShadowOffset(1.25, -1.25)
         healtext:SetFont(ns.db.fontSM, ns.db.fontsize, ns.db.outline)
+        self.Healtext = healtext
 
         if ns.db.healcommtext then
             if ns.db.healothersonly then
@@ -129,7 +130,7 @@ local Enable = function(self)
                 self:Tag(healtext, "[freebgrid:heals]")
             end
         else
-            --self:Tag(healtext, "[freebgrid:def]")
+            self:Tag(healtext, "[freebgrid:def]")
         end
     end
 end

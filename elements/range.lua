@@ -77,7 +77,7 @@ end
 
 local px, py, tx, ty
 local function GetBearing(unit)
-    if unit == "player" or WorldMapFrame:IsVisible() then return end
+    if unit == 'player' or WorldMapFrame:IsVisible() or not UIParent:IsShown() then return end
 
     px, py = GetPlayerMapPosition("player")
     if((px or 0)+(py or 0) <= 0) then
@@ -153,14 +153,14 @@ local Enable = function(self)
         end
         OnRangeFrame:Show()
 
-        local frame = CreateFrame("Frame", nil, UIParent)
+        local frame = CreateFrame("Frame")
         frame:SetAllPoints(self)
-        frame:SetFrameLevel(6)
+        frame:SetFrameStrata("HIGH")
 
         frame.arrow = frame:CreateTexture(nil, "OVERLAY")
         frame.arrow:SetTexture"Interface\\Addons\\oUF_Freebgrid\\Media\\Arrow"
         frame.arrow:SetPoint("TOPRIGHT", frame, "TOPRIGHT")
-        frame.arrow:SetSize(18, 24)
+        frame.arrow:SetSize(17, 22)
 
         self.freebarrow = frame
         self.freebarrow:Hide()

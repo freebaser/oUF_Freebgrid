@@ -2,13 +2,6 @@ local ADDON_NAME, ns = ...
 local oUF = ns.oUF or oUF
 assert(oUF, "oUF_Freebgrid was unable to locate oUF install.")
 
-if false then
-    CompactRaidFrameManager:UnregisterAllEvents()
-    CompactRaidFrameManager:Hide()
-    CompactRaidFrameContainer:UnregisterAllEvents()
-    CompactRaidFrameContainer:Hide()
-end
-
 oUF.colors.power['MANA'] = {.31,.45,.63}
 oUF.colors.power['RAGE'] = {.69,.31,.31}
 
@@ -114,7 +107,7 @@ local updateThreat = function(self, event, unit)
     threat:Show()
 end
 
-local function hex(r, g, b)
+function ns:hex(r, g, b)
     if(type(r) == 'table') then
         if(r.r) then r, g, b = r.r, r.g, r.b else r, g, b = unpack(r) end
     end
@@ -155,6 +148,10 @@ ns.colorCache = {}
 local colorCache
 local numberize = ns.numberize
 
+function ns.clearName()
+    wipe(nameCache)
+end
+
 oUF.Tags['freebgrid:info'] = function(u, r)
         local name = (u == 'vehicle' and UnitName(r or u)) or UnitName(u)
         
@@ -188,6 +185,12 @@ local updateHealth = function(health, unit)
         updateName(self, name, class)
     end
 
+    -- Define your own hp and hpbg colors
+    --health.bg:SetVertexColor(.33, .33, .33)
+    --health:SetStatusBarColor(.1, .1, .1)
+
+    if ns.db.reversecolors then return end
+
     local r, g, b, t
     if(UnitIsPlayer(unit)) then
         local _, class = UnitClass(unit)
@@ -204,20 +207,6 @@ local updateHealth = function(health, unit)
         local bg = health.bg
         bg:SetVertexColor(r, g, b)
         health:SetStatusBarColor(0, 0, 0, .8)
-    end
-
-    -- Define your own hp and hpbg colors
-    --health.bg:SetVertexColor(.33, .33, .33)
-    --health:SetStatusBarColor(.1, .1, .1)
-end
-
-local updateInfo = function(health, unit)
-    local self = health.__owner
-    local _, class = UnitClass(unit)
-    local name = UnitName(unit)
-
-    if not nameCache[name] and class then
-        updateName(self, name, class)
     end
 end
 
@@ -446,14 +435,12 @@ local style = function(self)
     hpbg:SetAllPoints(hp)
 
     if ns.db.reversecolors then
-        hp.colorClass =  true
+        hp.colorClass = true
         hp.colorReaction = true
         hpbg.multiplier = .3
-
-        hp.PostUpdate = updateInfo
-    else
-        hp.PostUpdate = updateHealth
     end
+
+    hp.PostUpdate = updateHealth
 
     hp.bg = hpbg 
     self.Health = hp
@@ -497,6 +484,7 @@ local style = function(self)
     DDG:SetFont(ns.db.fontSM, ns.db.fontsize, ns.db.outline)
     DDG:SetShadowOffset(1.25, -1.25)
     self:Tag(DDG, '[freebgrid:ddg]')
+    self.DDG = DDG
 
     -- Highlight tex
     local hl = hp:CreateTexture(nil, "OVERLAY")
@@ -553,10 +541,10 @@ local style = function(self)
         self.LFDRole:SetPoint('RIGHT', self, 'LEFT', ns.db.iconsize/2, ns.db.iconsize/2)
     end
 
-    -- Enable Indicators
     self.freebIndicators = true
     self.freebAfk = true
     self.freebHeals = true 
+    self.freebObject = true
 
     -- Range
     local range = {
@@ -585,9 +573,11 @@ local style = function(self)
     self:RegisterEvent('RAID_ROSTER_UPDATE', FocusTarget)
     self:RegisterEvent('PLAYER_TARGET_CHANGED', ChangedTarget)
     self:RegisterEvent('RAID_ROSTER_UPDATE', ChangedTarget)
+
+    self:SetScale(ns.db.scale)
 end
 
-local function SAP()
+function ns:SAP()
     if not ns then return end
 
     local pos, posRel, spacingX, spacingY, colX, colY, growth, point
@@ -690,7 +680,7 @@ oUF:Factory(function(self)
         if ns.db.reversecolors then
             ns.colorCache[class] = "|cffFFFFFF"
         else
-            ns.colorCache[class] = hex(color)
+            ns.colorCache[class] = ns:hex(color)
         end
     end
     colorCache = ns.colorCache
@@ -706,7 +696,7 @@ oUF:Factory(function(self)
         visible = 'raid'
     end
 
-    local pos, posRel, spacingX, spacingY, colX, colY, growth, point = SAP()
+    local pos, posRel, spacingX, spacingY, colX, colY, growth, point = ns:SAP()
 
     if ns.db.multi then
         local raid = {}
@@ -720,7 +710,7 @@ oUF:Factory(function(self)
             'showSolo', true,
             'showParty', ns.db.partyOn,
             'showRaid', true,
-            'xoffset', spacingX, 
+            'xOffset', spacingX, 
             'yOffset', spacingY,
             'point', ns.db.point,
             'groupFilter', tostring(i),
@@ -736,7 +726,6 @@ oUF:Factory(function(self)
             else
                 group:SetPoint(pos, raid[i-1], posRel, colX, colY)
             end
-            group:SetScale(ns.db.scale)
             raid[i] = group
         end
     else
@@ -749,7 +738,7 @@ oUF:Factory(function(self)
         'showSolo', true,
         'showParty', ns.db.partyOn,
         'showRaid', true,
-        'xoffset', spacingX, 
+        'xOffset', spacingX, 
         'yOffset', spacingY,
         'point', ns.db.point,
         'groupFilter', '1,2,3,4,5,6,7,8',
@@ -761,7 +750,6 @@ oUF:Factory(function(self)
         'columnAnchorPoint', growth
         )
         raid:SetPoint(point, "oUF_FreebgridRaidFrame", point)
-        raid:SetScale(ns.db.scale)
     end
 
     if ns.db.pets then
@@ -769,12 +757,11 @@ oUF:Factory(function(self)
         'oUF-initialConfigFunction', ([[
         self:SetWidth(%d)
         self:SetHeight(%d)
-        self:SetAttribute('unitsuffix', 'pet')
         ]]):format(ns.db.width, ns.db.height),
         'showSolo', true,
         'showParty', ns.db.partyOn,
         'showRaid', true,
-        'xoffset', spacingX,
+        'xOffset', spacingX,
         'yOffset', spacingY,
         'point', ns.db.point,
         'maxColumns', ns.db.numCol,
@@ -784,7 +771,6 @@ oUF:Factory(function(self)
         'useOwnerUnit', true
         )
         pets:SetPoint(point, "oUF_FreebgridPetFrame", point)
-        pets:SetScale(ns.db.scale)
     end
 
     if ns.db.MT then
@@ -794,7 +780,13 @@ oUF:Factory(function(self)
         self:SetHeight(%d)
         ]]):format(ns.db.width, ns.db.height),
         "showRaid", true,
-        "yOffset", -ns.db.spacing
+        'xOffset', spacingX,
+        'yOffset', spacingY,
+        'point', ns.db.point,
+        'maxColumns', ns.db.numCol,
+        'unitsPerColumn', ns.db.numUnits,
+        'columnSpacing', ns.db.spacing,
+        'columnAnchorPoint', growth
         )
         tank:SetPoint(point, "oUF_FreebgridMTFrame", point)
 
@@ -811,7 +803,6 @@ oUF:Factory(function(self)
         else
             tank:SetAttribute('groupFilter', 'MAINTANK')
         end
-        tank:SetScale(ns.db.scale)
     end
 end)
 
