@@ -1,0 +1,8 @@
+## Interface: 40000
+## Title: oUF_Freebgrid_Config
+## Notes: oUF_Freebgrid's configuration gui
+## Author: Freebaser
+## Dependencies: oUF_Freebgrid
+## LoadOnDemand: 1
+
+..\oUF_Freebgrid\libs\config.xml
