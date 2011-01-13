@@ -425,7 +425,7 @@ local miscopts = {
             set = function(info,val) ns.db.indicatorsize = val; updateObjects() end,
         },
         symbol = {
-            name = "Symbol size",
+            name = "Bottom right indicator size",
             type = "range",
             order = 9,
             min = 8,
@@ -435,7 +435,7 @@ local miscopts = {
             set = function(info,val) ns.db.symbolsize = val; updateObjects() end,
         },
         icon = {
-            name = "Size for various icons",
+            name = "Leader, raid, role icon size",
             type = "range",
             order = 10,
             min = 8,

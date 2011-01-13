@@ -187,7 +187,7 @@ getZone:SetScript("OnEvent", function(self, event)
     print(GetInstanceInfo().." "..zone)
 
     if ns.auras.instances[zone] then
-        instDebuffs = instances[zone]
+        instDebuffs = ns.auras.instances[zone]
     else
         wipe(instDebuffs)
         instDebuffs = {}
@@ -238,9 +238,8 @@ ns.colorCache = {}
 function ns:UpdateName(name, object, unit) 
     if unit then
         local _NAME = UnitName(unit)
-        if not _NAME then return end
-
         local _, class = UnitClass(unit)
+        if not _NAME or not class then return end
 
         local substring
         for length=#_NAME, 1, -1 do
@@ -263,15 +262,17 @@ local function PostHealth(hp, unit)
         ns:UpdateName(object.Name, object, unit)
     end
 
-    if unit == "vehicle" or unit == "pet" or ns.db.reversecolors then
+    local suffix = object:GetAttribute'unitsuffix'
+    if suffix == 'pet' or unit == 'vehicle' or unit == 'pet' then
+        local r, g, b = .2, .9, .1
+        hp:SetStatusBarColor(r*.2, g*.2, b*.2)
+        hp.bg:SetVertexColor(r, g, b)
+        return
+    elseif ns.db.reversecolors then
         hp.colorClass = true
         hp.colorReaction = true
         hp.bg.multiplier = .2
         return
-    else
-        hp.colorClass = false
-        hp.colorReaction = false
-        hp.bg.multiplier = nil
     end
      
     if ns.db.definecolors then
@@ -322,7 +323,6 @@ function ns:UpdateHealth(hp)
         hp:SetPoint"RIGHT"
     end
 
-    hp:SetStatusBarColor(0, 0, 0, .8)
     if ns.db.reversecolors then
         hp.colorClass = true
         hp.colorReaction = true
@@ -333,7 +333,6 @@ function ns:UpdateHealth(hp)
         hp.bg.multiplier = nil
     end
 
-    -- Define your own hp and hpbg colors
     if ns.db.definecolors then
         hp.bg:SetVertexColor(ns.db.hpbgcolor.r, ns.db.hpbgcolor.g, ns.db.hpbgcolor.b)
         hp:SetStatusBarColor(ns.db.hpcolor.r, ns.db.hpcolor.g, ns.db.hpcolor.b)
@@ -599,16 +598,8 @@ function ns:Colors()
     end
 end
 
-local function SetManyAttributes(self, ...)
-    for i=1,select("#", ...),2 do
-        local att,val = select(i, ...)
-        if not att then return end
-        self:SetAttribute(att,val)
-    end
-end
-
 local pos, posRel, colX, colY
-local function freebHeader(name, group, temp)
+local function freebHeader(name, group, temp, pet)
     local point, growth, xoff, yoff
     if ns.db.horizontal then
         point = "LEFT"
@@ -644,12 +635,22 @@ local function freebHeader(name, group, temp)
 
     local numUnits = ns.db.multi and 5 or ns.db.numUnits
 
-    local template = temp or nil
-    local header = oUF:SpawnHeader(name, template, 'raid,party,solo',
-    'oUF-initialConfigFunction', ([[
+    local initconfig = [[
     self:SetWidth(%d)
     self:SetHeight(%d)
-    ]]):format(ns.db.width, ns.db.height),
+    ]]
+
+    if pet then 
+        initconfig = [[ 
+        self:SetWidth(%d)        
+        self:SetHeight(%d)           
+        self:SetAttribute('unitsuffix', 'pet')                 
+        ]]
+    end
+
+    local template = temp or nil
+    local header = oUF:SpawnHeader(name, template, 'raid,party,solo',
+    'oUF-initialConfigFunction', (initconfig):format(ns.db.width, ns.db.height),
     'showPlayer', ns.db.player,
     'showSolo', ns.db.solo,
     'showParty', ns.db.party,
@@ -692,9 +693,9 @@ oUF:Factory(function(self)
     end
 
     if ns.db.pets then
-        local pet = freebHeader("Pet_Freebgrid", nil, 'SecureGroupPetHeaderTemplate')
+        local pet = freebHeader("Pet_Freebgrid", nil, 'SecureGroupPetHeaderTemplate', true)
         pet:SetPoint(pos, "oUF_FreebgridPetFrame", pos)
-        --pet:SetAttribute('useOwnerUnit', true)
+        pet:SetAttribute('useOwnerUnit', true)
         ns._Headers[pet:GetName()] = pet
     end
 
