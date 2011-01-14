@@ -21,12 +21,76 @@ ns.numberize = numberize
 local x = "M"
 
 local getTime = function(expirationTime)
-    local expire = -1*(GetTime()-expirationTime)
+    local expire = (expirationTime-GetTime())
     local timeleft = numberize(expire)
     if expire > 0.5 then
         return ("|cffffff00"..timeleft.."|r")
     end
 end
+
+-- Magic
+oUF.Tags['freebgrid:magic'] = function(u)
+    local index = 1
+    while true do
+        local name,_,_,_, dtype = UnitAura(u, index, 'HARMFUL')
+        if not name then break end
+        
+        if dtype == "Magic" then
+            return ns.debuffColor[dtype]..x
+        end
+
+        index = index+1
+    end
+end
+oUF.TagEvents['freebgrid:magic'] = "UNIT_AURA"
+
+-- Disease
+oUF.Tags['freebgrid:disease'] = function(u)
+    local index = 1
+    while true do
+        local name,_,_,_, dtype = UnitAura(u, index, 'HARMFUL')
+        if not name then break end
+        
+        if dtype == "Disease" then
+            return ns.debuffColor[dtype]..x
+        end
+
+        index = index+1
+    end
+end
+oUF.TagEvents['freebgrid:disease'] = "UNIT_AURA"
+
+-- Curse
+oUF.Tags['freebgrid:curse'] = function(u)
+    local index = 1
+    while true do
+        local name,_,_,_, dtype = UnitAura(u, index, 'HARMFUL')
+        if not name then break end
+        
+        if dtype == "Curse" then
+            return ns.debuffColor[dtype]..x
+        end
+
+        index = index+1
+    end
+end
+oUF.TagEvents['freebgrid:curse'] = "UNIT_AURA"
+
+-- Poison
+oUF.Tags['freebgrid:poison'] = function(u)
+    local index = 1
+    while true do
+        local name,_,_,_, dtype = UnitAura(u, index, 'HARMFUL')
+        if not name then break end
+        
+        if dtype == "Poison" then
+            return ns.debuffColor[dtype]..x
+        end
+
+        index = index+1
+    end
+end
+oUF.TagEvents['freebgrid:poison'] = "UNIT_AURA"
 
 -- Priest
 local pomCount = {"i","h","g","f","Z","Y"}
@@ -172,6 +236,7 @@ ns.classIndicators={
     ["PRIEST"] = {
         ["TL"] = "[freebgrid:pws][freebgrid:ws]",
         ["TR"] = "[freebgrid:fw][freebgrid:sp][freebgrid:fort]",
+        --["BL"] = "[freebgrid:magic][freebgrid:disease][freebgrid:curse][freebgrid:poison]",
         ["BL"] = "[freebgrid:rnw]",
         ["BR"] = "[freebgrid:pom]",
         ["Cen"] = "",

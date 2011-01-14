@@ -46,6 +46,11 @@ ns.defaults = {
     deficit = true,
     hpcolor = { r = 0.1, g = 0.1, b = 0.1, a = 1 },
     hpbgcolor = { r = 0.33, g = 0.33, b = 0.33, a = 1 },
+    tborder = true,
+    fborder = true,
+    afk = true,
+    highlight = true,
+    dispel = true,
 }
 
 function ns.InitDB()

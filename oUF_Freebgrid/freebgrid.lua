@@ -104,8 +104,7 @@ local glowBorder = {
 
 -- Show Target Border
 local ChangedTarget = function(self)
-    if UnitIsUnit('target', self.unit) then
-        self.TargetBorder:SetBackdropColor(.8, .8, .8, 1)
+    if ns.db.tborder and UnitIsUnit('target', self.unit) then
         self.TargetBorder:Show()
     else
         self.TargetBorder:Hide()
@@ -114,8 +113,7 @@ end
 
 -- Show Focus Border
 local FocusTarget = function(self)
-    if UnitIsUnit('focus', self.unit) then
-        self.FocusHighlight:SetBackdropColor(.6, .8, 0, 1)
+    if ns.db.fborder and UnitIsUnit('focus', self.unit) then
         self.FocusHighlight:Show()
     else
         self.FocusHighlight:Hide()
@@ -184,7 +182,7 @@ getZone:SetScript("OnEvent", function(self, event)
     SetMapToCurrentZone()
     local zone = GetCurrentMapAreaID()
 
-    print(GetInstanceInfo().." "..zone)
+    --print(GetInstanceInfo().." "..zone)
 
     if ns.auras.instances[zone] then
         instDebuffs = ns.auras.instances[zone]
@@ -211,7 +209,7 @@ local CustomFilter = function(icons, ...)
         icon.priority = ns.auras.buffs[name]
         icon.buff = true
         return true
-    elseif dispellist[dtype] then
+    elseif ns.db.dispel and dispellist[dtype] then
         icon.priority = dispelPriority[dtype]
         icon.buff = false
         return true
@@ -223,7 +221,7 @@ end
 oUF.Tags['freebgrid:name'] = function(u, r)
     local name = (u == 'vehicle' and UnitName(r or u)) or UnitName(u)
 
-    if(UnitIsAFK(u)) then
+    if ns.db.afk and UnitIsAFK(u) then
         local _, class = UnitClass(u)
         return ns.colorCache[class]..CHAT_FLAG_AFK
     elseif ns.nameCache[name] then
@@ -234,6 +232,7 @@ oUF.TagEvents['freebgrid:name'] = 'UNIT_NAME_UPDATE PLAYER_FLAGS_CHANGED UNIT_CO
 
 ns.nameCache = {}
 ns.colorCache = {}
+ns.debuffColor = {} -- hex debuff colors for tags
 
 function ns:UpdateName(name, object, unit) 
     if unit then
@@ -303,7 +302,7 @@ function ns:UpdateHealth(hp)
     hp:SetStatusBarTexture(ns.db.texturePath)
     hp:SetOrientation(ns.db.orientation)
     hp.bg:SetTexture(ns.db.texturePath)
-    hp.Smooth = true
+    --hp.Smooth = true
 
     if not ns.db.powerbar then
         hp:SetHeight(ns.db.height)
@@ -344,6 +343,7 @@ local function PostPower(power, unit)
     local self = power.__owner
 
     if ptype == 'MANA' then
+        power:Show()
         if(ns.db.porientation == "VERTICAL")then
             power:SetWidth(ns.db.width*ns.db.powerbarsize)
             self.Health:SetWidth((0.98 - ns.db.powerbarsize)*ns.db.width)
@@ -352,11 +352,10 @@ local function PostPower(power, unit)
             self.Health:SetHeight((0.98 - ns.db.powerbarsize)*ns.db.height)
         end
     else
+        power:Hide()
         if(ns.db.porientation == "VERTICAL")then
-            power:SetWidth(0.0001) -- in this case absolute zero is something, rather than nothing
             self.Health:SetWidth(ns.db.width)
         else
-            power:SetHeight(0.0001) -- ^ ditto
             self.Health:SetHeight(ns.db.height)
         end
     end
@@ -401,7 +400,7 @@ function ns:UpdatePower(power)
     power:SetStatusBarTexture(ns.db.texturePath)
     power:SetOrientation(ns.db.porientation)
     power.bg:SetTexture(ns.db.texturePath)
-    power.Smooth = true
+    --power.Smooth = true
 
     power:ClearAllPoints()
     if ns.db.orientation == "HORIZONTAL" and ns.db.porientation == "VERTICAL" then
@@ -422,7 +421,9 @@ end
 -- Show Mouseover highlight
 local OnEnter = function(self)
     UnitFrame_OnEnter(self)
-    self.Highlight:Show()
+    if ns.db.highlight then
+        self.Highlight:Show()
+    end
 
     if ns.db.arrowmouseover then
         ns:arrow(self, self.unit)
@@ -508,6 +509,7 @@ local style = function(self)
     tBorder:SetPoint("TOPLEFT", self, "TOPLEFT")
     tBorder:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT")
     tBorder:SetBackdrop(border)
+    tBorder:SetBackdropColor(.8, .8, .8, 1)
     tBorder:SetFrameLevel(2)
     tBorder:Hide()
     self.TargetBorder = tBorder
@@ -517,6 +519,7 @@ local style = function(self)
     fBorder:SetPoint("TOPLEFT", self, "TOPLEFT")
     fBorder:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT")
     fBorder:SetBackdrop(border)
+    fBorder:SetBackdropColor(.6, .8, 0, 1)
     fBorder:SetFrameLevel(2)
     fBorder:Hide()
     self.FocusHighlight = fBorder
@@ -595,6 +598,10 @@ function ns:Colors()
         else
             ns.colorCache[class] = ns:hex(color)
         end
+    end
+
+    for dtype, color in next, DebuffTypeColor do
+        ns.debuffColor[dtype] = ns:hex(color)
     end
 end
 
@@ -764,7 +771,6 @@ function ns:PLAYER_LOGIN()
         self:SetScript('OnShow', nil)
         if not IsAddOnLoaded('oUF_Freebgrid_Config') then
             LoadAddOn('oUF_Freebgrid_Config')
-            collectgarbage(collect)
         end
     end)
 
@@ -780,7 +786,6 @@ function ns:Slash(inp)
     if(inp:match("%S+")) then
         if not IsAddOnLoaded('oUF_Freebgrid_Config') then
             LoadAddOn('oUF_Freebgrid_Config')
-            collectgarbage(collect)
         end
         InterfaceOptionsFrame_OpenToCategory(ADDON_NAME)
     else

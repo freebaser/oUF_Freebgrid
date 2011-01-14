@@ -79,12 +79,14 @@ ns.auras = {
             [GetSpellInfo(82285)] = 7, -- Elemental Stasis
             [GetSpellInfo(92488)] = 8, -- Gravity Well
             --Cho'gall
+            [GetSpellInfo(86028)] = 6, -- Cho's Blast
+            [GetSpellInfo(86029)] = 6, -- Gall's Blast
             [GetSpellInfo(93189)] = 7, -- Corrupted Blood
             [GetSpellInfo(93133)] = 7, -- Debilitating Beam
             [GetSpellInfo(81836)] = 8, -- Corruption: Accelerated
             [GetSpellInfo(81831)] = 8, -- Corruption: Sickness
             [GetSpellInfo(82125)] = 8, -- Corruption: Malformation
-            [GetSpellInfo(82170)] = 8, -- Corruption: Absolute
+            [GetSpellInfo(82170)] = 8, -- Corruption: Absolute 
         },
 
         [L["Throne of the Four Winds"]] = {
@@ -100,6 +102,7 @@ ns.auras = {
             [GetSpellInfo(87873)] = 7, -- Static Shock
             [GetSpellInfo(88427)] = 7, -- Electrocute
             [GetSpellInfo(93294)] = 8, -- Lightning Rod
+            [GetSpellInfo(93284)] = 9, -- Squall Line
         },
     },
 }

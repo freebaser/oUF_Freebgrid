@@ -17,7 +17,7 @@ local colorCache = ns.colorCache
 
 oUF.Tags['freebgrid:afk'] = function(u)
     local name = UnitName(u)
-    if(UnitIsAFK(u)) then
+    if ns.db.afk and UnitIsAFK(u) then
         if not timer[name] then
             timer[name] = GetTime()
         end
