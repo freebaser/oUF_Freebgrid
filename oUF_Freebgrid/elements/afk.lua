@@ -37,7 +37,7 @@ local Enable = function(self)
     local afktext = self.Health:CreateFontString(nil, "OVERLAY")
     afktext:SetPoint("TOP")
     afktext:SetShadowOffset(1.25, -1.25)
-    afktext:SetFont(ns.db.fontPath, ns.db.fontsize, ns.db.outline)
+    afktext:SetFont(ns.db.fontPath, ns.db.fontsizeEdge, ns.db.outline)
     afktext:SetWidth(ns.db.width)
     afktext.frequentUpdates = 1
     self:Tag(afktext, "[freebgrid:afk]")

@@ -11,6 +11,7 @@ ns.defaults = {
     font = "calibri",
     fontPath = ns.mediapath.."calibri.ttf",
     fontsize = 14,
+    fontsizeEdge = 14,
     outline = nil,
     solo = false,
     player = true,
@@ -51,6 +52,7 @@ ns.defaults = {
     afk = true,
     highlight = true,
     dispel = true,
+    powerclass = false,
 }
 
 function ns.InitDB()

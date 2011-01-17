@@ -187,7 +187,6 @@ getZone:SetScript("OnEvent", function(self, event)
     if ns.auras.instances[zone] then
         instDebuffs = ns.auras.instances[zone]
     else
-        wipe(instDebuffs)
         instDebuffs = {}
     end
 
@@ -234,7 +233,7 @@ ns.nameCache = {}
 ns.colorCache = {}
 ns.debuffColor = {} -- hex debuff colors for tags
 
-function ns:UpdateName(name, object, unit) 
+function ns:UpdateName(name, unit) 
     if unit then
         local _NAME = UnitName(unit)
         local _, class = UnitClass(unit)
@@ -254,14 +253,14 @@ function ns:UpdateName(name, object, unit)
 end
 
 local function PostHealth(hp, unit)
-    local object = hp.__owner
+    local self = hp.__owner
     local name = UnitName(unit)
 
     if not ns.nameCache[name] then
-        ns:UpdateName(object.Name, object, unit)
+        ns:UpdateName(self.Name, unit)
     end
 
-    local suffix = object:GetAttribute'unitsuffix'
+    local suffix = self:GetAttribute'unitsuffix'
     if suffix == 'pet' or unit == 'vehicle' or unit == 'pet' then
         local r, g, b = .2, .9, .1
         hp:SetStatusBarColor(r*.2, g*.2, b*.2)
@@ -283,7 +282,7 @@ local function PostHealth(hp, unit)
     local r, g, b
     if(UnitIsPlayer(unit)) then
         local _, class = UnitClass(unit)
-        t = object.colors.class[class]
+        t = self.colors.class[class]
     else		
         r, g, b = .2, .9, .1
     end
@@ -339,8 +338,8 @@ function ns:UpdateHealth(hp)
 end
 
 local function PostPower(power, unit)
-    local _, ptype = UnitPowerType(unit)
     local self = power.__owner
+    local _, ptype = UnitPowerType(unit)
 
     if ptype == 'MANA' then
         power:Show()
@@ -361,15 +360,18 @@ local function PostPower(power, unit)
     end
 
     local r, g, b, t
-    t = self.colors.power[ptype]
-    r, g, b = 1, 1, 1
+    local _, class = UnitClass(unit)
+    t = ns.db.powerclass and self.colors.class[class] or self.colors.power[ptype]
+
     if(t) then
         r, g, b = t[1], t[2], t[3]
+    else
+        r, g, b = 1, 1, 1
     end
 
     if(b) then
         local bg = power.bg
-        if ns.db.reversecolors then
+        if ns.db.reversecolors or ns.db.powerclass then
             bg:SetVertexColor(r*.2, g*.2, b*.2)
             power:SetStatusBarColor(r, g, b)
         else
@@ -482,6 +484,7 @@ local style = function(self)
     name:SetJustifyH("CENTER")
     name:SetFont(ns.db.fontPath, ns.db.fontsize, ns.db.outline)
     name:SetShadowOffset(1.25, -1.25)
+    name:SetWidth(ns.db.width)
     name.overrideUnit = true
     self.Name = name
     self:Tag(self.Name, '[freebgrid:name]')

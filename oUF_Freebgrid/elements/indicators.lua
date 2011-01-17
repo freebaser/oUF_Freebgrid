@@ -37,11 +37,11 @@ local Enable = function(self)
         self:Tag(self.AuraStatusBR, ns.classIndicators[class]["BR"])
 
         self.AuraStatusCen = self.Health:CreateFontString(nil, "OVERLAY")
-        self.AuraStatusCen:ClearAllPoints()
         self.AuraStatusCen:SetPoint("TOP")
         self.AuraStatusCen:SetJustifyH("CENTER")
-        self.AuraStatusCen:SetFont(ns.db.fontPath, ns.db.fontsize, ns.db.outline)
+        self.AuraStatusCen:SetFont(ns.db.fontPath, ns.db.fontsizeEdge, ns.db.outline)
         self.AuraStatusCen:SetShadowOffset(1.25, -1.25)
+        self.AuraStatusCen:SetWidth(ns.db.width)
         self.AuraStatusCen.frequentUpdates = true
         self:Tag(self.AuraStatusCen, ns.classIndicators[class]["Cen"])
     end

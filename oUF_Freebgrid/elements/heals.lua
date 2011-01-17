@@ -128,7 +128,8 @@ local Enable = function(self)
         local healtext = self.Health:CreateFontString(nil, "OVERLAY")
         healtext:SetPoint("BOTTOM")
         healtext:SetShadowOffset(1.25, -1.25)
-        healtext:SetFont(ns.db.fontPath, ns.db.fontsize, ns.db.outline)
+        healtext:SetFont(ns.db.fontPath, ns.db.fontsizeEdge, ns.db.outline)
+        healtext:SetWidth(ns.db.width)
         self.Healtext = healtext
 
         if ns.db.healtext then

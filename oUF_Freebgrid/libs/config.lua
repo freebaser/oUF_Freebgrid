@@ -18,9 +18,13 @@ ns.orientation = {
 
 local function updateFonts(object)
     object.Name:SetFont(ns.db.fontPath, ns.db.fontsize, ns.db.outline)
-    object.AFKtext:SetFont(ns.db.fontPath, ns.db.fontsize, ns.db.outline)
-    object.AuraStatusCen:SetFont(ns.db.fontPath, ns.db.fontsize, ns.db.outline) 
-    object.Healtext:SetFont(ns.db.fontPath, ns.db.fontsize, ns.db.outline) 
+    object.Name:SetWidth(ns.db.width)
+    object.AFKtext:SetFont(ns.db.fontPath, ns.db.fontsizeEdge, ns.db.outline)
+    object.AFKtext:SetWidth(ns.db.width)
+    object.AuraStatusCen:SetFont(ns.db.fontPath, ns.db.fontsizeEdge, ns.db.outline) 
+    object.AuraStatusCen:SetWidth(ns.db.width)
+    object.Healtext:SetFont(ns.db.fontPath, ns.db.fontsizeEdge, ns.db.outline) 
+    object.Healtext:SetWidth(ns.db.width)
 end
 
 local function updateIndicators(object)
@@ -65,7 +69,7 @@ local function updateObjects()
         updateIndicators(object)
         updateIcons(object)
 
-        ns:UpdateName(object.Name, object, object.unit)
+        ns:UpdateName(object.Name, object.unit)
     end
 
     _G["oUF_FreebgridRaidFrame"]:SetSize(ns.db.width, ns.db.height)
@@ -287,6 +291,17 @@ local fontopts = {
             step = 1,
             get = function(info) return ns.db.fontsize end,
             set = function(info,val) ns.db.fontsize = val; wipe(ns.nameCache); updateObjects() end,
+        },
+        fontsizeEdge = {
+            name = "Edge Font Size",
+            type = "range",
+            order = 4,
+            desc = "Size of the Top and Bottom font strings",
+            min = 8,
+            max = 32,
+            step = 1,
+            get = function(info) return ns.db.fontsizeEdge  end,
+            set = function(info,val) ns.db.fontsizeEdge = val; wipe(ns.nameCache); updateObjects() end,
         },
     },
 }
@@ -518,10 +533,17 @@ local coloropts = {
                 end
                 ns:Colors(); updateObjects(); end,
         },
+        powerclass = {
+            name = "Color power by class",
+            type = "toggle",
+            order = 2,
+            get = function(info) return ns.db.powerclass end,
+            set = function(info,val) ns.db.powerclass = val; updateObjects(); end,
+        },
         definecolors = {
             name = "Use defined colors",
             type = "toggle",
-            order = 1,
+            order = 3,
             get = function(info) return ns.db.definecolors end,
             set = function(info,val) ns.db.definecolors = val;
                 if ns.db.reversecolors and val == true then
@@ -533,7 +555,7 @@ local coloropts = {
         hpcolor = {
             name = "Health color",
             type = "color",
-            order = 3,
+            order = 4,
             hasAlpha = false,
             get = function(info) return ns.db.hpcolor.r, ns.db.hpcolor.g, ns.db.hpcolor.b, ns.db.hpcolor.a end,
             set = function(info,r,g,b,a) ns.db.hpcolor.r, ns.db.hpcolor.g, ns.db.hpcolor.b, ns.db.hpcolor.a = r,g,b,a;
@@ -542,7 +564,7 @@ local coloropts = {
         hpbgcolor = {
             name = "Health background color",
             type = "color",
-            order = 4,
+            order = 5,
             hasAlpha = false,
             get = function(info) return ns.db.hpbgcolor.r, ns.db.hpbgcolor.g, ns.db.hpbgcolor.b, ns.db.hpbgcolor.a end,
             set = function(info,r,g,b,a) ns.db.hpbgcolor.r, ns.db.hpbgcolor.g, ns.db.hpbgcolor.b, ns.db.hpbgcolor.a = r,g,b,a;
