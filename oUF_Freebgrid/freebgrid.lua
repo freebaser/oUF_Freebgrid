@@ -427,7 +427,7 @@ local OnEnter = function(self)
         self.Highlight:Show()
     end
 
-    if ns.db.arrowmouseover then
+    if ns.db.arrow and ns.db.arrowmouseover then
         ns:arrow(self, self.unit)
     end
 end
@@ -436,7 +436,7 @@ local OnLeave = function(self)
     UnitFrame_OnLeave(self)
     self.Highlight:Hide()
 
-    if ns.db.arrowmouseover then
+    if(self.freebarrow and self.freebarrow:IsShown()) and ns.db.arrowmouseover then
         self.freebarrow:Hide()
     end
 end

@@ -330,6 +330,7 @@ local rangeopts = {
             name = "Only show on mouseover",
             type = "toggle",
             order = 3,
+            disabled = function(info) if not ns.db.arrow then return true end end,
             get = function(info) return ns.db.arrowmouseover end,
             set = function(info,val) ns.db.arrowmouseover = val end,
         },
