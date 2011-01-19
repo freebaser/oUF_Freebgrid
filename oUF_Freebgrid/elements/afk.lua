@@ -17,7 +17,7 @@ local colorCache = ns.colorCache
 
 oUF.Tags['freebgrid:afk'] = function(u)
     local name = UnitName(u)
-    if ns.db.afk and UnitIsAFK(u) then
+    if(ns.db.afk and (UnitIsAFK(u) or not UnitIsConnected(u))) then
         if not timer[name] then
             timer[name] = GetTime()
         end
@@ -29,7 +29,7 @@ oUF.Tags['freebgrid:afk'] = function(u)
         timer[name] = nil
     end
 end
-oUF.TagEvents['freebgrid:afk'] = 'PLAYER_FLAGS_CHANGED'
+oUF.TagEvents['freebgrid:afk'] = 'PLAYER_FLAGS_CHANGED UNIT_CONNECTION'
 
 local Enable = function(self)
     if not self.freebAfk then return end

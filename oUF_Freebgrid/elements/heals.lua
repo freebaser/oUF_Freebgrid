@@ -6,7 +6,9 @@ local numberize = ns.numberize
 local colorCache = ns.colorCache
 
 oUF.Tags['freebgrid:def'] = function(u)
-    if UnitIsDead(u) then
+    if UnitIsAFK(u) then
+        return CHAT_FLAG_AFK
+    elseif UnitIsDead(u) then
         return "|cffCFCFCFDead|r"
     elseif UnitIsGhost(u) then
         return "|cffCFCFCFGhost|r"
@@ -28,7 +30,7 @@ oUF.Tags['freebgrid:def'] = function(u)
         end
     end
 end
-oUF.TagEvents['freebgrid:def'] = 'UNIT_MAXHEALTH UNIT_HEALTH UNIT_CONNECTION'
+oUF.TagEvents['freebgrid:def'] = 'UNIT_MAXHEALTH UNIT_HEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED'
 
 oUF.Tags['freebgrid:heals'] = function(u)
     local incheal = UnitGetIncomingHeals(u) or 0
@@ -39,7 +41,7 @@ oUF.Tags['freebgrid:heals'] = function(u)
         return def
     end
 end
-oUF.TagEvents['freebgrid:heals'] = 'UNIT_HEAL_PREDICTION UNIT_MAXHEALTH UNIT_HEALTH UNIT_CONNECTION'
+oUF.TagEvents['freebgrid:heals'] = 'UNIT_HEAL_PREDICTION UNIT_MAXHEALTH UNIT_HEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED'
 
 oUF.Tags['freebgrid:othersheals'] = function(u)
     local incheal = UnitGetIncomingHeals(u) or 0

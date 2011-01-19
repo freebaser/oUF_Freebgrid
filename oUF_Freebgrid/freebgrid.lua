@@ -220,14 +220,11 @@ end
 oUF.Tags['freebgrid:name'] = function(u, r)
     local name = (u == 'vehicle' and UnitName(r or u)) or UnitName(u)
 
-    if ns.db.afk and UnitIsAFK(u) then
-        local _, class = UnitClass(u)
-        return ns.colorCache[class]..CHAT_FLAG_AFK
-    elseif ns.nameCache[name] then
+    if ns.nameCache[name] then
         return ns.nameCache[name]
     end
 end
-oUF.TagEvents['freebgrid:name'] = 'UNIT_NAME_UPDATE PLAYER_FLAGS_CHANGED UNIT_CONNECTION'
+oUF.TagEvents['freebgrid:name'] = 'UNIT_NAME_UPDATE'
 
 ns.nameCache = {}
 ns.colorCache = {}
