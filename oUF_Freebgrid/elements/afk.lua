@@ -13,8 +13,6 @@ local AfkTime = function(s)
     return min..":"..sec
 end
 
-local colorCache = ns.colorCache
-
 oUF.Tags['freebgrid:afk'] = function(u)
     local name = UnitName(u)
     if(ns.db.afk and (UnitIsAFK(u) or not UnitIsConnected(u))) then
@@ -23,8 +21,7 @@ oUF.Tags['freebgrid:afk'] = function(u)
         end
         local time = (GetTime()-timer[name])
 
-        local _, class = UnitClass(u)
-        return colorCache[class]..AfkTime(time)
+        return AfkTime(time)
     elseif timer[name] then
         timer[name] = nil
     end

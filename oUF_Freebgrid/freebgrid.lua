@@ -175,24 +175,39 @@ local dispelPriority = {
 }
 
 local instDebuffs = {}
-local getZone = CreateFrame"Frame"
-getZone:RegisterEvent"PLAYER_ENTERING_WORLD"
-getZone:RegisterEvent"ZONE_CHANGED_NEW_AREA"
-getZone:SetScript("OnEvent", function(self, event)
-    SetMapToCurrentZone()
-    local zone = GetCurrentMapAreaID()
 
-    --print(GetInstanceInfo().." "..zone)
+local delaytimer = 0
+local zoneDelay = function(self, elapsed)
+    delaytimer = delaytimer + elapsed
 
-    if ns.auras.instances[zone] then
-        instDebuffs = ns.auras.instances[zone]
+    if delaytimer < 5 then return end
+
+    if IsInInstance() then
+        SetMapToCurrentZone()
+        local zone = GetCurrentMapAreaID()
+
+        --print(GetInstanceInfo().." "..zone)
+
+        if ns.auras.instances[zone] then
+            instDebuffs = ns.auras.instances[zone]
+        end
     else
         instDebuffs = {}
     end
 
+    self:SetScript("OnUpdate", nil)
+end
+
+local getZone = CreateFrame"Frame"
+getZone:RegisterEvent"PLAYER_ENTERING_WORLD"
+getZone:RegisterEvent"ZONE_CHANGED_NEW_AREA"
+getZone:SetScript("OnEvent", function(self, event)
     if event == "PLAYER_ENTERING_WORLD" then
         self:UnregisterEvent("PLAYER_ENTERING_WORLD")
     end
+
+    -- Delay just in case zone data hasn't loaded
+    self:SetScript("OnUpdate", zoneDelay)
 end)
 
 local CustomFilter = function(icons, ...)
