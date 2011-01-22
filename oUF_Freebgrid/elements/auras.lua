@@ -13,6 +13,9 @@ local BBackdrop = {
     insets = {top = -1, left = -1, bottom = -1, right = -1},
 }
 
+local GetTime = GetTime
+local floor = floor
+
 local FormatTime = function(s)
     local day, hour, minute = 86400, 3600, 60
     if s >= day then
@@ -116,11 +119,11 @@ local updateIcon = function(unit, auras)
     local hide = true
     local index = 1
     while true do
-        local name, rank, texture, count, dtype, duration, timeLeft, caster, isStealable, shouldConsolidate, spellID = UnitAura(unit, index, 'HARMFUL')
+        local name, rank, texture, count, dtype, duration, timeLeft, caster = UnitDebuff(unit, index)
         if not name then break end
         
         local icon = auras.button
-        local show = auras.CustomFilter(auras, unit, icon, name, rank, texture, count, dtype, duration, timeLeft, caster, isStealable, shouldConsolidate, spellID)
+        local show = auras.CustomFilter(auras, unit, icon, name, rank, texture, count, dtype, duration, timeLeft, caster)
 
         if(show) then
             if not cur then
@@ -141,11 +144,11 @@ local updateIcon = function(unit, auras)
 
     index = 1
     while true do
-        local name, rank, texture, count, dtype, duration, timeLeft, caster, isStealable, shouldConsolidate, spellID = UnitAura(unit, index, 'HELPFUL')
+        local name, rank, texture, count, dtype, duration, timeLeft, caster = UnitBuff(unit, index)
         if not name then break end
         
         local icon = auras.button
-        local show = auras.CustomFilter(auras, unit, icon, name, rank, texture, count, dtype, duration, timeLeft, caster, isStealable, shouldConsolidate, spellID)
+        local show = auras.CustomFilter(auras, unit, icon, name, rank, texture, count, dtype, duration, timeLeft, caster)
 
         if(show) and icon.buff then
             if not cur then
@@ -192,4 +195,4 @@ local Disable = function(self)
     end
 end
 
-oUF:AddElement('freebDebuffs', Update, Enable, Disable)
+oUF:AddElement('freebAuras', Update, Enable, Disable)

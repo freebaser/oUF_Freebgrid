@@ -44,6 +44,36 @@ local function updateIcons(object)
     object.freebAuras.size = ns.db.aurasize
 end
 
+local function updateHealbar(object)
+    object.myHealPredictionBar:ClearAllPoints()
+    object.otherHealPredictionBar:ClearAllPoints()
+
+    if ns.db.orientation == "VERTICAL" then
+        object.myHealPredictionBar:SetPoint("BOTTOMLEFT", object.Health:GetStatusBarTexture(), "TOPLEFT", 0, 0)
+        object.myHealPredictionBar:SetPoint("BOTTOMRIGHT", object.Health:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
+        object.myHealPredictionBar:SetSize(0, ns.db.height)
+        object.myHealPredictionBar:SetOrientation"VERTICAL"
+
+        object.otherHealPredictionBar:SetPoint("BOTTOMLEFT", object.myHealPredictionBar:GetStatusBarTexture(), "TOPLEFT", 0, 0)
+        object.otherHealPredictionBar:SetPoint("BOTTOMRIGHT", object.myHealPredictionBar:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
+        object.otherHealPredictionBar:SetSize(0, ns.db.height)
+        object.otherHealPredictionBar:SetOrientation"VERTICAL"
+    else
+        object.myHealPredictionBar:SetPoint("TOPLEFT", object.Health:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
+        object.myHealPredictionBar:SetPoint("BOTTOMLEFT", object.Health:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0)
+        object.myHealPredictionBar:SetSize(ns.db.width, 0)
+        object.myHealPredictionBar:SetOrientation"HORIZONTAL"
+
+        object.otherHealPredictionBar:SetPoint("TOPLEFT", object.myHealPredictionBar:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
+        object.otherHealPredictionBar:SetPoint("BOTTOMLEFT", object.myHealPredictionBar:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0)
+        object.otherHealPredictionBar:SetSize(ns.db.width, 0)
+        object.otherHealPredictionBar:SetOrientation"HORIZONTAL"
+    end
+
+    object.myHealPredictionBar:GetStatusBarTexture():SetTexture(0, 1, 0.5, ns.db.healalpha)
+    object.otherHealPredictionBar:GetStatusBarTexture():SetTexture(0, 1, 0, ns.db.healalpha)
+end
+
 local lockprint
 local function updateObjects()
     if(InCombatLockdown()) then
@@ -68,6 +98,7 @@ local function updateObjects()
         updateFonts(object)
         updateIndicators(object)
         updateIcons(object)
+        updateHealbar(object)
 
         ns:UpdateName(object.Name, object.unit)
     end
@@ -376,7 +407,7 @@ local healopts = {
             max = 1,
             step = .1,
             get = function(info) return ns.db.healalpha end,
-            set = function(info,val) ns.db.healalpha = val end,
+            set = function(info,val) ns.db.healalpha = val; updateObjects() end,
         },
         deficit = {
             name = "Show missing health",
@@ -532,7 +563,8 @@ local coloropts = {
                 if ns.db.definecolors and val == true then
                     ns.db.definecolors = false
                 end
-                ns:Colors(); updateObjects(); end,
+                ns:Colors(); updateObjects(); 
+            end,
         },
         powerclass = {
             name = "Color power by class",
@@ -560,7 +592,8 @@ local coloropts = {
             hasAlpha = false,
             get = function(info) return ns.db.hpcolor.r, ns.db.hpcolor.g, ns.db.hpcolor.b, ns.db.hpcolor.a end,
             set = function(info,r,g,b,a) ns.db.hpcolor.r, ns.db.hpcolor.g, ns.db.hpcolor.b, ns.db.hpcolor.a = r,g,b,a;
-                ns:Colors(); updateObjects(); end,
+                ns:Colors(); updateObjects(); 
+            end,
         },
         hpbgcolor = {
             name = "Health background color",
@@ -569,7 +602,8 @@ local coloropts = {
             hasAlpha = false,
             get = function(info) return ns.db.hpbgcolor.r, ns.db.hpbgcolor.g, ns.db.hpbgcolor.b, ns.db.hpbgcolor.a end,
             set = function(info,r,g,b,a) ns.db.hpbgcolor.r, ns.db.hpbgcolor.g, ns.db.hpbgcolor.b, ns.db.hpbgcolor.a = r,g,b,a;
-                ns:Colors(); updateObjects(); end,
+                ns:Colors(); updateObjects(); 
+            end,
         },
     },
 }

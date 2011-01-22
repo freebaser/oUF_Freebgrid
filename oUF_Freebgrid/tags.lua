@@ -7,6 +7,8 @@ local function GetSpellInfo(a)
     return unpack(spellcache[a])
 end
 
+local GetTime = GetTime
+
 local numberize = function(val)
     if (val >= 1e6) then
         return ("%.1fm"):format(val / 1e6)

@@ -25,24 +25,6 @@ function ns:hex(r, g, b)
     return ('|cff%02x%02x%02x'):format(r * 255, g * 255, b * 255)
 end
 
-local function utf8sub(str, start, numChars) 
-    local currentIndex = start 
-    while numChars > 0 and currentIndex <= #str do 
-        local char = string.byte(str, currentIndex) 
-        if char >= 240 then 
-            currentIndex = currentIndex + 4 
-        elseif char >= 225 then 
-            currentIndex = currentIndex + 3 
-        elseif char >= 192 then 
-            currentIndex = currentIndex + 2 
-        else 
-            currentIndex = currentIndex + 1 
-        end 
-        numChars = numChars - 1 
-    end 
-    return str:sub(start, currentIndex - 1) 
-end 
-
 -- Unit Menu
 local dropdown = CreateFrame('Frame', ADDON_NAME .. 'DropDown', UIParent, 'UIDropDownMenuTemplate')
 
@@ -245,8 +227,26 @@ ns.nameCache = {}
 ns.colorCache = {}
 ns.debuffColor = {} -- hex debuff colors for tags
 
+local function utf8sub(str, start, numChars) 
+    local currentIndex = start 
+    while numChars > 0 and currentIndex <= #str do 
+        local char = string.byte(str, currentIndex) 
+        if char >= 240 then 
+            currentIndex = currentIndex + 4 
+        elseif char >= 225 then 
+            currentIndex = currentIndex + 3 
+        elseif char >= 192 then 
+            currentIndex = currentIndex + 2 
+        else 
+            currentIndex = currentIndex + 1 
+        end 
+        numChars = numChars - 1 
+    end 
+    return str:sub(start, currentIndex - 1) 
+end 
+
 function ns:UpdateName(name, unit) 
-    if unit then
+    if(unit) then
         local _NAME = UnitName(unit)
         local _, class = UnitClass(unit)
         if not _NAME or not class then return end
@@ -277,21 +277,14 @@ local function PostHealth(hp, unit)
         local r, g, b = .2, .9, .1
         hp:SetStatusBarColor(r*.2, g*.2, b*.2)
         hp.bg:SetVertexColor(r, g, b)
-        return
-    elseif ns.db.reversecolors then
-        hp.colorClass = true
-        hp.colorReaction = true
-        hp.bg.multiplier = .2
-        return
-    end
-     
-    if ns.db.definecolors then
+        return    
+    elseif ns.db.definecolors then
         hp.bg:SetVertexColor(ns.db.hpbgcolor.r, ns.db.hpbgcolor.g, ns.db.hpbgcolor.b)
         hp:SetStatusBarColor(ns.db.hpcolor.r, ns.db.hpcolor.g, ns.db.hpcolor.b)
         return 
     end
 
-    local r, g, b
+    local r, g, b, t
     if(UnitIsPlayer(unit)) then
         local _, class = UnitClass(unit)
         t = self.colors.class[class]
@@ -304,8 +297,13 @@ local function PostHealth(hp, unit)
     end
 
     if(b) then
-        hp.bg:SetVertexColor(r, g, b)
-        hp:SetStatusBarColor(0, 0, 0, .8)
+        if ns.db.reversecolors then
+            hp.bg:SetVertexColor(r*.2, g*.2, b*.2)
+            hp:SetStatusBarColor(r, g, b)
+        else
+            hp.bg:SetVertexColor(r, g, b)
+            hp:SetStatusBarColor(0, 0, 0, .8)
+        end
     end
 end
 
@@ -332,26 +330,12 @@ function ns:UpdateHealth(hp)
         hp:SetPoint"LEFT"
         hp:SetPoint"RIGHT"
     end
-
-    if ns.db.reversecolors then
-        hp.colorClass = true
-        hp.colorReaction = true
-        hp.bg.multiplier = .2
-    else
-        hp.colorClass = false
-        hp.colorReaction = false
-        hp.bg.multiplier = nil
-    end
-
-    if ns.db.definecolors then
-        hp.bg:SetVertexColor(ns.db.hpbgcolor.r, ns.db.hpbgcolor.g, ns.db.hpbgcolor.b)
-        hp:SetStatusBarColor(ns.db.hpcolor.r, ns.db.hpcolor.g, ns.db.hpcolor.b)
-    end
 end
 
 local function PostPower(power, unit)
     local self = power.__owner
     local _, ptype = UnitPowerType(unit)
+    local _, class = UnitClass(unit)
 
     if ptype == 'MANA' then
         power:Show()
@@ -372,7 +356,6 @@ local function PostPower(power, unit)
     end
 
     local r, g, b, t
-    local _, class = UnitClass(unit)
     t = ns.db.powerclass and self.colors.class[class] or self.colors.power[ptype]
 
     if(t) then
@@ -382,12 +365,11 @@ local function PostPower(power, unit)
     end
 
     if(b) then
-        local bg = power.bg
         if ns.db.reversecolors or ns.db.powerclass then
-            bg:SetVertexColor(r*.2, g*.2, b*.2)
+            power.bg:SetVertexColor(r*.2, g*.2, b*.2)
             power:SetStatusBarColor(r, g, b)
         else
-            bg:SetVertexColor(r, g, b)
+            power.bg:SetVertexColor(r, g, b)
             power:SetStatusBarColor(0, 0, 0, .8)
         end
     end
@@ -470,6 +452,7 @@ local style = function(self)
     self:SetScript("OnLeave", OnLeave)
     self:RegisterForClicks"AnyUp"
 
+    -- Health
     self.Health = CreateFrame"StatusBar"
     self.Health:SetParent(self)
     self.Health.frequentUpdates = true
@@ -491,6 +474,7 @@ local style = function(self)
     threat.Override = updateThreat
     self.Threat = threat
 
+    -- Name
     local name = self.Health:CreateFontString(nil, "OVERLAY")
     name:SetPoint("CENTER")
     name:SetJustifyH("CENTER")
@@ -503,6 +487,7 @@ local style = function(self)
 
     ns:UpdateName(self.Name)
 
+    -- Power
     self.Power = CreateFrame"StatusBar"
     self.Power:SetParent(self)
     self.Power.bg = self.Power:CreateTexture(nil, "BORDER")
@@ -752,17 +737,15 @@ ns.fonts = {
     ["Expressway"] = ns.mediapath.."expressway.ttf",
 }
 
-local function loadSM()
-    local SM = LibStub("LibSharedMedia-3.0", true)
+local SM = LibStub("LibSharedMedia-3.0", true)
 
-    if SM then
-        for font, path in pairs(ns.fonts) do
-            SM:Register("font", font, path)
-        end
+if SM then
+    for font, path in pairs(ns.fonts) do
+        SM:Register("font", font, path)
+    end
 
-        for tex, path in pairs(ns.textures) do
-            SM:Register("statusbar", tex, path)
-        end
+    for tex, path in pairs(ns.textures) do
+        SM:Register("statusbar", tex, path)
     end
 end
 
@@ -770,7 +753,6 @@ ns:RegisterEvent("ADDON_LOADED")
 function ns:ADDON_LOADED(event, addon)
     if addon ~= ADDON_NAME then return end
     self:InitDB()
-    loadSM()
 
     self:UnregisterEvent("ADDON_LOADED")
     self.ADDON_LOADED = nil

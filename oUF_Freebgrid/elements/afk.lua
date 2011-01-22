@@ -2,6 +2,8 @@ local _, ns = ...
 local oUF = ns.oUF or oUF
 assert(oUF, "oUF_Freebgrid was unable to locate oUF install.")
 
+local GetTime = GetTime
+local floor = floor
 local timer = {}
 
 local AfkTime = function(s)
