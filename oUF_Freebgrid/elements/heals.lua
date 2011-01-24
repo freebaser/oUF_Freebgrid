@@ -112,13 +112,13 @@ local Enable = function(self)
 
             self.otherHealPredictionBar = CreateFrame('StatusBar', nil, self.Health)
             if ns.db.orientation == "VERTICAL" then
-                self.otherHealPredictionBar:SetPoint("BOTTOMLEFT", self.myHealPredictionBar:GetStatusBarTexture(), "TOPLEFT", 0, 0)
-                self.otherHealPredictionBar:SetPoint("BOTTOMRIGHT", self.myHealPredictionBar:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
+                self.otherHealPredictionBar:SetPoint("BOTTOMLEFT", self.myHealPredictionBar:GetStatusBarTexture() or self.Health:GetStatusBarTexture(), "TOPLEFT", 0, 0)
+                self.otherHealPredictionBar:SetPoint("BOTTOMRIGHT", self.myHealPredictionBar:GetStatusBarTexture() or self.Health:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
                 self.otherHealPredictionBar:SetSize(0, ns.db.height)
                 self.otherHealPredictionBar:SetOrientation"VERTICAL"
             else
-                self.otherHealPredictionBar:SetPoint("TOPLEFT", self.myHealPredictionBar:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
-                self.otherHealPredictionBar:SetPoint("BOTTOMLEFT", self.myHealPredictionBar:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0)
+                self.otherHealPredictionBar:SetPoint("TOPLEFT", self.myHealPredictionBar:GetStatusBarTexture() or self.Health:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
+                self.otherHealPredictionBar:SetPoint("BOTTOMLEFT", self.myHealPredictionBar:GetStatusBarTexture() or self.Health:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0)
                 self.otherHealPredictionBar:SetSize(ns.db.width, 0)
             end
             self.otherHealPredictionBar:SetStatusBarTexture("", "BORDER")

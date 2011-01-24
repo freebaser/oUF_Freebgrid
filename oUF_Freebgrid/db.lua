@@ -18,11 +18,17 @@ ns.defaults = {
     party = true,
     numCol = 8,
     numUnits = 5,
+    petUnits = 5,
+    MTUnits = 5,
     spacing = 5,
     orientation = "VERTICAL",
     porientation = "VERTICAL",
     horizontal = false,
+    pethorizontal = false,
+    MThorizontal = false,
     growth = "RIGHT",
+    petgrowth = "RIGHT",
+    MTgrowth = "RIGHT",
     omfChar = false,
     reversecolors = false,
     definecolors = false,
@@ -47,12 +53,16 @@ ns.defaults = {
     deficit = true,
     hpcolor = { r = 0.1, g = 0.1, b = 0.1, a = 1 },
     hpbgcolor = { r = 0.33, g = 0.33, b = 0.33, a = 1 },
+    powercolor = { r = 1, g = 1, b = 1, a = 1 },
+    powerbgcolor = { r = 0.33, g = 0.33, b = 0.33, a = 1 },
+    powerdefinecolors = false,
     tborder = true,
     fborder = true,
     afk = true,
     highlight = true,
     dispel = true,
     powerclass = false,
+    tooltip = true,
 }
 
 function ns.InitDB()
@@ -68,6 +78,5 @@ end
 
 function ns.FlushDB()
     for i,v in pairs(ns.defaults) do if ns.db[i] == v and type(ns.db[i]) ~= "table" then ns.db[i] = nil end end
-    --for i,v in pairs(ns.db) do ns.db[i] = nil end
 end
 

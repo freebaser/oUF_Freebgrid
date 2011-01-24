@@ -355,6 +355,12 @@ local function PostPower(power, unit)
         end
     end
 
+    if ns.db.powerdefinecolors then
+        power.bg:SetVertexColor(ns.db.powerbgcolor.r, ns.db.powerbgcolor.g, ns.db.powerbgcolor.b)
+        power:SetStatusBarColor(ns.db.powercolor.r, ns.db.powercolor.g, ns.db.powercolor.b)
+        return 
+    end
+
     local r, g, b, t
     t = ns.db.powerclass and self.colors.class[class] or self.colors.power[ptype]
 
@@ -416,7 +422,12 @@ end
 
 -- Show Mouseover highlight
 local OnEnter = function(self)
-    UnitFrame_OnEnter(self)
+    if ns.db.tooltip then
+        UnitFrame_OnEnter(self)
+    else
+        GameTooltip:Hide()
+    end
+
     if ns.db.highlight then
         self.Highlight:Show()
     end
@@ -427,7 +438,9 @@ local OnEnter = function(self)
 end
 
 local OnLeave = function(self)
-    UnitFrame_OnLeave(self)
+    if ns.db.tooltip then
+        UnitFrame_OnLeave(self)
+    end
     self.Highlight:Hide()
 
     if(self.freebarrow and self.freebarrow:IsShown()) and ns.db.arrowmouseover then
@@ -606,13 +619,34 @@ function ns:Colors()
 end
 
 local pos, posRel, colX, colY
-local function freebHeader(name, group, temp, pet)
+local function freebHeader(name, group, temp, pet, MT)
+    local horiz, grow = ns.db.horizontal, ns.db.growth
+    local numUnits = ns.db.multi and 5 or ns.db.numUnits
+
+    local initconfig = [[
+    self:SetWidth(%d)
+    self:SetHeight(%d)
+    ]]
+
+    if pet then
+        horiz, grow = ns.db.pethorizontal, ns.db.petgrowth
+        numUnits = ns.db.petUnits
+        initconfig = [[ 
+        self:SetWidth(%d)        
+        self:SetHeight(%d)           
+        self:SetAttribute('unitsuffix', 'pet')                 
+        ]]
+    elseif MT then
+        horiz, grow = ns.db.MThorizontal, ns.db.MTgrowth
+        numUnits = ns.db.MTUnits
+    end
+
     local point, growth, xoff, yoff
-    if ns.db.horizontal then
+    if horiz then
         point = "LEFT"
         xoff = ns.db.spacing
         yoff = 0
-        if ns.db.growth == "UP" then
+        if grow == "UP" then
             growth = "BOTTOM"
             pos = "BOTTOMLEFT"
             posRel = "TOPLEFT"
@@ -627,7 +661,7 @@ local function freebHeader(name, group, temp, pet)
         point = "TOP"
         xoff = 0
         yoff = -ns.db.spacing
-        if ns.db.growth == "RIGHT" then
+        if grow == "RIGHT" then
             growth = "LEFT"
             pos = "TOPLEFT"
             posRel = "TOPRIGHT"
@@ -638,21 +672,6 @@ local function freebHeader(name, group, temp, pet)
             posRel = "TOPLEFT"
             colX = -ns.db.spacing
         end
-    end
-
-    local numUnits = ns.db.multi and 5 or ns.db.numUnits
-
-    local initconfig = [[
-    self:SetWidth(%d)
-    self:SetHeight(%d)
-    ]]
-
-    if pet then 
-        initconfig = [[ 
-        self:SetWidth(%d)        
-        self:SetHeight(%d)           
-        self:SetAttribute('unitsuffix', 'pet')                 
-        ]]
     end
 
     local template = temp or nil
@@ -707,7 +726,7 @@ oUF:Factory(function(self)
     end
 
     if ns.db.MT then
-        local tank = freebHeader("MT_Freebgrid")
+        local tank = freebHeader("MT_Freebgrid", nil, nil, nil, true)
         tank:SetPoint(pos, "oUF_FreebgridMTFrame", pos)
         ns._Headers[tank:GetName()] = tank
 

@@ -97,7 +97,12 @@ oUF.TagEvents['freebgrid:poison'] = "UNIT_AURA"
 -- Priest
 local pomCount = {"i","h","g","f","Z","Y"}
 oUF.Tags['freebgrid:pom'] = function(u) 
-    local c = select(4, UnitAura(u, GetSpellInfo(41635))) if c then return "|cffFFCF7F"..pomCount[c].."|r" end 
+    local name, _,_, c, _,_,_, fromwho = UnitAura(u, GetSpellInfo(41635)) 
+    if fromwho == "player" then
+        if c then return "|cff993300"..pomCount[c].."|r" end 
+    else
+        if c then return "|cffFFCF7F"..pomCount[c].."|r" end 
+    end
 end
 oUF.TagEvents['freebgrid:pom'] = "UNIT_AURA"
 
@@ -227,6 +232,9 @@ oUF.Tags['freebgrid:beacon'] = function(u)
 end
 oUF.TagEvents['freebgrid:beacon'] = "UNIT_AURA"
 
+oUF.Tags['freebgrid:forbearance'] = function(u) if UnitDebuff(u, GetSpellInfo(25771)) then return "|cffFF9900"..x.."|r" end end
+oUF.TagEvents['freebgrid:forbearance'] = "UNIT_AURA"
+
 ns.classIndicators={
     ["DRUID"] = {
         ["TL"] = "",
@@ -244,7 +252,7 @@ ns.classIndicators={
         ["Cen"] = "",
     },
     ["PALADIN"] = {
-        ["TL"] = "",
+        ["TL"] = "[freebgrid:forbearance]",
         ["TR"] = "[freebgrid:might][freebgrid:motw]",
         ["BL"] = "",
         ["BR"] = "[freebgrid:beacon]",
