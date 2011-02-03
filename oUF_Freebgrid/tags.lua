@@ -99,9 +99,9 @@ local pomCount = {"i","h","g","f","Z","Y"}
 oUF.Tags['freebgrid:pom'] = function(u) 
     local name, _,_, c, _,_,_, fromwho = UnitAura(u, GetSpellInfo(41635)) 
     if fromwho == "player" then
-        if c then return "|cff993300"..pomCount[c].."|r" end 
+        if(c) then return "|cff66FFFF"..pomCount[c].."|r" end 
     else
-        if c then return "|cffFFCF7F"..pomCount[c].."|r" end 
+        if(c) then return "|cffFFCF7F"..pomCount[c].."|r" end 
     end
 end
 oUF.TagEvents['freebgrid:pom'] = "UNIT_AURA"

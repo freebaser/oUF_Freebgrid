@@ -178,6 +178,7 @@ local zoneDelay = function(self, elapsed)
     end
 
     self:SetScript("OnUpdate", nil)
+    delaytimer = 0
 end
 
 local getZone = CreateFrame"Frame"

@@ -77,7 +77,7 @@ ns.auras = {
             [GetSpellInfo(82762)] = 7, -- Waterlogged
             [GetSpellInfo(83099)] = 7, -- Lightning Rod
             [GetSpellInfo(82285)] = 7, -- Elemental Stasis
-            [GetSpellInfo(92488)] = 8, -- Gravity Well
+            [GetSpellInfo(92488)] = 8, -- Gravity Crush
             --Cho'gall
             [GetSpellInfo(86028)] = 6, -- Cho's Blast
             [GetSpellInfo(86029)] = 6, -- Gall's Blast

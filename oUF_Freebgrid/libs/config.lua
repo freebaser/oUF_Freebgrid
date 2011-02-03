@@ -54,8 +54,8 @@ local function updateHealbar(object)
         object.myHealPredictionBar:SetSize(0, ns.db.height)
         object.myHealPredictionBar:SetOrientation"VERTICAL"
 
-        object.otherHealPredictionBar:SetPoint("BOTTOMLEFT", object.myHealPredictionBar:GetStatusBarTexture() or object.Health:GetStatusBarTexture(), "TOPLEFT", 0, 0)
-        object.otherHealPredictionBar:SetPoint("BOTTOMRIGHT", object.myHealPredictionBar:GetStatusBarTexture() or object.Health:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
+        object.otherHealPredictionBar:SetPoint("BOTTOMLEFT", object.myHealPredictionBar:GetStatusBarTexture(), "TOPLEFT", 0, 0)
+        object.otherHealPredictionBar:SetPoint("BOTTOMRIGHT", object.myHealPredictionBar:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
         object.otherHealPredictionBar:SetSize(0, ns.db.height)
         object.otherHealPredictionBar:SetOrientation"VERTICAL"
     else
@@ -64,8 +64,8 @@ local function updateHealbar(object)
         object.myHealPredictionBar:SetSize(ns.db.width, 0)
         object.myHealPredictionBar:SetOrientation"HORIZONTAL"
 
-        object.otherHealPredictionBar:SetPoint("TOPLEFT", object.myHealPredictionBar:GetStatusBarTexture() or object.Health:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
-        object.otherHealPredictionBar:SetPoint("BOTTOMLEFT", object.myHealPredictionBar:GetStatusBarTexture() or object.Health:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0)
+        object.otherHealPredictionBar:SetPoint("TOPLEFT", object.myHealPredictionBar:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
+        object.otherHealPredictionBar:SetPoint("BOTTOMLEFT", object.myHealPredictionBar:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0)
         object.otherHealPredictionBar:SetSize(ns.db.width, 0)
         object.otherHealPredictionBar:SetOrientation"HORIZONTAL"
     end
@@ -94,7 +94,7 @@ local function updateObjects()
         if UnitExists(object.unit) then
             object.Health:ForceUpdate()
             object.Power:ForceUpdate()
-        end 
+        end
         updateFonts(object)
         updateIndicators(object)
         updateIcons(object)
@@ -149,69 +149,6 @@ local generalopts = {
             get = function(info) return ns.db.height end,
             set = function(info,val) ns.db.height = val; updateObjects() end,
         },
-        sort = {
-            name = "Grouping",
-            type = "header",
-            order = 5,
-        },
-        horizontal = {
-            name = "Horizontal groups",
-            type = "toggle",
-            order = 6,
-            get = function(info) return ns.db.horizontal end,
-            set = function(info,val)
-                if(val == true and (ns.db.growth ~= "UP" or ns.db.growth ~= "DOWN")) then
-                    ns.db.growth = "UP"
-                elseif(val == false and (ns.db.growth ~= "RIGHT" or ns.db.growth ~= "LEFT")) then
-                    ns.db.growth = "RIGHT"
-                end
-                ns.db.horizontal = val; 
-            end,
-        },
-        growth = {
-            name = "Growth Direction",
-            type = "select",
-            order = 7,
-            values = function(info,val) 
-                info = ns.db.growth
-                if not ns.db.horizontal then
-                    return { ["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT" }
-                else
-                    return { ["UP"] = "UP", ["DOWN"] = "DOWN" }
-                end
-            end,
-            get = function(info) return ns.db.growth end,
-            set = function(info,val) ns.db.growth = val; end,
-        },
-        multi = {
-            name = "Multiple headers",
-            type = "toggle",
-            desc = "Use multiple headers for better group sorting. Note: This disables units per group and sets it to 5.",
-            order = 10,
-            get = function(info) return ns.db.multi end,
-            set = function(info,val) ns.db.multi = val end,
-        },
-        units = {
-            name = "Units per group",
-            type = "range",
-            order = 11,
-            min = 1,
-            max = 40,
-            step = 1,
-            disabled = function(info) if ns.db.multi then return true end end,
-            get = function(info) return ns.db.numUnits end,
-            set = function(info,val) ns.db.numUnits = val; end,
-        },
-        groups = {
-            name = "Number of groups",
-            type = "range",
-            order = 9,
-            min = 1,
-            max = 8,
-            step = 1,
-            get = function(info) return ns.db.numCol end,
-            set = function(info,val) ns.db.numCol = val; end,
-        },
         spacing = {
             name = "Space between units",
             type = "range",
@@ -222,93 +159,165 @@ local generalopts = {
             get = function(info) return ns.db.spacing end,
             set = function(info,val) ns.db.spacing = val; end,
         }, 
+        raid = {
+            name = "Raid",
+            type = "group",
+            order = 5,
+            inline = true,
+            args = {
+                horizontal = {
+                    name = "Horizontal groups",
+                    type = "toggle",
+                    order = 1,
+                    get = function(info) return ns.db.horizontal end,
+                    set = function(info,val)
+                        if(val == true and (ns.db.growth ~= "UP" or ns.db.growth ~= "DOWN")) then
+                            ns.db.growth = "UP"
+                        elseif(val == false and (ns.db.growth ~= "RIGHT" or ns.db.growth ~= "LEFT")) then
+                            ns.db.growth = "RIGHT"
+                        end
+                        ns.db.horizontal = val; 
+                    end,
+                },
+                growth = {
+                    name = "Growth Direction",
+                    type = "select",
+                    order = 2,
+                    values = function(info,val) 
+                        info = ns.db.growth
+                        if not ns.db.horizontal then
+                            return { ["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT" }
+                        else
+                            return { ["UP"] = "UP", ["DOWN"] = "DOWN" }
+                        end
+                    end,
+                    get = function(info) return ns.db.growth end,
+                    set = function(info,val) ns.db.growth = val; end,
+                },
+                groups = {
+                    name = "Number of groups",
+                    type = "range",
+                    order = 3,
+                    min = 1,
+                    max = 8,
+                    step = 1,
+                    get = function(info) return ns.db.numCol end,
+                    set = function(info,val) ns.db.numCol = val; end,
+                },
+                multi = {
+                    name = "Multiple headers",
+                    type = "toggle",
+                    desc = "Use multiple headers for better group sorting. Note: This disables units per group and sets it to 5.",
+                    order = 4,
+                    get = function(info) return ns.db.multi end,
+                    set = function(info,val) ns.db.multi = val end,
+                },
+                units = {
+                    name = "Units per group",
+                    type = "range",
+                    order = 5,
+                    min = 1,
+                    max = 40,
+                    step = 1,
+                    disabled = function(info) if ns.db.multi then return true end end,
+                    get = function(info) return ns.db.numUnits end,
+                    set = function(info,val) ns.db.numUnits = val; end,
+                },
+            },
+        },
         pets = {
             name = "Pets",
-            type = "header",
-            order = 12,
-        },
-        pethorizontal = {
-            name = "Horizontal groups",
-            type = "toggle",
-            order = 13,
-            get = function(info) return ns.db.pethorizontal end,
-            set = function(info,val)
-                if(val == true and (ns.db.petgrowth ~= "UP" or ns.db.petgrowth ~= "DOWN")) then
-                    ns.db.petgrowth = "UP"
-                elseif(val == false and (ns.db.petgrowth ~= "RIGHT" or ns.db.petgrowth ~= "LEFT")) then
-                    ns.db.petgrowth = "RIGHT"
-                end
-                ns.db.pethorizontal = val; 
-            end,
-        },
-        petgrowth = {
-            name = "Growth Direction",
-            type = "select",
-            order = 14,
-            values = function(info,val) 
-                info = ns.db.petgrowth
-                if not ns.db.pethorizontal then
-                    return { ["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT" }
-                else
-                    return { ["UP"] = "UP", ["DOWN"] = "DOWN" }
-                end
-            end,
-            get = function(info) return ns.db.petgrowth end,
-            set = function(info,val) ns.db.petgrowth = val; end,
-        },
-        petunits = {
-            name = "Units per group",
-            type = "range",
-            order = 15,
-            min = 1,
-            max = 40,
-            step = 1,
-            get = function(info) return ns.db.petUnits end,
-            set = function(info,val) ns.db.petUnits = val; end,
+            type = "group",
+            order = 11,
+            inline = true,
+            args = {
+                pethorizontal = {
+                    name = "Horizontal groups",
+                    type = "toggle",
+                    order = 1,
+                    get = function(info) return ns.db.pethorizontal end,
+                    set = function(info,val)
+                        if(val == true and (ns.db.petgrowth ~= "UP" or ns.db.petgrowth ~= "DOWN")) then
+                            ns.db.petgrowth = "UP"
+                        elseif(val == false and (ns.db.petgrowth ~= "RIGHT" or ns.db.petgrowth ~= "LEFT")) then
+                            ns.db.petgrowth = "RIGHT"
+                        end
+                        ns.db.pethorizontal = val; 
+                    end,
+                },
+                petgrowth = {
+                    name = "Growth Direction",
+                    type = "select",
+                    order = 2,
+                    values = function(info,val) 
+                        info = ns.db.petgrowth
+                        if not ns.db.pethorizontal then
+                            return { ["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT" }
+                        else
+                            return { ["UP"] = "UP", ["DOWN"] = "DOWN" }
+                        end
+                    end,
+                    get = function(info) return ns.db.petgrowth end,
+                    set = function(info,val) ns.db.petgrowth = val; end,
+                },
+                petunits = {
+                    name = "Units per group",
+                    type = "range",
+                    order = 3,
+                    min = 1,
+                    max = 40,
+                    step = 1,
+                    get = function(info) return ns.db.petUnits end,
+                    set = function(info,val) ns.db.petUnits = val; end,
+                },
+            },
         },
         MT = {
             name = "MainTanks",
-            type = "header",
+            type = "group",
+            inline = true,
             order = 16,
-        },
-        MThorizontal = {
-            name = "Horizontal groups",
-            type = "toggle",
-            order = 17,
-            get = function(info) return ns.db.MThorizontal end,
-            set = function(info,val)
-                if(val == true and (ns.db.MTgrowth ~= "UP" or ns.db.MTgrowth ~= "DOWN")) then
-                    ns.db.MTgrowth = "UP"
-                elseif(val == false and (ns.db.MTgrowth ~= "RIGHT" or ns.db.MTgrowth ~= "LEFT")) then
-                    ns.db.MTgrowth = "RIGHT"
-                end
-                ns.db.MThorizontal = val; 
-            end,
-        },
-        MTgrowth = {
-            name = "Growth Direction",
-            type = "select",
-            order = 18,
-            values = function(info,val) 
-                info = ns.db.MTgrowth
-                if not ns.db.MThorizontal then
-                    return { ["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT" }
-                else
-                    return { ["UP"] = "UP", ["DOWN"] = "DOWN" }
-                end
-            end,
-            get = function(info) return ns.db.MTgrowth end,
-            set = function(info,val) ns.db.MTgrowth = val; end,
-        },
-        MTunits = {
-            name = "Units per group",
-            type = "range",
-            order = 19,
-            min = 1,
-            max = 40,
-            step = 1,
-            get = function(info) return ns.db.MTUnits end,
-            set = function(info,val) ns.db.MTUnits = val; end,
+            args= {
+                MThorizontal = {
+                    name = "Horizontal groups",
+                    type = "toggle",
+                    order = 1,
+                    get = function(info) return ns.db.MThorizontal end,
+                    set = function(info,val)
+                        if(val == true and (ns.db.MTgrowth ~= "UP" or ns.db.MTgrowth ~= "DOWN")) then
+                            ns.db.MTgrowth = "UP"
+                        elseif(val == false and (ns.db.MTgrowth ~= "RIGHT" or ns.db.MTgrowth ~= "LEFT")) then
+                            ns.db.MTgrowth = "RIGHT"
+                        end
+                        ns.db.MThorizontal = val; 
+                    end,
+                },
+                MTgrowth = {
+                    name = "Growth Direction",
+                    type = "select",
+                    order = 2,
+                    values = function(info,val) 
+                        info = ns.db.MTgrowth
+                        if not ns.db.MThorizontal then
+                            return { ["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT" }
+                        else
+                            return { ["UP"] = "UP", ["DOWN"] = "DOWN" }
+                        end
+                    end,
+                    get = function(info) return ns.db.MTgrowth end,
+                    set = function(info,val) ns.db.MTgrowth = val; end,
+                },
+                MTunits = {
+                    name = "Units per group",
+                    type = "range",
+                    order = 3,
+                    min = 1,
+                    max = 40,
+                    step = 1,
+                    get = function(info) return ns.db.MTUnits end,
+                    set = function(info,val) ns.db.MTUnits = val; end,
+                },
+            },
         },
     },
 }
@@ -319,7 +328,7 @@ local statusbaropts = {
         statusbar = {
             name = "Statusbar",
             type = "select",
-            order = 4,
+            order = 1,
             dialogControl = "LSM30_Statusbar",
             values = SM:HashTable("statusbar"),
             get = function(info) return ns.db.texture end,
@@ -328,40 +337,43 @@ local statusbaropts = {
         orientation = {
             name = "Health Orientation",
             type = "select",
-            order = 5,
+            order = 2,
             values = ns.orientation,
             get = function(info) return ns.db.orientation end,
             set = function(info,val) ns.db.orientation = val; updateObjects() end,
         },
         powerbar = {
             name = "Power Bar",
-            type = "header",
-            order = 11,
-        },
-        power = {
-            name = "Enable PowerBars",
-            type = "toggle",
-            order = 12,
-            get = function(info) return ns.db.powerbar end,
-            set = function(info,val) ns.db.powerbar = val; updateObjects() end,
-        },
-        porientation = {
-            name = "PowerBar Orientation",
-            type = "select",
-            order = 13,
-            values = ns.orientation,
-            get = function(info) return ns.db.porientation end,
-            set = function(info,val) ns.db.porientation = val; updateObjects() end,
-        },
-        psize = {
-            name = "PowerBar size",
-            type = "range",
-            order = 14,
-            min = .02,
-            max = .30,
-            step = .02,
-            get = function(info) return ns.db.powerbarsize end,
-            set = function(info,val) ns.db.powerbarsize = val; updateObjects() end,
+            type = "group",
+            order = 3,
+            inline = true,
+            args = {
+                power = {
+                    name = "Enable PowerBars",
+                    type = "toggle",
+                    order = 1,
+                    get = function(info) return ns.db.powerbar end,
+                    set = function(info,val) ns.db.powerbar = val; updateObjects() end,
+                },
+                porientation = {
+                    name = "PowerBar Orientation",
+                    type = "select",
+                    order = 2,
+                    values = ns.orientation,
+                    get = function(info) return ns.db.porientation end,
+                    set = function(info,val) ns.db.porientation = val; updateObjects() end,
+                },
+                psize = {
+                    name = "PowerBar size",
+                    type = "range",
+                    order = 3,
+                    min = .02,
+                    max = .30,
+                    step = .02,
+                    get = function(info) return ns.db.powerbarsize end,
+                    set = function(info,val) ns.db.powerbarsize = val; updateObjects() end,
+                },
+            },
         },
     },
 }
@@ -648,99 +660,110 @@ local miscopts = {
 local coloropts = {
     type = "group", name = "Colors", order = 7,
     args = {
-        reverse = {
-            name = "Reverse health colors",
-            type = "toggle",
-            order = 2,
-            --disabled = function(info) if ns.db.definecolors then return false end end,
-            get = function(info) return ns.db.reversecolors end,
-            set = function(info,val) ns.db.reversecolors = val;
-                if ns.db.definecolors and val == true then
-                    ns.db.definecolors = false
-                end
-                ns:Colors(); updateObjects(); 
-            end,
-        },
         HP = {
             name = "Health Bar",
-            type = "header",
+            type = "group",
             order = 1,
-        },
-        definecolors = {
-            name = "Health define colors",
-            type = "toggle",
-            order = 4,
-            get = function(info) return ns.db.definecolors end,
-            set = function(info,val) ns.db.definecolors = val;
-                if ns.db.reversecolors and val == true then
-                    ns.db.reversecolors = false
-                end
-                ns:Colors(); updateObjects(); 
-            end,
-        },
-        hpcolor = {
-            name = "Health color",
-            type = "color",
-            order = 5,
-            hasAlpha = false,
-            get = function(info) return ns.db.hpcolor.r, ns.db.hpcolor.g, ns.db.hpcolor.b, ns.db.hpcolor.a end,
-            set = function(info,r,g,b,a) ns.db.hpcolor.r, ns.db.hpcolor.g, ns.db.hpcolor.b, ns.db.hpcolor.a = r,g,b,a;
-                ns:Colors(); updateObjects(); 
-            end,
-        },
-        hpbgcolor = {
-            name = "Health background color",
-            type = "color",
-            order = 6,
-            hasAlpha = false,
-            get = function(info) return ns.db.hpbgcolor.r, ns.db.hpbgcolor.g, ns.db.hpbgcolor.b, ns.db.hpbgcolor.a end,
-            set = function(info,r,g,b,a) ns.db.hpbgcolor.r, ns.db.hpbgcolor.g, ns.db.hpbgcolor.b, ns.db.hpbgcolor.a = r,g,b,a;
-                ns:Colors(); updateObjects(); 
-            end,
+            inline = true,
+            args = {
+                reverse = {
+                    name = "Reverse health colors",
+                    type = "toggle",
+                    order = 1,
+                    --disabled = function(info) if ns.db.definecolors then return false end end,
+                    get = function(info) return ns.db.reversecolors end,
+                    set = function(info,val) ns.db.reversecolors = val;
+                        if ns.db.definecolors and val == true then
+                            ns.db.definecolors = false
+                        end
+                        ns:Colors(); updateObjects(); 
+                    end,
+                },
+                definecolors = {
+                    name = "Health define colors",
+                    type = "toggle",
+                    order = 2,
+                    get = function(info) return ns.db.definecolors end,
+                    set = function(info,val) ns.db.definecolors = val;
+                        if ns.db.reversecolors and val == true then
+                            ns.db.reversecolors = false
+                        end
+                        ns:Colors(); updateObjects(); 
+                    end,
+                },
+                hpcolor = {
+                    name = "Health color",
+                    type = "color",
+                    order = 3,
+                    hasAlpha = false,
+                    get = function(info) return ns.db.hpcolor.r, ns.db.hpcolor.g, ns.db.hpcolor.b, ns.db.hpcolor.a end,
+                    set = function(info,r,g,b,a) ns.db.hpcolor.r, ns.db.hpcolor.g, ns.db.hpcolor.b, ns.db.hpcolor.a = r,g,b,a;
+                        ns:Colors(); updateObjects(); 
+                    end,
+                },
+                hpbgcolor = {
+                    name = "Health background color",
+                    type = "color",
+                    order = 4,
+                    hasAlpha = false,
+                    get = function(info) return ns.db.hpbgcolor.r, ns.db.hpbgcolor.g, ns.db.hpbgcolor.b, ns.db.hpbgcolor.a end,
+                    set = function(info,r,g,b,a) ns.db.hpbgcolor.r, ns.db.hpbgcolor.g, ns.db.hpbgcolor.b, ns.db.hpbgcolor.a = r,g,b,a;
+                        ns:Colors(); updateObjects(); 
+                    end,
+                },
+            },
         },
         PP = {
             name = "Power Bar",
-            type = "header",
-            order = 7,
-        },
-        powerclass = {
-            name = "Color power by class",
-            type = "toggle",
-            order = 8,
-            get = function(info) return ns.db.powerclass end,
-            set = function(info,val) ns.db.powerclass = val; updateObjects(); end,
-        },
-        powerdefinecolors = {
-            name = "Power define colors",
-            type = "toggle",
-            order = 9,
-            get = function(info) return ns.db.powerdefinecolors end,
-            set = function(info,val) ns.db.powerdefinecolors = val;
-                if ns.db.powerclass and val == true then
-                    ns.db.powerclass = false
-                end
-                ns:Colors(); updateObjects(); 
-            end,
-        },
-        powercolor = {
-            name = "Power color",
-            type = "color",
-            order = 10,
-            hasAlpha = false,
-            get = function(info) return ns.db.powercolor.r, ns.db.powercolor.g, ns.db.powercolor.b, ns.db.powercolor.a end,
-            set = function(info,r,g,b,a) ns.db.powercolor.r, ns.db.powercolor.g, ns.db.powercolor.b, ns.db.powercolor.a = r,g,b,a;
-                ns:Colors(); updateObjects(); 
-            end,
-        },
-        powerbgcolor = {
-            name = "Power background color",
-            type = "color",
-            order = 11,
-            hasAlpha = false,
-            get = function(info) return ns.db.powerbgcolor.r, ns.db.powerbgcolor.g, ns.db.powerbgcolor.b, ns.db.powerbgcolor.a end,
-            set = function(info,r,g,b,a) ns.db.powerbgcolor.r, ns.db.powerbgcolor.g, ns.db.powerbgcolor.b, ns.db.powerbgcolor.a = r,g,b,a;
-                ns:Colors(); updateObjects(); 
-            end,
+            type = "group",
+            order = 2,
+            inline = true,
+            args = {
+                powerclass = {
+                    name = "Color power by class",
+                    type = "toggle",
+                    order = 1,
+                    get = function(info) return ns.db.powerclass end,
+                    set = function(info,val) ns.db.powerclass = val; updateObjects(); 
+                        if ns.db.powerdefinecolors and val == true then
+                            ns.db.powerdefinecolors = false
+                        end
+                        ns:Colors(); updateObjects();
+                    end,
+                },
+                powerdefinecolors = {
+                    name = "Power define colors",
+                    type = "toggle",
+                    order = 2,
+                    get = function(info) return ns.db.powerdefinecolors end,
+                    set = function(info,val) ns.db.powerdefinecolors = val;
+                        if ns.db.powerclass and val == true then
+                            ns.db.powerclass = false
+                        end
+                        ns:Colors(); updateObjects(); 
+                    end,
+                },
+                powercolor = {
+                    name = "Power color",
+                    type = "color",
+                    order = 3,
+                    hasAlpha = false,
+                    get = function(info) return ns.db.powercolor.r, ns.db.powercolor.g, ns.db.powercolor.b, ns.db.powercolor.a end,
+                    set = function(info,r,g,b,a) ns.db.powercolor.r, ns.db.powercolor.g, ns.db.powercolor.b, ns.db.powercolor.a = r,g,b,a; 
+                        ns:Colors(); updateObjects(); 
+                    end,
+                },
+                powerbgcolor = {
+                    name = "Power background color",
+                    type = "color",
+                    order = 4,
+                    hasAlpha = false,
+                    get = function(info) return ns.db.powerbgcolor.r, ns.db.powerbgcolor.g, ns.db.powerbgcolor.b, ns.db.powerbgcolor.a end,
+                    set = function(info,r,g,b,a) ns.db.powerbgcolor.r, ns.db.powerbgcolor.g, ns.db.powerbgcolor.b, ns.db.powerbgcolor.a = r,g,b,a;
+                        ns:Colors(); updateObjects(); 
+                    end,
+                },
+            },
         },
     },
 }
