@@ -13,9 +13,16 @@ local L = {
 }
 
 ns.auras = {
+    -- Ascending aura timer
+    -- Add buffs to this list to have the aura time count up from 0
+    -- NOTE: This does not show the aura, it needs to be in one of the other list too.
+    ascending = {
+        [GetSpellInfo(92956)] = true, -- Wrack
+    },
+
+    -- Any Zone
     debuffs = {
-        -- Any Zone
-        --[GetSpellInfo(6788)] = 5, -- Weakened Soul
+        --[GetSpellInfo(6788)] = 16, -- Weakened Soul
         [GetSpellInfo(39171)] = 9, -- Mortal Strike
         [GetSpellInfo(76622)] = 9, -- Sunder Armor
     },
@@ -24,8 +31,8 @@ ns.auras = {
         --[GetSpellInfo(871)] = 15, -- Shield Wall
     },
 
+    -- Raid Debuffs
     instances = {
-        -- Raid Debuffs
         --["Zone"] = {
         --	[Name or GetSpellInfo(#)] = PRIORITY,
         --},
@@ -86,7 +93,9 @@ ns.auras = {
             [GetSpellInfo(81836)] = 8, -- Corruption: Accelerated
             [GetSpellInfo(81831)] = 8, -- Corruption: Sickness
             [GetSpellInfo(82125)] = 8, -- Corruption: Malformation
-            [GetSpellInfo(82170)] = 8, -- Corruption: Absolute 
+            [GetSpellInfo(82170)] = 8, -- Corruption: Absolute
+            --Sinestra
+            [GetSpellInfo(92956)] = 9, -- Wrack
         },
 
         [L["Throne of the Four Winds"]] = {

@@ -196,6 +196,14 @@ end)
 local CustomFilter = function(icons, ...)
     local _, icon, name, _, _, _, dtype = ...
 
+    icon.asc = false
+    icon.buff = false
+    icon.priority = 0
+
+    if ns.auras.ascending[name] then
+        icon.asc = true
+    end
+
     if instDebuffs[name] then
         icon.priority = instDebuffs[name]
         return true
@@ -208,10 +216,7 @@ local CustomFilter = function(icons, ...)
         return true
     elseif ns.db.dispel and dispellist[dtype] then
         icon.priority = dispelPriority[dtype]
-        icon.buff = false
         return true
-    else
-        icon.priority = 0
     end
 end
 
