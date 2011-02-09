@@ -13,6 +13,29 @@ local BBackdrop = {
     insets = {top = -1, left = -1, bottom = -1, right = -1},
 }
 
+local function multicheck(check, ...)
+    for i=1, select('#', ...) do
+        if check == select(i, ...) then return true end
+    end
+    return false
+end
+
+local GetTime = GetTime
+local floor, fmod = floor, math.fmod
+local day, hour, minute = 86400, 3600, 60
+
+local FormatTime = function(s)
+    if s >= day then
+        return format("%dd", floor(s/day + 0.5))
+    elseif s >= hour then
+        return format("%dh", floor(s/hour + 0.5))
+    elseif s >= minute then
+        return format("%dm", floor(s/minute + 0.5))
+    end
+
+    return format("%d", fmod(s, minute))
+end
+
 local CreateAuraIcon = function(auras)
     local button = CreateFrame("Button", nil, auras)
     button:EnableMouse(false)
@@ -56,20 +79,111 @@ local CreateAuraIcon = function(auras)
     return button
 end
 
-local GetTime = GetTime
-local floor, fmod = floor, math.fmod
-local day, hour, minute = 86400, 3600, 60
+local dispelClass = {
+    PRIEST = { Magic = true, Disease = true, },
+    SHAMAN = { Curse = true, },
+    PALADIN = { Poison = true, Disease = true, },
+    MAGE = { Curse = true, },
+    DRUID = { Curse = true, Poison = true, },
+}
 
-local FormatTime = function(s)
-    if s >= day then
-        return format("%dd", floor(s/day + 0.5))
-    elseif s >= hour then
-        return format("%dh", floor(s/hour + 0.5))
-    elseif s >= minute then
-        return format("%dm", floor(s/minute + 0.5))
+local _, class = UnitClass("player")
+local checkTalents = CreateFrame"Frame"
+checkTalents:RegisterEvent"PLAYER_ENTERING_WORLD"
+checkTalents:RegisterEvent"ACTIVE_TALENT_GROUP_CHANGED"
+checkTalents:RegisterEvent"CHARACTER_POINTS_CHANGED"
+checkTalents:SetScript("OnEvent", function()
+    if multicheck(class, "SHAMAN", "PALADIN", "DRUID") then
+        local tab, index
+
+        if class == "SHAMAN" then
+            tab, index = 3, 12
+        elseif class == "PALADIN" then
+            tab, index = 1, 14
+        elseif class == "DRUID" then
+            tab, index = 3, 17
+        end
+
+        local _,_,_,_,rank = GetTalentInfo(tab, index)
+
+        dispelClass[class].Magic = rank == 1 and true
     end
 
-    return format("%d", fmod(s, minute))
+    if event == "PLAYER_ENTERING_WORLD" then
+        self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+    end
+end)
+
+local dispellist = dispelClass[class] or {}
+local dispelPriority = {
+    Magic = 4,
+    Curse = 3,
+    Poison = 2,
+    Disease = 1,
+}
+
+local instDebuffs = {}
+
+local delaytimer = 0
+local zoneDelay = function(self, elapsed)
+    delaytimer = delaytimer + elapsed
+
+    if delaytimer < 5 then return end
+
+    if IsInInstance() then
+        SetMapToCurrentZone()
+        local zone = GetCurrentMapAreaID()
+
+        --print(GetInstanceInfo().." "..zone)
+
+        if ns.auras.instances[zone] then
+            instDebuffs = ns.auras.instances[zone]
+        end
+    else
+        instDebuffs = {}
+    end
+
+    self:SetScript("OnUpdate", nil)
+    delaytimer = 0
+end
+
+local getZone = CreateFrame"Frame"
+getZone:RegisterEvent"PLAYER_ENTERING_WORLD"
+getZone:RegisterEvent"ZONE_CHANGED_NEW_AREA"
+getZone:SetScript("OnEvent", function(self, event)
+    -- Delay just in case zone data hasn't loaded
+    self:SetScript("OnUpdate", zoneDelay)
+
+    if event == "PLAYER_ENTERING_WORLD" then
+        self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+    end
+end)
+
+local CustomFilter = function(icons, ...)
+    local _, icon, name, _, _, _, dtype = ...
+
+    icon.asc = false
+    icon.buff = false
+    icon.priority = 0
+
+    if ns.auras.ascending[name] then
+        icon.asc = true
+    end
+
+    if instDebuffs[name] then
+        icon.priority = instDebuffs[name]
+        return true
+    elseif ns.auras.debuffs[name] then
+        icon.priority = ns.auras.debuffs[name]
+        return true
+    elseif ns.auras.buffs[name] then
+        icon.priority = ns.auras.buffs[name]
+        icon.buff = true
+        return true
+    elseif ns.db.dispel and dispellist[dtype] then
+        icon.priority = dispelPriority[dtype]
+        return true
+    end
 end
 
 local AuraTimerAsc = function(self, elapsed)
@@ -134,7 +248,7 @@ local Update = function(self, event, unit)
         local name, rank, texture, count, dtype, duration, expires, caster = UnitDebuff(unit, index)
         if not name then break end
         
-        local show = auras.CustomFilter(auras, unit, icon, name, rank, texture, count, dtype, duration, expires, caster)
+        local show = CustomFilter(auras, unit, icon, name, rank, texture, count, dtype, duration, expires, caster)
 
         if(show) then
             if not cur then
@@ -158,7 +272,7 @@ local Update = function(self, event, unit)
         local name, rank, texture, count, dtype, duration, expires, caster = UnitBuff(unit, index)
         if not name then break end
         
-        local show = auras.CustomFilter(auras, unit, icon, name, rank, texture, count, dtype, duration, expires, caster)
+        local show = CustomFilter(auras, unit, icon, name, rank, texture, count, dtype, duration, expires, caster)
 
         if(show) and icon.buff then
             if not cur then
