@@ -293,7 +293,7 @@ local function PostHealth(hp, unit)
     local r, g, b, t
     if(UnitIsPlayer(unit)) then
         local _, class = UnitClass(unit)
-        t = self.colors.class[class]
+        t = colors.class[class]
     else		
         r, g, b = .2, .9, .1
     end
@@ -317,7 +317,7 @@ function ns:UpdateHealth(hp)
     hp:SetStatusBarTexture(ns.db.texturePath)
     hp:SetOrientation(ns.db.orientation)
     hp.bg:SetTexture(ns.db.texturePath)
-    --hp.Smooth = true
+    hp.freebSmooth = ns.db.smooth
 
     if not ns.db.powerbar then
         hp:SetHeight(ns.db.height)
@@ -368,7 +368,7 @@ local function PostPower(power, unit)
     end
 
     local r, g, b, t
-    t = ns.db.powerclass and self.colors.class[class] or self.colors.power[ptype]
+    t = ns.db.powerclass and colors.class[class] or colors.power[ptype]
 
     if(t) then
         r, g, b = t[1], t[2], t[3]
@@ -408,7 +408,7 @@ function ns:UpdatePower(power)
     power:SetStatusBarTexture(ns.db.texturePath)
     power:SetOrientation(ns.db.porientation)
     power.bg:SetTexture(ns.db.texturePath)
-    --power.Smooth = true
+    power.freebSmooth = ns.db.smooth
 
     power:ClearAllPoints()
     if ns.db.orientation == "HORIZONTAL" and ns.db.porientation == "VERTICAL" then
@@ -456,7 +456,6 @@ end
 
 local style = function(self)
     self.menu = menu
-    self.colors = colors
 
     -- Backdrop
     self.BG = CreateFrame("Frame", nil, self)

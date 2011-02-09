@@ -101,6 +101,12 @@ local function updateObjects()
         updateHealbar(object)
 
         ns:UpdateName(object.Name, object.unit)
+
+        if ns.db.smooth then
+            object:EnableElement('freebSmooth')
+        else
+            object:DisableElement('freebSmooth')
+        end
     end
 
     _G["oUF_FreebgridRaidFrame"]:SetSize(ns.db.width, ns.db.height)
@@ -613,6 +619,13 @@ local miscopts = {
             order = 13,
             get = function(info) return ns.db.tooltip end,
             set = function(info,val) ns.db.tooltip = val end,
+        },
+        smooth = {
+            name = "Smooth Update",
+            type = "toggle",
+            order = 14,
+            get = function(info) return ns.db.smooth end,
+            set = function(info,val) ns.db.smooth = val; updateObjects() end,
         },
         indicator = {
             name = "Indicator size",

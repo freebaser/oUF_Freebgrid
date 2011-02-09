@@ -5,7 +5,7 @@ local oUF = ns.oUF or oUF
 
 local _FRAMES = {}
 local OnRangeFrame
-local update = .10
+local update = .20
 
 local UnitInRange, UnitIsConnected = UnitInRange, UnitIsConnected
 local SetMapToCurrentZone, WorldMapFrame = SetMapToCurrentZone, WorldMapFrame

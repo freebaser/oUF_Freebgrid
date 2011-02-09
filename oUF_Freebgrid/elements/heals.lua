@@ -127,7 +127,7 @@ local Enable = function(self)
 
             self:RegisterEvent('UNIT_HEAL_PREDICTION', Update)
             self:RegisterEvent('UNIT_MAXHEALTH', Update)
-            self:RegisterEvent('UNIT_HEALTH', Update)
+            self:RegisterEvent('UNIT_HEALTH_FREQUENT', Update)
         end
 
         local healtext = self.Health:CreateFontString(nil, "OVERLAY")

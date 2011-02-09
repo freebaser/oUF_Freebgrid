@@ -67,7 +67,7 @@ ns.auras = {
             [GetSpellInfo(82890)] = 9, -- Mortality
             --Nefarian
             [GetSpellInfo(94128)] = 7, -- Tail Lash
-            [GetSpellInfo(94075)] = 8, -- Magma
+            --[GetSpellInfo(94075)] = 8, -- Magma
         },
 
         [L["The Bastion of Twilight"]] = {

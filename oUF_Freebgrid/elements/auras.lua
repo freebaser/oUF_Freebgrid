@@ -62,11 +62,11 @@ local day, hour, minute = 86400, 3600, 60
 
 local FormatTime = function(s)
     if s >= day then
-        return format("%dd", floor(s/day))
+        return format("%dd", floor(s/day + 0.5))
     elseif s >= hour then
-        return format("%dh", floor(s/hour))
+        return format("%dh", floor(s/hour + 0.5))
     elseif s >= minute then
-        return format("%dm", floor(s/minute))
+        return format("%dm", floor(s/minute + 0.5))
     end
 
     return format("%d", fmod(s, minute))
@@ -80,7 +80,6 @@ local AuraTimerAsc = function(self, elapsed)
 
     local timeLeft = self.expires - GetTime()
     if timeLeft <= 0 then
-        self:Hide()
         return
     else
         local duration = self.duration - timeLeft

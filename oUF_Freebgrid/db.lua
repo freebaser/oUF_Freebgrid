@@ -63,6 +63,7 @@ ns.defaults = {
     dispel = true,
     powerclass = false,
     tooltip = true,
+    smooth = false,
 }
 
 function ns.InitDB()
