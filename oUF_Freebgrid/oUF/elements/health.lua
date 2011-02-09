@@ -67,37 +67,16 @@ local ForceUpdate = function(element)
 	return Path(element.__owner, 'ForceUpdate', element.__owner.unit)
 end
 
-local OnHealthUpdate
-do
-	local UnitHealth = UnitHealth
-	OnHealthUpdate = function(self)
-		if(self.disconnected) then return end
-		local unit = self.__owner.unit
-		local health = UnitHealth(unit)
-
-		if(health ~= self.min) then
-			self.min = health
-
-			return Path(self.__owner, "OnHealthUpdate", unit)
-		end
-	end
-end
-
 local Enable = function(self, unit)
 	local health = self.Health
 	if(health) then
 		health.__owner = self
 		health.ForceUpdate = ForceUpdate
 
-		if(health.frequentUpdates and (unit and not unit:match'%w+target$')) then
-			health:SetScript('OnUpdate', OnHealthUpdate)
-
-			-- The party frames need this to handle disconnect states correctly.
-			if(unit == 'party') then
-				self:RegisterEvent("UNIT_HEALTH", Path)
-			end
+		if(health.frequentUpdates and not self:GetScript'OnUpdate') then
+			self:RegisterEvent('UNIT_HEALTH_FREQUENT', Path)
 		else
-			self:RegisterEvent("UNIT_HEALTH", Path)
+			self:RegisterEvent('UNIT_HEALTH', Path)
 		end
 
 		self:RegisterEvent("UNIT_MAXHEALTH", Path)
@@ -118,10 +97,7 @@ end
 local Disable = function(self)
 	local health = self.Health
 	if(health) then
-		if(health:GetScript'OnUpdate') then
-			health:SetScript('OnUpdate', nil)
-		end
-
+		self:UnregisterEvent('UNIT_HEALTH_FREQUENT', Path)
 		self:UnregisterEvent('UNIT_HEALTH', Path)
 		self:UnregisterEvent('UNIT_MAXHEALTH', Path)
 		self:UnregisterEvent('UNIT_CONNECTION', Path)
