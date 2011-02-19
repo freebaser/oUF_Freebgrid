@@ -351,7 +351,7 @@ local statusbaropts = {
         powerbar = {
             name = "Power Bar",
             type = "group",
-            order = 3,
+            order = 2,
             inline = true,
             args = {
                 power = {
@@ -378,6 +378,21 @@ local statusbaropts = {
                     step = .02,
                     get = function(info) return ns.db.powerbarsize end,
                     set = function(info,val) ns.db.powerbarsize = val; updateObjects() end,
+                },
+            },
+        },
+        altpower = {
+            name = "Alt Power",
+            type = "group",
+            order = 3,
+            inline = true,
+            args = {
+                text = {
+                    name = "Alt Power text",
+                    type = "toggle",
+                    order = 1,
+                    get = function(info) return ns.db.altpower end,
+                    set = function(info,val) ns.db.altpower = val end,
                 },
             },
         },

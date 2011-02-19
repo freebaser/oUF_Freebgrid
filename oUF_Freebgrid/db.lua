@@ -50,7 +50,7 @@ ns.defaults = {
     leadersize = 12,
     aurasize = 18,
     multi = false,
-    deficit = true,
+    deficit = false,
     hpcolor = { r = 0.1, g = 0.1, b = 0.1, a = 1 },
     hpbgcolor = { r = 0.33, g = 0.33, b = 0.33, a = 1 },
     powercolor = { r = 1, g = 1, b = 1, a = 1 },
@@ -64,6 +64,7 @@ ns.defaults = {
     powerclass = false,
     tooltip = true,
     smooth = false,
+    altpower = false,
 }
 
 function ns.InitDB()

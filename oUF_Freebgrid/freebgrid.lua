@@ -298,7 +298,6 @@ function ns:UpdatePower(power)
     power:SetStatusBarTexture(ns.db.texturePath)
     power:SetOrientation(ns.db.porientation)
     power.bg:SetTexture(ns.db.texturePath)
-    power.freebSmooth = ns.db.smooth
 
     power:ClearAllPoints()
     if ns.db.orientation == "HORIZONTAL" and ns.db.porientation == "VERTICAL" then
@@ -313,6 +312,44 @@ function ns:UpdatePower(power)
         power:SetPoint"LEFT"
         power:SetPoint"RIGHT"
         power:SetPoint"BOTTOM"
+    end
+end
+
+local function PostAltPower(altpp)
+    if not ns.db.altpp then
+        altpp:Hide()
+        return
+    end
+    local self = altpp.__owner
+
+    local tPath, r, g, b = UnitAlternatePowerTextureInfo(self.unit, 2)
+
+    if(r) then
+        altpp:SetStatusBarColor(r, g, b)
+    else
+        altpp:SetStatusBarColor(1, 1, 1)
+    end 
+
+    if ns.db.orientation == "VERTICAL" then
+        altpp:SetSize(2, self.Health:GetHeight())
+    else
+        altpp:SetSize(self.Health:GetWidth(), 2)
+    end
+end
+
+function ns:UpdateAltPower(altpp)
+    altpp:SetStatusBarTexture(ns.db.texturePath)
+    altpp:SetOrientation(ns.db.orientation)
+
+    altpp:ClearAllPoints()
+    if ns.db.orientation == "VERTICAL" then
+        altpp:SetPoint"RIGHT"
+        altpp:SetPoint"BOTTOM"
+        altpp:SetPoint"TOP"
+    else
+        altpp:SetPoint"LEFT"
+        altpp:SetPoint"RIGHT"
+        altpp:SetPoint"BOTTOM"
     end
 end
 
@@ -400,8 +437,13 @@ local style = function(self)
     self.Power:SetParent(self)
     self.Power.bg = self.Power:CreateTexture(nil, "BORDER")
     self.Power.bg:SetAllPoints(self.Power)
-    self.Power.PostUpdate = PostPower
     ns:UpdatePower(self.Power)
+
+    --[[ Alt Power
+    self.AltPowerBar = CreateFrame"StatusBar"
+    self.AltPowerBar:SetParent(self.Health)
+    self.AltPowerBar.PostUpdate = PostAltPower
+    ns:UpdateAltPower(self.AltPowerBar)]]
 
     -- Highlight tex
     local hl = self.Health:CreateTexture(nil, "OVERLAY")

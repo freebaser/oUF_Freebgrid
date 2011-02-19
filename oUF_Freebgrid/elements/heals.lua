@@ -5,6 +5,23 @@ assert(oUF, "oUF_Freebgrid was unable to locate oUF install.")
 local numberize = ns.numberize
 local colorCache = ns.colorCache
 
+oUF.Tags['freebgrid:altpower'] = function(u)
+	local cur = UnitPower(u, ALTERNATE_POWER_INDEX)
+    if cur > 0 then
+	    local max = UnitPowerMax(u, ALTERNATE_POWER_INDEX)
+        local per = floor(cur/max*100)
+
+        local tPath, r, g, b = UnitAlternatePowerTextureInfo(u, 2)
+    
+        if not r then
+            r, g, b = 1, 1, 1
+        end
+
+        return ns:hex(r,g,b)..format("%d", per).."|r"
+    end
+end
+oUF.TagEvents['freebgrid:altpower'] = "UNIT_POWER UNIT_MAXPOWER"
+
 oUF.Tags['freebgrid:def'] = function(u)
     if UnitIsAFK(u) then
         return CHAT_FLAG_AFK
@@ -16,10 +33,9 @@ oUF.Tags['freebgrid:def'] = function(u)
         return "|cffCFCFCFD/C|r"
     end
 
-    if not ns.db.deficit then return end
-    local max = UnitHealthMax(u)
-    if max ~= 0 then
+    if ns.db.deficit then
         local cur = UnitHealth(u)
+        local max = UnitHealthMax(u)
         local per = cur/max
         if per < 0.9 then
             local _, class = UnitClass(u)
@@ -29,8 +45,13 @@ oUF.Tags['freebgrid:def'] = function(u)
             end
         end
     end
+
+    if ns.db.altpower then
+        local altpp = oUF.Tags['freebgrid:altpower'](u)
+        return altpp
+    end
 end
-oUF.TagEvents['freebgrid:def'] = 'UNIT_MAXHEALTH UNIT_HEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED'
+oUF.TagEvents['freebgrid:def'] = 'UNIT_MAXHEALTH UNIT_HEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED UNIT_POWER UNIT_MAXPOWER'
 
 oUF.Tags['freebgrid:heals'] = function(u)
     local incheal = UnitGetIncomingHeals(u) or 0
@@ -41,7 +62,7 @@ oUF.Tags['freebgrid:heals'] = function(u)
         return def
     end
 end
-oUF.TagEvents['freebgrid:heals'] = 'UNIT_HEAL_PREDICTION UNIT_MAXHEALTH UNIT_HEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED'
+oUF.TagEvents['freebgrid:heals'] = 'UNIT_HEAL_PREDICTION UNIT_MAXHEALTH UNIT_HEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED UNIT_POWER UNIT_MAXPOWER'
 
 oUF.Tags['freebgrid:othersheals'] = function(u)
     local incheal = UnitGetIncomingHeals(u) or 0
@@ -127,7 +148,7 @@ local Enable = function(self)
 
             self:RegisterEvent('UNIT_HEAL_PREDICTION', Update)
             self:RegisterEvent('UNIT_MAXHEALTH', Update)
-            self:RegisterEvent('UNIT_HEALTH_FREQUENT', Update)
+            self:RegisterEvent('UNIT_HEALTH', Update)
         end
 
         local healtext = self.Health:CreateFontString(nil, "OVERLAY")

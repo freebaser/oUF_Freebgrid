@@ -194,7 +194,7 @@ local AuraTimerAsc = function(self, elapsed)
 
     local timeLeft = self.expires - GetTime()
     if timeLeft <= 0 then
-        return
+        self.remaining:SetText(nil)
     else
         local duration = self.duration - timeLeft
         self.remaining:SetText(FormatTime(duration))
@@ -209,8 +209,7 @@ local AuraTimer = function(self, elapsed)
 
     local timeLeft = self.expires - GetTime()
     if timeLeft <= 0 then
-        self:Hide()
-        return
+        self.remaining:SetText(nil)
     else
         self.remaining:SetText(FormatTime(timeLeft))
     end
