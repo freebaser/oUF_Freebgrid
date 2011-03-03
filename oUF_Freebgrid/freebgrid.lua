@@ -625,6 +625,7 @@ local function freebHeader(name, group, temp, pet, MT)
     if not pet and not MT then
         if ns.db.sortName then
             sort = "NAME"
+            groupBy = nil
         end
 
         if ns.db.sortClass then

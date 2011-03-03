@@ -221,6 +221,7 @@ local generalopts = {
                     set = function(info,val) ns.db.multi = val 
                         if val == true then
                             ns.db.sortClass = false
+                            ns.db.sortName = false
                         end
                     end,
                 },
@@ -242,7 +243,11 @@ local generalopts = {
                     type = "toggle",
                     order = 6,
                     get = function(info) return ns.db.sortName end,
-                    set = function(info,val) ns.db.sortName = val end,
+                    set = function(info,val) ns.db.sortName = val 
+                        if val == true then
+                            ns.db.multi = false
+                        end
+                    end,
                 },
                 sortClass = {
                     name = "Sort by Class",
