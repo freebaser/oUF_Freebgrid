@@ -200,7 +200,7 @@ do
     frame:SetScript("OnEvent", function(self, event, addon)
         if addon ~= ADDON_NAME then return end
 
-        if ns.db.omfChar then
+        if ns.db and ns.db.omfChar then
             _DB = Freebgridomf2Char or {}
             Freebgridomf2Char = _DB
         else

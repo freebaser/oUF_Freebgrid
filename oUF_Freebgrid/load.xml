@@ -2,6 +2,7 @@
     <Script file="libs\LibStub.lua" />
     <Script file="libs\CallbackHandler-1.0.lua" /> 
     <Include file="libs\LibSharedMedia-3.0\lib.xml" />
+    <Include file="libs\LibResComm-1.0\lib.xml" />
 
     <Script file="db.lua" />
     <Script file="events.lua" />
@@ -15,4 +16,5 @@
     <Script file="elements\heals.lua" />
     <Script file="elements\range.lua" />
     <Script file="elements\smooth.lua" />
+    <Script file="elements\resurrections.lua" />
 </Ui>

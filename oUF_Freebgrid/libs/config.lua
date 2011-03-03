@@ -25,6 +25,8 @@ local function updateFonts(object)
     object.AuraStatusCen:SetWidth(ns.db.width)
     object.Healtext:SetFont(ns.db.fontPath, ns.db.fontsizeEdge, ns.db.outline) 
     object.Healtext:SetWidth(ns.db.width)
+    object.Resurrection:SetFont(ns.db.fontPath, ns.db.fontsizeEdge, ns.db.outline) 
+    object.Resurrection:SetWidth(ns.db.width)
 end
 
 local function updateIndicators(object)
@@ -214,20 +216,60 @@ local generalopts = {
                     name = "Multiple headers",
                     type = "toggle",
                     desc = "Use multiple headers for better group sorting. Note: This disables units per group and sets it to 5.",
-                    order = 4,
+                    order = 5,
                     get = function(info) return ns.db.multi end,
-                    set = function(info,val) ns.db.multi = val end,
+                    set = function(info,val) ns.db.multi = val 
+                        if val == true then
+                            ns.db.sortClass = false
+                        end
+                    end,
                 },
                 units = {
                     name = "Units per group",
                     type = "range",
-                    order = 5,
+                    order = 4,
                     min = 1,
                     max = 40,
                     step = 1,
-                    disabled = function(info) if ns.db.multi then return true end end,
+                    disabled = function(info) 
+                        if ns.db.multi then return true end 
+                    end,
                     get = function(info) return ns.db.numUnits end,
                     set = function(info,val) ns.db.numUnits = val; end,
+                },
+                sortName = {
+                    name = "Sort by Name",
+                    type = "toggle",
+                    order = 6,
+                    get = function(info) return ns.db.sortName end,
+                    set = function(info,val) ns.db.sortName = val end,
+                },
+                sortClass = {
+                    name = "Sort by Class",
+                    type = "toggle",
+                    order = 7,
+                    get = function(info) return ns.db.sortClass end,
+                    set = function(info,val) ns.db.sortClass = val
+                        if val == true then
+                            ns.db.multi = false
+                        end
+                    end,
+                },
+                classOrder = {
+                    name = "Class Order",
+                    type = "input",
+                    desc = "Uppercase English class names separated by a comma. \n { CLASS[,CLASS]... }",
+                    order = 8,
+                    disabled = function() if not ns.db.sortClass then return true end end,
+                    get = function(info) return ns.db.classOrder end,
+                    set = function(info,val) ns.db.classOrder = tostring(val) end,
+                },
+                resetClassOrder = {
+                    name = "Reset Class Order",
+                    type = "execute",
+                    order = 9,
+                    disabled = function() if not ns.db.sortClass then return true end end,
+                    func = function() ns.db.classOrder = ns.defaults.classOrder end,
                 },
             },
         },

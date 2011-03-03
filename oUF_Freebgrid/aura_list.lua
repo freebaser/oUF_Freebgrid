@@ -14,7 +14,7 @@ local L = {
 
 ns.auras = {
     -- Ascending aura timer
-    -- Add buffs to this list to have the aura time count up from 0
+    -- Add spells to this list to have the aura time count up from 0
     -- NOTE: This does not show the aura, it needs to be in one of the other list too.
     ascending = {
         [GetSpellInfo(92956)] = true, -- Wrack

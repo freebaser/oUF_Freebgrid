@@ -2,6 +2,10 @@ local ADDON_NAME, ns = ...
 local oUF = ns.oUF or oUF
 assert(oUF, "oUF_Freebgrid was unable to locate oUF install.")
 
+if oUF.version ~= GetAddOnMetadata(ADDON_NAME, 'version') and oUF.version ~= "4f11798" then
+    error("Incorrect version of oUF. Please use the embedded oUF provided by Freebgrid.")
+end
+
 ns._Objects = {}
 ns._Headers = {}
 
@@ -504,7 +508,14 @@ local style = function(self)
 
     self.freebIndicators = true
     self.freebAfk = true
-    self.freebHeals = true 
+    self.freebHeals = true
+
+    self.Resurrection = self.Health:CreateFontString(nil, "OVERLAY")
+    self.Resurrection:SetPoint("TOP")
+    self.Resurrection:SetJustifyH("CENTER")
+    self.Resurrection:SetFont(ns.db.fontPath, ns.db.fontsizeEdge, ns.db.outline)
+    self.Resurrection:SetShadowOffset(1.25, -1.25)
+    self.Resurrection:SetWidth(ns.db.width)
 
     -- Range
     local range = {
@@ -610,6 +621,19 @@ local function freebHeader(name, group, temp, pet, MT)
         end
     end
 
+    local sort, groupBy, groupOrder = "INDEX", "GROUP", "1,2,3,4,5,6,7,8"
+    if not pet and not MT then
+        if ns.db.sortName then
+            sort = "NAME"
+        end
+
+        if ns.db.sortClass then
+            groupBy = "CLASS"
+            groupOrder = ns.db.classOrder
+            group = ns.db.classOrder
+        end
+    end
+
     local template = temp or nil
     local header = oUF:SpawnHeader(name, template, 'raid,party,solo',
     'oUF-initialConfigFunction', (initconfig):format(ns.db.width, ns.db.height),
@@ -620,9 +644,10 @@ local function freebHeader(name, group, temp, pet, MT)
     'xOffset', xoff,
     'yOffset', yoff,
     'point', point,
+    'sortMethod', sort,
     'groupFilter', group,
-    'groupingOrder', '1,2,3,4,5,6,7,8',
-    'groupBy', 'GROUP',
+    'groupingOrder', groupOrder,
+    'groupBy', groupBy,
     'maxColumns', ns.db.numCol,
     'unitsPerColumn', numUnits,
     'columnSpacing', ns.db.spacing,

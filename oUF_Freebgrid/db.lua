@@ -65,6 +65,9 @@ ns.defaults = {
     tooltip = true,
     smooth = false,
     altpower = false,
+    sortName = false,
+    sortClass = false,
+    classOrder = "DEATHKNIGHT,DRUID,HUNTER,MAGE,PALADIN,PRIEST,ROGUE,SHAMAN,WARLOCK,WARRIOR",
 }
 
 function ns.InitDB()
