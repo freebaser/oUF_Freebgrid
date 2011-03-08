@@ -33,10 +33,26 @@ oUF.Tags['freebgrid:def'] = function(u)
         return "|cffCFCFCFD/C|r"
     end
 
-    if ns.db.deficit then
+    if ns.db.altpower then
+        local altpp = oUF.Tags['freebgrid:altpower'](u)
+        if altpp then
+            return altpp
+        end
+    end
+
+    if ns.db.perc then
+        local perc = oUF.Tags['perhp'](u)
+        if perc < 90 then
+            local _, class = UnitClass(u)
+            local color = colorCache[class]
+
+            return color..perc.."|r"
+        end
+    elseif ns.db.deficit then
         local cur = UnitHealth(u)
         local max = UnitHealthMax(u)
         local per = cur/max
+
         if per < 0.9 then
             local _, class = UnitClass(u)
             local color = colorCache[class]
@@ -44,12 +60,7 @@ oUF.Tags['freebgrid:def'] = function(u)
                 return color.."-"..numberize(max-cur).."|r"
             end
         end
-    end
-
-    if ns.db.altpower then
-        local altpp = oUF.Tags['freebgrid:altpower'](u)
-        return altpp
-    end
+    end 
 end
 oUF.TagEvents['freebgrid:def'] = 'UNIT_MAXHEALTH UNIT_HEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED UNIT_POWER UNIT_MAXPOWER'
 

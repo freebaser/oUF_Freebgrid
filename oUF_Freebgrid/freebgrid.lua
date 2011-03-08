@@ -255,10 +255,19 @@ local function PostPower(power, unit)
         end
     end
 
+    local perc = oUF.Tags['perpp'](unit)
+    -- This kinda conflicts with the threat module, but I don't really care
+    if (perc < 10 and UnitIsConnected(unit) and ptype == 'MANA' and not UnitIsDeadOrGhost(unit)) then
+        self.Threat:SetBackdropBorderColor(0, 0, 1, 1)
+    else
+        -- pass the coloring back to the threat func
+        updateThreat(self, nil, unit)
+    end
+
     if ns.db.powerdefinecolors then
         power.bg:SetVertexColor(ns.db.powerbgcolor.r, ns.db.powerbgcolor.g, ns.db.powerbgcolor.b)
         power:SetStatusBarColor(ns.db.powercolor.r, ns.db.powercolor.g, ns.db.powercolor.b)
-        return 
+        return
     end
 
     local r, g, b, t
@@ -278,15 +287,6 @@ local function PostPower(power, unit)
             power.bg:SetVertexColor(r, g, b)
             power:SetStatusBarColor(0, 0, 0, .8)
         end
-    end
-
-    local perc = oUF.Tags['perpp'](unit)
-    -- This kinda conflicts with the threat module, but I don't really care
-    if (perc < 10 and UnitIsConnected(unit) and ptype == 'MANA' and not UnitIsDeadOrGhost(unit)) then
-        self.Threat:SetBackdropBorderColor(0, 0, 1, 1)
-    else
-        -- pass the coloring back to the threat func
-        return updateThreat(self, nil, unit)
     end
 end
 

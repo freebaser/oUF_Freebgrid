@@ -51,6 +51,7 @@ ns.defaults = {
     aurasize = 18,
     multi = false,
     deficit = false,
+    perc = false,
     hpcolor = { r = 0.1, g = 0.1, b = 0.1, a = 1 },
     hpbgcolor = { r = 0.33, g = 0.33, b = 0.33, a = 1 },
     powercolor = { r = 1, g = 1, b = 1, a = 1 },

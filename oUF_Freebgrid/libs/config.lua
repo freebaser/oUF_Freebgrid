@@ -553,6 +553,16 @@ local healopts = {
             get = function(info) return ns.db.healbar end,
             set = function(info,val) ns.db.healbar = val end,
         },
+        alpha = {
+            name = "Bar alpha",
+            type = "range",
+            order = 3,
+            min = 0,
+            max = 1,
+            step = .1,
+            get = function(info) return ns.db.healalpha end,
+            set = function(info,val) ns.db.healalpha = val; updateObjects() end,
+        },
         overflow = {
             name = "Heal overflow",
             type = "toggle",
@@ -566,23 +576,28 @@ local healopts = {
             order = 5,
             get = function(info) return ns.db.healothersonly end,
             set = function(info,val) ns.db.healothersonly = val end,
-        },
-        alpha = {
-            name = "Bar alpha",
-            type = "range",
-            order = 3,
-            min = 0,
-            max = 1,
-            step = .1,
-            get = function(info) return ns.db.healalpha end,
-            set = function(info,val) ns.db.healalpha = val; updateObjects() end,
-        },
+        }, 
         deficit = {
             name = "Show missing health",
             type = "toggle",
             order = 6,
             get = function(info) return ns.db.deficit end,
-            set = function(info,val) ns.db.deficit = val end,
+            set = function(info,val) ns.db.deficit = val 
+                if val == true then
+                    ns.db.perc = false
+                end
+            end,
+        },
+        perc = {
+            name = "Show health percentage",
+            type = "toggle",
+            order = 7,
+            get = function(info) return ns.db.perc end,
+            set = function(info,val) ns.db.perc = val 
+                if val == true then
+                    ns.db.deficit = false
+                end
+            end,
         },
     },
 }

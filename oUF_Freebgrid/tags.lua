@@ -142,6 +142,9 @@ oUF.TagEvents['freebgrid:sp'] = "UNIT_AURA"
 oUF.Tags['freebgrid:fort'] = function(u) if not(UnitAura(u, GetSpellInfo(79105)) or UnitAura(u, GetSpellInfo(6307)) or UnitAura(u, GetSpellInfo(469))) then return "|cff00A1DE"..x.."|r" end end
 oUF.TagEvents['freebgrid:fort'] = "UNIT_AURA"
 
+oUF.Tags['freebgrid:pwb'] = function(u) if UnitAura(u, GetSpellInfo(81782)) then return "|cffEEEE00"..x.."|r" end end
+oUF.TagEvents['freebgrid:pwb'] = "UNIT_AURA"
+
 -- Druid
 local lbCount = { 4, 2, 3}
 oUF.Tags['freebgrid:lb'] = function(u) 
@@ -235,6 +238,17 @@ oUF.TagEvents['freebgrid:beacon'] = "UNIT_AURA"
 oUF.Tags['freebgrid:forbearance'] = function(u) if UnitDebuff(u, GetSpellInfo(25771)) then return "|cffFF9900"..x.."|r" end end
 oUF.TagEvents['freebgrid:forbearance'] = "UNIT_AURA"
 
+-- Warlock
+oUF.Tags['freebgrid:di'] = function(u) 
+    local name, _,_,_,_,_,_, fromwho = UnitAura(u, GetSpellInfo(85767)) 
+    if fromwho == "player" then
+        return "|cff6600FF"..x.."|r"
+    elseif name then
+        return "|cffCC00FF"..x.."|r"
+    end
+end
+oUF.TagEvents['freebgrid:di'] = "UNIT_AURA"
+
 ns.classIndicators={
     ["DRUID"] = {
         ["TL"] = "",
@@ -247,7 +261,7 @@ ns.classIndicators={
         ["TL"] = "[freebgrid:pws][freebgrid:ws]",
         ["TR"] = "[freebgrid:fw][freebgrid:sp][freebgrid:fort]",
         --["BL"] = "[freebgrid:magic][freebgrid:disease][freebgrid:curse][freebgrid:poison]",
-        ["BL"] = "[freebgrid:rnw]",
+        ["BL"] = "[freebgrid:rnw][freebgrid:pwb]",
         ["BR"] = "[freebgrid:pom]",
         ["Cen"] = "",
     },
@@ -260,7 +274,7 @@ ns.classIndicators={
     },
     ["WARLOCK"] = {
         ["TL"] = "",
-        ["TR"] = "",
+        ["TR"] = "[freebgrid:di]",
         ["BL"] = "",
         ["BR"] = "",
         ["Cen"] = "",
