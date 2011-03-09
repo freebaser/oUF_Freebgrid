@@ -48,7 +48,7 @@ oUF.Tags['freebgrid:def'] = function(u)
 
             return color..perc.."|r"
         end
-    elseif ns.db.deficit then
+    elseif ns.db.deficit or ns.db.actual then
         local cur = UnitHealth(u)
         local max = UnitHealthMax(u)
         local per = cur/max
@@ -57,12 +57,12 @@ oUF.Tags['freebgrid:def'] = function(u)
             local _, class = UnitClass(u)
             local color = colorCache[class]
             if color then
-                return color.."-"..numberize(max-cur).."|r"
+                return color..(ns.db.deficit and "-"..numberize(max-cur) or numberize(cur)).."|r"
             end
         end
     end 
 end
-oUF.TagEvents['freebgrid:def'] = 'UNIT_MAXHEALTH UNIT_HEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED UNIT_POWER UNIT_MAXPOWER'
+oUF.TagEvents['freebgrid:def'] = 'UNIT_MAXHEALTH UNIT_HEALTH UNIT_HEALTH_FREQUENT UNIT_CONNECTION PLAYER_FLAGS_CHANGED '..oUF.TagEvents['freebgrid:altpower']
 
 oUF.Tags['freebgrid:heals'] = function(u)
     local incheal = UnitGetIncomingHeals(u) or 0
@@ -73,7 +73,7 @@ oUF.Tags['freebgrid:heals'] = function(u)
         return def
     end
 end
-oUF.TagEvents['freebgrid:heals'] = 'UNIT_HEAL_PREDICTION UNIT_MAXHEALTH UNIT_HEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED UNIT_POWER UNIT_MAXPOWER'
+oUF.TagEvents['freebgrid:heals'] = 'UNIT_HEAL_PREDICTION '..oUF.TagEvents['freebgrid:def']
 
 oUF.Tags['freebgrid:othersheals'] = function(u)
     local incheal = UnitGetIncomingHeals(u) or 0
@@ -139,7 +139,7 @@ local Enable = function(self)
                 self.myHealPredictionBar:SetSize(ns.db.width, 0)
             end
             self.myHealPredictionBar:SetStatusBarTexture("", "BORDER")
-            self.myHealPredictionBar:GetStatusBarTexture():SetTexture(0, 1, 0.5, ns.db.healalpha)
+            self.myHealPredictionBar:GetStatusBarTexture():SetTexture(ns.db.myhealcolor.r, ns.db.myhealcolor.g, ns.db.myhealcolor.b, ns.db.myhealcolor.a)
             self.myHealPredictionBar:Hide()
 
             self.otherHealPredictionBar = CreateFrame('StatusBar', nil, self.Health)
@@ -154,7 +154,7 @@ local Enable = function(self)
                 self.otherHealPredictionBar:SetSize(ns.db.width, 0)
             end
             self.otherHealPredictionBar:SetStatusBarTexture("", "BORDER")
-            self.otherHealPredictionBar:GetStatusBarTexture():SetTexture(0, 1, 0, ns.db.healalpha)
+            self.otherHealPredictionBar:GetStatusBarTexture():SetTexture(ns.db.otherhealcolor.r, ns.db.otherhealcolor.g, ns.db.otherhealcolor.b, ns.db.otherhealcolor.a)
             self.otherHealPredictionBar:Hide() 
 
             self:RegisterEvent('UNIT_HEAL_PREDICTION', Update)

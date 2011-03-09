@@ -12,18 +12,21 @@ local Enable = function(self)
         self.AuraStatusTL:ClearAllPoints()
         self.AuraStatusTL:SetPoint("TOPLEFT", self.Health, 0, -1)
         self.AuraStatusTL:SetFont(indicator, ns.db.indicatorsize, "THINOUTLINE")
+        self.AuraStatusTL.frequentUpdates = true
         self:Tag(self.AuraStatusTL, ns.classIndicators[class]["TL"])
 
         self.AuraStatusTR = self.Health:CreateFontString(nil, "OVERLAY")
         self.AuraStatusTR:ClearAllPoints()
         self.AuraStatusTR:SetPoint("TOPRIGHT", self.Health, 2, -1)
         self.AuraStatusTR:SetFont(indicator, ns.db.indicatorsize, "THINOUTLINE")
+        self.AuraStatusTR.frequentUpdates = true
         self:Tag(self.AuraStatusTR, ns.classIndicators[class]["TR"])
 
         self.AuraStatusBL = self.Health:CreateFontString(nil, "OVERLAY")
         self.AuraStatusBL:ClearAllPoints()
         self.AuraStatusBL:SetPoint("BOTTOMLEFT", self.Health, 0, 0)
         self.AuraStatusBL:SetFont(indicator, ns.db.indicatorsize, "THINOUTLINE")
+        self.AuraStatusBL.frequentUpdates = true
         self:Tag(self.AuraStatusBL, ns.classIndicators[class]["BL"])	
 
         self.AuraStatusBR = self.Health:CreateFontString(nil, "OVERLAY")

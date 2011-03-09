@@ -72,8 +72,8 @@ local function updateHealbar(object)
         object.otherHealPredictionBar:SetOrientation"HORIZONTAL"
     end
 
-    object.myHealPredictionBar:GetStatusBarTexture():SetTexture(0, 1, 0.5, ns.db.healalpha)
-    object.otherHealPredictionBar:GetStatusBarTexture():SetTexture(0, 1, 0, ns.db.healalpha)
+    object.myHealPredictionBar:GetStatusBarTexture():SetTexture(ns.db.myhealcolor.r, ns.db.myhealcolor.g, ns.db.myhealcolor.b, ns.db.myhealcolor.a)
+    object.otherHealPredictionBar:GetStatusBarTexture():SetTexture(ns.db.otherhealcolor.r, ns.db.otherhealcolor.g, ns.db.otherhealcolor.b, ns.db.otherhealcolor.a)
 end
 
 local lockprint
@@ -539,65 +539,123 @@ local rangeopts = {
 local healopts = {
     type = "group", name = "HealPrediction", order = 5,
     args = {
-        text = {
-            name = "Incoming heal text",
-            type = "toggle",
+        healtext = {
+            type = "group",
+            name = "Heal Text",
             order = 1,
-            get = function(info) return ns.db.healtext end,
-            set = function(info,val) ns.db.healtext= val end,
+            inline = true,
+            args = {
+                text = {
+                    name = "Incoming heal text",
+                    type = "toggle",
+                    order = 1,
+                    get = function(info) return ns.db.healtext end,
+                    set = function(info,val) ns.db.healtext= val end,
+                },
+            },
         },
-        bar = {
-            name = "Incoming heal bar",
-            type = "toggle",
+        healbar = {
+            type = "group",
+            name = "Heal Bar",
             order = 2,
-            get = function(info) return ns.db.healbar end,
-            set = function(info,val) ns.db.healbar = val end,
+            inline = true,
+            args = {
+                bar = {
+                    name = "Incoming heal bar",
+                    type = "toggle",
+                    order = 2,
+                    get = function(info) return ns.db.healbar end,
+                    set = function(info,val) ns.db.healbar = val end,
+                },
+                myheal = {
+                    name = "My Heal Color",
+                    type = "color",
+                    order = 3,
+                    hasAlpha = true,
+                    get = function(info) return ns.db.myhealcolor.r, ns.db.myhealcolor.g, ns.db.myhealcolor.b, ns.db.myhealcolor.a  end,
+                    set = function(info,r,g,b,a) ns.db.myhealcolor.r, ns.db.myhealcolor.g, ns.db.myhealcolor.b, ns.db.myhealcolor.a = r,g,b,a;
+                        updateObjects(); 
+                    end,
+                },
+                otherheal = {
+                    name = "Other Heal Color",
+                    type = "color",
+                    order = 4,
+                    hasAlpha = true,
+                    get = function(info) return ns.db.otherhealcolor.r, ns.db.otherhealcolor.g, ns.db.otherhealcolor.b, ns.db.otherhealcolor.a  end,
+                    set = function(info,r,g,b,a) ns.db.otherhealcolor.r, ns.db.otherhealcolor.g, ns.db.otherhealcolor.b, ns.db.otherhealcolor.a = r,g,b,a;
+                        updateObjects(); 
+                    end,
+                },
+                --[[alpha = {
+                name = "Bar alpha",
+                type = "range",
+                order = 5,
+                min = 0,
+                max = 1,
+                step = .1,
+                get = function(info) return ns.db.healalpha end,
+                set = function(info,val) ns.db.healalpha = val; updateObjects() end,
+                },]]
+                overflow = {
+                    name = "Heal overflow",
+                    type = "toggle",
+                    order = 6,
+                    get = function(info) return ns.db.healoverflow end,
+                    set = function(info,val) ns.db.healoverflow = val end,
+                },
+                others = {
+                    name = "Others' heals only",
+                    type = "toggle",
+                    order = 7,
+                    get = function(info) return ns.db.healothersonly end,
+                    set = function(info,val) ns.db.healothersonly = val end,
+                }, 
+            },
         },
-        alpha = {
-            name = "Bar alpha",
-            type = "range",
-            order = 3,
-            min = 0,
-            max = 1,
-            step = .1,
-            get = function(info) return ns.db.healalpha end,
-            set = function(info,val) ns.db.healalpha = val; updateObjects() end,
-        },
-        overflow = {
-            name = "Heal overflow",
-            type = "toggle",
-            order = 4,
-            get = function(info) return ns.db.healoverflow end,
-            set = function(info,val) ns.db.healoverflow = val end,
-        },
-        others = {
-            name = "Others' heals only",
-            type = "toggle",
-            order = 5,
-            get = function(info) return ns.db.healothersonly end,
-            set = function(info,val) ns.db.healothersonly = val end,
-        }, 
-        deficit = {
-            name = "Show missing health",
-            type = "toggle",
-            order = 6,
-            get = function(info) return ns.db.deficit end,
-            set = function(info,val) ns.db.deficit = val 
-                if val == true then
-                    ns.db.perc = false
-                end
-            end,
-        },
-        perc = {
-            name = "Show health percentage",
-            type = "toggle",
-            order = 7,
-            get = function(info) return ns.db.perc end,
-            set = function(info,val) ns.db.perc = val 
-                if val == true then
-                    ns.db.deficit = false
-                end
-            end,
+        hptext = {
+            type = "group",
+            name = "Health Text",
+            order = 8,
+            inline = true,
+            args = {
+                deficit = {
+                    name = "Show missing health",
+                    type = "toggle",
+                    order = 1,
+                    get = function(info) return ns.db.deficit end,
+                    set = function(info,val) ns.db.deficit = val 
+                        if val == true then
+                            ns.db.perc = false
+                            ns.db.actual = false
+                        end
+                    end,
+                },
+                perc = {
+                    name = "Show health percentage",
+                    type = "toggle",
+                    order = 2,
+                    get = function(info) return ns.db.perc end,
+                    set = function(info,val) ns.db.perc = val 
+                        if val == true then
+                            ns.db.deficit = false
+                            ns.db.actual = false
+                        end
+                    end,
+                },
+                actual = {
+                    name = "Show actual health",
+                    type = "toggle",
+                    order = 3,
+                    get = function(info) return ns.db.actual end,
+                    set = function(info,val) ns.db.actual = val 
+                        if val == true then
+                            ns.db.deficit = false
+                            ns.db.perc = false
+                        end
+                    end,
+                },
+            },
         },
     },
 }
@@ -769,37 +827,45 @@ local coloropts = {
                         ns:Colors(); updateObjects(); 
                     end,
                 },
-                definecolors = {
-                    name = "Health define colors",
-                    type = "toggle",
+                hpdefine = {
+                    type = "group",
+                    name = "Define HP color",
                     order = 2,
-                    get = function(info) return ns.db.definecolors end,
-                    set = function(info,val) ns.db.definecolors = val;
-                        if ns.db.reversecolors and val == true then
-                            ns.db.reversecolors = false
-                        end
-                        ns:Colors(); updateObjects(); 
-                    end,
-                },
-                hpcolor = {
-                    name = "Health color",
-                    type = "color",
-                    order = 3,
-                    hasAlpha = false,
-                    get = function(info) return ns.db.hpcolor.r, ns.db.hpcolor.g, ns.db.hpcolor.b, ns.db.hpcolor.a end,
-                    set = function(info,r,g,b,a) ns.db.hpcolor.r, ns.db.hpcolor.g, ns.db.hpcolor.b, ns.db.hpcolor.a = r,g,b,a;
-                        ns:Colors(); updateObjects(); 
-                    end,
-                },
-                hpbgcolor = {
-                    name = "Health background color",
-                    type = "color",
-                    order = 4,
-                    hasAlpha = false,
-                    get = function(info) return ns.db.hpbgcolor.r, ns.db.hpbgcolor.g, ns.db.hpbgcolor.b, ns.db.hpbgcolor.a end,
-                    set = function(info,r,g,b,a) ns.db.hpbgcolor.r, ns.db.hpbgcolor.g, ns.db.hpbgcolor.b, ns.db.hpbgcolor.a = r,g,b,a;
-                        ns:Colors(); updateObjects(); 
-                    end,
+                    inline = true,
+                    args = {
+                        definecolors = {
+                            name = "Health define colors",
+                            type = "toggle",
+                            order = 2,
+                            get = function(info) return ns.db.definecolors end,
+                            set = function(info,val) ns.db.definecolors = val;
+                                if ns.db.reversecolors and val == true then
+                                    ns.db.reversecolors = false
+                                end
+                                ns:Colors(); updateObjects(); 
+                            end,
+                        },
+                        hpcolor = {
+                            name = "Health color",
+                            type = "color",
+                            order = 3,
+                            hasAlpha = false,
+                            get = function(info) return ns.db.hpcolor.r, ns.db.hpcolor.g, ns.db.hpcolor.b, ns.db.hpcolor.a end,
+                            set = function(info,r,g,b,a) ns.db.hpcolor.r, ns.db.hpcolor.g, ns.db.hpcolor.b, ns.db.hpcolor.a = r,g,b,a;
+                                ns:Colors(); updateObjects(); 
+                            end,
+                        },
+                        hpbgcolor = {
+                            name = "Health background color",
+                            type = "color",
+                            order = 4,
+                            hasAlpha = false,
+                            get = function(info) return ns.db.hpbgcolor.r, ns.db.hpbgcolor.g, ns.db.hpbgcolor.b, ns.db.hpbgcolor.a end,
+                            set = function(info,r,g,b,a) ns.db.hpbgcolor.r, ns.db.hpbgcolor.g, ns.db.hpbgcolor.b, ns.db.hpbgcolor.a = r,g,b,a;
+                                ns:Colors(); updateObjects(); 
+                            end,
+                        },
+                    },
                 },
             },
         },
@@ -821,37 +887,45 @@ local coloropts = {
                         ns:Colors(); updateObjects();
                     end,
                 },
-                powerdefinecolors = {
-                    name = "Power define colors",
-                    type = "toggle",
+                ppdefine = {
+                    type = "group",
+                    name = "Define Power color",
                     order = 2,
-                    get = function(info) return ns.db.powerdefinecolors end,
-                    set = function(info,val) ns.db.powerdefinecolors = val;
-                        if ns.db.powerclass and val == true then
-                            ns.db.powerclass = false
-                        end
-                        ns:Colors(); updateObjects(); 
-                    end,
-                },
-                powercolor = {
-                    name = "Power color",
-                    type = "color",
-                    order = 3,
-                    hasAlpha = false,
-                    get = function(info) return ns.db.powercolor.r, ns.db.powercolor.g, ns.db.powercolor.b, ns.db.powercolor.a end,
-                    set = function(info,r,g,b,a) ns.db.powercolor.r, ns.db.powercolor.g, ns.db.powercolor.b, ns.db.powercolor.a = r,g,b,a; 
-                        ns:Colors(); updateObjects(); 
-                    end,
-                },
-                powerbgcolor = {
-                    name = "Power background color",
-                    type = "color",
-                    order = 4,
-                    hasAlpha = false,
-                    get = function(info) return ns.db.powerbgcolor.r, ns.db.powerbgcolor.g, ns.db.powerbgcolor.b, ns.db.powerbgcolor.a end,
-                    set = function(info,r,g,b,a) ns.db.powerbgcolor.r, ns.db.powerbgcolor.g, ns.db.powerbgcolor.b, ns.db.powerbgcolor.a = r,g,b,a;
-                        ns:Colors(); updateObjects(); 
-                    end,
+                    inline = true,
+                    args = {
+                        powerdefinecolors = {
+                            name = "Power define colors",
+                            type = "toggle",
+                            order = 2,
+                            get = function(info) return ns.db.powerdefinecolors end,
+                            set = function(info,val) ns.db.powerdefinecolors = val;
+                                if ns.db.powerclass and val == true then
+                                    ns.db.powerclass = false
+                                end
+                                ns:Colors(); updateObjects(); 
+                            end,
+                        },
+                        powercolor = {
+                            name = "Power color",
+                            type = "color",
+                            order = 3,
+                            hasAlpha = false,
+                            get = function(info) return ns.db.powercolor.r, ns.db.powercolor.g, ns.db.powercolor.b, ns.db.powercolor.a end,
+                            set = function(info,r,g,b,a) ns.db.powercolor.r, ns.db.powercolor.g, ns.db.powercolor.b, ns.db.powercolor.a = r,g,b,a; 
+                                ns:Colors(); updateObjects(); 
+                            end,
+                        },
+                        powerbgcolor = {
+                            name = "Power background color",
+                            type = "color",
+                            order = 4,
+                            hasAlpha = false,
+                            get = function(info) return ns.db.powerbgcolor.r, ns.db.powerbgcolor.g, ns.db.powerbgcolor.b, ns.db.powerbgcolor.a end,
+                            set = function(info,r,g,b,a) ns.db.powerbgcolor.r, ns.db.powerbgcolor.g, ns.db.powerbgcolor.b, ns.db.powerbgcolor.a = r,g,b,a;
+                                ns:Colors(); updateObjects(); 
+                            end,
+                        },
+                    },
                 },
             },
         },

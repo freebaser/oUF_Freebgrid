@@ -55,8 +55,9 @@ ns.auras = {
             --Maloriak
             [GetSpellInfo(92973)] = 8, -- Consuming Flames
             [GetSpellInfo(92978)] = 8, -- Flash Freeze
-            --[GetSpellInfo(92976)] = 7, -- Biting Chill
+            [GetSpellInfo(92976)] = 7, -- Biting Chill
             [GetSpellInfo(91829)] = 7, -- Fixate
+            [GetSpellInfo(92787)] = 9, -- Engulfing Darkness
             --Atramedes
             [GetSpellInfo(78092)] = 7, -- Tracking
             [GetSpellInfo(78897)] = 8, -- Noisy
