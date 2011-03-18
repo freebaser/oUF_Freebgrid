@@ -263,7 +263,7 @@ ns.classIndicators={
         --["BL"] = "[freebgrid:magic][freebgrid:disease][freebgrid:curse][freebgrid:poison]",
         ["BL"] = "[freebgrid:rnw][freebgrid:pwb]",
         ["BR"] = "[freebgrid:pom]",
-        ["Cen"] = "",
+        ["Cen"] = "[freebgrid:rnwTime]",
     },
     ["PALADIN"] = {
         ["TL"] = "[freebgrid:forbearance]",

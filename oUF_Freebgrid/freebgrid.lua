@@ -2,10 +2,6 @@ local ADDON_NAME, ns = ...
 local oUF = ns.oUF or oUF
 assert(oUF, "oUF_Freebgrid was unable to locate oUF install.")
 
-if oUF.version ~= GetAddOnMetadata(ADDON_NAME, 'version') and oUF.version ~= "4f11798" then
-    error("Incorrect version of oUF. Please use the embedded oUF provided by Freebgrid.")
-end
-
 ns._Objects = {}
 ns._Headers = {}
 
@@ -399,7 +395,6 @@ local style = function(self)
     -- Mouseover script
     self:SetScript("OnEnter", OnEnter)
     self:SetScript("OnLeave", OnLeave)
-    self:RegisterForClicks"AnyUp"
 
     -- Health
     self.Health = CreateFrame"StatusBar"
@@ -581,7 +576,7 @@ local function freebHeader(name, group, temp, pet, MT)
         initconfig = [[ 
         self:SetWidth(%d)        
         self:SetHeight(%d)           
-        self:SetAttribute('unitsuffix', 'pet')                 
+        self:SetAttribute('unitsuffix', 'pet')
         ]]
     elseif MT then
         horiz, grow = ns.db.MThorizontal, ns.db.MTgrowth
