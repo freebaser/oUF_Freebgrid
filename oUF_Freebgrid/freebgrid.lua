@@ -168,12 +168,17 @@ local function PostHealth(hp, unit)
         ns:UpdateName(self.Name, unit)
     end
 
+    if ns.db.definecolors and hp.colorSmooth then
+        hp.bg:SetVertexColor(ns.db.hpbgcolor.r, ns.db.hpbgcolor.g, ns.db.hpbgcolor.b)
+        return
+    end
+
     local suffix = self:GetAttribute'unitsuffix'
     if suffix == 'pet' or unit == 'vehicle' or unit == 'pet' then
         local r, g, b = .2, .9, .1
         hp:SetStatusBarColor(r*.2, g*.2, b*.2)
         hp.bg:SetVertexColor(r, g, b)
-        return    
+        return
     elseif ns.db.definecolors then
         hp.bg:SetVertexColor(ns.db.hpbgcolor.r, ns.db.hpbgcolor.g, ns.db.hpbgcolor.b)
         hp:SetStatusBarColor(ns.db.hpcolor.r, ns.db.hpcolor.g, ns.db.hpcolor.b)
@@ -208,6 +213,12 @@ function ns:UpdateHealth(hp)
     hp:SetOrientation(ns.db.orientation)
     hp.bg:SetTexture(ns.db.texturePath)
     hp.freebSmooth = ns.db.smooth
+
+    hp.colorSmooth = ns.db.colorSmooth
+    hp.smoothGradient = { 
+        ns.db.gradient.r, ns.db.gradient.g, ns.db.gradient.b,
+        ns.db.hpcolor.r, ns.db.hpcolor.g, ns.db.hpcolor.b,
+    }
 
     if not ns.db.powerbar then
         hp:SetHeight(ns.db.height)
@@ -315,44 +326,6 @@ function ns:UpdatePower(power)
     end
 end
 
-local function PostAltPower(altpp)
-    if not ns.db.altpp then
-        altpp:Hide()
-        return
-    end
-    local self = altpp.__owner
-
-    local tPath, r, g, b = UnitAlternatePowerTextureInfo(self.unit, 2)
-
-    if(r) then
-        altpp:SetStatusBarColor(r, g, b)
-    else
-        altpp:SetStatusBarColor(1, 1, 1)
-    end 
-
-    if ns.db.orientation == "VERTICAL" then
-        altpp:SetSize(2, self.Health:GetHeight())
-    else
-        altpp:SetSize(self.Health:GetWidth(), 2)
-    end
-end
-
-function ns:UpdateAltPower(altpp)
-    altpp:SetStatusBarTexture(ns.db.texturePath)
-    altpp:SetOrientation(ns.db.orientation)
-
-    altpp:ClearAllPoints()
-    if ns.db.orientation == "VERTICAL" then
-        altpp:SetPoint"RIGHT"
-        altpp:SetPoint"BOTTOM"
-        altpp:SetPoint"TOP"
-    else
-        altpp:SetPoint"LEFT"
-        altpp:SetPoint"RIGHT"
-        altpp:SetPoint"BOTTOM"
-    end
-end
-
 -- Show Mouseover highlight
 local OnEnter = function(self)
     if ns.db.tooltip then
@@ -395,6 +368,7 @@ local style = function(self)
     -- Mouseover script
     self:SetScript("OnEnter", OnEnter)
     self:SetScript("OnLeave", OnLeave)
+    self:RegisterForClicks"AnyUp"
 
     -- Health
     self.Health = CreateFrame"StatusBar"
@@ -437,12 +411,6 @@ local style = function(self)
     self.Power.bg = self.Power:CreateTexture(nil, "BORDER")
     self.Power.bg:SetAllPoints(self.Power)
     ns:UpdatePower(self.Power)
-
-    --[[ Alt Power
-    self.AltPowerBar = CreateFrame"StatusBar"
-    self.AltPowerBar:SetParent(self.Health)
-    self.AltPowerBar.PostUpdate = PostAltPower
-    ns:UpdateAltPower(self.AltPowerBar)]]
 
     -- Highlight tex
     local hl = self.Health:CreateTexture(nil, "OVERLAY")

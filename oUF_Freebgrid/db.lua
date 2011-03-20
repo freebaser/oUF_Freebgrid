@@ -60,6 +60,8 @@ ns.defaults = {
     powercolor = { r = 1, g = 1, b = 1, a = 1 },
     powerbgcolor = { r = 0.33, g = 0.33, b = 0.33, a = 1 },
     powerdefinecolors = false,
+    colorSmooth = false,
+    gradient = { r = 1, g = 0, b = 0, a = 1 },
     tborder = true,
     fborder = true,
     afk = true,

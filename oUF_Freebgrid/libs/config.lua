@@ -587,16 +587,6 @@ local healopts = {
                         updateObjects(); 
                     end,
                 },
-                --[[alpha = {
-                name = "Bar alpha",
-                type = "range",
-                order = 5,
-                min = 0,
-                max = 1,
-                step = .1,
-                get = function(info) return ns.db.healalpha end,
-                set = function(info,val) ns.db.healalpha = val; updateObjects() end,
-                },]]
                 overflow = {
                     name = "Heal overflow",
                     type = "toggle",
@@ -818,7 +808,6 @@ local coloropts = {
                     name = "Reverse health colors",
                     type = "toggle",
                     order = 1,
-                    --disabled = function(info) if ns.db.definecolors then return false end end,
                     get = function(info) return ns.db.reversecolors end,
                     set = function(info,val) ns.db.reversecolors = val;
                         if ns.db.definecolors and val == true then
@@ -863,6 +852,26 @@ local coloropts = {
                             get = function(info) return ns.db.hpbgcolor.r, ns.db.hpbgcolor.g, ns.db.hpbgcolor.b, ns.db.hpbgcolor.a end,
                             set = function(info,r,g,b,a) ns.db.hpbgcolor.r, ns.db.hpbgcolor.g, ns.db.hpbgcolor.b, ns.db.hpbgcolor.a = r,g,b,a;
                                 ns:Colors(); updateObjects(); 
+                            end,
+                        },
+                        colorSmooth = {
+                            name = "Smooth Gradient",
+                            type = "toggle",
+                            order = 5,
+                            disabled = function(info) return not ns.db.definecolors end,
+                            get = function(info) return ns.db.colorSmooth end,
+                            set = function(info,val) ns.db.colorSmooth = val;
+                                updateObjects(); 
+                            end,
+                        },
+                        gradient = {
+                            name = "Low health color",
+                            type = "color",
+                            order = 6,
+                            hasAlpha = false,
+                            get = function(info) return ns.db.gradient.r, ns.db.gradient.g, ns.db.gradient.b, ns.db.gradient.a end,
+                            set = function(info,r,g,b,a) ns.db.gradient.r, ns.db.gradient.g, ns.db.gradient.b, ns.db.gradient.a = r,g,b,a;
+                                updateObjects(); 
                             end,
                         },
                     },
