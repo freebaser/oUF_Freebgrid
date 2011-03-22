@@ -196,6 +196,9 @@ oUF.TagEvents['freebgrid:motw'] = "UNIT_AURA"
 oUF.Tags['freebgrid:stragi'] = function(u) if not(UnitAura(u, GetSpellInfo(6673)) or UnitAura(u, GetSpellInfo(57330)) or UnitAura(u, GetSpellInfo(8076))) then return "|cffFF0000"..x.."|r" end end
 oUF.TagEvents['freebgrid:stragi'] = "UNIT_AURA"
 
+oUF.Tags['freebgrid:vigil'] = function(u) if UnitAura(u, GetSpellInfo(50720)) then return "|cff8B4513"..x.."|r" end end
+oUF.TagEvents['freebgrid:vigil'] = "UNIT_AURA"
+
 -- Shaman
 oUF.Tags['freebgrid:rip'] = function(u) 
     local name, _,_,_,_,_,_, fromwho = UnitAura(u, GetSpellInfo(61295))
@@ -249,6 +252,13 @@ oUF.Tags['freebgrid:di'] = function(u)
 end
 oUF.TagEvents['freebgrid:di'] = "UNIT_AURA"
 
+-- Mage
+oUF.Tags['freebgrid:int'] = function(u) if not(UnitAura(u, GetSpellInfo(1459))) then return "|cff00A1DE"..x.."|r" end end
+oUF.TagEvents['freebgrid:int'] = "UNIT_AURA"
+
+oUF.Tags['freebgrid:fmagic'] = function(u) if UnitAura(u, GetSpellInfo(54648)) then return "|cffCC00FF"..x.."|r" end end
+oUF.TagEvents['freebgrid:fmagic'] = "UNIT_AURA"
+
 ns.classIndicators={
     ["DRUID"] = {
         ["TL"] = "",
@@ -260,7 +270,6 @@ ns.classIndicators={
     ["PRIEST"] = {
         ["TL"] = "[freebgrid:pws][freebgrid:ws]",
         ["TR"] = "[freebgrid:fw][freebgrid:sp][freebgrid:fort]",
-        --["BL"] = "[freebgrid:magic][freebgrid:disease][freebgrid:curse][freebgrid:poison]",
         ["BL"] = "[freebgrid:rnw][freebgrid:pwb]",
         ["BR"] = "[freebgrid:pom]",
         ["Cen"] = "[freebgrid:rnwTime]",
@@ -280,7 +289,7 @@ ns.classIndicators={
         ["Cen"] = "",
     },
     ["WARRIOR"] = {
-        ["TL"] = "",
+        ["TL"] = "[freebgrid:vigil]",
         ["TR"] = "[freebgrid:stragi][freebgrid:fort]",
         ["BL"] = "",
         ["BR"] = "",
@@ -316,7 +325,7 @@ ns.classIndicators={
     },
     ["MAGE"] = {
         ["TL"] = "",
-        ["TR"] = "",
+        ["TR"] = "[freebgrid:int]",
         ["BL"] = "",
         ["BR"] = "",
         ["Cen"] = "",

@@ -5,7 +5,7 @@
 ## Notes: Raid Frames using the oUF framework.
 ## SavedVariables: oUF_FreebgridDB, Freebgridomf2
 ## SavedVariablesPerCharacter: Freebgridomf2Char
-## OptionalDeps: !ClassColors, Ace3, Clique, SharedMedia
+## OptionalDeps: !ClassColors, Ace3, Clique, oRA3, SharedMedia
 ## X-oUF: Freebgrid
 ## X-LoadOn-Slash: /freeb
 ## X-Website: http://www.wowinterface.com/downloads/info12264-oUF_Freebgrid.html
