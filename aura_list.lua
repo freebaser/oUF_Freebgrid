@@ -52,6 +52,9 @@ ns.auras = {
             [GetSpellInfo(79501)] = 8, -- Acquiring Target
             [GetSpellInfo(80011)] = 7, -- Soaked in Poison
             [GetSpellInfo(80094)] = 7, -- Fixate
+            [GetSpellInfo(92048)] = 9, -- Shadow Infusion
+            [GetSpellInfo(92053)] = 9, -- Shadow Conductor
+            --[GetSpellInfo(91858)] = 6, -- Overcharged Power Generator
             --Maloriak
             [GetSpellInfo(92973)] = 8, -- Consuming Flames
             [GetSpellInfo(92978)] = 8, -- Flash Freeze
