@@ -989,4 +989,4 @@ local ACD = LibStub('AceConfigDialog-3.0')
 ACD:AddToBlizOptions(ADDON_NAME, ADDON_NAME)
 
 InterfaceOptions_AddCategory(ns.movableopt)
-LibStub("tekKonfig-AboutPanel").new(ADDON_NAME, ADDON_NAME)
+LibStub("LibAboutPanel").new(ADDON_NAME, ADDON_NAME)
