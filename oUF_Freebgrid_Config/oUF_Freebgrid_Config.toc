@@ -5,4 +5,4 @@
 ## Dependencies: oUF_Freebgrid
 ## LoadOnDemand: 1
 
-..\oUF_Freebgrid\libs\config.xml
+..\oUF_Freebgrid\config.xml

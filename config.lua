@@ -124,6 +124,9 @@ function ns:PLAYER_REGEN_ENABLED()
 end
 
 local SM = LibStub("LibSharedMedia-3.0", true)
+local fonts = SM:List("font")
+local statusbars = SM:List("statusbar")
+
 local generalopts = {
     type = "group", name = "General", order = 1,
     args = {
@@ -382,10 +385,17 @@ local statusbaropts = {
             name = "Statusbar",
             type = "select",
             order = 1,
-            dialogControl = "LSM30_Statusbar",
-            values = SM:HashTable("statusbar"),
-            get = function(info) return ns.db.texture end,
-            set = function(info, val) ns.db.texture = val; ns.db.texturePath = SM:Fetch("statusbar",val); updateObjects() end,
+            itemControl = "DDI-Statusbar",
+            values = statusbars,
+            get = function(info) 
+                for i, v in next, statusbars do
+                    if v == ns.db.texture then return i end
+                end
+            end,
+            set = function(info, val) ns.db.texture = statusbars[val]; 
+                ns.db.texturePath = SM:Fetch("statusbar",statusbars[val]); 
+                updateObjects() 
+            end,
         },
         orientation = {
             name = "Health Orientation",
@@ -453,10 +463,15 @@ local fontopts = {
             name = "Font",
             type = "select",
             order = 1,
-            dialogControl = "LSM30_Font",
-            values = SM:HashTable("font"),
-            get = function(info) return ns.db.font end,
-            set = function(info, val) ns.db.font = val; ns.db.fontPath = SM:Fetch("font",val); 
+            itemControl = "DDI-Font",
+            values = fonts,
+            get = function(info)
+                for i, v in next, fonts do
+                    if v == ns.db.font then return i end
+                end
+            end,
+            set = function(info, val) ns.db.font = fonts[val];
+                ns.db.fontPath = SM:Fetch("font",fonts[val]);
                 wipe(ns.nameCache); updateObjects() 
             end,
         },
