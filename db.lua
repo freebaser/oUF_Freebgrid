@@ -74,6 +74,7 @@ ns.defaults = {
     sortName = false,
     sortClass = false,
     classOrder = "DEATHKNIGHT,DRUID,HUNTER,MAGE,PALADIN,PRIEST,ROGUE,SHAMAN,WARLOCK,WARRIOR",
+    hidemenu = false,
 }
 
 function ns.InitDB()

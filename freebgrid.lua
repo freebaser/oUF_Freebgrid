@@ -27,6 +27,10 @@ local function menu(self)
 end
 
 local init = function(self)
+    if (ns.db and ns.db.hidemenu) and InCombatLockdown() then
+        return
+    end
+
     local unit = self:GetParent().unit
     local menu, name, id
 

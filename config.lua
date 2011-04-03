@@ -767,10 +767,18 @@ local miscopts = {
             get = function(info) return ns.db.smooth end,
             set = function(info,val) ns.db.smooth = val; updateObjects() end,
         },
+        hidemenu = {
+            name = "Hide Unit menu",
+            type = "toggle",
+            order = 15,
+            desc = "Prevent toggling the unit menu in combat.",
+            get = function(info) return ns.db.hidemenu end,
+            set = function(info,val) ns.db.hidemenu = val; end,
+        },
         indicator = {
             name = "Indicator size",
             type = "range",
-            order = 15,
+            order = 16,
             min = 4,
             max = 20,
             step = 1,
@@ -780,7 +788,7 @@ local miscopts = {
         symbol = {
             name = "Bottom right indicator size",
             type = "range",
-            order = 16,
+            order = 17,
             min = 8,
             max = 20,
             step = 1,
@@ -790,7 +798,7 @@ local miscopts = {
         icon = {
             name = "Leader, raid, role icon size",
             type = "range",
-            order = 17,
+            order = 18,
             min = 8,
             max = 20,
             step = 1,
@@ -800,7 +808,7 @@ local miscopts = {
         aura = {
             name = "Aura size",
             type = "range",
-            order = 18,
+            order = 19,
             min = 8,
             max = 30,
             step = 1,

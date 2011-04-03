@@ -252,6 +252,16 @@ oUF.Tags['freebgrid:di'] = function(u)
 end
 oUF.TagEvents['freebgrid:di'] = "UNIT_AURA"
 
+oUF.Tags['freebgrid:ss'] = function(u) 
+    local name, _,_,_,_,_,_, fromwho = UnitAura(u, GetSpellInfo(20707)) 
+    if fromwho == "player" then
+        return "|cff6600FFY|r"
+    elseif name then
+        return "|cffCC00FFY|r"
+    end
+end
+oUF.TagEvents['freebgrid:ss'] = "UNIT_AURA"
+
 -- Mage
 oUF.Tags['freebgrid:int'] = function(u) if not(UnitAura(u, GetSpellInfo(1459))) then return "|cff00A1DE"..x.."|r" end end
 oUF.TagEvents['freebgrid:int'] = "UNIT_AURA"
@@ -285,7 +295,7 @@ ns.classIndicators={
         ["TL"] = "",
         ["TR"] = "[freebgrid:di]",
         ["BL"] = "",
-        ["BR"] = "",
+        ["BR"] = "[freebgrid:ss]",
         ["Cen"] = "",
     },
     ["WARRIOR"] = {
