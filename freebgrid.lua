@@ -73,10 +73,16 @@ local backdrop = {
 
 local border = {
     bgFile = [=[Interface\AddOns\oUF_Freebgrid\media\white.tga]=],
+    insets = {top = -2, left = -2, bottom = -2, right = -2},
+}
+
+local border2 = {
+    bgFile = [=[Interface\ChatFrame\ChatFrameBackground]=],
     insets = {top = -1, left = -1, bottom = -1, right = -1},
 }
 
 local glowBorder = {
+    bgFile = [=[Interface\ChatFrame\ChatFrameBackground]=],
     edgeFile = [=[Interface\AddOns\oUF_Freebgrid\media\glowTex.tga]=], edgeSize = 5,
     insets = {left = 3, right = 3, top = 3, bottom = 3}
 }
@@ -101,17 +107,18 @@ end
 
 local updateThreat = function(self, event, unit)
     if(unit ~= self.unit) then return end
-    local threat = self.Threat
 
     local status = UnitThreatSituation(unit)
 
     if(status and status > 1) then
         local r, g, b = GetThreatStatusColor(status)
-        threat:SetBackdropBorderColor(r, g, b, 1)
+        self.Threat:SetBackdropBorderColor(r, g, b, 1)
+        self.border:SetBackdropColor(r, g, b, 1)
     else
-        threat:SetBackdropBorderColor(0, 0, 0, 1)
+        self.Threat:SetBackdropBorderColor(0, 0, 0, 1)
+        self.border:SetBackdropColor(0, 0, 0, 1)
     end
-    threat:Show()
+    self.Threat:Show()
 end
 
 oUF.Tags['freebgrid:name'] = function(u, r)
@@ -270,6 +277,7 @@ local function PostPower(power, unit)
     -- This kinda conflicts with the threat module, but I don't really care
     if (perc < 10 and UnitIsConnected(unit) and ptype == 'MANA' and not UnitIsDeadOrGhost(unit)) then
         self.Threat:SetBackdropBorderColor(0, 0, 1, 1)
+        self.border:SetBackdropColor(0, 0, 1, 1)
     else
         -- pass the coloring back to the threat func
         updateThreat(self, nil, unit)
@@ -369,6 +377,13 @@ local style = function(self)
     self.BG:SetBackdrop(backdrop)
     self.BG:SetBackdropColor(0, 0, 0)
 
+    self.border = CreateFrame("Frame", nil, self)
+    self.border:SetPoint("TOPLEFT", self, "TOPLEFT")
+    self.border:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT")
+    self.border:SetFrameLevel(2)
+    self.border:SetBackdrop(border2)
+    self.border:SetBackdropColor(0, 0, 0)
+
     -- Mouseover script
     self:SetScript("OnEnter", OnEnter)
     self:SetScript("OnLeave", OnLeave)
@@ -387,9 +402,9 @@ local style = function(self)
 
     -- Threat
     local threat = CreateFrame("Frame", nil, self)
-    threat:SetPoint("TOPLEFT", self, "TOPLEFT", -4, 4)
-    threat:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 4, -4)
-    threat:SetFrameStrata("LOW")
+    threat:SetPoint("TOPLEFT", self, "TOPLEFT", -5, 5)
+    threat:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 5, -5)
+    threat:SetFrameLevel(0)
     threat:SetBackdrop(glowBorder)
     threat:SetBackdropColor(0, 0, 0, 0)
     threat:SetBackdropBorderColor(0, 0, 0, 1)
@@ -431,7 +446,7 @@ local style = function(self)
     tBorder:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT")
     tBorder:SetBackdrop(border)
     tBorder:SetBackdropColor(.8, .8, .8, 1)
-    tBorder:SetFrameLevel(2)
+    tBorder:SetFrameLevel(1)
     tBorder:Hide()
     self.TargetBorder = tBorder
 
@@ -441,7 +456,7 @@ local style = function(self)
     fBorder:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT")
     fBorder:SetBackdrop(border)
     fBorder:SetBackdropColor(.6, .8, 0, 1)
-    fBorder:SetFrameLevel(2)
+    fBorder:SetFrameLevel(1)
     fBorder:Hide()
     self.FocusHighlight = fBorder
 
