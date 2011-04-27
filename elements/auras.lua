@@ -80,7 +80,7 @@ local CreateAuraIcon = function(auras)
 end
 
 local dispelClass = {
-    PRIEST = { Magic = true, Disease = true, },
+    PRIEST = { Disease = true, },
     SHAMAN = { Curse = true, },
     PALADIN = { Poison = true, Disease = true, },
     MAGE = { Curse = true, },
@@ -93,20 +93,29 @@ checkTalents:RegisterEvent"PLAYER_ENTERING_WORLD"
 checkTalents:RegisterEvent"ACTIVE_TALENT_GROUP_CHANGED"
 checkTalents:RegisterEvent"CHARACTER_POINTS_CHANGED"
 checkTalents:SetScript("OnEvent", function()
-    if multicheck(class, "SHAMAN", "PALADIN", "DRUID") then
-        local tab, index
+    if multicheck(class, "SHAMAN", "PALADIN", "DRUID", "PRIEST") then
 
         if class == "SHAMAN" then
-            tab, index = 3, 12
+            local _,_,_,_,rank = GetTalentInfo(3, 12)
+
+            dispelClass[class].Magic = rank == 1 and true
+
         elseif class == "PALADIN" then
-            tab, index = 1, 14
+            local _,_,_,_,rank = GetTalentInfo(1, 14)
+
+            dispelClass[class].Magic = rank == 1 and true
+
         elseif class == "DRUID" then
-            tab, index = 3, 17
+            local _,_,_,_,rank = GetTalentInfo(3, 17)
+
+            dispelClass[class].Magic = rank == 1 and true
+
+        elseif class == "PRIEST" then
+            local tree = GetPrimaryTalentTree()
+            
+            dispelClass[class].Magic = (tree == 1 or tree == 2) and true
+            
         end
-
-        local _,_,_,_,rank = GetTalentInfo(tab, index)
-
-        dispelClass[class].Magic = rank == 1 and true
     end
 
     if event == "PLAYER_ENTERING_WORLD" then
@@ -133,8 +142,6 @@ local zoneDelay = function(self, elapsed)
     if IsInInstance() then
         SetMapToCurrentZone()
         local zone = GetCurrentMapAreaID()
-
-        --print(GetInstanceInfo().." "..zone)
 
         if ns.auras.instances[zone] then
             instDebuffs = ns.auras.instances[zone]
