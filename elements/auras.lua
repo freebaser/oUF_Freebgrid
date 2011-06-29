@@ -2,15 +2,10 @@ local _, ns = ...
 local oUF = ns.oUF or oUF
 assert(oUF, "oUF_Freebgrid was unable to locate oUF install.")
 
-local backdrop = {
-    bgFile = [=[Interface\AddOns\oUF_Freebgrid\media\white.tga]=], tile = true, tileSize = 16,
-    edgeFile = [=[Interface\AddOns\oUF_Freebgrid\media\white.tga]=], edgeSize = 2,
-    insets = {top = 2, left = 2, bottom = 2, right = 2},
-}
-
-local BBackdrop = {
-    bgFile = [=[Interface\AddOns\oUF_Freebgrid\media\white.tga]=], tile = true, tileSize = 16,
-    insets = {top = -1, left = -1, bottom = -1, right = -1},
+local glowBorder = {
+    bgFile = [=[Interface\ChatFrame\ChatFrameBackground]=],
+    edgeFile = [=[Interface\AddOns\oUF_Freebgrid\media\glowTex.tga]=], edgeSize = 5,
+    insets = {left = 3, right = 3, top = 3, bottom = 3}
 }
 
 local function multicheck(check, ...)
@@ -39,30 +34,26 @@ end
 local CreateAuraIcon = function(auras)
     local button = CreateFrame("Button", nil, auras)
     button:EnableMouse(false)
-    button:SetBackdrop(BBackdrop)
-    button:SetBackdropColor(0,0,0,1)
-    button:SetBackdropBorderColor(0,0,0,0)
-
+    button:SetPoint("BOTTOMLEFT", auras, "BOTTOMLEFT")
     button:SetSize(auras.size, auras.size)
 
     local icon = button:CreateTexture(nil, "OVERLAY")
     icon:SetAllPoints(button)
     icon:SetTexCoord(.07, .93, .07, .93)
 
-    local overlay = CreateFrame("Frame", nil, button)
-    overlay:SetAllPoints(button)
-    overlay:SetBackdrop(backdrop)
-    overlay:SetBackdropColor(0,0,0,0)
-    overlay:SetBackdropBorderColor(1,1,1,1)
-    overlay:SetFrameLevel(6)
-    button.overlay = overlay
-
     local font, fontsize = GameFontNormalSmall:GetFont()
-    local count = overlay:CreateFontString(nil, "OVERLAY")
+    local count = button:CreateFontString(nil, "OVERLAY")
     count:SetFont(font, fontsize, "THINOUTLINE")
     count:SetPoint("LEFT", button, "BOTTOM", 3, 2)
 
-    button:SetPoint("BOTTOMLEFT", auras, "BOTTOMLEFT")
+    local border = CreateFrame("Frame", nil, button)
+    border:SetPoint("TOPLEFT", button, "TOPLEFT", -5, 5)
+    border:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 5, -5)
+    border:SetFrameLevel(4)
+    border:SetBackdrop(glowBorder)
+    border:SetBackdropColor(0,0,0,1)
+    border:SetBackdropBorderColor(0,0,0,1)
+    button.border = border
 
     local remaining = button:CreateFontString(nil, "OVERLAY")
     remaining:SetPoint("CENTER") 
@@ -226,7 +217,7 @@ local buffcolor = { r = 0.0, g = 1.0, b = 1.0 }
 local updateDebuff = function(icon, texture, count, dtype, duration, expires, buff)
     local color = buff and buffcolor or DebuffTypeColor[dtype] or DebuffTypeColor.none
 
-    icon.overlay:SetBackdropBorderColor(color.r, color.g, color.b)
+    icon.border:SetBackdropBorderColor(color.r, color.g, color.b)
 
     icon.icon:SetTexture(texture)
     icon.count:SetText((count > 1 and count))

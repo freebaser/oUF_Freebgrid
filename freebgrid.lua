@@ -526,6 +526,9 @@ local style = function(self)
     self:RegisterEvent('PLAYER_TARGET_CHANGED', ChangedTarget)
     self:RegisterEvent('RAID_ROSTER_UPDATE', ChangedTarget)
 
+    -- disable Movable
+    self.disableOMF = true
+
     self:SetScale(ns.db.scale)
 
     table.insert(ns._Objects, self)
