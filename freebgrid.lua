@@ -492,12 +492,9 @@ local style = function(self)
     self.freebAfk = true
     self.freebHeals = true
 
-    self.Resurrection = self.Health:CreateFontString(nil, "OVERLAY")
-    self.Resurrection:SetPoint("TOP")
-    self.Resurrection:SetJustifyH("CENTER")
-    self.Resurrection:SetFont(ns.db.fontPath, ns.db.fontsizeEdge, ns.db.outline)
-    self.Resurrection:SetShadowOffset(1.25, -1.25)
-    self.Resurrection:SetWidth(ns.db.width)
+    self.ResurrectIcon = self.Health:CreateTexture(nil, 'OVERLAY')
+    self.ResurrectIcon:SetPoint("TOP", self, 0, -2)
+    self.ResurrectIcon:SetSize(16, 16)
 
     -- Range
     local range = {
@@ -525,9 +522,6 @@ local style = function(self)
     self:RegisterEvent('RAID_ROSTER_UPDATE', FocusTarget)
     self:RegisterEvent('PLAYER_TARGET_CHANGED', ChangedTarget)
     self:RegisterEvent('RAID_ROSTER_UPDATE', ChangedTarget)
-
-    -- disable Movable
-    self.disableOMF = true
 
     self:SetScale(ns.db.scale)
 

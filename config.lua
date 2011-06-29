@@ -25,8 +25,6 @@ local function updateFonts(object)
     object.AuraStatusCen:SetWidth(ns.db.width)
     object.Healtext:SetFont(ns.db.fontPath, ns.db.fontsizeEdge, ns.db.outline) 
     object.Healtext:SetWidth(ns.db.width)
-    object.Resurrection:SetFont(ns.db.fontPath, ns.db.fontsizeEdge, ns.db.outline) 
-    object.Resurrection:SetWidth(ns.db.width)
 end
 
 local function updateIndicators(object)
