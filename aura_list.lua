@@ -30,6 +30,10 @@ ns.auras = {
         --	[Name or GetSpellInfo(#)] = PRIORITY,
         --},
 
+        [800] = { --[[ Firelands ]]--
+
+        },
+
         [752] = { --[[ Baradin Hold ]]--
 
             [GetSpellInfo(88954)] = 6, -- Consuming Darkness
