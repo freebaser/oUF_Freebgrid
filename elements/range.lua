@@ -110,32 +110,34 @@ local OnRangeUpdate = function(self, elapsed)
         for _, object in next, _FRAMES do
             if(object:IsShown()) then
                 local range = object.freebRange
-                if(UnitIsConnected(object.unit) and not UnitInRange(object.unit)) then
-                    if(object:GetAlpha() == range.insideAlpha) then
+                if(UnitIsConnected(object.unit)) then
+                    local inRange, checkRange = UnitInRange(object.unit)
+                    if(checkRange and not inRange) then
                         object:SetAlpha(range.outsideAlpha)
-                    end
 
-                    object.OoR = true
-                    if not ns.db.arrowmouseover then
-                        local bearing = GetBearing(object.unit)
-                        if bearing then
-                            RotateTexture(object.freebarrow, bearing)
-                        elseif object.freebarrow:IsShown() then
-                            object.freebarrow:Hide()
+                        object.OoR = true
+                        if not ns.db.arrowmouseover then
+                            local bearing = GetBearing(object.unit)
+                            if bearing then
+                                RotateTexture(object.freebarrow, bearing)
+                            elseif object.freebarrow:IsShown() then
+                                object.freebarrow:Hide()
+                            end
+                        end
+                    else
+                        object.OoR = false
+
+                        if(object:GetAlpha() ~= range.insideAlpha) then
+                            object:SetAlpha(range.insideAlpha)
+
+                            if object.freebarrow:IsShown() then
+                                object.freebarrow:Hide()
+                            end
                         end
                     end
-                elseif(object:GetAlpha() ~= range.insideAlpha) then
-                    object:SetAlpha(range.insideAlpha)
-                    if object.freebarrow:IsShown() then
-                        object.freebarrow:Hide()
-                    end
-                else
-                    object.OoR = false
                 end
-            else
-                if object.freebarrow:IsShown() then
-                    object.freebarrow:Hide()
-                end
+            elseif(object.freebarrow:IsShown()) then
+                object.freebarrow:Hide()
             end
         end
 
