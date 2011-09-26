@@ -379,79 +379,83 @@ local generalopts = {
 local statusbaropts = {
     type = "group", name = "StatusBars", order = 2,
     args = {
-        statusbar = {
-            name = "Statusbar",
-            type = "select",
-            order = 1,
-            itemControl = "DDI-Statusbar",
-            values = statusbars,
-            get = function(info) 
-                for i, v in next, statusbars do
-                    if v == ns.db.texture then return i end
-                end
-            end,
-            set = function(info, val) ns.db.texture = statusbars[val]; 
-                ns.db.texturePath = SM:Fetch("statusbar",statusbars[val]); 
-                updateObjects() 
-            end,
-        },
-        orientation = {
-            name = "Health Orientation",
-            type = "select",
-            order = 2,
-            values = ns.orientation,
-            get = function(info) return ns.db.orientation end,
-            set = function(info,val) ns.db.orientation = val; updateObjects() end,
-        },
-        powerbar = {
-            name = "Power Bar",
-            type = "group",
-            order = 2,
-            inline = true,
-            args = {
-                power = {
-                    name = "Enable PowerBars",
-                    type = "toggle",
-                    order = 1,
-                    get = function(info) return ns.db.powerbar end,
-                    set = function(info,val) ns.db.powerbar = val; updateObjects() end,
-                },
-                porientation = {
-                    name = "PowerBar Orientation",
-                    type = "select",
-                    order = 2,
-                    values = ns.orientation,
-                    get = function(info) return ns.db.porientation end,
-                    set = function(info,val) ns.db.porientation = val; updateObjects() end,
-                },
-                psize = {
-                    name = "PowerBar size",
-                    type = "range",
-                    order = 3,
-                    min = .02,
-                    max = .30,
-                    step = .02,
-                    get = function(info) return ns.db.powerbarsize end,
-                    set = function(info,val) ns.db.powerbarsize = val; updateObjects() end,
-                },
+        statusbargroup = { type = "group", name = "Statusbar Texture", inline = true, order = 1,
+        args = {
+            statusbar = {
+                name = "Statusbar",
+                type = "select",
+                order = 1,
+                itemControl = "DDI-Statusbar",
+                values = statusbars,
+                get = function(info) 
+                    for i, v in next, statusbars do
+                        if v == ns.db.texture then return i end
+                    end
+                end,
+                set = function(info, val) ns.db.texture = statusbars[val]; 
+                    ns.db.texturePath = SM:Fetch("statusbar",statusbars[val]); 
+                    updateObjects() 
+                end,
             },
-        },
-        altpower = {
-            name = "Alt Power",
-            type = "group",
-            order = 3,
-            inline = true,
-            args = {
-                text = {
-                    name = "Alt Power text",
-                    type = "toggle",
-                    order = 1,
-                    get = function(info) return ns.db.altpower end,
-                    set = function(info,val) ns.db.altpower = val end,
-                },
+            orientation = {
+                name = "Health Orientation",
+                type = "select",
+                order = 2,
+                values = ns.orientation,
+                get = function(info) return ns.db.orientation end,
+                set = function(info,val) ns.db.orientation = val; updateObjects() end,
             },
         },
     },
+    powerbar = {
+        name = "Power Bar",
+        type = "group",
+        order = 2,
+        inline = true,
+        args = {
+            power = {
+                name = "Enable PowerBars",
+                type = "toggle",
+                order = 1,
+                get = function(info) return ns.db.powerbar end,
+                set = function(info,val) ns.db.powerbar = val; updateObjects() end,
+            },
+            porientation = {
+                name = "PowerBar Orientation",
+                type = "select",
+                order = 2,
+                values = ns.orientation,
+                get = function(info) return ns.db.porientation end,
+                set = function(info,val) ns.db.porientation = val; updateObjects() end,
+            },
+            psize = {
+                name = "PowerBar size",
+                type = "range",
+                order = 3,
+                min = .02,
+                max = .30,
+                step = .02,
+                get = function(info) return ns.db.powerbarsize end,
+                set = function(info,val) ns.db.powerbarsize = val; updateObjects() end,
+            },
+        },
+    },
+    altpower = {
+        name = "Alt Power",
+        type = "group",
+        order = 3,
+        inline = true,
+        args = {
+            text = {
+                name = "Alt Power text",
+                type = "toggle",
+                order = 1,
+                get = function(info) return ns.db.altpower end,
+                set = function(info,val) ns.db.altpower = val end,
+            },
+        },
+    },
+},
 }
 
 local fontopts = {
@@ -519,34 +523,38 @@ local fontopts = {
 }
 
 local rangeopts = {
-    type = "group", name = "Range", order = 4,
+    type = "group", name = "Range", order = 4, width = "half",
     args = {
-        oor = {
-            name = "Out of range alpha",
-            type = "range",
-            order = 1,
-            min = 0,
-            max = 1,
-            step = .1,
-            get = function(info) return ns.db.outsideRange end,
-            set = function(info,val) ns.db.outsideRange = val end,
-        },
-        arrow = {
-            name = "Enable range arrow",
-            type = "toggle",
-            order = 2,
-            get = function(info) return ns.db.arrow end,
-            set = function(info,val) ns.db.arrow = val end,
-        },
-        mouseover = {
-            name = "Only show on mouseover",
-            type = "toggle",
-            order = 3,
-            disabled = function(info) if not ns.db.arrow then return true end end,
-            get = function(info) return ns.db.arrowmouseover end,
-            set = function(info,val) ns.db.arrowmouseover = val end,
+        rangegroup = { type = "group", name = "Range", inline = true, order = 1,
+        args = {
+            oor = {
+                name = "Out of range alpha",
+                type = "range",
+                order = 3,
+                min = 0,
+                max = 1,
+                step = .1,
+                get = function(info) return ns.db.outsideRange end,
+                set = function(info,val) ns.db.outsideRange = val end,
+            },
+            arrow = {
+                name = "Enable range arrow",
+                type = "toggle",
+                order = 1,
+                get = function(info) return ns.db.arrow end,
+                set = function(info,val) ns.db.arrow = val end,
+            },
+            mouseover = {
+                name = "Only show on mouseover",
+                type = "toggle",
+                order = 2,
+                disabled = function(info) if not ns.db.arrow then return true end end,
+                get = function(info) return ns.db.arrowmouseover end,
+                set = function(info,val) ns.db.arrowmouseover = val end,
+            },
         },
     },
+},
 }
 
 local healopts = {
@@ -666,113 +674,119 @@ local healopts = {
 local miscopts = {
     type = "group", name = "Miscellaneous", order = 6,
     args = {
-        party = {
-            name = "Show when in a party",
-            type = "toggle",
-            order = 1,
-            get = function(info) return ns.db.party end,
-            set = function(info,val) ns.db.party = val; end,
+        checkgroup = { type = "group", name = "Checks", inline = true, order = 1,
+        args = {
+            party = {
+                name = "Show when in a party",
+                type = "toggle",
+                order = 1,
+                get = function(info) return ns.db.party end,
+                set = function(info,val) ns.db.party = val; end,
+            },
+            solo = {
+                name = "Show player when solo",
+                type = "toggle",
+                order = 2,
+                get = function(info) return ns.db.solo end,
+                set = function(info,val) ns.db.solo = val; end,
+            },
+            player = {
+                name = "Show self in group",
+                type = "toggle",
+                order = 3,
+                get = function(info) return ns.db.player end,
+                set = function(info,val) ns.db.player = val; end,
+            },
+            pets = {
+                name = "Show party/raid pets",
+                type = "toggle",
+                order = 4,
+                get = function(info) return ns.db.pets end,
+                set = function(info,val) ns.db.pets = val end,
+            },
+            MT = {
+                name = "MainTanks",
+                type = "toggle",
+                order = 5,
+                get = function(info) return ns.db.MT end,
+                set = function(info,val) ns.db.MT = val end,
+            },
+            omfChar = {
+                name = "Save position per character",
+                type = "toggle",
+                order = 6,
+                get = function(info) return ns.db.omfChar end,
+                set = function(info,val) ns.db.omfChar = val end,
+            },
+            role = {
+                name = "Role icon",
+                type = "toggle",
+                order = 7,
+                get = function(info) return ns.db.roleicon end,
+                set = function(info,val) ns.db.roleicon = val end,
+            },
+            tborder = {
+                name = "Show target border",
+                type = "toggle",
+                order = 8,
+                get = function(info) return ns.db.tborder end,
+                set = function(info,val) ns.db.tborder = val end,
+            },
+            fborder = {
+                name = "Show focus border",
+                type = "toggle",
+                order = 9,
+                get = function(info) return ns.db.fborder end,
+                set = function(info,val) ns.db.fborder = val end,
+            },
+            afk = {
+                name = "AFK flag/timer",
+                type = "toggle",
+                order = 10,
+                get = function(info) return ns.db.afk end,
+                set = function(info,val) ns.db.afk = val end,
+            },
+            highlight = {
+                name = "Mouseover highlight",
+                type = "toggle",
+                order = 11,
+                get = function(info) return ns.db.highlight end,
+                set = function(info,val) ns.db.highlight = val end,
+            },
+            dispel = {
+                name = "Dispel icons",
+                type = "toggle",
+                desc = "Show auras as icons that can be dispelled by you",
+                order = 12,
+                get = function(info) return ns.db.dispel end,
+                set = function(info,val) ns.db.dispel = val end,
+            },
+            tooltip = {
+                name = "Show unit tooltip",
+                type = "toggle",
+                order = 13,
+                get = function(info) return ns.db.tooltip end,
+                set = function(info,val) ns.db.tooltip = val end,
+            },
+            smooth = {
+                name = "Smooth Update",
+                type = "toggle",
+                order = 14,
+                get = function(info) return ns.db.smooth end,
+                set = function(info,val) ns.db.smooth = val; updateObjects() end,
+            },
+            hidemenu = {
+                name = "Hide Unit menu",
+                type = "toggle",
+                order = 15,
+                desc = "Prevent toggling the unit menu in combat.",
+                get = function(info) return ns.db.hidemenu end,
+                set = function(info,val) ns.db.hidemenu = val; end,
+            },
         },
-        solo = {
-            name = "Show player when solo",
-            type = "toggle",
-            order = 2,
-            get = function(info) return ns.db.solo end,
-            set = function(info,val) ns.db.solo = val; end,
-        },
-        player = {
-            name = "Show self in group",
-            type = "toggle",
-            order = 3,
-            get = function(info) return ns.db.player end,
-            set = function(info,val) ns.db.player = val; end,
-        },
-        pets = {
-            name = "Show party/raid pets",
-            type = "toggle",
-            order = 4,
-            get = function(info) return ns.db.pets end,
-            set = function(info,val) ns.db.pets = val end,
-        },
-        MT = {
-            name = "MainTanks",
-            type = "toggle",
-            order = 5,
-            get = function(info) return ns.db.MT end,
-            set = function(info,val) ns.db.MT = val end,
-        },
-        omfChar = {
-            name = "Save position per character",
-            type = "toggle",
-            order = 6,
-            get = function(info) return ns.db.omfChar end,
-            set = function(info,val) ns.db.omfChar = val end,
-        },
-        role = {
-            name = "Role icon",
-            type = "toggle",
-            order = 7,
-            get = function(info) return ns.db.roleicon end,
-            set = function(info,val) ns.db.roleicon = val end,
-        },
-        tborder = {
-            name = "Show target border",
-            type = "toggle",
-            order = 8,
-            get = function(info) return ns.db.tborder end,
-            set = function(info,val) ns.db.tborder = val end,
-        },
-        fborder = {
-            name = "Show focus border",
-            type = "toggle",
-            order = 9,
-            get = function(info) return ns.db.fborder end,
-            set = function(info,val) ns.db.fborder = val end,
-        },
-        afk = {
-            name = "AFK flag/timer",
-            type = "toggle",
-            order = 10,
-            get = function(info) return ns.db.afk end,
-            set = function(info,val) ns.db.afk = val end,
-        },
-        highlight = {
-            name = "Mouseover highlight",
-            type = "toggle",
-            order = 11,
-            get = function(info) return ns.db.highlight end,
-            set = function(info,val) ns.db.highlight = val end,
-        },
-        dispel = {
-            name = "Dispel icons",
-            type = "toggle",
-            desc = "Show auras as icons that can be dispelled by you",
-            order = 12,
-            get = function(info) return ns.db.dispel end,
-            set = function(info,val) ns.db.dispel = val end,
-        },
-        tooltip = {
-            name = "Show unit tooltip",
-            type = "toggle",
-            order = 13,
-            get = function(info) return ns.db.tooltip end,
-            set = function(info,val) ns.db.tooltip = val end,
-        },
-        smooth = {
-            name = "Smooth Update",
-            type = "toggle",
-            order = 14,
-            get = function(info) return ns.db.smooth end,
-            set = function(info,val) ns.db.smooth = val; updateObjects() end,
-        },
-        hidemenu = {
-            name = "Hide Unit menu",
-            type = "toggle",
-            order = 15,
-            desc = "Prevent toggling the unit menu in combat.",
-            get = function(info) return ns.db.hidemenu end,
-            set = function(info,val) ns.db.hidemenu = val; end,
-        },
+    },
+    slidersgroup = { type = "group", name = "Sliders", inline = true, order = 2,
+    args = {
         indicator = {
             name = "Indicator size",
             type = "range",
@@ -813,6 +827,8 @@ local miscopts = {
             get = function(info) return ns.db.aurasize end,
             set = function(info,val) ns.db.aurasize = val; updateObjects() end,
         },
+    },
+},
     },
 }
 
