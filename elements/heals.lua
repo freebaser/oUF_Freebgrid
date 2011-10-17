@@ -46,7 +46,11 @@ oUF.Tags['freebgrid:def'] = function(u)
             local _, class = UnitClass(u)
             local color = colorCache[class]
 
-            return color..perc.."%|r"
+            if color then 
+                return color..perc.."%|r" 
+            else
+                return perc.."%|r" 
+            end
         end
     elseif ns.db.deficit or ns.db.actual then
         local cur = UnitHealth(u)
