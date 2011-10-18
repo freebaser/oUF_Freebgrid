@@ -11,12 +11,25 @@ local classList = {
     },
 
     ["WARLOCK"] = {
-        combat = GetSpellInfo(20707),
+        combat = GetSpellInfo(6203),
+        ooc = GetSpellInfo(6203),
     },
 
-    ["Priest"] = {
+    ["PRIEST"] = {
         ooc = GetSpellInfo(2006),
     },
+
+    ["SHAMAN"] = {
+        ooc = GetSpellInfo(2008),
+    },
+
+    ["PALADIN"] = {
+        ooc = GetSpellInfo(7328),
+    },
+
+    ["DEATHKNIGHT"] = {
+        combat = GetSpellInfo(61999),
+    }
 }
 
 local body = ""
@@ -24,18 +37,21 @@ local function macroBody(class)
     local combatspell = classList[class].combat
     local oocspell = classList[class].ooc
     
-    
     if combatspell then
         body = "/cast [combat,help,dead,@mouseover] " .. combatspell .. "; "
         
         if oocspell then
-            body = body .. "[help,dead,@mouseover] " .. oocspell .. "; "    
+            body = body .. "[help,dead,@mouseover] " .. oocspell .. "; "
+        end
+
+        if class == "WARLOCK" then
+            body = body .. "\n/cast Create Soulstone\n "
         end
     elseif oocspell then
         body = "/cast [help,dead,@mouseover] " .. oocspell .. "; "
     end
 
-    body = body .. "\n/tar [nodead,@mouseover]"
+    body = body .. "\n/tar [nocombat,nodead,@mouseover]"
     --body = body .. "\n/say test"
 end
 
@@ -56,9 +72,10 @@ local Enable = function(self)
 
     if classList[class] then
         macroBody(class)
-        updateMacro()
 
-        if not IsAddOnLoaded("Clique") then
+        if IsAddOnLoaded("Clique") then
+            updateMacro()
+        else
             self:SetAttribute("type1", "macro")
             self:SetAttribute("macrotext1", body)
         end

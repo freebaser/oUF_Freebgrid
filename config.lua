@@ -525,18 +525,19 @@ local fontopts = {
 local rangeopts = {
     type = "group", name = "Range", order = 4, width = "half",
     args = {
+        oor = {
+            name = "Out of range alpha",
+            type = "range",
+            order = 4,
+            min = 0,
+            max = 1,
+            step = .1,
+            get = function(info) return ns.db.outsideRange end,
+            set = function(info,val) ns.db.outsideRange = val end,
+        },
+
         rangegroup = { type = "group", name = "Range", inline = true, order = 1,
         args = {
-            oor = {
-                name = "Out of range alpha",
-                type = "range",
-                order = 3,
-                min = 0,
-                max = 1,
-                step = .1,
-                get = function(info) return ns.db.outsideRange end,
-                set = function(info,val) ns.db.outsideRange = val end,
-            },
             arrow = {
                 name = "Enable range arrow",
                 type = "toggle",
@@ -551,6 +552,14 @@ local rangeopts = {
                 disabled = function(info) if not ns.db.arrow then return true end end,
                 get = function(info) return ns.db.arrowmouseover end,
                 set = function(info,val) ns.db.arrowmouseover = val end,
+            },
+            mouseoveralways = {
+                name = "Always show on mouseover",
+                type = "toggle",
+                order = 3,
+                disabled = function(info) if not ns.db.arrow then return true end end,
+                get = function(info) return ns.db.arrowmouseoveralways end,
+                set = function(info,val) ns.db.arrowmouseoveralways = val end,
             },
         },
     },

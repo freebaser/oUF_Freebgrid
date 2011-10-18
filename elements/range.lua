@@ -94,7 +94,7 @@ local function GetBearing(unit)
 end
 
 function ns:arrow(object, unit)
-    if not object.OoR then return end 
+    if(not object.OoR and not ns.db.arrowmouseoveralways) or not UnitIsConnected(unit) then return end 
     local bearing = GetBearing(unit)
 
     if bearing then
@@ -130,7 +130,7 @@ local OnRangeUpdate = function(self, elapsed)
                         if(object:GetAlpha() ~= range.insideAlpha) then
                             object:SetAlpha(range.insideAlpha)
 
-                            if object.freebarrow:IsShown() then
+                            if not ns.db.arrowmouseover and object.freebarrow:IsShown() then
                                 object.freebarrow:Hide()
                             end
                         end

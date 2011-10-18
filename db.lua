@@ -37,6 +37,7 @@ ns.defaults = {
     outsideRange = .40,
     arrow = true,
     arrowmouseover = true,
+    arrowmouseoveralways = false,
     healtext = false,
     healbar = true,
     healoverflow = true,
