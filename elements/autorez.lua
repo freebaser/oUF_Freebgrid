@@ -36,9 +36,10 @@ local body = ""
 local function macroBody(class)
     local combatspell = classList[class].combat
     local oocspell = classList[class].ooc
-    
+   
+    body = "/tar [nocombat,nodead,@mouseover]\n/stopmacro [nodead,@mouseover]\n"
     if combatspell then
-        body = "/cast [combat,help,dead,@mouseover] " .. combatspell .. "; "
+        body = body .. "/cast [combat,help,dead,@mouseover] " .. combatspell .. "; "
         
         if oocspell then
             body = body .. "[help,dead,@mouseover] " .. oocspell .. "; "
@@ -51,7 +52,6 @@ local function macroBody(class)
         body = "/cast [help,dead,@mouseover] " .. oocspell .. "; "
     end
 
-    body = body .. "\n/tar [nocombat,nodead,@mouseover]"
     --body = body .. "\n/say test"
 end
 
