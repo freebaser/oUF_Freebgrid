@@ -37,7 +37,7 @@ local function macroBody(class)
     local combatspell = classList[class].combat
     local oocspell = classList[class].ooc
    
-    body = "/tar [nocombat,nodead,@mouseover]\n/stopmacro [nodead,@mouseover]\n"
+    body = "/tar [nodead,@mouseover]\n/stopmacro [nodead,@mouseover]\n"
     if combatspell then
         body = body .. "/cast [combat,help,dead,@mouseover] " .. combatspell .. "; "
         
@@ -49,10 +49,8 @@ local function macroBody(class)
             body = body .. "\n/cast Create Soulstone\n "
         end
     elseif oocspell then
-        body = "/cast [help,dead,@mouseover] " .. oocspell .. "; "
+        body = body .. "/cast [help,dead,@mouseover] " .. oocspell .. "; "
     end
-
-    --body = body .. "\n/say test"
 end
 
 local function updateMacro()
@@ -61,7 +59,9 @@ local function updateMacro()
     if macroid > 0 then
         EditMacro(macroid, nil, nil, body)
     else
-        macroid = CreateMacro(macroName, 1, body)
+        if IsAddOnLoaded("Clique") then
+            macroid = CreateMacro(macroName, 1, body)
+        end
     end
 end
 
@@ -72,10 +72,9 @@ local Enable = function(self)
 
     if classList[class] then
         macroBody(class)
+        updateMacro()
 
-        if IsAddOnLoaded("Clique") then
-            updateMacro()
-        else
+        if not IsAddOnLoaded("Clique") then
             self:SetAttribute("type1", "macro")
             self:SetAttribute("macrotext1", body)
         end
