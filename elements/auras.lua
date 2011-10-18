@@ -83,7 +83,7 @@ local checkTalents = CreateFrame"Frame"
 checkTalents:RegisterEvent"PLAYER_ENTERING_WORLD"
 checkTalents:RegisterEvent"ACTIVE_TALENT_GROUP_CHANGED"
 checkTalents:RegisterEvent"CHARACTER_POINTS_CHANGED"
-checkTalents:SetScript("OnEvent", function()
+checkTalents:SetScript("OnEvent", function(self, event)
     if multicheck(class, "SHAMAN", "PALADIN", "DRUID", "PRIEST") then
 
         if class == "SHAMAN" then

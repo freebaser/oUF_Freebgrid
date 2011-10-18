@@ -15,5 +15,5 @@
     <Script file="elements\heals.lua" />
     <Script file="elements\range.lua" />
     <Script file="elements\smooth.lua" />
-    <Script file="elements\resurrections.lua" />
+    <Script file="elements\autorez.lua" />
 </Ui>
