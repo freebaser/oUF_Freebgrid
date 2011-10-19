@@ -89,6 +89,8 @@ local function updateObjects()
         object:SetSize(ns.db.width, ns.db.height)
         object:SetScale(ns.db.scale)
 
+        object.freebarrow:SetScale(ns.db.arrowscale)
+
         ns:UpdateHealth(object.Health)
         ns:UpdatePower(object.Power)
         if UnitExists(object.unit) then
@@ -106,6 +108,12 @@ local function updateObjects()
             object:EnableElement('freebSmooth')
         else
             object:DisableElement('freebSmooth')
+        end
+
+        if ns.db.autorez then
+            object:EnableElement('freebAutoRez')
+        else
+            object:DisableElement('freebAutoRez')
         end
     end
 
@@ -545,10 +553,20 @@ local rangeopts = {
                 get = function(info) return ns.db.arrow end,
                 set = function(info,val) ns.db.arrow = val end,
             },
+            arrowscale = {
+                name = "Arrow Scale",
+                type = "range",
+                order = 2,
+                min = 0.5,
+                max = 3,
+                step = .1,
+                get = function(info) return ns.db.arrowscale end,
+                set = function(info,val) ns.db.arrowscale = val; updateObjects() end,
+            },
             mouseover = {
                 name = "Only show on mouseover",
                 type = "toggle",
-                order = 2,
+                order = 3,
                 disabled = function(info) if not ns.db.arrow then return true end end,
                 get = function(info) return ns.db.arrowmouseover end,
                 set = function(info,val) ns.db.arrowmouseover = val end,
@@ -556,7 +574,8 @@ local rangeopts = {
             mouseoveralways = {
                 name = "Always show on mouseover",
                 type = "toggle",
-                order = 3,
+                order = 4,
+                desc = "Show arrow regardless of range on mouseover.",
                 disabled = function(info) if not ns.db.arrow then return true end end,
                 get = function(info) return ns.db.arrowmouseoveralways end,
                 set = function(info,val) ns.db.arrowmouseoveralways = val end,
@@ -791,6 +810,14 @@ local miscopts = {
                 desc = "Prevent toggling the unit menu in combat.",
                 get = function(info) return ns.db.hidemenu end,
                 set = function(info,val) ns.db.hidemenu = val; end,
+            },
+            autorez = {
+                name = "Auto Resurrection",
+                type = "toggle",
+                order = 16,
+                desc = "Auto cast resurrection or battle rez on left click when the unit is dead. |cffFF0000Does not work with Clique enabled|r, but a macro (freebAutoRez) will be created for the binding of your choice.",
+                get = function(info) return ns.db.autorez end,
+                set = function(info,val) ns.db.autorez = val; updateObjects() end,
             },
         },
     },

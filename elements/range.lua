@@ -159,6 +159,7 @@ local Enable = function(self)
         local frame = CreateFrame("Frame", nil, UIParent)
         frame:SetAllPoints(self)
         frame:SetFrameStrata("HIGH")
+        frame:SetScale(ns.db.arrowscale)
 
         frame.arrow = frame:CreateTexture(nil, "OVERLAY")
         frame.arrow:SetTexture"Interface\\Addons\\oUF_Freebgrid\\Media\\Arrow"

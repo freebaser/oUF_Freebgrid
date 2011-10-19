@@ -361,7 +361,7 @@ local OnLeave = function(self)
     end
     self.Highlight:Hide()
 
-    if(self.freebarrow and self.freebarrow:IsShown()) and ns.db.arrowmouseover or ns.db.arrowmouseoveralways then
+    if(self.freebarrow and self.freebarrow:IsShown()) and ns.db.arrowmouseover or (ns.db.arrowmouseoveralways and not self.OoR)then
         self.freebarrow:Hide()
     end
 end

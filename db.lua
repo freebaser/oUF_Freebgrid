@@ -38,6 +38,7 @@ ns.defaults = {
     arrow = true,
     arrowmouseover = true,
     arrowmouseoveralways = false,
+    arrowscale = 1.0,
     healtext = false,
     healbar = true,
     healoverflow = true,
@@ -76,6 +77,7 @@ ns.defaults = {
     sortClass = false,
     classOrder = "DEATHKNIGHT,DRUID,HUNTER,MAGE,PALADIN,PRIEST,ROGUE,SHAMAN,WARLOCK,WARRIOR",
     hidemenu = false,
+    autorez = false,
 }
 
 function ns.InitDB()

@@ -11,24 +11,24 @@ local classList = {
     },
 
     ["WARLOCK"] = {
-        combat = GetSpellInfo(6203),
-        ooc = GetSpellInfo(6203),
+        combat = GetSpellInfo(6203), -- Soulstone
+        ooc = GetSpellInfo(6203), -- Soulstone
     },
 
     ["PRIEST"] = {
-        ooc = GetSpellInfo(2006),
+        ooc = GetSpellInfo(2006), -- Resurrection
     },
 
     ["SHAMAN"] = {
-        ooc = GetSpellInfo(2008),
+        ooc = GetSpellInfo(2008), -- Ancestral Spirit
     },
 
     ["PALADIN"] = {
-        ooc = GetSpellInfo(7328),
+        ooc = GetSpellInfo(7328), -- Redemption
     },
 
     ["DEATHKNIGHT"] = {
-        combat = GetSpellInfo(61999),
+        combat = GetSpellInfo(61999), -- Raise Ally
     }
 }
 
@@ -37,7 +37,7 @@ local function macroBody(class)
     local combatspell = classList[class].combat
     local oocspell = classList[class].ooc
    
-    body = "/tar [nodead,@mouseover]\n/stopmacro [nodead,@mouseover]\n"
+    body = "/tar [@mouseover]\n/stopmacro [nodead,@mouseover]\n"
     if combatspell then
         body = body .. "/cast [combat,help,dead,@mouseover] " .. combatspell .. "; "
         
@@ -51,6 +51,8 @@ local function macroBody(class)
     elseif oocspell then
         body = body .. "/cast [help,dead,@mouseover] " .. oocspell .. "; "
     end
+
+    body = body .. "\n/targetlasttarget [combat]"
 end
 
 local function updateMacro()
@@ -68,7 +70,7 @@ end
 
 local Enable = function(self)
     local _, class = UnitClass("player")
-    if not class then return end
+    if not class or not ns.db.autorez then return end
 
     if classList[class] then
         macroBody(class)
@@ -82,10 +84,10 @@ local Enable = function(self)
 end
 
 local Disable = function(self)
-    if not IsAddOnLoaded("Clique") then
-        self:SetAttribute("type1", nil)
-        self:SetAttribute("macrotext1", nil)
-    end
+    if ns.db.autorez then return end
+
+    self:SetAttribute("type1", nil)
+    self:SetAttribute("macrotext1", nil)
 end
 
 oUF:AddElement('freebAutoRez', nil, Enable, Disable)
