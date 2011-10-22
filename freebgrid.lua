@@ -2,6 +2,29 @@ local ADDON_NAME, ns = ...
 local oUF = ns.oUF or oUF
 assert(oUF, "oUF_Freebgrid was unable to locate oUF install.")
 
+local scaleRaid, raid = true
+local doscale = scaleraid and 0.10 or 1
+do
+    local updateRaid = CreateFrame"Frame"
+    updateRaid:RegisterEvent("RAID_ROSTER_UPDATE")
+    updateRaid:RegisterEvent("PLAYER_ENTERING_WORLD")
+    updateRaid:SetScript("OnEvent", function(self)
+        -- doesn't work the multiple headers
+        if scaleRaid == false or ns.db.multi then return end
+        if(InCombatLockdown()) then
+            self:RegisterEvent('PLAYER_REGEN_ENABLED')
+        else
+            self:UnregisterEvent('PLAYER_REGEN_ENABLED')
+            if GetNumRaidMembers() > 29 then
+                raid:SetScale(ns.db.scale-(ns.db.scale*doscale))
+            else
+                raid:SetScale(ns.db.scale)
+            end
+        end
+    end)
+end
+
+
 ns._Objects = {}
 ns._Headers = {}
 
@@ -654,7 +677,8 @@ oUF:Factory(function(self)
             ns._Headers[group:GetName()] = group
         end
     else
-        local raid = freebHeader("Raid_Freebgrid")
+        -- make this local if raidscale is removed
+        raid = freebHeader("Raid_Freebgrid")
         raid:SetPoint(pos, "oUF_FreebgridRaidFrame", pos)
         ns._Headers[raid:GetName()] = raid
     end
