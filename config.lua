@@ -815,7 +815,7 @@ local miscopts = {
                 name = "Auto Resurrection",
                 type = "toggle",
                 order = 16,
-                desc = "Auto cast resurrection or battle rez on left click when the unit is dead. |cffFF0000Does not work with Clique enabled|r, but a macro (freebAutoRez) will be created for the binding of your choice.",
+                desc = "Auto cast resurrection or battle rez on left click when the unit is dead. |cffFF0000Does not work with Clique enabled|r.",
                 get = function(info) return ns.db.autorez end,
                 set = function(info,val) ns.db.autorez = val; updateObjects() end,
             },

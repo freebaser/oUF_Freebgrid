@@ -7,8 +7,10 @@ local doscale = scaleRaid and 0.10 or 1
 do
     local updateRaid = CreateFrame"Frame"
     updateRaid:RegisterEvent("RAID_ROSTER_UPDATE")
+    updateRaid:RegisterEvent("PARTY_MEMBERS_CHANGED")
     updateRaid:RegisterEvent("PLAYER_ENTERING_WORLD")
     updateRaid:SetScript("OnEvent", function(self)
+        -- doesn't work the multiple headers
         if scaleRaid == false or ns.db.multi then return end
         if(InCombatLockdown()) then
             self:RegisterEvent('PLAYER_REGEN_ENABLED')
@@ -22,8 +24,6 @@ do
         end
     end)
 end
-
-
 
 ns._Objects = {}
 ns._Headers = {}
