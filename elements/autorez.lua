@@ -30,14 +30,14 @@ local classList = {
 }
 
 local body = ""
-local function macroBody(class, unit)
+local function macroBody(class)
     local combatspell = classList[class].combat
     local oocspell = classList[class].ooc
-   
-    body = "/tar [@"..unit.."]\n/stopmacro [nodead,@mouseover]\n"
+
+    body = "/tar [@mouseover]\n/stopmacro [nodead,@mouseover]\n"
     if combatspell then
         body = body .. "/cast [combat,help,dead,@mouseover] " .. combatspell .. "; "
-        
+
         if oocspell then
             body = body .. "[help,dead,@mouseover] " .. oocspell .. "; "
         end
@@ -58,19 +58,9 @@ local Enable = function(self)
     local _, class = UnitClass("player")
     if not class or not ns.db.autorez then return end
 
-    if classList[class] then
-        if not IsAddOnLoaded("Clique") then
-            self:SetAttribute("type1", "macro")
-
-            self:SetScript("PreClick", function(self, button)
-                local unit = self.unit or "mouseover"
-
-                self:SetAttribute("macrotext1", macroBody(class, unit))
-                
-                --debug
-                --print(self:GetAttribute("macrotext1"))
-            end)
-        end
+    if classList[class] and not IsAddOnLoaded("Clique") then
+        self:SetAttribute("type1", "macro")
+        self:SetAttribute("macrotext1", macroBody(class))
     end
 end
 

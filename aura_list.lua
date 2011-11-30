@@ -29,9 +29,16 @@ ns.auras = {
         --["MapID"] = {
         --	[Name or GetSpellInfo(#)] = PRIORITY,
         --},
+        [824] = { --[[ Dragon Soul ]]--
+
+            --Ultraxion
+            [GetSpellInfo(109075)] = 7, -- Fading Light
+        },
 
         [800] = { --[[ Firelands ]]--
 
+            --Baleroc
+            [GetSpellInfo(100232)] = 9, -- Torment
         },
 
         [752] = { --[[ Baradin Hold ]]--
