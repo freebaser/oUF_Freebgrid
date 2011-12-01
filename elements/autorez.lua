@@ -34,7 +34,7 @@ local function macroBody(class)
     local combatspell = classList[class].combat
     local oocspell = classList[class].ooc
 
-    body = "/tar [@mouseover]\n/stopmacro [nodead,@mouseover]\n"
+    body = "/stopmacro [nodead,@mouseover]\n"
     if combatspell then
         body = body .. "/cast [combat,help,dead,@mouseover] " .. combatspell .. "; "
 
@@ -49,8 +49,6 @@ local function macroBody(class)
         body = body .. "/cast [help,dead,@mouseover] " .. oocspell .. "; "
     end
 
-    body = body .. "\n/targetlasttarget [combat]"
-
     return body
 end
 
@@ -59,16 +57,15 @@ local Enable = function(self)
     if not class or not ns.db.autorez then return end
 
     if classList[class] and not IsAddOnLoaded("Clique") then
-        self:SetAttribute("type1", "macro")
-        self:SetAttribute("macrotext1", macroBody(class))
+        self:SetAttribute("*type3", "macro")
+        self:SetAttribute("macrotext3", macroBody(class))
     end
 end
 
 local Disable = function(self)
     if ns.db.autorez then return end
 
-    self:SetAttribute("type1", nil)
-    self:SetAttribute("macrotext1", nil)
+    self:SetAttribute("*type3", nil)
 end
 
 oUF:AddElement('freebAutoRez', nil, Enable, Disable)
