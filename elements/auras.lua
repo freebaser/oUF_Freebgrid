@@ -164,9 +164,7 @@ local CustomFilter = function(icons, ...)
     icon.buff = false
     icon.priority = 0
 
-    if ns.auras.ascending[spellID] then
-        icon.asc = true
-    elseif ns.auras.ascending[name] then
+    if ns.auras.ascending[spellID] or ns.auras.ascending[name] then
         icon.asc = true
     end
 

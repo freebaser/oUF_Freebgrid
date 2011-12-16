@@ -104,7 +104,6 @@ function ns.InitDB()
     end
 end
 
-local next = next
 function ns.FlushDB()
     for k,v in pairs(ns.defaults) do 
         if ns.db[k] == v and type(ns.db[k]) ~= "table" then 

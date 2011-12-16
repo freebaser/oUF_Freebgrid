@@ -472,7 +472,7 @@ local style = function(self)
     self.Leader:SetPoint("TOPLEFT", self, 0, 8)
     self.Leader:SetSize(ns.db.leadersize, ns.db.leadersize)
 
-    -- Assistant Iconi
+    -- Assistant Icon
     self.Assistant = self.Health:CreateTexture(nil, "OVERLAY")
     self.Assistant:SetPoint("TOPLEFT", self, 0, 8)
     self.Assistant:SetSize(ns.db.leadersize, ns.db.leadersize)
