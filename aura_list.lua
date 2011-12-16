@@ -15,6 +15,7 @@ ns.auras = {
 
     -- Any Zone
     debuffs = {
+        --[6788] = 16,
         --[GetSpellInfo(6788)] = 16, -- Weakened Soul
         [GetSpellInfo(39171)] = 9, -- Mortal Strike
         [GetSpellInfo(76622)] = 9, -- Sunder Armor
@@ -27,9 +28,12 @@ ns.auras = {
     -- Raid Debuffs
     instances = {
         --["MapID"] = {
-        --	[Name or GetSpellInfo(#)] = PRIORITY,
+        --	[Name or GetSpellInfo(spellID) or SpellID] = PRIORITY,
         --},
         [824] = { --[[ Dragon Soul ]]--
+           --Deep Corruption IDs
+           --[109389] = 8,
+           --[103628] = 8,
 
             --Ultraxion
             [GetSpellInfo(109075)] = 7, -- Fading Light

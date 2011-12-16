@@ -158,17 +158,29 @@ getZone:SetScript("OnEvent", function(self, event)
 end)
 
 local CustomFilter = function(icons, ...)
-    local _, icon, name, _, _, _, dtype = ...
+    local _, icon, name, _, _, _, dtype, _, _, caster, spellID = ...
 
     icon.asc = false
     icon.buff = false
     icon.priority = 0
 
-    if ns.auras.ascending[name] then
+    if ns.auras.ascending[spellID] then
+        icon.asc = true
+    elseif ns.auras.ascending[name] then
         icon.asc = true
     end
 
-    if instDebuffs[name] then
+    if instDebuffs[spellID] then
+        icon.priority = instDebuffs[spellID]
+        return true
+    elseif ns.auras.debuffs[spellID] then
+        icon.priority = ns.auras.debuffs[spellID]
+        return true
+    elseif ns.auras.buffs[spellID] then
+        icon.priority = ns.auras.buffs[spellID]
+        icon.buff = true
+        return true
+    elseif instDebuffs[name] then
         icon.priority = instDebuffs[name]
         return true
     elseif ns.auras.debuffs[name] then
@@ -242,12 +254,13 @@ local Update = function(self, event, unit)
 
     local index = 1
     while true do
-        local name, rank, texture, count, dtype, duration, expires, caster = UnitDebuff(unit, index)
+        local name, rank, texture, count, dtype, duration, expires, caster, _, _, spellID = UnitDebuff(unit, index)
         if not name then break end
         
-        local show = CustomFilter(auras, unit, icon, name, rank, texture, count, dtype, duration, expires, caster)
+        local show = CustomFilter(auras, unit, icon, name, rank, texture, count, dtype, duration, expires, caster, spellID)
 
         if(show) then
+            --print(name)
             if not cur then
                 cur = icon.priority
                 updateDebuff(icon, texture, count, dtype, duration, expires)
@@ -266,10 +279,10 @@ local Update = function(self, event, unit)
 
     index = 1
     while true do
-        local name, rank, texture, count, dtype, duration, expires, caster = UnitBuff(unit, index)
+        local name, rank, texture, count, dtype, duration, expires, caster, _, _, spellID = UnitBuff(unit, index)
         if not name then break end
         
-        local show = CustomFilter(auras, unit, icon, name, rank, texture, count, dtype, duration, expires, caster)
+        local show = CustomFilter(auras, unit, icon, name, rank, texture, count, dtype, duration, expires, caster, spellID)
 
         if(show) and icon.buff then
             if not cur then

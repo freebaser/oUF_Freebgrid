@@ -89,23 +89,13 @@ end
 
 UIDropDownMenu_Initialize(dropdown, init, 'MENU')
 
-local backdrop = {
-    bgFile = [=[Interface\ChatFrame\ChatFrameBackground]=],
-    insets = {top = 0, left = 0, bottom = 0, right = 0},
-}
-
 local border = {
     bgFile = [=[Interface\AddOns\oUF_Freebgrid\media\white.tga]=],
     insets = {top = -2, left = -2, bottom = -2, right = -2},
 }
 
-local border2 = {
-    bgFile = [=[Interface\ChatFrame\ChatFrameBackground]=],
-    insets = {top = -1, left = -1, bottom = -1, right = -1},
-}
-
 local glowBorder = {
-    bgFile = [=[Interface\ChatFrame\ChatFrameBackground]=],
+    --bgFile = [=[Interface\ChatFrame\ChatFrameBackground]=],
     edgeFile = [=[Interface\AddOns\oUF_Freebgrid\media\glowTex.tga]=], edgeSize = 5,
     insets = {left = 3, right = 3, top = 3, bottom = 3}
 }
@@ -136,10 +126,8 @@ local updateThreat = function(self, event, unit)
     if(status and status > 1) then
         local r, g, b = GetThreatStatusColor(status)
         self.Threat:SetBackdropBorderColor(r, g, b, 1)
-        self.border:SetBackdropColor(r, g, b, 1)
     else
         self.Threat:SetBackdropBorderColor(0, 0, 0, 1)
-        self.border:SetBackdropColor(0, 0, 0, 1)
     end
     self.Threat:Show()
 end
@@ -200,6 +188,12 @@ local function PostHealth(hp, unit)
 
     if not ns.nameCache[name] then
         ns:UpdateName(self.Name, unit)
+    end
+
+    if ns.db.definecolors then
+        hp.bg:SetAlpha(ns.db.hpbgcolor.a)
+    else
+        hp.bg:SetAlpha(1)
     end
 
     if ns.db.definecolors and hp.colorSmooth then
@@ -282,10 +276,10 @@ local function PostPower(power, unit)
         power:Show()
         if(ns.db.porientation == "VERTICAL")then
             power:SetWidth(ns.db.width*ns.db.powerbarsize)
-            self.Health:SetWidth((0.98 - ns.db.powerbarsize)*ns.db.width)
+            self.Health:SetWidth((1 - ns.db.powerbarsize)*ns.db.width)
         else
             power:SetHeight(ns.db.height*ns.db.powerbarsize)
-            self.Health:SetHeight((0.98 - ns.db.powerbarsize)*ns.db.height)
+            self.Health:SetHeight((1 - ns.db.powerbarsize)*ns.db.height)
         end
     else
         power:Hide()
@@ -300,14 +294,13 @@ local function PostPower(power, unit)
     -- This kinda conflicts with the threat module, but I don't really care
     if (perc < 10 and UnitIsConnected(unit) and ptype == 'MANA' and not UnitIsDeadOrGhost(unit)) then
         self.Threat:SetBackdropBorderColor(0, 0, 1, 1)
-        self.border:SetBackdropColor(0, 0, 1, 1)
     else
         -- pass the coloring back to the threat func
         updateThreat(self, nil, unit)
     end
 
     if ns.db.powerdefinecolors then
-        power.bg:SetVertexColor(ns.db.powerbgcolor.r, ns.db.powerbgcolor.g, ns.db.powerbgcolor.b)
+        power.bg:SetVertexColor(ns.db.powerbgcolor.r, ns.db.powerbgcolor.g, ns.db.powerbgcolor.b, ns.db.powerbgcolor.a)
         power:SetStatusBarColor(ns.db.powercolor.r, ns.db.powercolor.g, ns.db.powercolor.b)
         return
     end
@@ -323,10 +316,10 @@ local function PostPower(power, unit)
 
     if(b) then
         if ns.db.reversecolors or ns.db.powerclass then
-            power.bg:SetVertexColor(r*.2, g*.2, b*.2)
+            power.bg:SetVertexColor(r*.2, g*.2, b*.2, 1)
             power:SetStatusBarColor(r, g, b)
         else
-            power.bg:SetVertexColor(r, g, b)
+            power.bg:SetVertexColor(r, g, b, 1)
             power:SetStatusBarColor(0, 0, 0, .8)
         end
     end
@@ -391,21 +384,6 @@ end
 
 local style = function(self)
     self.menu = menu
-
-    -- Backdrop
-    self.BG = CreateFrame("Frame", nil, self)
-    self.BG:SetPoint("TOPLEFT", self, "TOPLEFT")
-    self.BG:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT")
-    self.BG:SetFrameLevel(3)
-    self.BG:SetBackdrop(backdrop)
-    self.BG:SetBackdropColor(0, 0, 0)
-
-    self.border = CreateFrame("Frame", nil, self)
-    self.border:SetPoint("TOPLEFT", self, "TOPLEFT")
-    self.border:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT")
-    self.border:SetFrameLevel(2)
-    self.border:SetBackdrop(border2)
-    self.border:SetBackdropColor(0, 0, 0)
 
     -- Mouseover script
     self:SetScript("OnEnter", OnEnter)
@@ -494,7 +472,7 @@ local style = function(self)
     self.Leader:SetPoint("TOPLEFT", self, 0, 8)
     self.Leader:SetSize(ns.db.leadersize, ns.db.leadersize)
 
-    -- Assistant Icon
+    -- Assistant Iconi
     self.Assistant = self.Health:CreateTexture(nil, "OVERLAY")
     self.Assistant:SetPoint("TOPLEFT", self, 0, 8)
     self.Assistant:SetSize(ns.db.leadersize, ns.db.leadersize)
@@ -515,9 +493,10 @@ local style = function(self)
     self.freebAfk = true
     self.freebHeals = true
 
-    self.ResurrectIcon = self.Health:CreateTexture(nil, 'OVERLAY')
+    --WHY U GET STUCK!!! FUUUUUU
+    --[[self.ResurrectIcon = self.Health:CreateTexture(nil, 'OVERLAY')
     self.ResurrectIcon:SetPoint("TOP", self, 0, -2)
-    self.ResurrectIcon:SetSize(16, 16)
+    self.ResurrectIcon:SetSize(18, 18) ]]--
 
     -- Range
     local range = {

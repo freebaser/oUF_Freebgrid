@@ -25,6 +25,9 @@ local function updateFonts(object)
     object.AuraStatusCen:SetWidth(ns.db.width)
     object.Healtext:SetFont(ns.db.fontPath, ns.db.fontsizeEdge, ns.db.outline) 
     object.Healtext:SetWidth(ns.db.width)
+    if object.freebCluster then
+        object.freebCluster:SetTextColor(ns.db.cluster.textcolor.r, ns.db.cluster.textcolor.g, ns.db.cluster.textcolor.b) 
+    end
 end
 
 local function updateIndicators(object)
@@ -544,45 +547,46 @@ local rangeopts = {
             set = function(info,val) ns.db.outsideRange = val end,
         },
 
-        rangegroup = { type = "group", name = "Range", inline = true, order = 1,
-        args = {
-            arrow = {
-                name = "Enable range arrow",
-                type = "toggle",
-                order = 1,
-                get = function(info) return ns.db.arrow end,
-                set = function(info,val) ns.db.arrow = val end,
-            },
-            arrowscale = {
-                name = "Arrow Scale",
-                type = "range",
-                order = 2,
-                min = 0.5,
-                max = 3,
-                step = .1,
-                get = function(info) return ns.db.arrowscale end,
-                set = function(info,val) ns.db.arrowscale = val; updateObjects() end,
-            },
-            mouseover = {
-                name = "Only show on mouseover",
-                type = "toggle",
-                order = 3,
-                disabled = function(info) if not ns.db.arrow then return true end end,
-                get = function(info) return ns.db.arrowmouseover end,
-                set = function(info,val) ns.db.arrowmouseover = val end,
-            },
-            mouseoveralways = {
-                name = "Always show on mouseover",
-                type = "toggle",
-                order = 4,
-                desc = "Show arrow regardless of range on mouseover.",
-                disabled = function(info) if not ns.db.arrow then return true end end,
-                get = function(info) return ns.db.arrowmouseoveralways end,
-                set = function(info,val) ns.db.arrowmouseoveralways = val end,
+        rangegroup = { 
+            type = "group", name = "Range", inline = true, order = 1,
+            args = {
+                arrow = {
+                    name = "Enable range arrow",
+                    type = "toggle",
+                    order = 1,
+                    get = function(info) return ns.db.arrow end,
+                    set = function(info,val) ns.db.arrow = val end,
+                },
+                arrowscale = {
+                    name = "Arrow Scale",
+                    type = "range",
+                    order = 2,
+                    min = 0.5,
+                    max = 3,
+                    step = .1,
+                    get = function(info) return ns.db.arrowscale end,
+                    set = function(info,val) ns.db.arrowscale = val; updateObjects() end,
+                },
+                mouseover = {
+                    name = "Only show on mouseover",
+                    type = "toggle",
+                    order = 3,
+                    disabled = function(info) if not ns.db.arrow then return true end end,
+                    get = function(info) return ns.db.arrowmouseover end,
+                    set = function(info,val) ns.db.arrowmouseover = val end,
+                },
+                mouseoveralways = {
+                    name = "Always show on mouseover",
+                    type = "toggle",
+                    order = 4,
+                    desc = "Show arrow regardless of range on mouseover.",
+                    disabled = function(info) if not ns.db.arrow then return true end end,
+                    get = function(info) return ns.db.arrowmouseoveralways end,
+                    set = function(info,val) ns.db.arrowmouseoveralways = val end,
+                },
             },
         },
     },
-},
 }
 
 local healopts = {
@@ -921,7 +925,7 @@ local coloropts = {
                             name = "Health background color",
                             type = "color",
                             order = 4,
-                            hasAlpha = false,
+                            hasAlpha = true,
                             get = function(info) return ns.db.hpbgcolor.r, ns.db.hpbgcolor.g, ns.db.hpbgcolor.b, ns.db.hpbgcolor.a end,
                             set = function(info,r,g,b,a) ns.db.hpbgcolor.r, ns.db.hpbgcolor.g, ns.db.hpbgcolor.b, ns.db.hpbgcolor.a = r,g,b,a;
                                 ns:Colors(); updateObjects(); 
@@ -1001,7 +1005,7 @@ local coloropts = {
                             name = "Power background color",
                             type = "color",
                             order = 4,
-                            hasAlpha = false,
+                            hasAlpha = true,
                             get = function(info) return ns.db.powerbgcolor.r, ns.db.powerbgcolor.g, ns.db.powerbgcolor.b, ns.db.powerbgcolor.a end,
                             set = function(info,r,g,b,a) ns.db.powerbgcolor.r, ns.db.powerbgcolor.g, ns.db.powerbgcolor.b, ns.db.powerbgcolor.a = r,g,b,a;
                                 ns:Colors(); updateObjects(); 
@@ -1012,6 +1016,64 @@ local coloropts = {
             },
         },
     },
+}
+
+local clusteropts = {
+    type = "group", name = "Cluster", order = 8, width = "half",
+    --clustergroup = { 
+    --type = "group", name = "Cluster", inline = true, order = 1,
+    args = {
+        enabled = {
+            name = "Enable Cluster Heal",
+            type = "toggle",
+            order = 1,
+            desc = "This will put a number in the right corner of the unit indicating how many units are in range and below a certain heal.",
+            get = function(info) return ns.db.cluster.enabled end,
+            set = function(info,val) ns.db.cluster.enabled = val end,
+        },
+        range = {
+            name = "Range",
+            type = "range",
+            order = 2,
+            min = 5,
+            max = 40,
+            step = 1,
+            get = function(info) return ns.db.cluster.range end,
+            set = function(info,val) ns.db.cluster.range = val end,
+        },
+        perc = {
+            name = "Percent HP",
+            type = "range",
+            order = 3,
+            min = 10,
+            max = 100,
+            step = 5,
+            get = function(info) return ns.db.cluster.perc end,
+            set = function(info,val) ns.db.cluster.perc = val end,
+        },
+        freq = {
+            name = "Scan Timer",
+            type = "range",
+            order = 4,
+            desc = "Set how often to scan in milliseconds.",
+            min = 100,
+            max = 1000,
+            step = 50,
+            get = function(info) return ns.db.cluster.freq end,
+            set = function(info,val) ns.db.cluster.freq = val end,
+        },
+        textcolor = {
+            name = "Text color",
+            type = "color",
+            order = 5,
+            hasAlpha = false,
+            get = function(info) return ns.db.cluster.textcolor.r, ns.db.cluster.textcolor.g, ns.db.cluster.textcolor.b, ns.db.cluster.textcolor.a end,
+            set = function(info,r,g,b,a) ns.db.cluster.textcolor.r, ns.db.cluster.textcolor.g, ns.db.cluster.textcolor.b, ns.db.cluster.textcolor.a = r,g,b,a; 
+                updateObjects(); 
+            end,
+        },
+    },
+    --},
 }
 
 local options = {
@@ -1037,6 +1099,7 @@ local options = {
         heal = healopts,
         misc = miscopts,
         color = coloropts,
+        cluster = clusteropts,
     },
 }
 

@@ -78,6 +78,13 @@ ns.defaults = {
     classOrder = "DEATHKNIGHT,DRUID,HUNTER,MAGE,PALADIN,PRIEST,ROGUE,SHAMAN,WARLOCK,WARRIOR",
     hidemenu = false,
     autorez = false,
+    cluster = {
+        enabled = false,
+        range = 30,
+        freq = 250,
+        perc = 90,
+        textcolor = { r = 0, g = .9, b = .6, a = 1 },
+    }
 }
 
 function ns.InitDB()
@@ -85,13 +92,24 @@ function ns.InitDB()
     ns.db = _G[ADDON_NAME.."DB"]
 
     for k, v in pairs(ns.defaults) do
-        if(type(_G[ADDON_NAME.."DB"][k]) == 'nil') then
-            _G[ADDON_NAME.."DB"][k] = v
+        if(type(ns.db[k]) == 'nil') then
+            ns.db[k] = v
+        elseif(type(ns.db[k]) == 'table') then
+            for i, x in pairs(ns.defaults[k]) do
+                if(ns.db[k][i] == nil) then
+                    ns.db[k][i] = x
+                end
+            end
         end
     end
 end
 
+local next = next
 function ns.FlushDB()
-    for i,v in pairs(ns.defaults) do if ns.db[i] == v and type(ns.db[i]) ~= "table" then ns.db[i] = nil end end
+    for k,v in pairs(ns.defaults) do 
+        if ns.db[k] == v and type(ns.db[k]) ~= "table" then 
+            ns.db[k] = nil 
+        end 
+    end
 end
 

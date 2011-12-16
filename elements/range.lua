@@ -168,6 +168,8 @@ local Enable = function(self)
 
         self.freebarrow = frame
         self.freebarrow:Hide()
+
+        return true
     end
 end
 
