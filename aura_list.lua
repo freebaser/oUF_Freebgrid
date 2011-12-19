@@ -32,8 +32,8 @@ ns.auras = {
         --},
         [824] = { --[[ Dragon Soul ]]--
            --Deep Corruption IDs
-           --[109389] = 8,
-           --[103628] = 8,
+           [109389] = 8,
+           [103628] = 8,
 
             --Ultraxion
             [GetSpellInfo(109075)] = 7, -- Fading Light

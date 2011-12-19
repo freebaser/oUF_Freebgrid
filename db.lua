@@ -84,7 +84,11 @@ ns.defaults = {
         freq = 250,
         perc = 90,
         textcolor = { r = 0, g = .9, b = .6, a = 1 },
-    }
+    },
+    hpinverted = false,
+    hpreversed = false,
+    ppinverted = false,
+    ppreversed = false,
 }
 
 function ns.InitDB()

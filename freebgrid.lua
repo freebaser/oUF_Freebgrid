@@ -182,7 +182,7 @@ function ns:UpdateName(name, unit)
     end
 end
 
-local function PostHealth(hp, unit)
+local function PostHealth(hp, unit, min, max)
     local self = hp.__owner
     local name = UnitName(unit)
 
@@ -190,27 +190,38 @@ local function PostHealth(hp, unit)
         ns:UpdateName(self.Name, unit)
     end
 
-    if ns.db.definecolors then
-        hp.bg:SetAlpha(ns.db.hpbgcolor.a)
-    else
-        hp.bg:SetAlpha(1)
-    end
+    if ns.db.hpinverted and not hp.colorSmooth then
+        if ns.db.hpreversed then
+            hp:SetValue(max - min)
+        end
 
+        if ns.db.orientation == "VERTICAL" then
+            hp.bg:SetPoint("BOTTOM", hp:GetStatusBarTexture(), "TOP")
+        else
+            hp.bg:SetPoint("LEFT", hp:GetStatusBarTexture(), "RIGHT")
+        end
+    end
+    
     if ns.db.definecolors and hp.colorSmooth then
-        hp.bg:SetVertexColor(ns.db.hpbgcolor.r, ns.db.hpbgcolor.g, ns.db.hpbgcolor.b)
+        hp.bg:SetVertexColor(ns.db.hpbgcolor.r, ns.db.hpbgcolor.g, ns.db.hpbgcolor.b, ns.db.hpbgcolor.a)
+        return
+    elseif ns.db.definecolors then
+        if ns.db.hpinverted then
+            hp.bg:SetVertexColor(ns.db.hpcolor.r, ns.db.hpcolor.g, ns.db.hpcolor.b, 1)
+            hp:SetStatusBarColor(ns.db.hpbgcolor.r, ns.db.hpbgcolor.g, ns.db.hpbgcolor.b, ns.db.hpbgcolor.a)
+        else
+            hp.bg:SetVertexColor(ns.db.hpbgcolor.r, ns.db.hpbgcolor.g, ns.db.hpbgcolor.b, ns.db.hpbgcolor.a)
+            hp:SetStatusBarColor(ns.db.hpcolor.r, ns.db.hpcolor.g, ns.db.hpcolor.b, 1)
+        end
         return
     end
 
     local suffix = self:GetAttribute'unitsuffix'
     if suffix == 'pet' or unit == 'vehicle' or unit == 'pet' then
         local r, g, b = .2, .9, .1
-        hp:SetStatusBarColor(r*.2, g*.2, b*.2)
-        hp.bg:SetVertexColor(r, g, b)
+        hp:SetStatusBarColor(r*.2, g*.2, b*.2, 1)
+        hp.bg:SetVertexColor(r, g, b, 1)
         return
-    elseif ns.db.definecolors then
-        hp.bg:SetVertexColor(ns.db.hpbgcolor.r, ns.db.hpbgcolor.g, ns.db.hpbgcolor.b)
-        hp:SetStatusBarColor(ns.db.hpcolor.r, ns.db.hpcolor.g, ns.db.hpcolor.b)
-        return 
     end
 
     local r, g, b, t
@@ -227,10 +238,10 @@ local function PostHealth(hp, unit)
 
     if(b) then
         if ns.db.reversecolors then
-            hp.bg:SetVertexColor(r*.2, g*.2, b*.2)
-            hp:SetStatusBarColor(r, g, b)
+            hp.bg:SetVertexColor(r*.2, g*.2, b*.2, 1)
+            hp:SetStatusBarColor(r, g, b, 1)
         else
-            hp.bg:SetVertexColor(r, g, b)
+            hp.bg:SetVertexColor(r, g, b, 1)
             hp:SetStatusBarColor(0, 0, 0, .8)
         end
     end
@@ -251,23 +262,42 @@ function ns:UpdateHealth(hp)
     if not ns.db.powerbar then
         hp:SetHeight(ns.db.height)
         hp:SetWidth(ns.db.width)
+        hp.bg:SetHeight(ns.db.height)
+        hp.bg:SetWidth(ns.db.width)
+    else
+        if(ns.db.porientation == "VERTICAL")then
+            hp:SetWidth((1 - ns.db.powerbarsize)*ns.db.width)
+            hp.bg:SetWidth(hp:GetWidth())
+        else
+            hp:SetHeight((1 - ns.db.powerbarsize)*ns.db.height)
+            hp.bg:SetHeight(hp:GetHeight())
+        end
     end
 
     hp:ClearAllPoints()
+    hp.bg:ClearAllPoints()
+
     hp:SetPoint"TOP"
+    hp.bg:SetPoint"TOP"
     if ns.db.orientation == "VERTICAL" and ns.db.porientation == "VERTICAL" then
         hp:SetPoint"LEFT"
         hp:SetPoint"BOTTOM"
+        hp.bg:SetPoint"LEFT"
+        hp.bg:SetPoint"BOTTOM"
     elseif ns.db.orientation == "HORIZONTAL" and ns.db.porientation == "VERTICAL" then
         hp:SetPoint"RIGHT"
         hp:SetPoint"BOTTOM"
+        hp.bg:SetPoint"RIGHT"
+        hp.bg:SetPoint"BOTTOM"
     else
         hp:SetPoint"LEFT"
         hp:SetPoint"RIGHT"
+        hp.bg:SetPoint"LEFT"
+        hp.bg:SetPoint"RIGHT"
     end
 end
 
-local function PostPower(power, unit)
+local function PostPower(power, unit, min, max)
     local self = power.__owner
     local _, ptype = UnitPowerType(unit)
     local _, class = UnitClass(unit)
@@ -276,18 +306,25 @@ local function PostPower(power, unit)
         power:Show()
         if(ns.db.porientation == "VERTICAL")then
             power:SetWidth(ns.db.width*ns.db.powerbarsize)
+            power.bg:SetWidth(power:GetWidth())
             self.Health:SetWidth((1 - ns.db.powerbarsize)*ns.db.width)
+            self.Health.bg:SetWidth(self.Health:GetWidth())
         else
             power:SetHeight(ns.db.height*ns.db.powerbarsize)
+            power.bg:SetHeight(power:GetHeight())
             self.Health:SetHeight((1 - ns.db.powerbarsize)*ns.db.height)
+            self.Health.bg:SetHeight(self.Health:GetHeight())
         end
     else
         power:Hide()
         if(ns.db.porientation == "VERTICAL")then
             self.Health:SetWidth(ns.db.width)
+            self.Health.bg:SetWidth(ns.db.width)
         else
             self.Health:SetHeight(ns.db.height)
+            self.Health.bg:SetHeight(ns.db.height)
         end
+        return
     end
 
     local perc = oUF.Tags['perpp'](unit)
@@ -299,9 +336,26 @@ local function PostPower(power, unit)
         updateThreat(self, nil, unit)
     end
 
+    if ns.db.ppinverted then
+        if ns.db.ppreversed then
+            power:SetValue(max - min)
+        end
+
+        if ns.db.porientation == "VERTICAL" then
+            power.bg:SetPoint("BOTTOM", power:GetStatusBarTexture(), "TOP")
+        else
+            power.bg:SetPoint("LEFT", power:GetStatusBarTexture(), "RIGHT")
+        end
+    end
+
     if ns.db.powerdefinecolors then
-        power.bg:SetVertexColor(ns.db.powerbgcolor.r, ns.db.powerbgcolor.g, ns.db.powerbgcolor.b, ns.db.powerbgcolor.a)
-        power:SetStatusBarColor(ns.db.powercolor.r, ns.db.powercolor.g, ns.db.powercolor.b)
+        if ns.db.hpinverted then
+            power.bg:SetVertexColor(ns.db.powercolor.r, ns.db.powercolor.g, ns.db.powercolor.b, 1)
+            power:SetStatusBarColor(ns.db.powerbgcolor.r, ns.db.powerbgcolor.g, ns.db.powerbgcolor.b, ns.db.powerbgcolor.a)
+        else
+            power.bg:SetVertexColor(ns.db.powerbgcolor.r, ns.db.powerbgcolor.g, ns.db.powerbgcolor.b, ns.db.powerbgcolor.a)
+            power:SetStatusBarColor(ns.db.powercolor.r, ns.db.powercolor.g, ns.db.powercolor.b, 1)
+        end
         return
     end
 
@@ -317,7 +371,7 @@ local function PostPower(power, unit)
     if(b) then
         if ns.db.reversecolors or ns.db.powerclass then
             power.bg:SetVertexColor(r*.2, g*.2, b*.2, 1)
-            power:SetStatusBarColor(r, g, b)
+            power:SetStatusBarColor(r, g, b, 1)
         else
             power.bg:SetVertexColor(r, g, b, 1)
             power:SetStatusBarColor(0, 0, 0, .8)
@@ -339,18 +393,28 @@ function ns:UpdatePower(power)
     power.bg:SetTexture(ns.db.texturePath)
 
     power:ClearAllPoints()
+    power.bg:ClearAllPoints()
     if ns.db.orientation == "HORIZONTAL" and ns.db.porientation == "VERTICAL" then
         power:SetPoint"LEFT"
         power:SetPoint"TOP"
         power:SetPoint"BOTTOM"
+        power.bg:SetPoint"LEFT"
+        power.bg:SetPoint"TOP"
+        power.bg:SetPoint"BOTTOM"
     elseif ns.db.porientation == "VERTICAL" then
         power:SetPoint"TOP"
         power:SetPoint"RIGHT"
         power:SetPoint"BOTTOM"
+        power.bg:SetPoint"TOP"
+        power.bg:SetPoint"RIGHT"
+        power.bg:SetPoint"BOTTOM"
     else
         power:SetPoint"LEFT"
         power:SetPoint"RIGHT"
         power:SetPoint"BOTTOM"
+        power.bg:SetPoint"LEFT"
+        power.bg:SetPoint"RIGHT"
+        power.bg:SetPoint"BOTTOM"
     end
 end
 
@@ -396,7 +460,8 @@ local style = function(self)
     self.Health.frequentUpdates = true
 
     self.Health.bg = self.Health:CreateTexture(nil, "BORDER")
-    self.Health.bg:SetAllPoints(self.Health)
+    self.Health.bg:SetParent(self)
+    --self.Health.bg:SetAllPoints(self.Health)
 
     self.Health.PostUpdate = PostHealth
     ns:UpdateHealth(self.Health)
@@ -429,7 +494,8 @@ local style = function(self)
     self.Power = CreateFrame"StatusBar"
     self.Power:SetParent(self)
     self.Power.bg = self.Power:CreateTexture(nil, "BORDER")
-    self.Power.bg:SetAllPoints(self.Power)
+    self.Power.bg:SetParent(self.Power)
+    --self.Power.bg:SetAllPoints(self.Power)
     ns:UpdatePower(self.Power)
 
     -- Highlight tex

@@ -893,10 +893,39 @@ local coloropts = {
                         ns:Colors(); updateObjects(); 
                     end,
                 },
+                hpinversed = {
+                    type = "group", name = "Craziness!", order = 2, inline = true,
+                    args = {
+                        hpinverted = {
+                            name = "Invert health and bg",
+                            type = "toggle",
+                            order = 1,
+                            desc = "Can not be used with Smooth Gradient.",
+                            get = function(info) return ns.db.hpinverted end,
+                            set = function(info,val) ns.db.hpinverted = val;
+                                if ns.db.colorSmooth and val == true then
+                                    ns.db.colorSmooth = false
+                                end
+                                updateObjects(); 
+                            end,
+                        },
+                        hpreversed = {
+                            name = "Reverse fill direction",
+                            type = "toggle",
+                            order = 2,
+                            desc = "Note: The Healbar is not reversible. So its kinda useless with this option enabled.",
+                            disabled = function(info) return not ns.db.hpinverted end,
+                            get = function(info) return ns.db.hpreversed end,
+                            set = function(info,val) ns.db.hpreversed = val;
+                                updateObjects(); 
+                            end,
+                        },
+                    },
+                },
                 hpdefine = {
                     type = "group",
                     name = "Define HP color",
-                    order = 2,
+                    order = 3,
                     inline = true,
                     args = {
                         definecolors = {
@@ -938,6 +967,9 @@ local coloropts = {
                             disabled = function(info) return not ns.db.definecolors end,
                             get = function(info) return ns.db.colorSmooth end,
                             set = function(info,val) ns.db.colorSmooth = val;
+                                if ns.db.hpinverted and val == true then
+                                    ns.db.hpinverted = false
+                                end
                                 updateObjects(); 
                             end,
                         },
@@ -973,10 +1005,36 @@ local coloropts = {
                         ns:Colors(); updateObjects();
                     end,
                 },
+                ppinversed = {
+                    type = "group", name = "Craziness!", order = 2, inline = true,
+                    args = {
+                        ppinverted = {
+                            name = "Invert power and bg",
+                            type = "toggle",
+                            order = 1,
+                            --desc = "",
+                            get = function(info) return ns.db.ppinverted end,
+                            set = function(info,val) ns.db.ppinverted = val;
+                                updateObjects(); 
+                            end,
+                        },
+                        ppreversed = {
+                            name = "Reverse fill direction",
+                            type = "toggle",
+                            order = 2,
+                            --desc = "",
+                            disabled = function(info) return not ns.db.ppinverted end,
+                            get = function(info) return ns.db.ppreversed end,
+                            set = function(info,val) ns.db.ppreversed = val;
+                                updateObjects(); 
+                            end,
+                        },
+                    },
+                },
                 ppdefine = {
                     type = "group",
                     name = "Define Power color",
-                    order = 2,
+                    order = 3,
                     inline = true,
                     args = {
                         powerdefinecolors = {
