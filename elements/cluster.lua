@@ -11,6 +11,7 @@ local units = {}
 --freebroster = units
 
 oUF.Tags['freebgrid:cluster'] = function(u)
+    --print(u)
     if units[u] then
         local num = units[u].numInRange
         if num > 2 then
@@ -118,12 +119,36 @@ local updateMapFiles = function()
         mapwidth, mapheight = MapData:MapArea(map, level)
     end
 end
+
 local fillroster = function(unit)
     units[unit] = { 
         ["pos"] = "",
         ["numInRange"] = 1,
         ["hp"] = 0,
     }
+end
+
+local updateRoster = function()
+    wipe(units)
+
+    local numRaid = GetNumRaidMembers()
+    if numRaid > 1 then
+        for i=1, numRaid do
+            local name = GetRaidRosterInfo(i)
+            if name then
+                local unit = "raid"..i
+                fillroster(unit)
+            end
+        end
+    else
+        fillroster("player")
+
+        local numParty = GetNumPartyMembers()
+        for i=1, numParty do
+            local unit = "party"..i
+            fillroster(unit)
+        end
+    end
 end
 
 local frame = CreateFrame"Frame"
@@ -135,31 +160,12 @@ frame:SetScript("OnEvent", function(self, event)
 
     if event ~= "ZONE_CHANGED_NEW_AREA" then
         --print("rosterevent")
-        wipe(units)
-
-        local numRaid = GetNumRaidMembers()
-        if numRaid > 1 then
-            for i=1, numRaid do
-                local name = GetRaidRosterInfo(i)
-                if name then
-                    local unit = "raid"..i
-                    fillroster(unit)
-                end
-            end
-        else
-            fillroster("player")
-
-            local numParty = GetNumPartyMembers()
-            for i=1, numParty do
-                local unit = "party"..i
-                fillroster(unit)
-            end
-        end
+        updateRoster()
     end
 end)
 
 local Enable = function(self)
-    if ns.db.cluster.enabled then
+    if self.IsFreebgrid and ns.db.cluster.enabled then
         update = ns.db.cluster.freq / 1000
         healrange = ns.db.cluster.range
         clusterPerc = ns.db.cluster.perc / 100
@@ -173,18 +179,27 @@ local Enable = function(self)
         self.freebCluster:SetWidth(ns.db.width)
         self.freebCluster.frequentUpdates = update
         self:Tag(self.freebCluster, "[freebgrid:cluster]")
+        self.freebCluster:Show()
 
         frame:RegisterEvent("RAID_ROSTER_UPDATE")
         frame:RegisterEvent("PARTY_MEMBERS_CHANGED")
         frame:RegisterEvent("PLAYER_ENTERING_WORLD")
         frame:RegisterEvent("ZONE_CHANGED_NEW_AREA")
         frame:SetScript("OnUpdate", updatePos)
+        updateRoster()
+
+        return true
     end
 
 end
 
 local Disable = function(self)
-    if not ns.db.cluster.enabled then
+    if self.IsFreebgrid and not ns.db.cluster.enabled then
+        if self.freebCluster then
+            self.freebCluster.frequentUpdates = false
+            self.freebCluster:Hide()
+        end
+
         frame:UnregisterEvent("RAID_ROSTER_UPDATE")
         frame:UnregisterEvent("PARTY_MEMBERS_CHANGED")
         frame:UnregisterEvent("PLAYER_ENTERING_WORLD")

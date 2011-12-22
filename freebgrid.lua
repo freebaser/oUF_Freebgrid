@@ -2,7 +2,7 @@ local ADDON_NAME, ns = ...
 local oUF = ns.oUF or oUF
 assert(oUF, "oUF_Freebgrid was unable to locate oUF install.")
 
-local scaleRaid, raid = true
+local scaleRaid, raid = false
 local doscale = scaleRaid and 0.10 or 1
 do
     local updateRaid = CreateFrame"Frame"
@@ -132,6 +132,29 @@ local updateThreat = function(self, event, unit)
     self.Threat:Show()
 end
 
+local roleOverride = function(self, event)
+    local lfdrole = self.LFDRole
+
+    local role = UnitGroupRolesAssigned(self.unit)
+
+    if(role == 'TANK' or role == 'HEALER') then
+        lfdrole:SetTexCoord(GetTexCoordsForRoleSmallCircle(role))
+		lfdrole:Show()
+    else
+        lfdrole:Hide()
+    end
+end
+
+local assistOverride = function(self, event)
+    local unit = self.unit
+
+    if(UnitInRaid(unit) and UnitIsRaidOfficer(unit) and not UnitIsPartyLeader(unit) and not RaidFrameAllAssistCheckButton:GetChecked()) then
+        self.Assistant:Show()
+	else
+		self.Assistant:Hide()
+	end
+end
+
 oUF.Tags['freebgrid:name'] = function(u, r)
     local name = (u == 'vehicle' and UnitName(r or u)) or UnitName(u)
 
@@ -190,29 +213,16 @@ local function PostHealth(hp, unit, min, max)
         ns:UpdateName(self.Name, unit)
     end
 
-    if ns.db.hpinverted and not hp.colorSmooth then
-        if ns.db.hpreversed then
-            hp:SetValue(max - min)
-        end
-
-        if ns.db.orientation == "VERTICAL" then
-            hp.bg:SetPoint("BOTTOM", hp:GetStatusBarTexture(), "TOP")
-        else
-            hp.bg:SetPoint("LEFT", hp:GetStatusBarTexture(), "RIGHT")
-        end
+    if ns.db.hpinverted then
+        hp:SetValue(max - min)
     end
     
     if ns.db.definecolors and hp.colorSmooth then
         hp.bg:SetVertexColor(ns.db.hpbgcolor.r, ns.db.hpbgcolor.g, ns.db.hpbgcolor.b, ns.db.hpbgcolor.a)
         return
     elseif ns.db.definecolors then
-        if ns.db.hpinverted then
-            hp.bg:SetVertexColor(ns.db.hpcolor.r, ns.db.hpcolor.g, ns.db.hpcolor.b, 1)
-            hp:SetStatusBarColor(ns.db.hpbgcolor.r, ns.db.hpbgcolor.g, ns.db.hpbgcolor.b, ns.db.hpbgcolor.a)
-        else
-            hp.bg:SetVertexColor(ns.db.hpbgcolor.r, ns.db.hpbgcolor.g, ns.db.hpbgcolor.b, ns.db.hpbgcolor.a)
-            hp:SetStatusBarColor(ns.db.hpcolor.r, ns.db.hpcolor.g, ns.db.hpcolor.b, 1)
-        end
+        hp.bg:SetVertexColor(ns.db.hpbgcolor.r, ns.db.hpbgcolor.g, ns.db.hpbgcolor.b, ns.db.hpbgcolor.a)
+        hp:SetStatusBarColor(ns.db.hpcolor.r, ns.db.hpcolor.g, ns.db.hpcolor.b, 1)
         return
     end
 
@@ -258,42 +268,35 @@ function ns:UpdateHealth(hp)
         ns.db.gradient.r, ns.db.gradient.g, ns.db.gradient.b,
         ns.db.hpcolor.r, ns.db.hpcolor.g, ns.db.hpcolor.b,
     }
+    if ns.db.hpreversed then
+        hp:SetReverseFill(true)
+    else
+        hp:SetReverseFill(false)
+    end
 
     if not ns.db.powerbar then
         hp:SetHeight(ns.db.height)
         hp:SetWidth(ns.db.width)
-        hp.bg:SetHeight(ns.db.height)
-        hp.bg:SetWidth(ns.db.width)
     else
         if(ns.db.porientation == "VERTICAL")then
             hp:SetWidth((1 - ns.db.powerbarsize)*ns.db.width)
-            hp.bg:SetWidth(hp:GetWidth())
         else
             hp:SetHeight((1 - ns.db.powerbarsize)*ns.db.height)
-            hp.bg:SetHeight(hp:GetHeight())
         end
     end
 
     hp:ClearAllPoints()
-    hp.bg:ClearAllPoints()
 
     hp:SetPoint"TOP"
-    hp.bg:SetPoint"TOP"
     if ns.db.orientation == "VERTICAL" and ns.db.porientation == "VERTICAL" then
         hp:SetPoint"LEFT"
         hp:SetPoint"BOTTOM"
-        hp.bg:SetPoint"LEFT"
-        hp.bg:SetPoint"BOTTOM"
     elseif ns.db.orientation == "HORIZONTAL" and ns.db.porientation == "VERTICAL" then
         hp:SetPoint"RIGHT"
         hp:SetPoint"BOTTOM"
-        hp.bg:SetPoint"RIGHT"
-        hp.bg:SetPoint"BOTTOM"
     else
         hp:SetPoint"LEFT"
         hp:SetPoint"RIGHT"
-        hp.bg:SetPoint"LEFT"
-        hp.bg:SetPoint"RIGHT"
     end
 end
 
@@ -306,25 +309,23 @@ local function PostPower(power, unit, min, max)
         power:Show()
         if(ns.db.porientation == "VERTICAL")then
             power:SetWidth(ns.db.width*ns.db.powerbarsize)
-            power.bg:SetWidth(power:GetWidth())
             self.Health:SetWidth((1 - ns.db.powerbarsize)*ns.db.width)
-            self.Health.bg:SetWidth(self.Health:GetWidth())
         else
             power:SetHeight(ns.db.height*ns.db.powerbarsize)
-            power.bg:SetHeight(power:GetHeight())
             self.Health:SetHeight((1 - ns.db.powerbarsize)*ns.db.height)
-            self.Health.bg:SetHeight(self.Health:GetHeight())
         end
     else
         power:Hide()
         if(ns.db.porientation == "VERTICAL")then
             self.Health:SetWidth(ns.db.width)
-            self.Health.bg:SetWidth(ns.db.width)
         else
             self.Health:SetHeight(ns.db.height)
-            self.Health.bg:SetHeight(ns.db.height)
         end
         return
+    end
+
+    if ns.db.ppinverted then
+        power:SetValue(max - min)
     end
 
     local perc = oUF.Tags['perpp'](unit)
@@ -336,26 +337,9 @@ local function PostPower(power, unit, min, max)
         updateThreat(self, nil, unit)
     end
 
-    if ns.db.ppinverted then
-        if ns.db.ppreversed then
-            power:SetValue(max - min)
-        end
-
-        if ns.db.porientation == "VERTICAL" then
-            power.bg:SetPoint("BOTTOM", power:GetStatusBarTexture(), "TOP")
-        else
-            power.bg:SetPoint("LEFT", power:GetStatusBarTexture(), "RIGHT")
-        end
-    end
-
     if ns.db.powerdefinecolors then
-        if ns.db.hpinverted then
-            power.bg:SetVertexColor(ns.db.powercolor.r, ns.db.powercolor.g, ns.db.powercolor.b, 1)
-            power:SetStatusBarColor(ns.db.powerbgcolor.r, ns.db.powerbgcolor.g, ns.db.powerbgcolor.b, ns.db.powerbgcolor.a)
-        else
-            power.bg:SetVertexColor(ns.db.powerbgcolor.r, ns.db.powerbgcolor.g, ns.db.powerbgcolor.b, ns.db.powerbgcolor.a)
-            power:SetStatusBarColor(ns.db.powercolor.r, ns.db.powercolor.g, ns.db.powercolor.b, 1)
-        end
+        power.bg:SetVertexColor(ns.db.powerbgcolor.r, ns.db.powerbgcolor.g, ns.db.powerbgcolor.b, ns.db.powerbgcolor.a)
+        power:SetStatusBarColor(ns.db.powercolor.r, ns.db.powercolor.g, ns.db.powercolor.b, 1)
         return
     end
 
@@ -392,29 +376,25 @@ function ns:UpdatePower(power)
     power:SetOrientation(ns.db.porientation)
     power.bg:SetTexture(ns.db.texturePath)
 
+    if ns.db.ppreversed then
+        power:SetReverseFill(true)
+    else
+        power:SetReverseFill(false)
+    end
+
     power:ClearAllPoints()
-    power.bg:ClearAllPoints()
     if ns.db.orientation == "HORIZONTAL" and ns.db.porientation == "VERTICAL" then
         power:SetPoint"LEFT"
         power:SetPoint"TOP"
         power:SetPoint"BOTTOM"
-        power.bg:SetPoint"LEFT"
-        power.bg:SetPoint"TOP"
-        power.bg:SetPoint"BOTTOM"
     elseif ns.db.porientation == "VERTICAL" then
         power:SetPoint"TOP"
         power:SetPoint"RIGHT"
         power:SetPoint"BOTTOM"
-        power.bg:SetPoint"TOP"
-        power.bg:SetPoint"RIGHT"
-        power.bg:SetPoint"BOTTOM"
     else
         power:SetPoint"LEFT"
         power:SetPoint"RIGHT"
         power:SetPoint"BOTTOM"
-        power.bg:SetPoint"LEFT"
-        power.bg:SetPoint"RIGHT"
-        power.bg:SetPoint"BOTTOM"
     end
 end
 
@@ -461,7 +441,7 @@ local style = function(self)
 
     self.Health.bg = self.Health:CreateTexture(nil, "BORDER")
     self.Health.bg:SetParent(self)
-    --self.Health.bg:SetAllPoints(self.Health)
+    self.Health.bg:SetAllPoints(self.Health)
 
     self.Health.PostUpdate = PostHealth
     ns:UpdateHealth(self.Health)
@@ -495,7 +475,7 @@ local style = function(self)
     self.Power:SetParent(self)
     self.Power.bg = self.Power:CreateTexture(nil, "BORDER")
     self.Power.bg:SetParent(self.Power)
-    --self.Power.bg:SetAllPoints(self.Power)
+    self.Power.bg:SetAllPoints(self.Power)
     ns:UpdatePower(self.Power)
 
     -- Highlight tex
@@ -542,6 +522,7 @@ local style = function(self)
     self.Assistant = self.Health:CreateTexture(nil, "OVERLAY")
     self.Assistant:SetPoint("TOPLEFT", self, 0, 8)
     self.Assistant:SetSize(ns.db.leadersize, ns.db.leadersize)
+    self.Assistant.Override = assistOverride
 
     local masterlooter = self.Health:CreateTexture(nil, 'OVERLAY')
     masterlooter:SetSize(ns.db.leadersize, ns.db.leadersize)
@@ -553,11 +534,13 @@ local style = function(self)
         self.LFDRole = self.Health:CreateTexture(nil, 'OVERLAY')
         self.LFDRole:SetSize(ns.db.leadersize, ns.db.leadersize)
         self.LFDRole:SetPoint('RIGHT', self, 'LEFT', ns.db.leadersize/2, ns.db.leadersize/2)
+        self.LFDRole.Override = roleOverride
     end
 
     self.freebIndicators = true
     self.freebAfk = true
     self.freebHeals = true
+    self.IsFreebgrid = true
 
     --WHY U GET STUCK!!! FUUUUUU
     --[[self.ResurrectIcon = self.Health:CreateTexture(nil, 'OVERLAY')

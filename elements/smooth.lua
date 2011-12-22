@@ -42,6 +42,8 @@ local function SmoothBar(bar)
         bar.SetValue = Smooth
 
         bar:SetScript("OnUpdate", SmoothUpdate)
+
+        return true
     end 
 end
 

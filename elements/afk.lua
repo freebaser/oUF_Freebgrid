@@ -41,6 +41,8 @@ local Enable = function(self)
     afktext.frequentUpdates = 1
     self:Tag(afktext, "[freebgrid:afk]")
     self.AFKtext = afktext
+
+    return true
 end
 
 oUF:AddElement('freebAfk', nil, Enable, nil)

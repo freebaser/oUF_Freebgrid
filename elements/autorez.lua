@@ -56,16 +56,18 @@ local Enable = function(self)
     local _, class = UnitClass("player")
     if not class or not ns.db.autorez then return end
 
-    if classList[class] and not IsAddOnLoaded("Clique") then
+    if self.IsFreebgrid and classList[class] and not IsAddOnLoaded("Clique") then
         self:SetAttribute("*type3", "macro")
         self:SetAttribute("macrotext3", macroBody(class))
+
+        return true
     end
 end
 
 local Disable = function(self)
-    if ns.db.autorez then return end
-
-    self:SetAttribute("*type3", nil)
+    if self.IsFreebgrid and not ns.db.autorez then
+        self:SetAttribute("*type3", nil)
+    end
 end
 
 oUF:AddElement('freebAutoRez', nil, Enable, Disable)

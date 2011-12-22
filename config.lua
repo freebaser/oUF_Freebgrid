@@ -26,7 +26,9 @@ local function updateFonts(object)
     object.Healtext:SetFont(ns.db.fontPath, ns.db.fontsizeEdge, ns.db.outline) 
     object.Healtext:SetWidth(ns.db.width)
     if object.freebCluster then
-        object.freebCluster:SetTextColor(ns.db.cluster.textcolor.r, ns.db.cluster.textcolor.g, ns.db.cluster.textcolor.b) 
+        object.freebCluster:SetTextColor(ns.db.cluster.textcolor.r, ns.db.cluster.textcolor.g, ns.db.cluster.textcolor.b)
+        object.freebCluster:SetFont(ns.db.fontPath, ns.db.fontsizeEdge, ns.db.outline)
+        object.freebCluster:SetWidth(ns.db.width)
     end
 end
 
@@ -48,33 +50,69 @@ local function updateIcons(object)
 end
 
 local function updateHealbar(object)
+    if not object.myHealPredictionBar then return end
+
     object.myHealPredictionBar:ClearAllPoints()
     object.otherHealPredictionBar:ClearAllPoints()
 
     if ns.db.orientation == "VERTICAL" then
-        object.myHealPredictionBar:SetPoint("BOTTOMLEFT", object.Health:GetStatusBarTexture(), "TOPLEFT", 0, 0)
-        object.myHealPredictionBar:SetPoint("BOTTOMRIGHT", object.Health:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
+        if ns.db.hpreversed and not ns.db.hpinverted then
+            object.myHealPredictionBar:SetPoint("TOPLEFT", object.Health:GetStatusBarTexture(), "BOTTOMLEFT", 0, 0)
+            object.myHealPredictionBar:SetPoint("TOPRIGHT", object.Health:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0)
+            object.myHealPredictionBar:SetReverseFill(true)
+
+            object.otherHealPredictionBar:SetPoint("TOPLEFT", object.myHealPredictionBar:GetStatusBarTexture(), "BOTTOMLEFT", 0, 0)
+            object.otherHealPredictionBar:SetPoint("TOPRIGHT", object.myHealPredictionBar:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0)
+            object.otherHealPredictionBar:SetReverseFill(true)
+        else
+            object.myHealPredictionBar:SetPoint("BOTTOMLEFT", object.Health:GetStatusBarTexture(), "TOPLEFT", 0, 0)
+            object.myHealPredictionBar:SetPoint("BOTTOMRIGHT", object.Health:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
+            object.myHealPredictionBar:SetReverseFill(false)
+
+            object.otherHealPredictionBar:SetPoint("BOTTOMLEFT", object.myHealPredictionBar:GetStatusBarTexture(), "TOPLEFT", 0, 0)
+            object.otherHealPredictionBar:SetPoint("BOTTOMRIGHT", object.myHealPredictionBar:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
+            object.otherHealPredictionBar:SetReverseFill(false)
+        end
         object.myHealPredictionBar:SetSize(0, ns.db.height)
         object.myHealPredictionBar:SetOrientation"VERTICAL"
 
-        object.otherHealPredictionBar:SetPoint("BOTTOMLEFT", object.myHealPredictionBar:GetStatusBarTexture(), "TOPLEFT", 0, 0)
-        object.otherHealPredictionBar:SetPoint("BOTTOMRIGHT", object.myHealPredictionBar:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
         object.otherHealPredictionBar:SetSize(0, ns.db.height)
         object.otherHealPredictionBar:SetOrientation"VERTICAL"
     else
-        object.myHealPredictionBar:SetPoint("TOPLEFT", object.Health:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
-        object.myHealPredictionBar:SetPoint("BOTTOMLEFT", object.Health:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0)
+        if ns.db.hpreversed and not ns.db.hpinverted then
+            object.myHealPredictionBar:SetPoint("TOPRIGHT", object.Health:GetStatusBarTexture(), "TOPLEFT", 0, 0)
+            object.myHealPredictionBar:SetPoint("BOTTOMRIGHT", object.Health:GetStatusBarTexture(), "BOTTOMLEFT", 0, 0)
+            object.myHealPredictionBar:SetReverseFill(true)
+
+            object.otherHealPredictionBar:SetPoint("TOPRIGHT", object.myHealPredictionBar:GetStatusBarTexture(), "TOPLEFT", 0, 0)
+            object.otherHealPredictionBar:SetPoint("BOTTOMRIGHT", object.myHealPredictionBar:GetStatusBarTexture(), "BOTTOMLEFT", 0, 0)
+            object.otherHealPredictionBar:SetReverseFill(true)
+        else
+            object.myHealPredictionBar:SetPoint("TOPLEFT", object.Health:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
+            object.myHealPredictionBar:SetPoint("BOTTOMLEFT", object.Health:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0)
+            object.myHealPredictionBar:SetReverseFill(false)
+
+            object.otherHealPredictionBar:SetPoint("TOPLEFT", object.myHealPredictionBar:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
+            object.otherHealPredictionBar:SetPoint("BOTTOMLEFT", object.myHealPredictionBar:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0)
+            object.otherHealPredictionBar:SetReverseFill(false)
+        end
         object.myHealPredictionBar:SetSize(ns.db.width, 0)
         object.myHealPredictionBar:SetOrientation"HORIZONTAL"
 
-        object.otherHealPredictionBar:SetPoint("TOPLEFT", object.myHealPredictionBar:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
-        object.otherHealPredictionBar:SetPoint("BOTTOMLEFT", object.myHealPredictionBar:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0)
         object.otherHealPredictionBar:SetSize(ns.db.width, 0)
         object.otherHealPredictionBar:SetOrientation"HORIZONTAL"
     end
 
     object.myHealPredictionBar:GetStatusBarTexture():SetTexture(ns.db.myhealcolor.r, ns.db.myhealcolor.g, ns.db.myhealcolor.b, ns.db.myhealcolor.a)
     object.otherHealPredictionBar:GetStatusBarTexture():SetTexture(ns.db.otherhealcolor.r, ns.db.otherhealcolor.g, ns.db.otherhealcolor.b, ns.db.otherhealcolor.a)
+end
+
+local updateCluster = function(object)
+    if ns.db.cluster.enabled then
+        object:EnableElement('freebCluster')
+     else
+        object:DisableElement('freebCluster') 
+     end
 end
 
 local lockprint
@@ -104,6 +142,7 @@ local function updateObjects()
         updateIndicators(object)
         updateIcons(object)
         updateHealbar(object)
+        updateCluster(object)
 
         ns:UpdateName(object.Name, object.unit)
 
@@ -390,83 +429,103 @@ local generalopts = {
 local statusbaropts = {
     type = "group", name = "StatusBars", order = 2,
     args = {
-        statusbargroup = { type = "group", name = "Statusbar Texture", inline = true, order = 1,
-        args = {
-            statusbar = {
-                name = "Statusbar",
-                type = "select",
-                order = 1,
-                itemControl = "DDI-Statusbar",
-                values = statusbars,
-                get = function(info) 
-                    for i, v in next, statusbars do
-                        if v == ns.db.texture then return i end
-                    end
-                end,
-                set = function(info, val) ns.db.texture = statusbars[val]; 
-                    ns.db.texturePath = SM:Fetch("statusbar",statusbars[val]); 
-                    updateObjects() 
-                end,
+        statusbargroup = { 
+            type = "group", name = "Statusbar Texture", inline = true, order = 1,
+            args = {
+                statusbar = {
+                    name = "Statusbar",
+                    type = "select",
+                    order = 1,
+                    itemControl = "DDI-Statusbar",
+                    values = statusbars,
+                    get = function(info) 
+                        for i, v in next, statusbars do
+                            if v == ns.db.texture then return i end
+                        end
+                    end,
+                    set = function(info, val) ns.db.texture = statusbars[val]; 
+                        ns.db.texturePath = SM:Fetch("statusbar",statusbars[val]); 
+                        updateObjects() 
+                    end,
+                },
+                orientation = {
+                    name = "Health Orientation",
+                    type = "select",
+                    order = 2,
+                    values = ns.orientation,
+                    get = function(info) return ns.db.orientation end,
+                    set = function(info,val) ns.db.orientation = val; updateObjects() end,
+                },
+                hpreversed = {
+                    name = "Reverse fill direction",
+                    type = "toggle",
+                    order = 3,
+                    get = function(info) return ns.db.hpreversed end,
+                    set = function(info,val) ns.db.hpreversed = val;
+                        updateObjects(); 
+                    end,
+                },
             },
-            orientation = {
-                name = "Health Orientation",
-                type = "select",
-                order = 2,
-                values = ns.orientation,
-                get = function(info) return ns.db.orientation end,
-                set = function(info,val) ns.db.orientation = val; updateObjects() end,
+        },
+        powerbar = {
+            name = "Power Bar",
+            type = "group",
+            order = 2,
+            inline = true,
+            args = {
+                power = {
+                    name = "Enable PowerBars",
+                    type = "toggle",
+                    order = 1,
+                    get = function(info) return ns.db.powerbar end,
+                    set = function(info,val) ns.db.powerbar = val; updateObjects() end,
+                },
+                porientation = {
+                    name = "PowerBar Orientation",
+                    type = "select",
+                    order = 2,
+                    values = ns.orientation,
+                    get = function(info) return ns.db.porientation end,
+                    set = function(info,val) ns.db.porientation = val; updateObjects() end,
+                },
+                ppreversed = {
+                    name = "Reverse fill direction",
+                    type = "toggle",
+                    order = 3,
+                    get = function(info) return ns.db.ppreversed end,
+                    set = function(info,val) ns.db.ppreversed = val;
+                        updateObjects(); 
+                    end,
+                },
+
+                psize = {
+                    name = "PowerBar size",
+                    type = "range",
+                    order = 4,
+                    min = .02,
+                    max = .30,
+                    step = .02,
+                    get = function(info) return ns.db.powerbarsize end,
+                    set = function(info,val) ns.db.powerbarsize = val; updateObjects() end,
+                },
+            },
+        },
+        altpower = {
+            name = "Alt Power",
+            type = "group",
+            order = 3,
+            inline = true,
+            args = {
+                text = {
+                    name = "Alt Power text",
+                    type = "toggle",
+                    order = 1,
+                    get = function(info) return ns.db.altpower end,
+                    set = function(info,val) ns.db.altpower = val end,
+                },
             },
         },
     },
-    powerbar = {
-        name = "Power Bar",
-        type = "group",
-        order = 2,
-        inline = true,
-        args = {
-            power = {
-                name = "Enable PowerBars",
-                type = "toggle",
-                order = 1,
-                get = function(info) return ns.db.powerbar end,
-                set = function(info,val) ns.db.powerbar = val; updateObjects() end,
-            },
-            porientation = {
-                name = "PowerBar Orientation",
-                type = "select",
-                order = 2,
-                values = ns.orientation,
-                get = function(info) return ns.db.porientation end,
-                set = function(info,val) ns.db.porientation = val; updateObjects() end,
-            },
-            psize = {
-                name = "PowerBar size",
-                type = "range",
-                order = 3,
-                min = .02,
-                max = .30,
-                step = .02,
-                get = function(info) return ns.db.powerbarsize end,
-                set = function(info,val) ns.db.powerbarsize = val; updateObjects() end,
-            },
-        },
-    },
-    altpower = {
-        name = "Alt Power",
-        type = "group",
-        order = 3,
-        inline = true,
-        args = {
-            text = {
-                name = "Alt Power text",
-                type = "toggle",
-                order = 1,
-                get = function(info) return ns.db.altpower end,
-                set = function(info,val) ns.db.altpower = val end,
-            },
-        },
-    },
-},
 }
 
 local fontopts = {
@@ -893,34 +952,15 @@ local coloropts = {
                         ns:Colors(); updateObjects(); 
                     end,
                 },
-                hpinversed = {
-                    type = "group", name = "Craziness!", order = 2, inline = true,
-                    args = {
-                        hpinverted = {
-                            name = "Invert health and bg",
-                            type = "toggle",
-                            order = 1,
-                            desc = "Can not be used with Smooth Gradient.",
-                            get = function(info) return ns.db.hpinverted end,
-                            set = function(info,val) ns.db.hpinverted = val;
-                                if ns.db.colorSmooth and val == true then
-                                    ns.db.colorSmooth = false
-                                end
-                                updateObjects(); 
-                            end,
-                        },
-                        hpreversed = {
-                            name = "Reverse fill direction",
-                            type = "toggle",
-                            order = 2,
-                            desc = "Note: The Healbar is not reversible. So its kinda useless with this option enabled.",
-                            disabled = function(info) return not ns.db.hpinverted end,
-                            get = function(info) return ns.db.hpreversed end,
-                            set = function(info,val) ns.db.hpreversed = val;
-                                updateObjects(); 
-                            end,
-                        },
-                    },
+                hpinverted = {
+                    name = "Invert health and bg",
+                    type = "toggle",
+                    order = 2,
+                    desc = "Does not play nice with the Heal Bar",
+                    get = function(info) return ns.db.hpinverted end,
+                    set = function(info,val) ns.db.hpinverted = val;
+                        updateObjects(); 
+                    end,
                 },
                 hpdefine = {
                     type = "group",
@@ -1005,31 +1045,14 @@ local coloropts = {
                         ns:Colors(); updateObjects();
                     end,
                 },
-                ppinversed = {
-                    type = "group", name = "Craziness!", order = 2, inline = true,
-                    args = {
-                        ppinverted = {
-                            name = "Invert power and bg",
-                            type = "toggle",
-                            order = 1,
-                            --desc = "",
-                            get = function(info) return ns.db.ppinverted end,
-                            set = function(info,val) ns.db.ppinverted = val;
-                                updateObjects(); 
-                            end,
-                        },
-                        ppreversed = {
-                            name = "Reverse fill direction",
-                            type = "toggle",
-                            order = 2,
-                            --desc = "",
-                            disabled = function(info) return not ns.db.ppinverted end,
-                            get = function(info) return ns.db.ppreversed end,
-                            set = function(info,val) ns.db.ppreversed = val;
-                                updateObjects(); 
-                            end,
-                        },
-                    },
+                ppinverted = {
+                    name = "Invert power and bg",
+                    type = "toggle",
+                    order = 2,
+                    get = function(info) return ns.db.ppinverted end,
+                    set = function(info,val) ns.db.ppinverted = val;
+                        updateObjects(); 
+                    end,
                 },
                 ppdefine = {
                     type = "group",
@@ -1085,9 +1108,11 @@ local clusteropts = {
             name = "Enable Cluster Heal",
             type = "toggle",
             order = 1,
-            desc = "This will put a number in the right corner of the unit indicating how many units are in range and below a certain heal.",
+            desc = "This will put a number in the right corner of the unit indicating how many units are in range and below a certain health.",
             get = function(info) return ns.db.cluster.enabled end,
-            set = function(info,val) ns.db.cluster.enabled = val end,
+            set = function(info,val) ns.db.cluster.enabled = val; 
+                updateObjects(); 
+            end,
         },
         range = {
             name = "Range",
