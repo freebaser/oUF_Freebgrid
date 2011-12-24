@@ -56,7 +56,7 @@ local function updateHealbar(object)
     object.otherHealPredictionBar:ClearAllPoints()
 
     if ns.db.orientation == "VERTICAL" then
-        if ns.db.hpreversed and not ns.db.hpinverted then
+        if ns.db.hpreversed then
             object.myHealPredictionBar:SetPoint("TOPLEFT", object.Health:GetStatusBarTexture(), "BOTTOMLEFT", 0, 0)
             object.myHealPredictionBar:SetPoint("TOPRIGHT", object.Health:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0)
             object.myHealPredictionBar:SetReverseFill(true)
@@ -79,7 +79,7 @@ local function updateHealbar(object)
         object.otherHealPredictionBar:SetSize(0, ns.db.height)
         object.otherHealPredictionBar:SetOrientation"VERTICAL"
     else
-        if ns.db.hpreversed and not ns.db.hpinverted then
+        if ns.db.hpreversed then
             object.myHealPredictionBar:SetPoint("TOPRIGHT", object.Health:GetStatusBarTexture(), "TOPLEFT", 0, 0)
             object.myHealPredictionBar:SetPoint("BOTTOMRIGHT", object.Health:GetStatusBarTexture(), "BOTTOMLEFT", 0, 0)
             object.myHealPredictionBar:SetReverseFill(true)
@@ -110,9 +110,9 @@ end
 local updateCluster = function(object)
     if ns.db.cluster.enabled then
         object:EnableElement('freebCluster')
-     else
+    else
         object:DisableElement('freebCluster') 
-     end
+    end
 end
 
 local lockprint
@@ -128,7 +128,7 @@ local function updateObjects()
 
     for _, object in next, ns._Objects do
         object:SetSize(ns.db.width, ns.db.height)
-        object:SetScale(ns.db.scale)
+        --object:SetScale(ns.db.scale)
 
         object.freebarrow:SetScale(ns.db.arrowscale)
 
@@ -159,6 +159,8 @@ local function updateObjects()
         end
     end
 
+    ns:scaleRaid()
+
     _G["oUF_FreebgridRaidFrame"]:SetSize(ns.db.width, ns.db.height)
     _G["oUF_FreebgridPetFrame"]:SetSize(ns.db.width, ns.db.height)
     _G["oUF_FreebgridMTFrame"]:SetSize(ns.db.width, ns.db.height)
@@ -188,10 +190,46 @@ local generalopts = {
             get = function(info) return ns.db.scale end,
             set = function(info,val) ns.db.scale = val; updateObjects() end,
         },
+        scalegroup = {
+            type = "group", name = "Scale on Raid size", order = 2, inline = true,
+            args = {
+                scaleYes = {
+                    name = "Enable",
+                    type = "toggle",
+                    order = 1,
+                    get = function(info) return ns.db.scaleYes end,
+                    set = function(info,val) ns.db.scaleYes = val; updateObjects() end,
+                },
+                scale25 = {
+                    name = "25 man",
+                    type = "range",
+                    order = 2,
+                    desc = "Scale of the frames when more than 10 members.", 
+                    min = 0.5,
+                    max = 2.0,
+                    step = .05,
+                    disabled = function(info) return not ns.db.scaleYes end,
+                    get = function(info) return ns.db.scale25 end,
+                    set = function(info,val) ns.db.scale25 = val; updateObjects() end,
+                },
+                scale40 = {
+                    name = "40 man",
+                    type = "range",
+                    order = 3,
+                    desc = "Scale of the frames when more than 25 members.",
+                    min = 0.5,
+                    max = 2.0,
+                    step = .05,
+                    disabled = function(info) return not ns.db.scaleYes end,
+                    get = function(info) return ns.db.scale40 end,
+                    set = function(info,val) ns.db.scale40 = val; updateObjects() end,
+                },
+            },
+        },
         width = {
             name = "Width",
             type = "range",
-            order = 2,
+            order = 4,
             min = 20,
             max = 150,
             step = 1,
@@ -201,7 +239,7 @@ local generalopts = {
         height = {
             name = "Height",
             type = "range",
-            order = 3,
+            order = 5,
             min = 20,
             max = 150,
             step = 1,
@@ -211,7 +249,7 @@ local generalopts = {
         spacing = {
             name = "Space between units",
             type = "range",
-            order = 4,
+            order = 6,
             min = 0,
             max = 30,
             step = 1,
@@ -221,7 +259,7 @@ local generalopts = {
         raid = {
             name = "Raid",
             type = "group",
-            order = 5,
+            order = 7,
             inline = true,
             args = {
                 horizontal = {
@@ -1122,7 +1160,7 @@ local clusteropts = {
             max = 40,
             step = 1,
             get = function(info) return ns.db.cluster.range end,
-            set = function(info,val) ns.db.cluster.range = val end,
+            set = function(info,val) ns.db.cluster.range = val; updateObjects(); end,
         },
         perc = {
             name = "Percent HP",
@@ -1132,7 +1170,7 @@ local clusteropts = {
             max = 100,
             step = 5,
             get = function(info) return ns.db.cluster.perc end,
-            set = function(info,val) ns.db.cluster.perc = val end,
+            set = function(info,val) ns.db.cluster.perc = val; updateObjects(); end,
         },
         freq = {
             name = "Scan Timer",
@@ -1143,7 +1181,7 @@ local clusteropts = {
             max = 1000,
             step = 50,
             get = function(info) return ns.db.cluster.freq end,
-            set = function(info,val) ns.db.cluster.freq = val end,
+            set = function(info,val) ns.db.cluster.freq = val; updateObjects(); end,
         },
         textcolor = {
             name = "Text color",

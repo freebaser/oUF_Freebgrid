@@ -4,6 +4,9 @@ ns.mediapath = "Interface\\AddOns\\oUF_Freebgrid\\media\\"
 
 ns.defaults = {
     scale = 1.0,
+    scale25 = 1.0,
+    scale40 = 1.0,
+    scaleYes = false,
     width = 42,
     height = 42,
     texture = "gradient",

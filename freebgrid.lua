@@ -2,31 +2,48 @@ local ADDON_NAME, ns = ...
 local oUF = ns.oUF or oUF
 assert(oUF, "oUF_Freebgrid was unable to locate oUF install.")
 
-local scaleRaid, raid = false
-local doscale = scaleRaid and 0.10 or 1
-do
-    local updateRaid = CreateFrame"Frame"
-    updateRaid:RegisterEvent("RAID_ROSTER_UPDATE")
-    updateRaid:RegisterEvent("PARTY_MEMBERS_CHANGED")
-    updateRaid:RegisterEvent("PLAYER_ENTERING_WORLD")
-    updateRaid:SetScript("OnEvent", function(self)
-        -- doesn't work the multiple headers
-        if scaleRaid == false or ns.db.multi then return end
-        if(InCombatLockdown()) then
-            self:RegisterEvent('PLAYER_REGEN_ENABLED')
-        else
-            self:UnregisterEvent('PLAYER_REGEN_ENABLED')
-            if GetNumRaidMembers() > 26 then
-                raid:SetScale(ns.db.scale-doscale)
-            else
-                raid:SetScale(ns.db.scale)
-            end
-        end
-    end)
-end
-
 ns._Objects = {}
 ns._Headers = {}
+freebHeaders = ns._Headers
+
+local setHeaderScale = function(scale)
+    for k, v in pairs(ns._Headers) do
+        if v then
+            v:SetScale(scale)
+        end
+    end
+end
+
+function ns:scaleRaid()
+    if not ns.db.scaleYes then
+        setHeaderScale(ns.db.scale)
+        return
+    end
+
+    local numRaiders = GetNumRaidMembers()
+
+    if numRaiders > 25 then
+        setHeaderScale(ns.db.scale40)
+    elseif numRaiders > 10 then
+        setHeaderScale(ns.db.scale25)
+    else
+        setHeaderScale(ns.db.scale)
+    end
+end
+
+local updateRaid = CreateFrame"Frame"
+updateRaid:RegisterEvent("RAID_ROSTER_UPDATE")
+updateRaid:RegisterEvent("PARTY_MEMBERS_CHANGED")
+updateRaid:RegisterEvent("PLAYER_ENTERING_WORLD")
+updateRaid:SetScript("OnEvent", function(self)
+    if(InCombatLockdown()) then
+        self:RegisterEvent('PLAYER_REGEN_ENABLED')
+    else
+        self:UnregisterEvent('PLAYER_REGEN_ENABLED')
+
+        ns:scaleRaid()
+    end
+end)
 
 local colors = setmetatable({
     power = setmetatable({
@@ -139,7 +156,7 @@ local roleOverride = function(self, event)
 
     if(role == 'TANK' or role == 'HEALER') then
         lfdrole:SetTexCoord(GetTexCoordsForRoleSmallCircle(role))
-		lfdrole:Show()
+        lfdrole:Show()
     else
         lfdrole:Hide()
     end
@@ -150,9 +167,9 @@ local assistOverride = function(self, event)
 
     if(UnitInRaid(unit) and UnitIsRaidOfficer(unit) and not UnitIsPartyLeader(unit) and not RaidFrameAllAssistCheckButton:GetChecked()) then
         self.Assistant:Show()
-	else
-		self.Assistant:Hide()
-	end
+    else
+        self.Assistant:Hide()
+    end
 end
 
 oUF.Tags['freebgrid:name'] = function(u, r)
@@ -216,7 +233,7 @@ local function PostHealth(hp, unit, min, max)
     if ns.db.hpinverted then
         hp:SetValue(max - min)
     end
-    
+
     if ns.db.definecolors and hp.colorSmooth then
         hp.bg:SetVertexColor(ns.db.hpbgcolor.r, ns.db.hpbgcolor.g, ns.db.hpbgcolor.b, ns.db.hpbgcolor.a)
         return
@@ -574,7 +591,7 @@ local style = function(self)
     self:RegisterEvent('PLAYER_TARGET_CHANGED', ChangedTarget)
     self:RegisterEvent('RAID_ROSTER_UPDATE', ChangedTarget)
 
-    self:SetScale(ns.db.scale)
+    --self:SetScale(ns.db.scale)
 
     table.insert(ns._Objects, self)
 end
@@ -705,8 +722,7 @@ oUF:Factory(function(self)
             ns._Headers[group:GetName()] = group
         end
     else
-        -- make this local if raidscale is removed
-        raid = freebHeader("Raid_Freebgrid")
+        local raid = freebHeader("Raid_Freebgrid")
         raid:SetPoint(pos, "oUF_FreebgridRaidFrame", pos)
         ns._Headers[raid:GetName()] = raid
     end
