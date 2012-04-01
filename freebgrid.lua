@@ -165,7 +165,7 @@ end
 local assistOverride = function(self, event)
     local unit = self.unit
 
-    if(UnitInRaid(unit) and UnitIsRaidOfficer(unit) and not UnitIsPartyLeader(unit) and not RaidFrameAllAssistCheckButton:GetChecked()) then
+    if(UnitInRaid(unit) and UnitIsRaidOfficer(unit) and not UnitIsPartyLeader(unit)) then
         self.Assistant:Show()
     else
         self.Assistant:Hide()
