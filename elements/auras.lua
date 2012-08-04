@@ -71,49 +71,14 @@ local CreateAuraIcon = function(auras)
 end
 
 local dispelClass = {
-    PRIEST = { Disease = true, },
-    SHAMAN = { Curse = true, },
-    PALADIN = { Poison = true, Disease = true, },
+    PRIEST = { Disease = true, Magic = true, },
+    SHAMAN = { Curse = true, Magic = true, },
+    PALADIN = { Poison = true, Disease = true, Magic = true, },
     MAGE = { Curse = true, },
-    DRUID = { Curse = true, Poison = true, },
+    DRUID = { Curse = true, Poison = true, Magic = true, },
 }
 
 local _, class = UnitClass("player")
-local checkTalents = CreateFrame"Frame"
-checkTalents:RegisterEvent"PLAYER_ENTERING_WORLD"
-checkTalents:RegisterEvent"ACTIVE_TALENT_GROUP_CHANGED"
-checkTalents:RegisterEvent"CHARACTER_POINTS_CHANGED"
-checkTalents:SetScript("OnEvent", function(self, event)
-    if multicheck(class, "SHAMAN", "PALADIN", "DRUID", "PRIEST") then
-
-        if class == "SHAMAN" then
-            local _,_,_,_,rank = GetTalentInfo(3, 12)
-
-            dispelClass[class].Magic = rank == 1 and true
-
-        elseif class == "PALADIN" then
-            local _,_,_,_,rank = GetTalentInfo(1, 14)
-
-            dispelClass[class].Magic = rank == 1 and true
-
-        elseif class == "DRUID" then
-            local _,_,_,_,rank = GetTalentInfo(3, 17)
-
-            dispelClass[class].Magic = rank == 1 and true
-
-        elseif class == "PRIEST" then
-            local tree = GetPrimaryTalentTree()
-            
-            dispelClass[class].Magic = (tree == 1 or tree == 2) and true
-            
-        end
-    end
-
-    if event == "PLAYER_ENTERING_WORLD" then
-        self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-    end
-end)
-
 local dispellist = dispelClass[class] or {}
 local dispelPriority = {
     Magic = 4,
