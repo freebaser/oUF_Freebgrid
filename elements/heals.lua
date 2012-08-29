@@ -34,7 +34,7 @@ oUF.Tags.Methods['freebgrid:def'] = function(u)
     end
 
     if ns.db.altpower then
-        local altpp = oUF.Tags['freebgrid:altpower'](u)
+        local altpp = oUF.Tags.Methods['freebgrid:altpower'](u)
         if altpp then
             return altpp
         end

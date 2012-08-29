@@ -131,7 +131,7 @@ end
 local updateRoster = function()
     wipe(units)
 
-    local numRaid = GetNumRaidMembers()
+    local numRaid = GetNumGroupMembers()
     if numRaid > 1 then
         for i=1, numRaid do
             local name = GetRaidRosterInfo(i)
@@ -143,7 +143,7 @@ local updateRoster = function()
     else
         fillroster("player")
 
-        local numParty = GetNumPartyMembers()
+        local numParty = GetNumSubgroupMembers()
         for i=1, numParty do
             local unit = "party"..i
             fillroster(unit)

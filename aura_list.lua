@@ -9,8 +9,8 @@ local spellcache = setmetatable({},
 		return a
 	end
 
-	print("Invalid spell ID: ", id)
-	return "foo"
+	--print("Invalid spell ID: ", id)
+	return {"foo"}
 end
 })
 
