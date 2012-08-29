@@ -1,6 +1,19 @@
 local _, ns = ...
 
-local spellcache = setmetatable({}, {__index=function(t,v) local a = {GetSpellInfo(v)} if GetSpellInfo(v) then t[v] = a end return a end})
+local spellcache = setmetatable({}, 
+{__index=function(t,id) 
+	local a = {GetSpellInfo(id)} 
+
+	if GetSpellInfo(id) then
+		t[id] = a
+		return a
+	end
+
+	print("Invalid spell ID: ", id)
+	return "foo"
+end
+})
+
 local function GetSpellInfo(a)
     return unpack(spellcache[a])
 end

@@ -5,7 +5,7 @@ assert(oUF, "oUF_Freebgrid was unable to locate oUF install.")
 local numberize = ns.numberize
 local colorCache = ns.colorCache
 
-oUF.Tags['freebgrid:altpower'] = function(u)
+oUF.Tags.Methods['freebgrid:altpower'] = function(u)
 	local cur = UnitPower(u, ALTERNATE_POWER_INDEX)
     if cur > 0 then
 	    local max = UnitPowerMax(u, ALTERNATE_POWER_INDEX)
@@ -20,9 +20,9 @@ oUF.Tags['freebgrid:altpower'] = function(u)
         return ns:hex(r,g,b)..format("%d", per).."|r"
     end
 end
-oUF.TagEvents['freebgrid:altpower'] = "UNIT_POWER UNIT_MAXPOWER"
+oUF.Tags.Events['freebgrid:altpower'] = "UNIT_POWER UNIT_MAXPOWER"
 
-oUF.Tags['freebgrid:def'] = function(u)
+oUF.Tags.Methods['freebgrid:def'] = function(u)
     if UnitIsAFK(u) then
         return CHAT_FLAG_AFK
     elseif UnitIsDead(u) then
@@ -66,9 +66,9 @@ oUF.Tags['freebgrid:def'] = function(u)
         end
     end 
 end
-oUF.TagEvents['freebgrid:def'] = 'UNIT_MAXHEALTH UNIT_HEALTH UNIT_HEALTH_FREQUENT UNIT_CONNECTION PLAYER_FLAGS_CHANGED '..oUF.TagEvents['freebgrid:altpower']
+oUF.Tags.Events['freebgrid:def'] = 'UNIT_MAXHEALTH UNIT_HEALTH UNIT_HEALTH_FREQUENT UNIT_CONNECTION PLAYER_FLAGS_CHANGED '..oUF.Tags.Events['freebgrid:altpower']
 
-oUF.Tags['freebgrid:heals'] = function(u)
+oUF.Tags.Methods['freebgrid:heals'] = function(u)
     local incheal = UnitGetIncomingHeals(u) or 0
     if incheal > 0 then
         return "|cff00FF00"..numberize(incheal).."|r"
@@ -77,9 +77,9 @@ oUF.Tags['freebgrid:heals'] = function(u)
         return def
     end
 end
-oUF.TagEvents['freebgrid:heals'] = 'UNIT_HEAL_PREDICTION '..oUF.TagEvents['freebgrid:def']
+oUF.Tags.Events['freebgrid:heals'] = 'UNIT_HEAL_PREDICTION '..oUF.Tags.Events['freebgrid:def']
 
-oUF.Tags['freebgrid:othersheals'] = function(u)
+oUF.Tags.Methods['freebgrid:othersheals'] = function(u)
     local incheal = UnitGetIncomingHeals(u) or 0
     local player = UnitGetIncomingHeals(u, "player") or 0
 
@@ -92,7 +92,7 @@ oUF.Tags['freebgrid:othersheals'] = function(u)
         return def
     end
 end
-oUF.TagEvents['freebgrid:othersheals'] = oUF.TagEvents['freebgrid:heals']
+oUF.Tags.Events['freebgrid:othersheals'] = oUF.Tags.Events['freebgrid:heals']
 
 local Update = function(self, event, unit)
     if self.unit ~= unit then return end

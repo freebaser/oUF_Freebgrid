@@ -32,8 +32,7 @@ function ns:scaleRaid()
 end
 
 local updateRaid = CreateFrame"Frame"
-updateRaid:RegisterEvent("RAID_ROSTER_UPDATE")
-updateRaid:RegisterEvent("PARTY_MEMBERS_CHANGED")
+updateRaid:RegisterEvent("GROUP_ROSTER_UPDATE")
 updateRaid:RegisterEvent("PLAYER_ENTERING_WORLD")
 updateRaid:SetScript("OnEvent", function(self)
     if(InCombatLockdown()) then
@@ -172,14 +171,14 @@ local assistOverride = function(self, event)
     end
 end
 
-oUF.Tags['freebgrid:name'] = function(u, r)
+oUF.Tags.Methods['freebgrid:name'] = function(u, r)
     local name = (u == 'vehicle' and UnitName(r or u)) or UnitName(u)
 
     if ns.nameCache[name] then
         return ns.nameCache[name]
     end
 end
-oUF.TagEvents['freebgrid:name'] = 'UNIT_NAME_UPDATE'
+oUF.Tags.Events['freebgrid:name'] = 'UNIT_NAME_UPDATE'
 
 ns.nameCache = {}
 ns.colorCache = {}
@@ -345,7 +344,7 @@ local function PostPower(power, unit, min, max)
         power:SetValue(max - min)
     end
 
-    local perc = oUF.Tags['perpp'](unit)
+    local perc = oUF.Tags.Methods['perpp'](unit)
     -- This kinda conflicts with the threat module, but I don't really care
     if (perc < 10 and UnitIsConnected(unit) and ptype == 'MANA' and not UnitIsDeadOrGhost(unit)) then
         self.Threat:SetBackdropBorderColor(0, 0, 1, 1)
@@ -587,9 +586,9 @@ local style = function(self)
 
     -- Add events
     self:RegisterEvent('PLAYER_FOCUS_CHANGED', FocusTarget)
-    self:RegisterEvent('RAID_ROSTER_UPDATE', FocusTarget)
+    self:RegisterEvent('GROUP_ROSTER_UPDATE', FocusTarget)
     self:RegisterEvent('PLAYER_TARGET_CHANGED', ChangedTarget)
-    self:RegisterEvent('RAID_ROSTER_UPDATE', ChangedTarget)
+    self:RegisterEvent('GROUP_ROSTER_UPDATE', ChangedTarget)
 
     --self:SetScale(ns.db.scale)
 

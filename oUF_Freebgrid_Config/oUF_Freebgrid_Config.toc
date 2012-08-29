@@ -1,4 +1,4 @@
-## Interface: 40300
+## Interface: 50001
 ## Title: oUF_Freebgrid_Config
 ## Notes: oUF_Freebgrid's configuration gui
 ## Author: Freebaser

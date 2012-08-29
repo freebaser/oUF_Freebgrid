@@ -10,7 +10,7 @@ local clusterPerc
 local units = {}
 --freebroster = units
 
-oUF.Tags['freebgrid:cluster'] = function(u)
+oUF.Tags.Methods['freebgrid:cluster'] = function(u)
     --print(u)
     if units[u] then
         local num = units[u].numInRange
@@ -181,8 +181,7 @@ local Enable = function(self)
         self:Tag(self.freebCluster, "[freebgrid:cluster]")
         self.freebCluster:Show()
 
-        frame:RegisterEvent("RAID_ROSTER_UPDATE")
-        frame:RegisterEvent("PARTY_MEMBERS_CHANGED")
+        frame:RegisterEvent("GROUP_ROSTER_UPDATE")
         frame:RegisterEvent("PLAYER_ENTERING_WORLD")
         frame:RegisterEvent("ZONE_CHANGED_NEW_AREA")
         frame:SetScript("OnUpdate", updatePos)
@@ -200,8 +199,7 @@ local Disable = function(self)
             self.freebCluster:Hide()
         end
 
-        frame:UnregisterEvent("RAID_ROSTER_UPDATE")
-        frame:UnregisterEvent("PARTY_MEMBERS_CHANGED")
+        frame:UnregisterEvent("GROUP_ROSTER_UPDATE")
         frame:UnregisterEvent("PLAYER_ENTERING_WORLD")
         frame:UnregisterEvent("ZONE_CHANGED_NEW_AREA")
         frame:SetScript("OnUpdate", nil)
