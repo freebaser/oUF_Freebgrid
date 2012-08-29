@@ -1,4 +1,5 @@
 package-as: oUF_Freebgrid
+enable-nolib-creation: no
 
 externals:
     libs/LibStub:
