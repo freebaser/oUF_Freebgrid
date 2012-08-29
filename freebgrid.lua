@@ -161,16 +161,6 @@ local roleOverride = function(self, event)
     end
 end
 
-local assistOverride = function(self, event)
-    local unit = self.unit
-
-    if(UnitInRaid(unit) and UnitIsRaidOfficer(unit) and not UnitIsPartyLeader(unit)) then
-        self.Assistant:Show()
-    else
-        self.Assistant:Hide()
-    end
-end
-
 oUF.Tags.Methods['freebgrid:name'] = function(u, r)
     local name = (u == 'vehicle' and UnitName(r or u)) or UnitName(u)
 
@@ -538,7 +528,6 @@ local style = function(self)
     self.Assistant = self.Health:CreateTexture(nil, "OVERLAY")
     self.Assistant:SetPoint("TOPLEFT", self, 0, 8)
     self.Assistant:SetSize(ns.db.leadersize, ns.db.leadersize)
-    self.Assistant.Override = assistOverride
 
     local masterlooter = self.Health:CreateTexture(nil, 'OVERLAY')
     masterlooter:SetSize(ns.db.leadersize, ns.db.leadersize)
