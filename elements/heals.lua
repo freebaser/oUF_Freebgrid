@@ -41,7 +41,7 @@ oUF.Tags.Methods['freebgrid:def'] = function(u)
     end
 
     if ns.db.perc then
-        local perc = oUF.Tags['perhp'](u)
+        local perc = oUF.Tags.Methods['perhp'](u)
         if perc < 90 then
             local _, class = UnitClass(u)
             local color = colorCache[class]
@@ -73,7 +73,7 @@ oUF.Tags.Methods['freebgrid:heals'] = function(u)
     if incheal > 0 then
         return "|cff00FF00"..numberize(incheal).."|r"
     else
-        local def = oUF.Tags['freebgrid:def'](u)
+        local def = oUF.Tags.Methods['freebgrid:def'](u)
         return def
     end
 end
@@ -88,7 +88,7 @@ oUF.Tags.Methods['freebgrid:othersheals'] = function(u)
     if incheal > 0 then
         return "|cff00FF00"..numberize(incheal).."|r"
     else
-        local def = oUF.Tags['freebgrid:def'](u)
+        local def = oUF.Tags.Methods['freebgrid:def'](u)
         return def
     end
 end
