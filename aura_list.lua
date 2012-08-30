@@ -1,16 +1,18 @@
 local _, ns = ...
 
+local foo = {""}
 local spellcache = setmetatable({}, 
 {__index=function(t,id) 
 	local a = {GetSpellInfo(id)} 
 
 	if GetSpellInfo(id) then
-		t[id] = a
-		return a
+	    t[id] = a
+	    return a
 	end
 
 	--print("Invalid spell ID: ", id)
-	return {"foo"}
+        t[id] = foo
+	return foo
 end
 })
 

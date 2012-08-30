@@ -2,17 +2,19 @@ local _, ns = ...
 local oUF = ns.oUF or oUF
 assert(oUF, "oUF_Freebgrid was unable to locate oUF install.")
 
+local foo = {""}
 local spellcache = setmetatable({}, 
 {__index=function(t,id) 
 	local a = {GetSpellInfo(id)} 
 
 	if GetSpellInfo(id) then
-		t[id] = a
-		return a
+	    t[id] = a
+	    return a
 	end
 
 	--print("Invalid spell ID: ", id)
-	return {"foo"}
+        t[id] = foo
+	return foo
 end
 })
 
@@ -149,10 +151,7 @@ oUF.Tags.Events['freebgrid:ws'] = "UNIT_AURA"
 oUF.Tags.Methods['freebgrid:fw'] = function(u) if UnitAura(u, GetSpellInfo(6346)) then return "|cff8B4513"..x.."|r" end end
 oUF.Tags.Events['freebgrid:fw'] = "UNIT_AURA"
 
-oUF.Tags.Methods['freebgrid:sp'] = function(u) if not UnitAura(u, GetSpellInfo(79107)) then return "|cff9900FF"..x.."|r" end end
-oUF.Tags.Events['freebgrid:sp'] = "UNIT_AURA"
-
-oUF.Tags.Methods['freebgrid:fort'] = function(u) if not(UnitAura(u, GetSpellInfo(79105)) or UnitAura(u, GetSpellInfo(6307)) or UnitAura(u, GetSpellInfo(469))) then return "|cff00A1DE"..x.."|r" end end
+oUF.Tags.Methods['freebgrid:fort'] = function(u) if not(UnitAura(u, GetSpellInfo(21562)) or UnitAura(u, GetSpellInfo(6307)) or UnitAura(u, GetSpellInfo(469))) then return "|cff00A1DE"..x.."|r" end end
 oUF.Tags.Events['freebgrid:fort'] = "UNIT_AURA"
 
 oUF.Tags.Methods['freebgrid:pwb'] = function(u) if UnitAura(u, GetSpellInfo(81782)) then return "|cffEEEE00"..x.."|r" end end
@@ -202,7 +201,7 @@ oUF.Tags.Events['freebgrid:regrow'] = "UNIT_AURA"
 oUF.Tags.Methods['freebgrid:wg'] = function(u) if UnitAura(u, GetSpellInfo(48438)) then return "|cff33FF33"..x.."|r" end end
 oUF.Tags.Events['freebgrid:wg'] = "UNIT_AURA"
 
-oUF.Tags.Methods['freebgrid:motw'] = function(u) if not(UnitAura(u, GetSpellInfo(79060)) or UnitAura(u,GetSpellInfo(79063))) then return "|cff00A1DE"..x.."|r" end end
+oUF.Tags.Methods['freebgrid:motw'] = function(u) if not(UnitAura(u, GetSpellInfo(1126)) or UnitAura(u,GetSpellInfo(20217))) then return "|cff00A1DE"..x.."|r" end end
 oUF.Tags.Events['freebgrid:motw'] = "UNIT_AURA"
 
 -- Warrior
@@ -232,19 +231,14 @@ end
 oUF.Tags.Events['freebgrid:earth'] = 'UNIT_AURA'
 
 -- Paladin
-oUF.Tags.Methods['freebgrid:might'] = function(u) if not(UnitAura(u, GetSpellInfo(53138)) or UnitAura(u, GetSpellInfo(79102))) then return "|cffFF0000"..x.."|r" end end
+oUF.Tags.Methods['freebgrid:might'] = function(u) if not(UnitAura(u, GetSpellInfo(109773))) then return "|cffFF0000"..x.."|r" end end
 oUF.Tags.Events['freebgrid:might'] = "UNIT_AURA"
 
 oUF.Tags.Methods['freebgrid:beacon'] = function(u)
-    local name, _,_,_,_,_, expirationTime, fromwho = UnitAura(u, GetSpellInfo(53563))
+    local name, _,_,_,_,_,_, fromwho = UnitAura(u, GetSpellInfo(53563))
     if not name then return end
     if(fromwho == "player") then
-        local spellTimer = GetTime()-expirationTime
-        if spellTimer > -30 then
-            return "|cffFF00004|r"
-        else
-            return "|cffFFCC003|r"
-        end
+        return "|cffFFCC003|r"
     else
         return "|cff996600Y|r" -- other pally's beacon
     end
@@ -256,7 +250,7 @@ oUF.Tags.Events['freebgrid:forbearance'] = "UNIT_AURA"
 
 -- Warlock
 oUF.Tags.Methods['freebgrid:di'] = function(u) 
-    local name, _,_,_,_,_,_, fromwho = UnitAura(u, GetSpellInfo(85767)) 
+    local name, _,_,_,_,_,_, fromwho = UnitAura(u, GetSpellInfo(109773))
     if fromwho == "player" then
         return "|cff6600FF"..x.."|r"
     elseif name then
@@ -292,7 +286,7 @@ ns.classIndicators={
     },
     ["PRIEST"] = {
         ["TL"] = "[freebgrid:pws][freebgrid:ws]",
-        ["TR"] = "[freebgrid:fw][freebgrid:sp][freebgrid:fort]",
+        ["TR"] = "[freebgrid:fw][freebgrid:fort]",
         ["BL"] = "[freebgrid:rnw][freebgrid:pwb]",
         ["BR"] = "[freebgrid:pom]",
         ["Cen"] = "[freebgrid:rnwTime]",

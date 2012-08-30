@@ -20,7 +20,7 @@ function ns:scaleRaid()
         return
     end
 
-    local numRaiders = GetNumRaidMembers()
+    local numRaiders = GetNumGroupMembers()
 
     if numRaiders > 25 then
         setHeaderScale(ns.db.scale40)
