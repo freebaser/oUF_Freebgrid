@@ -11,7 +11,7 @@ local spellcache = setmetatable({},
 	end
 
 	--print("Invalid spell ID: ", id)
-        t[id] = foo
+   t[id] = foo
 	return foo
 end
 })
