@@ -112,11 +112,13 @@ oUF.Tags.Events['freebgrid:poison'] = "UNIT_AURA"
 -- Priest
 local pomCount = {"i","h","g","f","Z","Y"}
 oUF.Tags.Methods['freebgrid:pom'] = function(u) 
-    local name, _,_, c, _,_,_, fromwho = UnitAura(u, GetSpellInfo(41635)) 
-    if fromwho == "player" then
-        if(c) then return "|cff66FFFF"..pomCount[c].."|r" end 
-    else
-        if(c) then return "|cffFFCF7F"..pomCount[c].."|r" end 
+    local name, _,_, c, _,_,_, fromwho = UnitAura(u, GetSpellInfo(33076))
+    if name and c then
+        if(fromwho == "player") then
+            return "|cff66FFFF"..pomCount[c].."|r"
+        else
+            return "|cffFFCF7F"..pomCount[c].."|r"
+        end
     end
 end
 oUF.Tags.Events['freebgrid:pom'] = "UNIT_AURA"
