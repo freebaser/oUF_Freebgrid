@@ -62,7 +62,7 @@ local dropdown = CreateFrame('Frame', ADDON_NAME .. 'DropDown', UIParent, 'UIDro
 
 local function menu(self)
     dropdown:SetParent(self)
-    return ToggleDropDownMenu(1, nil, dropdown, 'cursor', 0, 0)
+    return ToggleDropDownMenu(1, nil, dropdown, self:GetName(), 0, 0)
 end
 
 local init = function(self)

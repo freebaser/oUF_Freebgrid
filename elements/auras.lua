@@ -71,11 +71,12 @@ local CreateAuraIcon = function(auras)
 end
 
 local dispelClass = {
-    PRIEST = { Disease = true, Magic = true, },
-    SHAMAN = { Curse = true, Magic = true, },
-    PALADIN = { Poison = true, Disease = true, Magic = true, },
-    MAGE = { Curse = true, },
-    DRUID = { Curse = true, Poison = true, Magic = true, },
+	PRIEST = { Disease = true, Magic = true, }, --Purify
+	SHAMAN = { Curse = true, Magic = true, }, --Purify Spirit
+	PALADIN = { Poison = true, Disease = true, Magic = true, }, --Cleanse
+	MAGE = { Curse = true, }, --Remove Curse
+	DRUID = { Curse = true, Poison = true, Magic = true, }, --Nature's Cure
+	MONK = { Poison = true, Disease = true, Magic = true, }, --Detox
 }
 
 local _, class = UnitClass("player")

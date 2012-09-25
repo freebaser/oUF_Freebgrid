@@ -476,7 +476,7 @@ end
 
 local _LOCK
 function ns:Movable()
-
+	if(InCombatLockdown()) then return end
     if(not _LOCK) then
         for k, frame in next, anchorpool do
             frame:Show()

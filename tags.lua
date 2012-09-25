@@ -110,10 +110,17 @@ end
 oUF.Tags.Events['freebgrid:poison'] = "UNIT_AURA"
 
 -- Priest
-local pomCount = {"i","h","g","f","Z","Y"}
+local pomCount = {
+	[1] = 'i',
+	[2] = 'h',
+	[3] = 'g',
+	[4] = 'f',
+	[5] = 'Z',
+	[6] = 'Y',
+}
 oUF.Tags.Methods['freebgrid:pom'] = function(u) 
     local name, _,_, c, _,_,_, fromwho = UnitAura(u, GetSpellInfo(33076))
-    if name and c then
+    if name and pomCount[c] then
         if(fromwho == "player") then
             return "|cff66FFFF"..pomCount[c].."|r"
         else
@@ -233,7 +240,7 @@ end
 oUF.Tags.Events['freebgrid:earth'] = 'UNIT_AURA'
 
 -- Paladin
-oUF.Tags.Methods['freebgrid:might'] = function(u) if not(UnitAura(u, GetSpellInfo(109773))) then return "|cffFF0000"..x.."|r" end end
+oUF.Tags.Methods['freebgrid:might'] = function(u) if not(UnitAura(u, GetSpellInfo(19740))) then return "|cffFF0000"..x.."|r" end end
 oUF.Tags.Events['freebgrid:might'] = "UNIT_AURA"
 
 oUF.Tags.Methods['freebgrid:beacon'] = function(u)
@@ -249,6 +256,21 @@ oUF.Tags.Events['freebgrid:beacon'] = "UNIT_AURA"
 
 oUF.Tags.Methods['freebgrid:forbearance'] = function(u) if UnitDebuff(u, GetSpellInfo(25771)) then return "|cffFF9900"..x.."|r" end end
 oUF.Tags.Events['freebgrid:forbearance'] = "UNIT_AURA"
+
+oUF.Tags.Methods['freebgrid:sacred'] = function(u)
+    local name, _,_,_,_,_,_, fromwho = UnitAura(u, GetSpellInfo(20925))
+    if not name then return end
+    if(fromwho == "player") then
+        return "|cffFFCC00"..x.."|r"
+    end
+end
+oUF.Tags.Events['freebgrid:sacred'] = "UNIT_AURA"
+
+oUF.Tags.Methods['freebgrid:eternalTime'] = function(u)
+    local name, _,_,_,_,_, expirationTime, fromwho = UnitAura(u, GetSpellInfo(114163))
+    if(fromwho == "player") then return getTime(expirationTime) end 
+end
+oUF.Tags.Events['freebgrid:eternalTime'] = "UNIT_AURA"
 
 -- Warlock
 oUF.Tags.Methods['freebgrid:di'] = function(u) 
@@ -296,9 +318,9 @@ ns.classIndicators={
     ["PALADIN"] = {
         ["TL"] = "[freebgrid:forbearance]",
         ["TR"] = "[freebgrid:might][freebgrid:motw]",
-        ["BL"] = "",
+        ["BL"] = "[freebgrid:sacred]",
         ["BR"] = "[freebgrid:beacon]",
-        ["Cen"] = "",
+        ["Cen"] = "[freebgrid:eternalTime]",
     },
     ["WARLOCK"] = {
         ["TL"] = "",
