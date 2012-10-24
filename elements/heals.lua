@@ -162,7 +162,7 @@ local Enable = function(self)
 			if ns.db.hpreversed then
 				self.otherHealPredictionBar:SetPoint("TOPLEFT", self.myHealPredictionBar:GetStatusBarTexture(), "BOTTOMLEFT", 0, 0)
 				self.otherHealPredictionBar:SetPoint("TOPRIGHT", self.myHealPredictionBar:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0)
-				self.otherHealPRedictionBar:SetReverseFill(true)
+				self.otherHealPredictionBar:SetReverseFill(true)
 			else
 				self.otherHealPredictionBar:SetPoint("BOTTOMLEFT", self.myHealPredictionBar:GetStatusBarTexture(), "TOPLEFT", 0, 0)
 				self.otherHealPredictionBar:SetPoint("BOTTOMRIGHT", self.myHealPredictionBar:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
