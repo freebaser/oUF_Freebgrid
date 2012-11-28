@@ -103,8 +103,8 @@ local function updateHealbar(object)
         object.otherHealPredictionBar:SetOrientation"HORIZONTAL"
     end
 
-    object.myHealPredictionBar:GetStatusBarTexture():SetTexture(ns.db.myhealcolor.r, ns.db.myhealcolor.g, ns.db.myhealcolor.b, ns.db.myhealcolor.a)
-    object.otherHealPredictionBar:GetStatusBarTexture():SetTexture(ns.db.otherhealcolor.r, ns.db.otherhealcolor.g, ns.db.otherhealcolor.b, ns.db.otherhealcolor.a)
+    object.myHealPredictionBar:SetStatusBarColor(ns.db.myhealcolor.r, ns.db.myhealcolor.g, ns.db.myhealcolor.b, ns.db.myhealcolor.a)
+    object.otherHealPredictionBar:SetStatusBarColor(ns.db.otherhealcolor.r, ns.db.otherhealcolor.g, ns.db.otherhealcolor.b, ns.db.otherhealcolor.a)
 end
 
 local updateCluster = function(object)

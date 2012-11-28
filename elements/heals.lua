@@ -154,7 +154,7 @@ local Enable = function(self)
 			self.myHealPredictionBar:SetSize(ns.db.width, 0)
 		end
 		self.myHealPredictionBar:SetStatusBarTexture("", "BORDER")
-		self.myHealPredictionBar:GetStatusBarTexture():SetTexture(ns.db.myhealcolor.r, ns.db.myhealcolor.g, ns.db.myhealcolor.b, ns.db.myhealcolor.a)
+		self.myHealPredictionBar:SetStatusBarColor(ns.db.myhealcolor.r, ns.db.myhealcolor.g, ns.db.myhealcolor.b, ns.db.myhealcolor.a)
 		self.myHealPredictionBar:Hide()
 
 		self.otherHealPredictionBar = CreateFrame('StatusBar', nil, self.Health)
@@ -181,7 +181,7 @@ local Enable = function(self)
 			self.otherHealPredictionBar:SetSize(ns.db.width, 0)
 		end
 		self.otherHealPredictionBar:SetStatusBarTexture("", "BORDER")
-		self.otherHealPredictionBar:GetStatusBarTexture():SetTexture(ns.db.otherhealcolor.r, ns.db.otherhealcolor.g, ns.db.otherhealcolor.b, ns.db.otherhealcolor.a)
+		self.otherHealPredictionBar:SetStatusBarColor(ns.db.otherhealcolor.r, ns.db.otherhealcolor.g, ns.db.otherhealcolor.b, ns.db.otherhealcolor.a)
 		self.otherHealPredictionBar:Hide() 
 
 		if ns.db.healbar then

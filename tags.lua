@@ -210,7 +210,7 @@ oUF.Tags.Events['freebgrid:regrow'] = "UNIT_AURA"
 oUF.Tags.Methods['freebgrid:wg'] = function(u) if UnitAura(u, GetSpellInfo(48438)) then return "|cff33FF33"..x.."|r" end end
 oUF.Tags.Events['freebgrid:wg'] = "UNIT_AURA"
 
-oUF.Tags.Methods['freebgrid:motw'] = function(u) if not(UnitAura(u, GetSpellInfo(1126)) or UnitAura(u,GetSpellInfo(20217))) then return "|cff00A1DE"..x.."|r" end end
+oUF.Tags.Methods['freebgrid:motw'] = function(u) if not(UnitAura(u, GetSpellInfo(1126)) or UnitAura(u,GetSpellInfo(20217)) or UnitAura(u,GetSpellInfo(115921))) then return "|cff00A1DE"..x.."|r" end end
 oUF.Tags.Events['freebgrid:motw'] = "UNIT_AURA"
 
 -- Warrior
