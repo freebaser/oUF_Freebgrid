@@ -153,7 +153,7 @@ local Enable = function(self)
 			end
 			self.myHealPredictionBar:SetSize(ns.db.width, 0)
 		end
-		self.myHealPredictionBar:SetStatusBarTexture("", "BORDER")
+		self.myHealPredictionBar:SetStatusBarTexture(1,1,1, "BORDER", -1)
 		self.myHealPredictionBar:SetStatusBarColor(ns.db.myhealcolor.r, ns.db.myhealcolor.g, ns.db.myhealcolor.b, ns.db.myhealcolor.a)
 		self.myHealPredictionBar:Hide()
 
@@ -180,7 +180,7 @@ local Enable = function(self)
 			end
 			self.otherHealPredictionBar:SetSize(ns.db.width, 0)
 		end
-		self.otherHealPredictionBar:SetStatusBarTexture("", "BORDER")
+		self.otherHealPredictionBar:SetStatusBarTexture(1,1,1, "BORDER", -1)
 		self.otherHealPredictionBar:SetStatusBarColor(ns.db.otherhealcolor.r, ns.db.otherhealcolor.g, ns.db.otherhealcolor.b, ns.db.otherhealcolor.a)
 		self.otherHealPredictionBar:Hide() 
 
