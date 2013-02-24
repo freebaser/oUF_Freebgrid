@@ -77,7 +77,7 @@ ns.auras = {
 			[GetSpellInfo(137972)] = 6, --Twisted Fate (Heroic only)
 
 			--Tortos
-			[GetSpellInfo(134030)] = 6 --Kick Shell
+			[GetSpellInfo(134030)] = 6, --Kick Shell
 			[GetSpellInfo(134920)] = 6, --Quake Stomp
 			[GetSpellInfo(136751)] = 6, --Sonic Screech
 			[GetSpellInfo(136753)] = 2, --Slashing Talons (tank only)
