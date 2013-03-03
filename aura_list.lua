@@ -65,22 +65,25 @@ ns.auras = {
 			[GetSpellInfo(136512)] = 5, --Hex of Confusion
 			[GetSpellInfo(136719)] = 6, --Blazing Sunlight
 			[GetSpellInfo(136654)] = 4, --Rending Charge
+			[GetSpellInfo(140946)] = 7, --Dire Fixation (Heroic Only)
 
 			--Council of Elders
 			[GetSpellInfo(136922)] = 6, --Frostbite
 			[GetSpellInfo(137084)] = 3, --Body Heat
 			[GetSpellInfo(137641)] = 6, --Soul Fragment (Heroic only)
-			[GetSpellInfo(137359)] = 5, --Ensnared
+			[GetSpellInfo(136878)] = 5, --Ensnared
 			[GetSpellInfo(136857)] = 6, --Entrapped (Dispell)
-			[GetSpellInfo(137650)] = 4, --Shadowed Soul
+			[GetSpellInfo(137650)] = 5, --Shadowed Soul
 			[GetSpellInfo(137359)] = 6, --Shadowed Loa Spirit fixate target
 			[GetSpellInfo(137972)] = 6, --Twisted Fate (Heroic only)
+			[GetSpellInfo(136860)] = 5, --Quicksand
 
 			--Tortos
 			[GetSpellInfo(134030)] = 6, --Kick Shell
 			[GetSpellInfo(134920)] = 6, --Quake Stomp
 			[GetSpellInfo(136751)] = 6, --Sonic Screech
 			[GetSpellInfo(136753)] = 2, --Slashing Talons (tank only)
+			[GetSpellInfo(137633)] = 5, --Crystal Shell (heroic only)
 
 			--Megaera
 			[GetSpellInfo(139822)] = 6, --Cinder (Dispell)
@@ -91,8 +94,13 @@ ns.auras = {
 			[GetSpellInfo(137746)] = 6, --Consuming Magic
 			[GetSpellInfo(139843)] = 4, --Artic Freeze
 			[GetSpellInfo(139840)] = 4, --Rot Armor
+			[GetSpellInfo(140179)] = 6, --Suppression (stun)
 
 			--Ji-Kun
+			[GetSpellInfo(138309)] = 4, --Slimed
+			[GetSpellInfo(138319)] = 5, --Feed Pool
+			[GetSpellInfo(140571)] = 3, --Feed Pool
+			[GetSpellInfo(134372)] = 3, --Screech
 
 			--Durumu the Forgotten
 			[GetSpellInfo(133768)] = 2, --Arterial Cut (tank only)
@@ -104,9 +112,11 @@ ns.auras = {
 			[GetSpellInfo(133795)] = 4, --Life Drain
 			[GetSpellInfo(133597)] = 6, --Dark Parasite
 			[GetSpellInfo(133732)] = 5, --Infrared Light (the stacking red debuff)
-			[GetSpellInfo(133675)] = 5, --Blue Rays (the stacking blue debuff)
-			[GetSpellInfo(133737)] = 5, --Bright Light (one of the yellow debuffs)  
+			[GetSpellInfo(133677)] = 5, --Blue Rays (the stacking blue debuff)
 			[GetSpellInfo(133738)] = 5, --Bright Light (the stacking yellow debuff)
+			[GetSpellInfo(133737)] = 6, --Bright Light (The one that says you are actually in a beam)
+			[GetSpellInfo(133675)] = 6, --Blue Rays (The one that says you are actually in a beam)
+			[GetSpellInfo(134626)] = 6, --Lingering Gaze
 
 			--Primordius
 			[GetSpellInfo(140546)] = 6, --Fully Mutated
@@ -139,11 +149,12 @@ ns.auras = {
 			[GetSpellInfo(137668)] = 5, --Burning Cinders
 			[GetSpellInfo(137654)] = 5, --Rushing Winds 
 			[GetSpellInfo(136577)] = 4, --Wind Storm
+			[GetSpellInfo(136192)] = 4, --Lightning Storm
 
 			--Twin Consorts
-			[GetSpellInfo(137440)] = 2, --Icy Shadows (tank only)
+			[GetSpellInfo(137440)] = 6, --Icy Shadows (tank only)
 			[GetSpellInfo(137417)] = 6, --Flames of Passion
-			[GetSpellInfo(138306)] = 6, --Serpent's Vitality
+			[GetSpellInfo(138306)] = 5, --Serpent's Vitality
 			[GetSpellInfo(137408)] = 2, --Fan of Flames (tank only)
 			[GetSpellInfo(137360)] = 6, --Corrupted Healing (tanks and healers only?)
 			[GetSpellInfo(137375)] = 3, --Beast of Nightmares
