@@ -57,54 +57,6 @@ function ns:hex(r, g, b)
     return ('|cff%02x%02x%02x'):format(r * 255, g * 255, b * 255)
 end
 
--- Unit Menu
-local dropdown = CreateFrame('Frame', ADDON_NAME .. 'DropDown', UIParent, 'UIDropDownMenuTemplate')
-
-local function menu(self)
-    dropdown:SetParent(self)
-    return ToggleDropDownMenu(1, nil, dropdown, self:GetName(), 0, 0)
-end
-
-local init = function(self)
-    if (ns.db and ns.db.hidemenu) and InCombatLockdown() then
-        return
-    end
-
-    local unit = self:GetParent().unit
-    local menu, name, id
-
-    if(not unit) then
-        return
-    end
-
-    if(UnitIsUnit(unit, "player")) then
-        menu = "SELF"
-    elseif(UnitIsUnit(unit, "vehicle")) then
-        menu = "VEHICLE"
-    elseif(UnitIsUnit(unit, "pet")) then
-        menu = "PET"
-    elseif(UnitIsPlayer(unit)) then
-        id = UnitInRaid(unit)
-        if(id) then
-            menu = "RAID_PLAYER"
-            name = GetRaidRosterInfo(id)
-        elseif(UnitInParty(unit)) then
-            menu = "PARTY"
-        else
-            menu = "PLAYER"
-        end
-    else
-        menu = "TARGET"
-        name = RAID_TARGET_ICON
-    end
-
-    if(menu) then
-        UnitPopup_ShowMenu(self, menu, unit, name, id)
-    end
-end
-
-UIDropDownMenu_Initialize(dropdown, init, 'MENU')
-
 local border = {
     bgFile = [=[Interface\AddOns\oUF_Freebgrid\media\white.tga]=],
     insets = {top = -2, left = -2, bottom = -2, right = -2},
@@ -433,7 +385,6 @@ local OnLeave = function(self)
 end
 
 local style = function(self)
-    self.menu = menu
 
     -- Mouseover script
     self:SetScript("OnEnter", OnEnter)
