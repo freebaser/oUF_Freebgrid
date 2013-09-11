@@ -45,7 +45,7 @@ ns.auras = {
         --["MapID"] = {
         --	[Name or GetSpellInfo(spellID) or SpellID] = PRIORITY,
         --},
-        [956] = { --[[ Siege of Orgrimmar ]]--
+        [953] = { --[[ Siege of Orgrimmar ]]--
 			--Immerseus
 			[GetSpellInfo(143297)] = 5, --Sha Splash
 			[GetSpellInfo(143459)] = 4, --Sha Residue
