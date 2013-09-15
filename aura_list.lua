@@ -6,46 +6,49 @@ local spellcache = setmetatable({},
 	local a = {GetSpellInfo(id)} 
 
 	if GetSpellInfo(id) then
-	    t[id] = a
-	    return a
+		t[id] = a
+		return a
 	end
 
 	--print("Invalid spell ID: ", id)
-   t[id] = foo
+	t[id] = foo
 	return foo
 end
 })
 
 local function GetSpellInfo(a)
-    return unpack(spellcache[a])
+	return unpack(spellcache[a])
 end
 
 ns.auras = {
-    -- Ascending aura timer
-    -- Add spells to this list to have the aura time count up from 0
-    -- NOTE: This does not show the aura, it needs to be in one of the other list too.
-    ascending = {
-        [GetSpellInfo(92956)] = true, -- Wrack
-    },
+	-- Ascending aura timer
+	-- Add spells to this list to have the aura time count up from 0
+	-- NOTE: This does not show the aura, it needs to be in one of the other list too.
+	ascending = {
+		[GetSpellInfo(92956)] = true, -- Wrack
+	},
 
-    -- Any Zone
-    debuffs = {
-        --[6788] = 16,
-        --[GetSpellInfo(6788)] = 16, -- Weakened Soul
-        [GetSpellInfo(39171)] = 9, -- Mortal Strike
-        [GetSpellInfo(76622)] = 9, -- Sunder Armor
-    },
+	-- Any Zone
+	debuffs = {
+		--[6788] = 16,
+		--[GetSpellInfo(6788)] = 16, -- Weakened Soul
+		[GetSpellInfo(39171)] = 9, -- Mortal Strike
+		[GetSpellInfo(76622)] = 9, -- Sunder Armor
+	},
 
-    buffs = {
-        --[GetSpellInfo(871)] = 15, -- Shield Wall
-    },
+	buffs = {
+		--[GetSpellInfo(871)] = 15, -- Shield Wall
+	},
 
-    -- Raid Debuffs
-    instances = {
-        --["MapID"] = {
-        --	[Name or GetSpellInfo(spellID) or SpellID] = PRIORITY,
-        --},
-        [953] = { --[[ Siege of Orgrimmar ]]--
+	-- Raid Debuffs
+	instances = {
+		--["MapID"] = {
+		--	[Name or GetSpellInfo(spellID) or SpellID] = PRIORITY,
+		--},
+
+		--[[ Siege of Orgrimmar ]]--
+		[953] = {
+
 			--Immerseus
 			[GetSpellInfo(143297)] = 5, --Sha Splash
 			[GetSpellInfo(143459)] = 4, --Sha Residue
@@ -202,7 +205,9 @@ ns.auras = {
 
 		},
 
-		[930] = { --[[ Throne of Thunder ]]--
+		--[[ Throne of Thunder ]]--
+		[930] = {
+
 			--Jin'rokh the Breaker
 			[GetSpellInfo(138006)] = 4, --Electrified Waters
 			[GetSpellInfo(137399)] = 6, --Focused Lightning fixate
@@ -338,7 +343,8 @@ ns.auras = {
 
 		},
 
-		[886] = { --[[ Terrace of Endless Spring ]]--
+		--[[ Terrace of Endless Spring ]]--
+		[886] = {
 
 			--Protector Kaolan
 			[GetSpellInfo(117519)] = 7, --Touch of Sha
@@ -376,7 +382,8 @@ ns.auras = {
 
 		},
 
-		[897] = { --[[ Heart of Fear ]]--
+		--[[ Heart of Fear ]]--
+		[897] = {
 
 			--Imperial Vizier Zor'lok
 			[GetSpellInfo(123812)] = 7, --Pheromones of Zeal
@@ -421,15 +428,16 @@ ns.auras = {
 			[GetSpellInfo(125283)] = 7, --Sha Corruption
 
 		},
-		
-		[896] = { --[[ Mogu'shan Vaults ]]--
+
+		--[[ Mogu'shan Vaults ]]--
+		[896] = {
 
 			--The Stone Guard
 			[GetSpellInfo(130395)] = 7, --Jasper Chains
 			[GetSpellInfo(130774)] = 7, --Amethyst Pool
 			[GetSpellInfo(116281)] = 7, --Cobalt Mine Blast
 			[GetSpellInfo(125206)] = 7, --Rend Flesh
-			
+
 			--Feng The Accursed
 			[GetSpellInfo(131788)] = 7, --Lightning Lash
 			[GetSpellInfo(116942)] = 7, --Flaming Spear
@@ -439,13 +447,13 @@ ns.auras = {
 			[GetSpellInfo(116374)] = 7, --Lightning Charge
 			[GetSpellInfo(116364)] = 7, --Arcane Velocity
 			[GetSpellInfo(116040)] = 7, --Epicenter
-			
+
 			--Gara'jal the Spiritbinder
 			[GetSpellInfo(122151)] = 9, --Voodoo doll
 			[GetSpellInfo(117723)] = 8, --Frail Soul
 			[GetSpellInfo(116260)] = 7, --Crossed Over
 			[GetSpellInfo(116278)] = 7, --Soul Sever
-			
+
 			--The Spirit Kings
 			--Meng the Demented
 			[GetSpellInfo(117708)] = 7, --Maddening Shout
@@ -479,118 +487,125 @@ ns.auras = {
 			[GetSpellInfo(116829)] = 7, --Focused Energy (fixate)
 
 		},
-		
-        [824] = { --[[ Dragon Soul ]]--
-           --Deep Corruption IDs
-           [109389] = 8,
-           [103628] = 8,
 
-            --Ultraxion
-            [GetSpellInfo(109075)] = 7, -- Fading Light
-        },
+		--[[ Dragon Soul ]]--
+		[824] = {
 
-        [800] = { --[[ Firelands ]]--
+			--Deep Corruption IDs
+			[109389] = 8,
+			[103628] = 8,
 
-            --Baleroc
-            [GetSpellInfo(100232)] = 9, -- Torment
-        },
+			--Ultraxion
+			[GetSpellInfo(109075)] = 7, -- Fading Light
+		},
 
-        [752] = { --[[ Baradin Hold ]]--
+		--[[ Firelands ]]--
+		[800] = {
 
-            [GetSpellInfo(88954)] = 6, -- Consuming Darkness
-        },
-        
-        [754] = { --[[ Blackwing Descent ]]--
+			--Baleroc
+			[GetSpellInfo(100232)] = 9, -- Torment
+		},
 
-            --Magmaw
-            [GetSpellInfo(78941)] = 6, -- Parasitic Infection
-            [GetSpellInfo(89773)] = 7, -- Mangle
+		--[[ Baradin Hold ]]--
+		[752] = {
 
-            --Omnitron Defense System
-            [GetSpellInfo(79888)] = 6, -- Lightning Conductor
-            [GetSpellInfo(79505)] = 8, -- Flamethrower
-            [GetSpellInfo(80161)] = 7, -- Chemical Cloud
-            [GetSpellInfo(79501)] = 8, -- Acquiring Target
-            [GetSpellInfo(80011)] = 7, -- Soaked in Poison
-            [GetSpellInfo(80094)] = 7, -- Fixate
-            [GetSpellInfo(92023)] = 9, -- Encasing Shadows
-            [GetSpellInfo(92048)] = 9, -- Shadow Infusion
-            [GetSpellInfo(92053)] = 9, -- Shadow Conductor
-            --[GetSpellInfo(91858)] = 6, -- Overcharged Power Generator
-            
-            --Maloriak
-            [GetSpellInfo(92973)] = 8, -- Consuming Flames
-            [GetSpellInfo(92978)] = 8, -- Flash Freeze
-            [GetSpellInfo(92976)] = 7, -- Biting Chill
-            [GetSpellInfo(91829)] = 7, -- Fixate
-            [GetSpellInfo(92787)] = 9, -- Engulfing Darkness
+			[GetSpellInfo(88954)] = 6, -- Consuming Darkness
+		},
 
-            --Atramedes
-            [GetSpellInfo(78092)] = 7, -- Tracking
-            [GetSpellInfo(78897)] = 8, -- Noisy
-            [GetSpellInfo(78023)] = 7, -- Roaring Flame
+		--[[ Blackwing Descent ]]--
+		[754] = {
 
-            --Chimaeron
-            [GetSpellInfo(89084)] = 8, -- Low Health
-            [GetSpellInfo(82881)] = 7, -- Break
-            [GetSpellInfo(82890)] = 9, -- Mortality
+			--Magmaw
+			[GetSpellInfo(78941)] = 6, -- Parasitic Infection
+			[GetSpellInfo(89773)] = 7, -- Mangle
 
-            --Nefarian
-            [GetSpellInfo(94128)] = 7, -- Tail Lash
-            --[GetSpellInfo(94075)] = 8, -- Magma
-            [GetSpellInfo(79339)] = 9, -- Explosive Cinders
-            [GetSpellInfo(79318)] = 9, -- Dominion
-        },
+			--Omnitron Defense System
+			[GetSpellInfo(79888)] = 6, -- Lightning Conductor
+			[GetSpellInfo(79505)] = 8, -- Flamethrower
+			[GetSpellInfo(80161)] = 7, -- Chemical Cloud
+			[GetSpellInfo(79501)] = 8, -- Acquiring Target
+			[GetSpellInfo(80011)] = 7, -- Soaked in Poison
+			[GetSpellInfo(80094)] = 7, -- Fixate
+			[GetSpellInfo(92023)] = 9, -- Encasing Shadows
+			[GetSpellInfo(92048)] = 9, -- Shadow Infusion
+			[GetSpellInfo(92053)] = 9, -- Shadow Conductor
+			--[GetSpellInfo(91858)] = 6, -- Overcharged Power Generator
 
-        [758] = { --[[ The Bastion of Twilight ]]--
+			--Maloriak
+			[GetSpellInfo(92973)] = 8, -- Consuming Flames
+			[GetSpellInfo(92978)] = 8, -- Flash Freeze
+			[GetSpellInfo(92976)] = 7, -- Biting Chill
+			[GetSpellInfo(91829)] = 7, -- Fixate
+			[GetSpellInfo(92787)] = 9, -- Engulfing Darkness
 
-            --Halfus
-            [GetSpellInfo(39171)] = 7, -- Malevolent Strikes
-            [GetSpellInfo(86169)] = 8, -- Furious Roar
+			--Atramedes
+			[GetSpellInfo(78092)] = 7, -- Tracking
+			[GetSpellInfo(78897)] = 8, -- Noisy
+			[GetSpellInfo(78023)] = 7, -- Roaring Flame
 
-            --Valiona & Theralion
-            [GetSpellInfo(86788)] = 6, -- Blackout
-            [GetSpellInfo(86622)] = 7, -- Engulfing Magic
-            [GetSpellInfo(86202)] = 7, -- Twilight Shift
+			--Chimaeron
+			[GetSpellInfo(89084)] = 8, -- Low Health
+			[GetSpellInfo(82881)] = 7, -- Break
+			[GetSpellInfo(82890)] = 9, -- Mortality
 
-            --Council
-            [GetSpellInfo(82665)] = 7, -- Heart of Ice
-            [GetSpellInfo(82660)] = 7, -- Burning Blood
-            [GetSpellInfo(82762)] = 7, -- Waterlogged
-            [GetSpellInfo(83099)] = 7, -- Lightning Rod
-            [GetSpellInfo(82285)] = 7, -- Elemental Stasis
-            [GetSpellInfo(92488)] = 8, -- Gravity Crush
+			--Nefarian
+			[GetSpellInfo(94128)] = 7, -- Tail Lash
+			--[GetSpellInfo(94075)] = 8, -- Magma
+			[GetSpellInfo(79339)] = 9, -- Explosive Cinders
+			[GetSpellInfo(79318)] = 9, -- Dominion
+		},
 
-            --Cho'gall
-            [GetSpellInfo(86028)] = 6, -- Cho's Blast
-            [GetSpellInfo(86029)] = 6, -- Gall's Blast
-            [GetSpellInfo(93189)] = 7, -- Corrupted Blood
-            [GetSpellInfo(93133)] = 7, -- Debilitating Beam
-            [GetSpellInfo(81836)] = 8, -- Corruption: Accelerated
-            [GetSpellInfo(81831)] = 8, -- Corruption: Sickness
-            [GetSpellInfo(82125)] = 8, -- Corruption: Malformation
-            [GetSpellInfo(82170)] = 8, -- Corruption: Absolute
+		--[[ The Bastion of Twilight ]]--
+		[758] = {
 
-            --Sinestra
-            [GetSpellInfo(92956)] = 9, -- Wrack
-        },
+			--Halfus
+			[GetSpellInfo(39171)] = 7, -- Malevolent Strikes
+			[GetSpellInfo(86169)] = 8, -- Furious Roar
 
-        [773] = { --[[ Throne of the Four Winds ]]--
+			--Valiona & Theralion
+			[GetSpellInfo(86788)] = 6, -- Blackout
+			[GetSpellInfo(86622)] = 7, -- Engulfing Magic
+			[GetSpellInfo(86202)] = 7, -- Twilight Shift
 
-            --Conclave
-            [GetSpellInfo(85576)] = 9, -- Withering Winds
-            [GetSpellInfo(85573)] = 9, -- Deafening Winds
-            [GetSpellInfo(93057)] = 7, -- Slicing Gale
-            [GetSpellInfo(86481)] = 8, -- Hurricane
-            [GetSpellInfo(93123)] = 7, -- Wind Chill
-            [GetSpellInfo(93121)] = 8, -- Toxic Spores
+			--Council
+			[GetSpellInfo(82665)] = 7, -- Heart of Ice
+			[GetSpellInfo(82660)] = 7, -- Burning Blood
+			[GetSpellInfo(82762)] = 7, -- Waterlogged
+			[GetSpellInfo(83099)] = 7, -- Lightning Rod
+			[GetSpellInfo(82285)] = 7, -- Elemental Stasis
+			[GetSpellInfo(92488)] = 8, -- Gravity Crush
 
-            --Al'Akir
-            --[GetSpellInfo(93281)] = 7, -- Acid Rain
-            [GetSpellInfo(87873)] = 7, -- Static Shock
-            [GetSpellInfo(88427)] = 7, -- Electrocute
-            [GetSpellInfo(93294)] = 8, -- Lightning Rod
-            [GetSpellInfo(93284)] = 9, -- Squall Line
-        },
-    },
+			--Cho'gall
+			[GetSpellInfo(86028)] = 6, -- Cho's Blast
+			[GetSpellInfo(86029)] = 6, -- Gall's Blast
+			[GetSpellInfo(93189)] = 7, -- Corrupted Blood
+			[GetSpellInfo(93133)] = 7, -- Debilitating Beam
+			[GetSpellInfo(81836)] = 8, -- Corruption: Accelerated
+			[GetSpellInfo(81831)] = 8, -- Corruption: Sickness
+			[GetSpellInfo(82125)] = 8, -- Corruption: Malformation
+			[GetSpellInfo(82170)] = 8, -- Corruption: Absolute
+
+			--Sinestra
+			[GetSpellInfo(92956)] = 9, -- Wrack
+		},
+
+		--[[ Throne of the Four Winds ]]--
+		[773] = {
+
+			--Conclave
+			[GetSpellInfo(85576)] = 9, -- Withering Winds
+			[GetSpellInfo(85573)] = 9, -- Deafening Winds
+			[GetSpellInfo(93057)] = 7, -- Slicing Gale
+			[GetSpellInfo(86481)] = 8, -- Hurricane
+			[GetSpellInfo(93123)] = 7, -- Wind Chill
+			[GetSpellInfo(93121)] = 8, -- Toxic Spores
+
+			--Al'Akir
+			--[GetSpellInfo(93281)] = 7, -- Acid Rain
+			[GetSpellInfo(87873)] = 7, -- Static Shock
+			[GetSpellInfo(88427)] = 7, -- Electrocute
+			[GetSpellInfo(93294)] = 8, -- Lightning Rod
+			[GetSpellInfo(93284)] = 9, -- Squall Line
+		},
+	},
 }
