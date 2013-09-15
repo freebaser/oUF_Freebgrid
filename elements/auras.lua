@@ -108,7 +108,7 @@ getZone:SetScript("OnUpdate", function(self, elapsed)
 	end
 
 	self:Hide()
-	self.elapsed
+	self.elapsed = 0
 end)
 
 getZone:SetScript("OnEvent", function(self, event)
