@@ -160,7 +160,7 @@ oUF.Tags.Events['freebgrid:ws'] = "UNIT_AURA"
 oUF.Tags.Methods['freebgrid:fw'] = function(u) if UnitAura(u, GetSpellInfo(6346)) then return "|cff8B4513"..x.."|r" end end
 oUF.Tags.Events['freebgrid:fw'] = "UNIT_AURA"
 
-oUF.Tags.Methods['freebgrid:fort'] = function(u) if not(UnitAura(u, GetSpellInfo(21562)) or UnitAura(u, GetSpellInfo(6307)) or UnitAura(u, GetSpellInfo(469))) then return "|cff00A1DE"..x.."|r" end end
+oUF.Tags.Methods['freebgrid:fort'] = function(u) if not(UnitAura(u, GetSpellInfo(21562)) or UnitAura(u, GetSpellInfo(6307)) or UnitAura(u, GetSpellInfo(469)) or UnitAura(u, GetSpellInfo(109773))) then return "|cff00A1DE"..x.."|r" end end
 oUF.Tags.Events['freebgrid:fort'] = "UNIT_AURA"
 
 oUF.Tags.Methods['freebgrid:pwb'] = function(u) if UnitAura(u, GetSpellInfo(81782)) then return "|cffEEEE00"..x.."|r" end end

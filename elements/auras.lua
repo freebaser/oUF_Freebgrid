@@ -90,11 +90,11 @@ local dispelPriority = {
 
 local instDebuffs = {}
 
-local delaytimer = 0
-local zoneDelay = function(self, elapsed)
-	delaytimer = delaytimer + elapsed
-
-	if delaytimer < 5 then return end
+local getZone = CreateFrame"Frame"
+getZone:RegisterEvent"PLAYER_ENTERING_WORLD"
+getZone:SetScript("OnUpdate", function(self, elapsed)
+	self.elapsed = (self.elapsed or 0) + elapsed
+	if(self.elapsed < 5) then return end
 
 	if IsInInstance() then
 		SetMapToCurrentZone()
@@ -107,20 +107,18 @@ local zoneDelay = function(self, elapsed)
 		instDebuffs = {}
 	end
 
-	self:SetScript("OnUpdate", nil)
-	delaytimer = 0
-end
+	self:Hide()
+	self.elapsed
+end)
 
-local getZone = CreateFrame"Frame"
-getZone:RegisterEvent"PLAYER_ENTERING_WORLD"
-getZone:RegisterEvent"ZONE_CHANGED_NEW_AREA"
 getZone:SetScript("OnEvent", function(self, event)
-	-- Delay just in case zone data hasn't loaded
-	self:SetScript("OnUpdate", zoneDelay)
-
 	if event == "PLAYER_ENTERING_WORLD" then
-		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+		self:UnregisterEvent"PLAYER_ENTERING_WORLD"
+		self:RegisterEvent"ZONE_CHANGED_NEW_AREA"
 	end
+
+	-- Delay just in case zone data hasn't loaded
+	self:Show()
 end)
 
 local CustomFilter = function(icons, ...)
