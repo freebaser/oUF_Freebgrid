@@ -131,6 +131,9 @@ ns.auras = {
 			[GetSpellInfo(142990)] = 2, --Fatal Strike (Tank debuff)
 			[GetSpellInfo(142913)] = 6, --Displaced Energy (Dispell)
 			[GetSpellInfo(143919)] = 5, --Languish (Heroic)
+			[GetSpellInfo(142863)] = 9, --Weak Ancient Barrier
+			[GetSpellInfo(142865)] = 9, --Strong Ancient Barrier
+			[GetSpellInfo(142862)] = 9, --Ancient Barrier
 
 			--Spoils of Pandaria
 			[GetSpellInfo(145685)] = 2, --Unstable Defensive System
