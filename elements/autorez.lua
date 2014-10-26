@@ -4,7 +4,7 @@ local oUF = ns.oUF or oUF
 local classList = {
 	["DRUID"] = {
 		combat = GetSpellInfo(20484), -- Rebirth
-		ooc = GetSpellInfo(50769), -- Revive    
+		ooc = GetSpellInfo(50769), -- Revive
 	},
 
 	["WARLOCK"] = {

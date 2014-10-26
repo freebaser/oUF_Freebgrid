@@ -112,10 +112,10 @@ function ns.InitDB()
 end
 
 function ns.FlushDB()
-	for k,v in pairs(ns.defaults) do 
-		if ns.db[k] == v and type(ns.db[k]) ~= "table" then 
-			ns.db[k] = nil 
-		end 
+	for k,v in pairs(ns.defaults) do
+		if ns.db[k] == v and type(ns.db[k]) ~= "table" then
+			ns.db[k] = nil
+		end
 	end
 end
 

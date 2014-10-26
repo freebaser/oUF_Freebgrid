@@ -1,9 +1,9 @@
 local _, ns = ...
 
 local foo = {""}
-local spellcache = setmetatable({}, 
-{__index=function(t,id) 
-	local a = {GetSpellInfo(id)} 
+local spellcache = setmetatable({},
+{__index=function(t,id)
+	local a = {GetSpellInfo(id)}
 
 	if GetSpellInfo(id) then
 		t[id] = a
@@ -312,7 +312,7 @@ ns.auras = {
 			[GetSpellInfo(136520)] = 5, --Frozen Blood
 			[GetSpellInfo(137669)] = 3, --Storm Cloud
 			[GetSpellInfo(137668)] = 5, --Burning Cinders
-			[GetSpellInfo(137654)] = 5, --Rushing Winds 
+			[GetSpellInfo(137654)] = 5, --Rushing Winds
 			[GetSpellInfo(136577)] = 4, --Wind Storm
 			[GetSpellInfo(136192)] = 4, --Lightning Storm
 			[GetSpellInfo(136615)] = 6, --Electrified

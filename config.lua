@@ -21,9 +21,9 @@ local function updateFonts(object)
 	object.Name:SetWidth(ns.db.width)
 	object.AFKtext:SetFont(ns.db.fontPath, ns.db.fontsizeEdge, ns.db.outline)
 	object.AFKtext:SetWidth(ns.db.width)
-	object.AuraStatusCen:SetFont(ns.db.fontPath, ns.db.fontsizeEdge, ns.db.outline) 
+	object.AuraStatusCen:SetFont(ns.db.fontPath, ns.db.fontsizeEdge, ns.db.outline)
 	object.AuraStatusCen:SetWidth(ns.db.width)
-	object.Healtext:SetFont(ns.db.fontPath, ns.db.fontsizeEdge, ns.db.outline) 
+	object.Healtext:SetFont(ns.db.fontPath, ns.db.fontsizeEdge, ns.db.outline)
 	object.Healtext:SetWidth(ns.db.width)
 	if object.freebCluster then
 		object.freebCluster:SetTextColor(ns.db.cluster.textcolor.r, ns.db.cluster.textcolor.g, ns.db.cluster.textcolor.b)
@@ -111,7 +111,7 @@ local updateCluster = function(object)
 	if ns.db.cluster.enabled then
 		object:EnableElement('freebCluster')
 	else
-		object:DisableElement('freebCluster') 
+		object:DisableElement('freebCluster')
 	end
 end
 
@@ -204,7 +204,7 @@ local generalopts = {
 					name = "25 man",
 					type = "range",
 					order = 2,
-					desc = "Scale of the frames when more than 10 members.", 
+					desc = "Scale of the frames when more than 10 members.",
 					min = 0.25,
 					max = 2.0,
 					step = .05,
@@ -255,7 +255,7 @@ local generalopts = {
 			step = 1,
 			get = function(info) return ns.db.spacing end,
 			set = function(info,val) ns.db.spacing = val; end,
-		}, 
+		},
 		raid = {
 			name = "Raid",
 			type = "group",
@@ -273,14 +273,14 @@ local generalopts = {
 						elseif(val == false and (ns.db.growth ~= "RIGHT" or ns.db.growth ~= "LEFT")) then
 							ns.db.growth = "RIGHT"
 						end
-						ns.db.horizontal = val; 
+						ns.db.horizontal = val;
 					end,
 				},
 				growth = {
 					name = "Growth Direction",
 					type = "select",
 					order = 2,
-					values = function(info,val) 
+					values = function(info,val)
 						info = ns.db.growth
 						if not ns.db.horizontal then
 							return { ["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT" }
@@ -307,7 +307,7 @@ local generalopts = {
 					desc = "Use multiple headers for better group sorting. Note: This disables units per group and sets it to 5.",
 					order = 5,
 					get = function(info) return ns.db.multi end,
-					set = function(info,val) ns.db.multi = val 
+					set = function(info,val) ns.db.multi = val
 						if val == true then
 							ns.db.sortClass = false
 							ns.db.sortName = false
@@ -321,8 +321,8 @@ local generalopts = {
 					min = 1,
 					max = 40,
 					step = 1,
-					disabled = function(info) 
-						if ns.db.multi then return true end 
+					disabled = function(info)
+						if ns.db.multi then return true end
 					end,
 					get = function(info) return ns.db.numUnits end,
 					set = function(info,val) ns.db.numUnits = val; end,
@@ -332,7 +332,7 @@ local generalopts = {
 					type = "toggle",
 					order = 6,
 					get = function(info) return ns.db.sortName end,
-					set = function(info,val) ns.db.sortName = val 
+					set = function(info,val) ns.db.sortName = val
 						if val == true then
 							ns.db.multi = false
 						end
@@ -384,14 +384,14 @@ local generalopts = {
 						elseif(val == false and (ns.db.petgrowth ~= "RIGHT" or ns.db.petgrowth ~= "LEFT")) then
 							ns.db.petgrowth = "RIGHT"
 						end
-						ns.db.pethorizontal = val; 
+						ns.db.pethorizontal = val;
 					end,
 				},
 				petgrowth = {
 					name = "Growth Direction",
 					type = "select",
 					order = 2,
-					values = function(info,val) 
+					values = function(info,val)
 						info = ns.db.petgrowth
 						if not ns.db.pethorizontal then
 							return { ["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT" }
@@ -431,14 +431,14 @@ local generalopts = {
 						elseif(val == false and (ns.db.MTgrowth ~= "RIGHT" or ns.db.MTgrowth ~= "LEFT")) then
 							ns.db.MTgrowth = "RIGHT"
 						end
-						ns.db.MThorizontal = val; 
+						ns.db.MThorizontal = val;
 					end,
 				},
 				MTgrowth = {
 					name = "Growth Direction",
 					type = "select",
 					order = 2,
-					values = function(info,val) 
+					values = function(info,val)
 						info = ns.db.MTgrowth
 						if not ns.db.MThorizontal then
 							return { ["LEFT"] = "LEFT", ["RIGHT"] = "RIGHT" }
@@ -467,7 +467,7 @@ local generalopts = {
 local statusbaropts = {
 	type = "group", name = "StatusBars", order = 2,
 	args = {
-		statusbargroup = { 
+		statusbargroup = {
 			type = "group", name = "Statusbar Texture", inline = true, order = 1,
 			args = {
 				statusbar = {
@@ -476,14 +476,14 @@ local statusbaropts = {
 					order = 1,
 					itemControl = "DDI-Statusbar",
 					values = statusbars,
-					get = function(info) 
+					get = function(info)
 						for i, v in next, statusbars do
 							if v == ns.db.texture then return i end
 						end
 					end,
-					set = function(info, val) ns.db.texture = statusbars[val]; 
-						ns.db.texturePath = SM:Fetch("statusbar",statusbars[val]); 
-						updateObjects() 
+					set = function(info, val) ns.db.texture = statusbars[val];
+						ns.db.texturePath = SM:Fetch("statusbar",statusbars[val]);
+						updateObjects()
 					end,
 				},
 				orientation = {
@@ -500,7 +500,7 @@ local statusbaropts = {
 					order = 3,
 					get = function(info) return ns.db.hpreversed end,
 					set = function(info,val) ns.db.hpreversed = val;
-						updateObjects(); 
+						updateObjects();
 					end,
 				},
 			},
@@ -532,7 +532,7 @@ local statusbaropts = {
 					order = 3,
 					get = function(info) return ns.db.ppreversed end,
 					set = function(info,val) ns.db.ppreversed = val;
-						updateObjects(); 
+						updateObjects();
 					end,
 				},
 
@@ -582,7 +582,7 @@ local fontopts = {
 			end,
 			set = function(info, val) ns.db.font = fonts[val];
 				ns.db.fontPath = SM:Fetch("font",fonts[val]);
-				wipe(ns.nameCache); updateObjects() 
+				wipe(ns.nameCache); updateObjects()
 			end,
 		},
 		outline = {
@@ -590,14 +590,14 @@ local fontopts = {
 			type = "select",
 			order = 2,
 			values = ns.outline,
-			get = function(info) 
+			get = function(info)
 				if not ns.db.outline then
 					return "None"
 				else
 					return ns.db.outline
 				end
 			end,
-			set = function(info,val) 
+			set = function(info,val)
 				if val == "None" then
 					ns.db.outline = nil
 				else
@@ -644,7 +644,7 @@ local rangeopts = {
 			set = function(info,val) ns.db.outsideRange = val end,
 		},
 
-		rangegroup = { 
+		rangegroup = {
 			type = "group", name = "Range", inline = true, order = 1,
 			args = {
 				arrow = {
@@ -724,7 +724,7 @@ local healopts = {
 					hasAlpha = true,
 					get = function(info) return ns.db.myhealcolor.r, ns.db.myhealcolor.g, ns.db.myhealcolor.b, ns.db.myhealcolor.a  end,
 					set = function(info,r,g,b,a) ns.db.myhealcolor.r, ns.db.myhealcolor.g, ns.db.myhealcolor.b, ns.db.myhealcolor.a = r,g,b,a;
-						updateObjects(); 
+						updateObjects();
 					end,
 				},
 				otherheal = {
@@ -734,7 +734,7 @@ local healopts = {
 					hasAlpha = true,
 					get = function(info) return ns.db.otherhealcolor.r, ns.db.otherhealcolor.g, ns.db.otherhealcolor.b, ns.db.otherhealcolor.a  end,
 					set = function(info,r,g,b,a) ns.db.otherhealcolor.r, ns.db.otherhealcolor.g, ns.db.otherhealcolor.b, ns.db.otherhealcolor.a = r,g,b,a;
-						updateObjects(); 
+						updateObjects();
 					end,
 				},
 				overflow = {
@@ -750,7 +750,7 @@ local healopts = {
 					order = 7,
 					get = function(info) return ns.db.healothersonly end,
 					set = function(info,val) ns.db.healothersonly = val end,
-				}, 
+				},
 			},
 		},
 		hptext = {
@@ -764,7 +764,7 @@ local healopts = {
 					type = "toggle",
 					order = 1,
 					get = function(info) return ns.db.deficit end,
-					set = function(info,val) ns.db.deficit = val 
+					set = function(info,val) ns.db.deficit = val
 						if val == true then
 							ns.db.perc = false
 							ns.db.actual = false
@@ -776,7 +776,7 @@ local healopts = {
 					type = "toggle",
 					order = 2,
 					get = function(info) return ns.db.perc end,
-					set = function(info,val) ns.db.perc = val 
+					set = function(info,val) ns.db.perc = val
 						if val == true then
 							ns.db.deficit = false
 							ns.db.actual = false
@@ -788,7 +788,7 @@ local healopts = {
 					type = "toggle",
 					order = 3,
 					get = function(info) return ns.db.actual end,
-					set = function(info,val) ns.db.actual = val 
+					set = function(info,val) ns.db.actual = val
 						if val == true then
 							ns.db.deficit = false
 							ns.db.perc = false
@@ -803,7 +803,7 @@ local healopts = {
 local miscopts = {
 	type = "group", name = "Miscellaneous", order = 6,
 	args = {
-		checkgroup = { 
+		checkgroup = {
 			type = "group", name = "Checks", inline = true, order = 1,
 			args = {
 				party = {
@@ -989,7 +989,7 @@ local coloropts = {
 						if ns.db.definecolors and val == true then
 							ns.db.definecolors = false
 						end
-						ns:Colors(); updateObjects(); 
+						ns:Colors(); updateObjects();
 					end,
 				},
 				hpinverted = {
@@ -999,7 +999,7 @@ local coloropts = {
 					desc = "Does not play nice with the Heal Bar",
 					get = function(info) return ns.db.hpinverted end,
 					set = function(info,val) ns.db.hpinverted = val;
-						updateObjects(); 
+						updateObjects();
 					end,
 				},
 				hpdefine = {
@@ -1017,7 +1017,7 @@ local coloropts = {
 								if ns.db.reversecolors and val == true then
 									ns.db.reversecolors = false
 								end
-								ns:Colors(); updateObjects(); 
+								ns:Colors(); updateObjects();
 							end,
 						},
 						hpcolor = {
@@ -1027,7 +1027,7 @@ local coloropts = {
 							hasAlpha = false,
 							get = function(info) return ns.db.hpcolor.r, ns.db.hpcolor.g, ns.db.hpcolor.b, ns.db.hpcolor.a end,
 							set = function(info,r,g,b,a) ns.db.hpcolor.r, ns.db.hpcolor.g, ns.db.hpcolor.b, ns.db.hpcolor.a = r,g,b,a;
-								ns:Colors(); updateObjects(); 
+								ns:Colors(); updateObjects();
 							end,
 						},
 						hpbgcolor = {
@@ -1037,7 +1037,7 @@ local coloropts = {
 							hasAlpha = true,
 							get = function(info) return ns.db.hpbgcolor.r, ns.db.hpbgcolor.g, ns.db.hpbgcolor.b, ns.db.hpbgcolor.a end,
 							set = function(info,r,g,b,a) ns.db.hpbgcolor.r, ns.db.hpbgcolor.g, ns.db.hpbgcolor.b, ns.db.hpbgcolor.a = r,g,b,a;
-								ns:Colors(); updateObjects(); 
+								ns:Colors(); updateObjects();
 							end,
 						},
 						colorSmooth = {
@@ -1050,7 +1050,7 @@ local coloropts = {
 								if ns.db.hpinverted and val == true then
 									ns.db.hpinverted = false
 								end
-								updateObjects(); 
+								updateObjects();
 							end,
 						},
 						gradient = {
@@ -1060,7 +1060,7 @@ local coloropts = {
 							hasAlpha = false,
 							get = function(info) return ns.db.gradient.r, ns.db.gradient.g, ns.db.gradient.b, ns.db.gradient.a end,
 							set = function(info,r,g,b,a) ns.db.gradient.r, ns.db.gradient.g, ns.db.gradient.b, ns.db.gradient.a = r,g,b,a;
-								updateObjects(); 
+								updateObjects();
 							end,
 						},
 					},
@@ -1078,7 +1078,7 @@ local coloropts = {
 					type = "toggle",
 					order = 1,
 					get = function(info) return ns.db.powerclass end,
-					set = function(info,val) ns.db.powerclass = val; updateObjects(); 
+					set = function(info,val) ns.db.powerclass = val; updateObjects();
 						if ns.db.powerdefinecolors and val == true then
 							ns.db.powerdefinecolors = false
 						end
@@ -1091,7 +1091,7 @@ local coloropts = {
 					order = 2,
 					get = function(info) return ns.db.ppinverted end,
 					set = function(info,val) ns.db.ppinverted = val;
-						updateObjects(); 
+						updateObjects();
 					end,
 				},
 				ppdefine = {
@@ -1109,7 +1109,7 @@ local coloropts = {
 								if ns.db.powerclass and val == true then
 									ns.db.powerclass = false
 								end
-								ns:Colors(); updateObjects(); 
+								ns:Colors(); updateObjects();
 							end,
 						},
 						powercolor = {
@@ -1118,8 +1118,8 @@ local coloropts = {
 							order = 3,
 							hasAlpha = false,
 							get = function(info) return ns.db.powercolor.r, ns.db.powercolor.g, ns.db.powercolor.b, ns.db.powercolor.a end,
-							set = function(info,r,g,b,a) ns.db.powercolor.r, ns.db.powercolor.g, ns.db.powercolor.b, ns.db.powercolor.a = r,g,b,a; 
-								ns:Colors(); updateObjects(); 
+							set = function(info,r,g,b,a) ns.db.powercolor.r, ns.db.powercolor.g, ns.db.powercolor.b, ns.db.powercolor.a = r,g,b,a;
+								ns:Colors(); updateObjects();
 							end,
 						},
 						powerbgcolor = {
@@ -1129,7 +1129,7 @@ local coloropts = {
 							hasAlpha = true,
 							get = function(info) return ns.db.powerbgcolor.r, ns.db.powerbgcolor.g, ns.db.powerbgcolor.b, ns.db.powerbgcolor.a end,
 							set = function(info,r,g,b,a) ns.db.powerbgcolor.r, ns.db.powerbgcolor.g, ns.db.powerbgcolor.b, ns.db.powerbgcolor.a = r,g,b,a;
-								ns:Colors(); updateObjects(); 
+								ns:Colors(); updateObjects();
 							end,
 						},
 					},
@@ -1141,7 +1141,7 @@ local coloropts = {
 
 local clusteropts = {
 	type = "group", name = "Cluster", order = 8, width = "half",
-	--clustergroup = { 
+	--clustergroup = {
 	--type = "group", name = "Cluster", inline = true, order = 1,
 	args = {
 		enabled = {
@@ -1150,8 +1150,8 @@ local clusteropts = {
 			order = 1,
 			desc = "This will put a number in the right corner of the unit indicating how many units are in range and below a certain health.",
 			get = function(info) return ns.db.cluster.enabled end,
-			set = function(info,val) ns.db.cluster.enabled = val; 
-				updateObjects(); 
+			set = function(info,val) ns.db.cluster.enabled = val;
+				updateObjects();
 			end,
 		},
 		range = {
@@ -1191,8 +1191,8 @@ local clusteropts = {
 			order = 5,
 			hasAlpha = false,
 			get = function(info) return ns.db.cluster.textcolor.r, ns.db.cluster.textcolor.g, ns.db.cluster.textcolor.b, ns.db.cluster.textcolor.a end,
-			set = function(info,r,g,b,a) ns.db.cluster.textcolor.r, ns.db.cluster.textcolor.g, ns.db.cluster.textcolor.b, ns.db.cluster.textcolor.a = r,g,b,a; 
-				updateObjects(); 
+			set = function(info,r,g,b,a) ns.db.cluster.textcolor.r, ns.db.cluster.textcolor.g, ns.db.cluster.textcolor.b, ns.db.cluster.textcolor.a = r,g,b,a;
+				updateObjects();
 			end,
 		},
 	},

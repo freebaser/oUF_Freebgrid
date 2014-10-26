@@ -44,7 +44,7 @@ local function SmoothBar(bar)
 		bar:SetScript("OnUpdate", SmoothUpdate)
 
 		return true
-	end 
+	end
 end
 
 local function Restore(bar)

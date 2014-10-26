@@ -94,7 +94,7 @@ local function GetBearing(unit)
 end
 
 function ns:arrow(object, unit)
-	if(not object.OoR and not ns.db.arrowmouseoveralways) or not UnitIsConnected(unit) then return end 
+	if(not object.OoR and not ns.db.arrowmouseoveralways) or not UnitIsConnected(unit) then return end
 	local bearing = GetBearing(unit)
 
 	if bearing then

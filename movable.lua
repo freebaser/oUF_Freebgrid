@@ -67,7 +67,7 @@ local saveDefaultPosition = function(anchor)
 		_DB.__INITIAL[style] = {}
 	end
 
-	if(not _DB.__INITIAL[style][identifier]) then	
+	if(not _DB.__INITIAL[style][identifier]) then
 		_DB.__INITIAL[style][identifier] = getPoint(anchor)
 	end
 end

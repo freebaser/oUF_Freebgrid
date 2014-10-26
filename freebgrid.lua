@@ -126,25 +126,25 @@ ns.nameCache = {}
 ns.colorCache = {}
 ns.debuffColor = {} -- hex debuff colors for tags
 
-local function utf8sub(str, start, numChars) 
-	local currentIndex = start 
-	while numChars > 0 and currentIndex <= #str do 
-		local char = string.byte(str, currentIndex) 
-		if char >= 240 then 
-			currentIndex = currentIndex + 4 
-		elseif char >= 225 then 
-			currentIndex = currentIndex + 3 
-		elseif char >= 192 then 
-			currentIndex = currentIndex + 2 
-		else 
-			currentIndex = currentIndex + 1 
-		end 
-		numChars = numChars - 1 
-	end 
-	return str:sub(start, currentIndex - 1) 
-end 
+local function utf8sub(str, start, numChars)
+	local currentIndex = start
+	while numChars > 0 and currentIndex <= #str do
+		local char = string.byte(str, currentIndex)
+		if char >= 240 then
+			currentIndex = currentIndex + 4
+		elseif char >= 225 then
+			currentIndex = currentIndex + 3
+		elseif char >= 192 then
+			currentIndex = currentIndex + 2
+		else
+			currentIndex = currentIndex + 1
+		end
+		numChars = numChars - 1
+	end
+	return str:sub(start, currentIndex - 1)
+end
 
-function ns:UpdateName(name, unit) 
+function ns:UpdateName(name, unit)
 	if(unit) then
 		local _NAME = UnitName(unit)
 		local _, class = UnitClass(unit)
@@ -196,7 +196,7 @@ local function PostHealth(hp, unit, min, max)
 	if(UnitIsPlayer(unit)) then
 		local _, class = UnitClass(unit)
 		t = colors.class[class]
-	else		
+	else
 		r, g, b = .2, .9, .1
 	end
 
@@ -222,7 +222,7 @@ function ns:UpdateHealth(hp)
 	hp.freebSmooth = ns.db.smooth
 
 	hp.colorSmooth = ns.db.colorSmooth
-	hp.smoothGradient = { 
+	hp.smoothGradient = {
 		ns.db.gradient.r, ns.db.gradient.g, ns.db.gradient.b,
 		ns.db.hpcolor.r, ns.db.hpcolor.g, ns.db.hpcolor.b,
 	}
@@ -564,9 +564,9 @@ local function freebHeader(name, group, temp, pet, MT)
 	if pet then
 		horiz, grow = ns.db.pethorizontal, ns.db.petgrowth
 		numUnits = ns.db.petUnits
-		initconfig = [[ 
-		self:SetWidth(%d)        
-		self:SetHeight(%d)           
+		initconfig = [[
+		self:SetWidth(%d)
+		self:SetHeight(%d)
 		self:SetAttribute('unitsuffix', 'pet')
 		]]
 	elseif MT then
@@ -683,7 +683,7 @@ oUF:Factory(function(self)
 			tank:SetAttribute("nameList", table.concat(oRA3:GetSortedTanks(), ","))
 
 			local tankhandler = {}
-			function tankhandler:OnTanksUpdated(event, tanks) 
+			function tankhandler:OnTanksUpdated(event, tanks)
 				tank:SetAttribute("nameList", table.concat(tanks, ","))
 			end
 			oRA3.RegisterCallback(tankhandler, "OnTanksUpdated")

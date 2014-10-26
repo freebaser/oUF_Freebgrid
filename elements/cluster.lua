@@ -121,7 +121,7 @@ local updateMapFiles = function()
 end
 
 local fillroster = function(unit)
-	units[unit] = { 
+	units[unit] = {
 		["pos"] = "",
 		["numInRange"] = 1,
 		["hp"] = 0,

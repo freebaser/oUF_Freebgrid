@@ -46,10 +46,10 @@ oUF.Tags.Methods['freebgrid:def'] = function(u)
 			local _, class = UnitClass(u)
 			local color = colorCache[class]
 
-			if color then 
-				return color..perc.."%|r" 
+			if color then
+				return color..perc.."%|r"
 			else
-				return perc.."%|r" 
+				return perc.."%|r"
 			end
 		end
 	elseif ns.db.deficit or ns.db.actual then
@@ -64,7 +64,7 @@ oUF.Tags.Methods['freebgrid:def'] = function(u)
 				return color..(ns.db.deficit and "-"..numberize(max-cur) or numberize(cur)).."|r"
 			end
 		end
-	end 
+	end
 end
 oUF.Tags.Events['freebgrid:def'] = 'UNIT_MAXHEALTH UNIT_HEALTH UNIT_HEALTH_FREQUENT UNIT_CONNECTION PLAYER_FLAGS_CHANGED '..oUF.Tags.Events['freebgrid:altpower']
 
@@ -115,7 +115,7 @@ local Update = function(self, event, unit)
 		allIncomingHeal = allIncomingHeal - myIncomingHeal
 	end
 
-	self.myHealPredictionBar:SetMinMaxValues(0, maxHealth) 
+	self.myHealPredictionBar:SetMinMaxValues(0, maxHealth)
 	if ns.db.healothersonly then
 		self.myHealPredictionBar:SetValue(0)
 	else
@@ -182,7 +182,7 @@ local Enable = function(self)
 		end
 		self.otherHealPredictionBar:SetStatusBarTexture(1,1,1, "BORDER", -1)
 		self.otherHealPredictionBar:SetStatusBarColor(ns.db.otherhealcolor.r, ns.db.otherhealcolor.g, ns.db.otherhealcolor.b, ns.db.otherhealcolor.a)
-		self.otherHealPredictionBar:Hide() 
+		self.otherHealPredictionBar:Hide()
 
 		if ns.db.healbar then
 			self:RegisterEvent('UNIT_HEAL_PREDICTION', Update)

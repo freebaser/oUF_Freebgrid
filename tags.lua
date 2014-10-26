@@ -3,9 +3,9 @@ local oUF = ns.oUF or oUF
 assert(oUF, "oUF_Freebgrid was unable to locate oUF install.")
 
 local foo = {""}
-local spellcache = setmetatable({}, 
-{__index=function(t,id) 
-	local a = {GetSpellInfo(id)} 
+local spellcache = setmetatable({},
+{__index=function(t,id)
+	local a = {GetSpellInfo(id)}
 
 	if GetSpellInfo(id) then
 		t[id] = a
@@ -118,7 +118,7 @@ local pomCount = {
 	[5] = 'Z',
 	[6] = 'Y',
 }
-oUF.Tags.Methods['freebgrid:pom'] = function(u) 
+oUF.Tags.Methods['freebgrid:pom'] = function(u)
 	local name, _,_, c, _,_,_, fromwho = UnitAura(u, GetSpellInfo(33076))
 	if name and pomCount[c] then
 		if(fromwho == "player") then
@@ -147,7 +147,7 @@ oUF.Tags.Events['freebgrid:rnw'] = "UNIT_AURA"
 
 oUF.Tags.Methods['freebgrid:rnwTime'] = function(u)
 	local name, _,_,_,_,_, expirationTime, fromwho = UnitAura(u, GetSpellInfo(139))
-	if(fromwho == "player") then return getTime(expirationTime) end 
+	if(fromwho == "player") then return getTime(expirationTime) end
 end
 oUF.Tags.Events['freebgrid:rnwTime'] = "UNIT_AURA"
 
@@ -168,7 +168,7 @@ oUF.Tags.Events['freebgrid:pwb'] = "UNIT_AURA"
 
 -- Druid
 local lbCount = { 4, 2, 3}
-oUF.Tags.Methods['freebgrid:lb'] = function(u) 
+oUF.Tags.Methods['freebgrid:lb'] = function(u)
 	local name, _,_, c,_,_, expirationTime, fromwho = UnitAura(u, GetSpellInfo(33763))
 	if(fromwho == "player") then
 		local spellTimer = GetTime()-expirationTime
@@ -200,7 +200,7 @@ oUF.Tags.Events['freebgrid:rejuv'] = "UNIT_AURA"
 
 oUF.Tags.Methods['freebgrid:rejuvTime'] = function(u)
 	local name, _,_,_,_,_, expirationTime, fromwho = UnitAura(u, GetSpellInfo(774))
-	if(fromwho == "player") then return getTime(expirationTime) end 
+	if(fromwho == "player") then return getTime(expirationTime) end
 end
 oUF.Tags.Events['freebgrid:rejuvTime'] = "UNIT_AURA"
 
@@ -221,7 +221,7 @@ oUF.Tags.Methods['freebgrid:vigil'] = function(u) if UnitAura(u, GetSpellInfo(50
 oUF.Tags.Events['freebgrid:vigil'] = "UNIT_AURA"
 
 -- Shaman
-oUF.Tags.Methods['freebgrid:rip'] = function(u) 
+oUF.Tags.Methods['freebgrid:rip'] = function(u)
 	local name, _,_,_,_,_,_, fromwho = UnitAura(u, GetSpellInfo(61295))
 	if(fromwho == 'player') then return "|cff00FEBF"..x.."|r" end
 end
@@ -229,13 +229,13 @@ oUF.Tags.Events['freebgrid:rip'] = 'UNIT_AURA'
 
 oUF.Tags.Methods['freebgrid:ripTime'] = function(u)
 	local name, _,_,_,_,_, expirationTime, fromwho = UnitAura(u, GetSpellInfo(61295))
-	if(fromwho == "player") then return getTime(expirationTime) end 
+	if(fromwho == "player") then return getTime(expirationTime) end
 end
 oUF.Tags.Events['freebgrid:ripTime'] = 'UNIT_AURA'
 
 local earthCount = {'i','h','g','f','p','q','Z','Z','Y'}
-oUF.Tags.Methods['freebgrid:earth'] = function(u) 
-	local c = select(4, UnitAura(u, GetSpellInfo(974))) if c then return '|cffFFCF7F'..earthCount[c]..'|r' end 
+oUF.Tags.Methods['freebgrid:earth'] = function(u)
+	local c = select(4, UnitAura(u, GetSpellInfo(974))) if c then return '|cffFFCF7F'..earthCount[c]..'|r' end
 end
 oUF.Tags.Events['freebgrid:earth'] = 'UNIT_AURA'
 
@@ -268,12 +268,12 @@ oUF.Tags.Events['freebgrid:sacred'] = "UNIT_AURA"
 
 oUF.Tags.Methods['freebgrid:eternalTime'] = function(u)
 	local name, _,_,_,_,_, expirationTime, fromwho = UnitAura(u, GetSpellInfo(114163))
-	if(fromwho == "player") then return getTime(expirationTime) end 
+	if(fromwho == "player") then return getTime(expirationTime) end
 end
 oUF.Tags.Events['freebgrid:eternalTime'] = "UNIT_AURA"
 
 -- Warlock
-oUF.Tags.Methods['freebgrid:di'] = function(u) 
+oUF.Tags.Methods['freebgrid:di'] = function(u)
 	local name, _,_,_,_,_,_, fromwho = UnitAura(u, GetSpellInfo(109773))
 	if fromwho == "player" then
 		return "|cff6600FF"..x.."|r"
@@ -283,8 +283,8 @@ oUF.Tags.Methods['freebgrid:di'] = function(u)
 end
 oUF.Tags.Events['freebgrid:di'] = "UNIT_AURA"
 
-oUF.Tags.Methods['freebgrid:ss'] = function(u) 
-	local name, _,_,_,_,_,_, fromwho = UnitAura(u, GetSpellInfo(20707)) 
+oUF.Tags.Methods['freebgrid:ss'] = function(u)
+	local name, _,_,_,_,_,_, fromwho = UnitAura(u, GetSpellInfo(20707))
 	if fromwho == "player" then
 		return "|cff6600FFY|r"
 	elseif name then
