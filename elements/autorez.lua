@@ -2,35 +2,12 @@ local parent, ns = ...
 local oUF = ns.oUF or oUF
 
 local classList = {
+	--[[
 	["DRUID"] = {
 		combat = GetSpellInfo(20484), -- Rebirth
 		ooc = GetSpellInfo(50769), -- Revive
 	},
-
-	["WARLOCK"] = {
-		combat = GetSpellInfo(6203), -- Soulstone
-		ooc = GetSpellInfo(6203), -- Soulstone
-	},
-
-	["PRIEST"] = {
-		ooc = GetSpellInfo(2006), -- Resurrection
-	},
-
-	["SHAMAN"] = {
-		ooc = GetSpellInfo(2008), -- Ancestral Spirit
-	},
-
-	["PALADIN"] = {
-		ooc = GetSpellInfo(7328), -- Redemption
-	},
-
-	["DEATHKNIGHT"] = {
-		combat = GetSpellInfo(61999), -- Raise Ally
-	},
-
-	["MONK"] = {
-		ooc = GetSpellInfo(115178), -- Resuscitate
-	},
+	]]--
 }
 
 local body = ""
